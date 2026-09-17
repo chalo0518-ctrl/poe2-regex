@@ -1,0 +1,21 @@
+{
+  "name": "@poe2-regex/regex",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "to-regex-range": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/to-regex-range": "^5.0.3",
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

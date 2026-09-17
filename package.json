@@ -1,0 +1,16 @@
+{
+  "name": "poe2-regex",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "test": "pnpm --filter @poe2-regex/regex test && pnpm --filter @poe2-regex/data test",
+    "fetch-data": "node scripts/fetch-shields.mjs && node scripts/fetch-endgame.mjs"
+  },
+  "packageManager": "pnpm@10.33.3",
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,3168 @@
+[
+  {
+    "id": "Thorns|1",
+    "family": "Thorns",
+    "generation": "prefix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "physical_damage",
+      "damage",
+      "physical"
+    ],
+    "tagsZh": [
+      "傷害",
+      "物理"
+    ],
+    "labelZh": "多刺的",
+    "labelEn": "Thorny",
+    "textZh": "(1—2)至(3—4)點物理荊棘傷害",
+    "textEn": "(1—2) to (3—4) Physical Thorns damage",
+    "match": "to Physical Thorns damage",
+    "matchZh": "至點物理荊棘傷害",
+    "kind": "numeric",
+    "numeric": {
+      "format": "bare",
+      "suggestedMin": 1,
+      "suggestedMax": 151
+    },
+    "tiers": [
+      {
+        "nameZh": "多刺的",
+        "nameEn": "Thorny",
+        "level": 1,
+        "textZh": "(1—2)至(3—4)點物理荊棘傷害",
+        "textEn": "(1—2) to (3—4) Physical Thorns damage",
+        "dropChance": 1000,
+        "statMin": 1,
+        "statMax": 2
+      },
+      {
+        "nameZh": "帶刺的",
+        "nameEn": "Spiny",
+        "level": 10,
+        "textZh": "(5—7)至(7—10)點物理荊棘傷害",
+        "textEn": "(5—7) to (7—10) Physical Thorns damage",
+        "dropChance": 1000,
+        "statMin": 5,
+        "statMax": 7
+      },
+      {
+        "nameZh": "尖刺的",
+        "nameEn": "Barbed",
+        "level": 19,
+        "textZh": "(11—16)至(17—23)點物理荊棘傷害",
+        "textEn": "(11—16) to (17—23) Physical Thorns damage",
+        "dropChance": 1000,
+        "statMin": 11,
+        "statMax": 16
+      },
+      {
+        "nameZh": "尖銳的",
+        "nameEn": "Pointed",
+        "level": 38,
+        "textZh": "(24—35)至(36—53)點物理荊棘傷害",
+        "textEn": "(24—35) to (36—53) Physical Thorns damage",
+        "dropChance": 1000,
+        "statMin": 24,
+        "statMax": 35
+      },
+      {
+        "nameZh": "尖刺",
+        "nameEn": "Spiked",
+        "level": 48,
+        "textZh": "(40—60)至(61—92)點物理荊棘傷害",
+        "textEn": "(40—60) to (61—92) Physical Thorns damage",
+        "dropChance": 1000,
+        "statMin": 40,
+        "statMax": 60
+      },
+      {
+        "nameZh": "尖刃",
+        "nameEn": "Edged",
+        "level": 63,
+        "textZh": "(64—97)至(98—145)點物理荊棘傷害",
+        "textEn": "(64—97) to (98—145) Physical Thorns damage",
+        "dropChance": 1000,
+        "statMin": 64,
+        "statMax": 97
+      },
+      {
+        "nameZh": "鋸齒的",
+        "nameEn": "Jagged",
+        "level": 74,
+        "textZh": "(101—151)至(152—220)點物理荊棘傷害",
+        "textEn": "(101—151) to (152—220) Physical Thorns damage",
+        "dropChance": 1000,
+        "statMin": 101,
+        "statMax": 151
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 74,
+    "tierCount": 7,
+    "weight": 7000
+  },
+  {
+    "id": "IncreasedLife|1",
+    "family": "IncreasedLife",
+    "generation": "prefix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "resource",
+      "life"
+    ],
+    "tagsZh": [
+      "生命"
+    ],
+    "labelZh": "健壯之",
+    "labelEn": "Hale",
+    "textZh": "+(10—19)最大生命",
+    "textEn": "+(10—19) to maximum Life",
+    "match": "to maximum Life",
+    "matchZh": "最大生命",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusFlat",
+      "suggestedMin": 10,
+      "suggestedMax": 189
+    },
+    "tiers": [
+      {
+        "nameZh": "健壯之",
+        "nameEn": "Hale",
+        "level": 1,
+        "textZh": "+(10—19)最大生命",
+        "textEn": "+(10—19) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 10,
+        "statMax": 19
+      },
+      {
+        "nameZh": "健康的",
+        "nameEn": "Healthy",
+        "level": 6,
+        "textZh": "+(20—29)最大生命",
+        "textEn": "+(20—29) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 20,
+        "statMax": 29
+      },
+      {
+        "nameZh": "樂觀的",
+        "nameEn": "Sanguine",
+        "level": 16,
+        "textZh": "+(30—39)最大生命",
+        "textEn": "+(30—39) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 30,
+        "statMax": 39
+      },
+      {
+        "nameZh": "堅信的",
+        "nameEn": "Stalwart",
+        "level": 24,
+        "textZh": "+(40—59)最大生命",
+        "textEn": "+(40—59) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 40,
+        "statMax": 59
+      },
+      {
+        "nameZh": "堅毅者",
+        "nameEn": "Stout",
+        "level": 33,
+        "textZh": "+(60—69)最大生命",
+        "textEn": "+(60—69) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 60,
+        "statMax": 69
+      },
+      {
+        "nameZh": "健壯的",
+        "nameEn": "Robust",
+        "level": 38,
+        "textZh": "+(70—84)最大生命",
+        "textEn": "+(70—84) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 70,
+        "statMax": 84
+      },
+      {
+        "nameZh": "豐腴的",
+        "nameEn": "Rotund",
+        "level": 46,
+        "textZh": "+(85—99)最大生命",
+        "textEn": "+(85—99) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 85,
+        "statMax": 99
+      },
+      {
+        "nameZh": "陽剛的",
+        "nameEn": "Virile",
+        "level": 54,
+        "textZh": "+(100—119)最大生命",
+        "textEn": "+(100—119) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 100,
+        "statMax": 119
+      },
+      {
+        "nameZh": "運動員的",
+        "nameEn": "Athlete's",
+        "level": 60,
+        "textZh": "+(120—149)最大生命",
+        "textEn": "+(120—149) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 120,
+        "statMax": 149
+      },
+      {
+        "nameZh": "豐饒的",
+        "nameEn": "Fecund",
+        "level": 65,
+        "textZh": "+(150—174)最大生命",
+        "textEn": "+(150—174) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 150,
+        "statMax": 174
+      },
+      {
+        "nameZh": "蓬勃的",
+        "nameEn": "Vigorous",
+        "level": 70,
+        "textZh": "+(175—189)最大生命",
+        "textEn": "+(175—189) to maximum Life",
+        "dropChance": 1000,
+        "statMin": 175,
+        "statMax": 189
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 70,
+    "tierCount": 11,
+    "weight": 11000
+  },
+  {
+    "id": "BaseLocalDefences|1",
+    "family": "BaseLocalDefences",
+    "generation": "prefix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "defences",
+      "armour",
+      "evasion",
+      "energy_shield"
+    ],
+    "tagsZh": [
+      "護甲",
+      "閃避",
+      "能量護盾"
+    ],
+    "labelZh": "上漆的",
+    "labelEn": "Lacquered",
+    "textZh": "+(16—27)護甲值",
+    "textEn": "+(16—27) to Armour",
+    "match": "to Armour",
+    "matchZh": "護甲值",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusFlat",
+      "suggestedMin": 9,
+      "suggestedMax": 277
+    },
+    "tiers": [
+      {
+        "nameZh": "上漆的",
+        "nameEn": "Lacquered",
+        "level": 1,
+        "textZh": "+(16—27)護甲值",
+        "textEn": "+(16—27) to Armour",
+        "dropChance": 1000,
+        "statMin": 16,
+        "statMax": 27
+      },
+      {
+        "nameZh": "柔軟的",
+        "nameEn": "Supple",
+        "level": 1,
+        "textZh": "+(9—16)護甲值 +(6—10)閃避值",
+        "textEn": "+(9—16) to Armour +(6—10) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 9,
+        "statMax": 16
+      },
+      {
+        "nameZh": "敏捷的",
+        "nameEn": "Agile",
+        "level": 1,
+        "textZh": "+(11—18)閃避值",
+        "textEn": "+(11—18) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 11,
+        "statMax": 18
+      },
+      {
+        "nameZh": "被祝福的",
+        "nameEn": "Blessed",
+        "level": 1,
+        "textZh": "+(9—16)護甲值 +(5—8)最大能量護盾",
+        "textEn": "+(9—16) to Armour +(5—8) to maximum Energy Shield",
+        "dropChance": 1000,
+        "statMin": 9,
+        "statMax": 16
+      },
+      {
+        "nameZh": "舞者的",
+        "nameEn": "Dancer's",
+        "level": 8,
+        "textZh": "+(19—46)閃避值",
+        "textEn": "+(19—46) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 19,
+        "statMax": 46
+      },
+      {
+        "nameZh": "鑲嵌的",
+        "nameEn": "Studded",
+        "level": 8,
+        "textZh": "+(28—56)護甲值",
+        "textEn": "+(28—56) to Armour",
+        "dropChance": 1000,
+        "statMin": 28,
+        "statMax": 56
+      },
+      {
+        "nameZh": "易彎的",
+        "nameEn": "Pliant",
+        "level": 16,
+        "textZh": "+(17—46)護甲值 +(11—41)閃避值",
+        "textEn": "+(17—46) to Armour +(11—41) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 17,
+        "statMax": 46
+      },
+      {
+        "nameZh": "神聖的",
+        "nameEn": "Anointed",
+        "level": 16,
+        "textZh": "+(17—46)護甲值 +(9—15)最大能量護盾",
+        "textEn": "+(17—46) to Armour +(9—15) to maximum Energy Shield",
+        "dropChance": 1000,
+        "statMin": 17,
+        "statMax": 46
+      },
+      {
+        "nameZh": "螺紋的",
+        "nameEn": "Ribbed",
+        "level": 16,
+        "textZh": "+(57—77)護甲值",
+        "textEn": "+(57—77) to Armour",
+        "dropChance": 1000,
+        "statMin": 57,
+        "statMax": 77
+      },
+      {
+        "nameZh": "雜技的",
+        "nameEn": "Acrobat's",
+        "level": 16,
+        "textZh": "+(47—66)閃避值",
+        "textEn": "+(47—66) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 47,
+        "statMax": 66
+      },
+      {
+        "nameZh": "強化的",
+        "nameEn": "Fortified",
+        "level": 25,
+        "textZh": "+(78—98)護甲值",
+        "textEn": "+(78—98) to Armour",
+        "dropChance": 1000,
+        "statMin": 78,
+        "statMax": 98
+      },
+      {
+        "nameZh": "飄忽的",
+        "nameEn": "Fleet",
+        "level": 25,
+        "textZh": "+(67—87)閃避值",
+        "textEn": "+(67—87) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 67,
+        "statMax": 87
+      },
+      {
+        "nameZh": "聖化的",
+        "nameEn": "Sanctified",
+        "level": 33,
+        "textZh": "+(47—71)護甲值 +(16—21)最大能量護盾",
+        "textEn": "+(47—71) to Armour +(16—21) to maximum Energy Shield",
+        "dropChance": 1000,
+        "statMin": 47,
+        "statMax": 71
+      },
+      {
+        "nameZh": "電鍍的",
+        "nameEn": "Plated",
+        "level": 33,
+        "textZh": "+(99—127)護甲值",
+        "textEn": "+(99—127) to Armour",
+        "dropChance": 1000,
+        "statMin": 99,
+        "statMax": 127
+      },
+      {
+        "nameZh": "彈性的",
+        "nameEn": "Flexible",
+        "level": 33,
+        "textZh": "+(47—71)護甲值 +(42—64)閃避值",
+        "textEn": "+(47—71) to Armour +(42—64) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 47,
+        "statMax": 71
+      },
+      {
+        "nameZh": "模糊的",
+        "nameEn": "Blurred",
+        "level": 33,
+        "textZh": "+(88—116)閃避值",
+        "textEn": "+(88—116) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 88,
+        "statMax": 116
+      },
+      {
+        "nameZh": "相位的",
+        "nameEn": "Phased",
+        "level": 46,
+        "textZh": "+(117—146)閃避值",
+        "textEn": "+(117—146) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 117,
+        "statMax": 146
+      },
+      {
+        "nameZh": "耐用的",
+        "nameEn": "Durable",
+        "level": 46,
+        "textZh": "+(72—85)護甲值 +(65—78)閃避值",
+        "textEn": "+(72—85) to Armour +(65—78) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 72,
+        "statMax": 85
+      },
+      {
+        "nameZh": "聖潔的",
+        "nameEn": "Hallowed",
+        "level": 46,
+        "textZh": "+(72—85)護甲值 +(22—25)最大能量護盾",
+        "textEn": "+(72—85) to Armour +(22—25) to maximum Energy Shield",
+        "dropChance": 1000,
+        "statMin": 72,
+        "statMax": 85
+      },
+      {
+        "nameZh": "裝甲化的",
+        "nameEn": "Carapaced",
+        "level": 46,
+        "textZh": "+(128—159)護甲值",
+        "textEn": "+(128—159) to Armour",
+        "dropChance": 1000,
+        "statMin": 128,
+        "statMax": 159
+      },
+      {
+        "nameZh": "幸福的",
+        "nameEn": "Beatified",
+        "level": 54,
+        "textZh": "+(86—102)護甲值 +(26—29)最大能量護盾",
+        "textEn": "+(86—102) to Armour +(26—29) to maximum Energy Shield",
+        "dropChance": 1000,
+        "statMin": 86,
+        "statMax": 102
+      },
+      {
+        "nameZh": "氣態的",
+        "nameEn": "Vaporous",
+        "level": 54,
+        "textZh": "+(147—176)閃避值",
+        "textEn": "+(147—176) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 147,
+        "statMax": 176
+      },
+      {
+        "nameZh": "強健的",
+        "nameEn": "Sturdy",
+        "level": 54,
+        "textZh": "+(86—102)護甲值 +(79—94)閃避值",
+        "textEn": "+(86—102) to Armour +(79—94) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 86,
+        "statMax": 102
+      },
+      {
+        "nameZh": "圍繞的",
+        "nameEn": "Encased",
+        "level": 54,
+        "textZh": "+(160—190)護甲值",
+        "textEn": "+(160—190) to Armour",
+        "dropChance": 1000,
+        "statMin": 160,
+        "statMax": 190
+      },
+      {
+        "nameZh": "神祭的",
+        "nameEn": "Consecrated",
+        "level": 60,
+        "textZh": "+(103—127)護甲值 +(30—36)最大能量護盾",
+        "textEn": "+(103—127) to Armour +(30—36) to maximum Energy Shield",
+        "dropChance": 1000,
+        "statMin": 103,
+        "statMax": 127
+      },
+      {
+        "nameZh": "彈力的",
+        "nameEn": "Resilient",
+        "level": 60,
+        "textZh": "+(103—127)護甲值 +(95—119)閃避值",
+        "textEn": "+(103—127) to Armour +(95—119) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 103,
+        "statMax": 127
+      },
+      {
+        "nameZh": "難以捉摸的",
+        "nameEn": "Elusory",
+        "level": 60,
+        "textZh": "+(177—207)閃避值",
+        "textEn": "+(177—207) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 177,
+        "statMax": 207
+      },
+      {
+        "nameZh": "籠罩的",
+        "nameEn": "Enveloped",
+        "level": 60,
+        "textZh": "+(191—221)護甲值",
+        "textEn": "+(191—221) to Armour",
+        "dropChance": 1000,
+        "statMin": 191,
+        "statMax": 221
+      },
+      {
+        "nameZh": "減弱的",
+        "nameEn": "Abating",
+        "level": 65,
+        "textZh": "+(222—248)護甲值",
+        "textEn": "+(222—248) to Armour",
+        "dropChance": 1000,
+        "statMin": 222,
+        "statMax": 248
+      },
+      {
+        "nameZh": "聖潔的",
+        "nameEn": "Saintly",
+        "level": 65,
+        "textZh": "+(128—149)護甲值 +(37—42)最大能量護盾",
+        "textEn": "+(128—149) to Armour +(37—42) to maximum Energy Shield",
+        "dropChance": 1000,
+        "statMin": 128,
+        "statMax": 149
+      },
+      {
+        "nameZh": "熟練的",
+        "nameEn": "Adroit",
+        "level": 65,
+        "textZh": "+(208—234)閃避值",
+        "textEn": "+(208—234) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 208,
+        "statMax": 234
+      },
+      {
+        "nameZh": "適應的",
+        "nameEn": "Adaptable",
+        "level": 65,
+        "textZh": "+(128—149)護甲值 +(120—141)閃避值",
+        "textEn": "+(128—149) to Armour +(120—141) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 128,
+        "statMax": 149
+      },
+      {
+        "nameZh": "不動的",
+        "nameEn": "Unmoving",
+        "level": 75,
+        "textZh": "+(249—277)護甲值",
+        "textEn": "+(249—277) to Armour",
+        "dropChance": 1000,
+        "statMin": 249,
+        "statMax": 277
+      },
+      {
+        "nameZh": "柔軟的",
+        "nameEn": "Lissome",
+        "level": 75,
+        "textZh": "+(235—261)閃避值",
+        "textEn": "+(235—261) to Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 235,
+        "statMax": 261
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 75,
+    "tierCount": 34,
+    "weight": 34000
+  },
+  {
+    "id": "IncreasedShieldBlockPercentage|1",
+    "family": "IncreasedShieldBlockPercentage",
+    "generation": "prefix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "block"
+    ],
+    "tagsZh": [],
+    "labelZh": "堅韌的",
+    "labelEn": "Steadfast",
+    "textZh": "增加(15—19)%格擋率",
+    "textEn": "(15—19)% increased Block chance",
+    "match": "increased Block chance",
+    "matchZh": "增加格擋率",
+    "kind": "numeric",
+    "numeric": {
+      "format": "percentPrefix",
+      "suggestedMin": 15,
+      "suggestedMax": 30
+    },
+    "tiers": [
+      {
+        "nameZh": "堅韌的",
+        "nameEn": "Steadfast",
+        "level": 1,
+        "textZh": "增加(15—19)%格擋率",
+        "textEn": "(15—19)% increased Block chance",
+        "dropChance": 1000,
+        "statMin": 15,
+        "statMax": 19
+      },
+      {
+        "nameZh": "不屈不撓的",
+        "nameEn": "Unrelenting",
+        "level": 33,
+        "textZh": "增加(20—24)%格擋率",
+        "textEn": "(20—24)% increased Block chance",
+        "dropChance": 1000,
+        "statMin": 20,
+        "statMax": 24
+      },
+      {
+        "nameZh": "堅決的",
+        "nameEn": "Adamant",
+        "level": 65,
+        "textZh": "增加(25—30)%格擋率",
+        "textEn": "(25—30)% increased Block chance",
+        "dropChance": 1000,
+        "statMin": 25,
+        "statMax": 30
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 65,
+    "tierCount": 3,
+    "weight": 3000
+  },
+  {
+    "id": "DefencesPercent|1",
+    "family": "DefencesPercent",
+    "generation": "prefix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "defences",
+      "armour",
+      "evasion",
+      "energy_shield"
+    ],
+    "tagsZh": [
+      "護甲",
+      "閃避",
+      "能量護盾"
+    ],
+    "labelZh": "拆解的",
+    "labelEn": "Scrapper's",
+    "textZh": "增加(15—26)%護甲值和閃避",
+    "textEn": "(15—26)% increased Armour and Evasion",
+    "match": "increased Armour",
+    "matchZh": "增加護甲值",
+    "kind": "numeric",
+    "numeric": {
+      "format": "percentPrefix",
+      "suggestedMin": 15,
+      "suggestedMax": 110
+    },
+    "tiers": [
+      {
+        "nameZh": "拆解的",
+        "nameEn": "Scrapper's",
+        "level": 2,
+        "textZh": "增加(15—26)%護甲值和閃避",
+        "textEn": "(15—26)% increased Armour and Evasion",
+        "dropChance": 1000,
+        "statMin": 15,
+        "statMax": 26
+      },
+      {
+        "nameZh": "陰暗的",
+        "nameEn": "Shade's",
+        "level": 2,
+        "textZh": "增加(15—26)%閃避值",
+        "textEn": "(15—26)% increased Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 15,
+        "statMax": 26
+      },
+      {
+        "nameZh": "嵌入的",
+        "nameEn": "Infixed",
+        "level": 2,
+        "textZh": "增加(15—26)%護甲值和能量護盾",
+        "textEn": "(15—26)% increased Armour and Energy Shield",
+        "dropChance": 1000,
+        "statMin": 15,
+        "statMax": 26
+      },
+      {
+        "nameZh": "增強的",
+        "nameEn": "Reinforced",
+        "level": 2,
+        "textZh": "增加(15—26)%護甲值",
+        "textEn": "(15—26)% increased Armour",
+        "dropChance": 1000,
+        "statMin": 15,
+        "statMax": 26
+      },
+      {
+        "nameZh": "分層的",
+        "nameEn": "Layered",
+        "level": 16,
+        "textZh": "增加(27—42)%護甲值",
+        "textEn": "(27—42)% increased Armour",
+        "dropChance": 1000,
+        "statMin": 27,
+        "statMax": 42
+      },
+      {
+        "nameZh": "打鬥者的",
+        "nameEn": "Brawler's",
+        "level": 16,
+        "textZh": "增加(27—42)%護甲值和閃避",
+        "textEn": "(27—42)% increased Armour and Evasion",
+        "dropChance": 1000,
+        "statMin": 27,
+        "statMax": 42
+      },
+      {
+        "nameZh": "鬼魂的",
+        "nameEn": "Ghost's",
+        "level": 16,
+        "textZh": "增加(27—42)%閃避值",
+        "textEn": "(27—42)% increased Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 27,
+        "statMax": 42
+      },
+      {
+        "nameZh": "紮根的",
+        "nameEn": "Ingrained",
+        "level": 16,
+        "textZh": "增加(27—42)%護甲值和能量護盾",
+        "textEn": "(27—42)% increased Armour and Energy Shield",
+        "dropChance": 1000,
+        "statMin": 27,
+        "statMax": 42
+      },
+      {
+        "nameZh": "幽魂的",
+        "nameEn": "Spectre's",
+        "level": 33,
+        "textZh": "增加(43—55)%閃避值",
+        "textEn": "(43—55)% increased Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 43,
+        "statMax": 55
+      },
+      {
+        "nameZh": "擊劍士的",
+        "nameEn": "Fencer's",
+        "level": 33,
+        "textZh": "增加(43—55)%護甲值和閃避",
+        "textEn": "(43—55)% increased Armour and Evasion",
+        "dropChance": 1000,
+        "statMin": 43,
+        "statMax": 55
+      },
+      {
+        "nameZh": "灌輸的",
+        "nameEn": "Instilled",
+        "level": 33,
+        "textZh": "增加(43—55)%護甲值和能量護盾",
+        "textEn": "(43—55)% increased Armour and Energy Shield",
+        "dropChance": 1000,
+        "statMin": 43,
+        "statMax": 55
+      },
+      {
+        "nameZh": "甲殼的",
+        "nameEn": "Lobstered",
+        "level": 35,
+        "textZh": "增加(43—55)%護甲值",
+        "textEn": "(43—55)% increased Armour",
+        "dropChance": 1000,
+        "statMin": 43,
+        "statMax": 55
+      },
+      {
+        "nameZh": "支持的",
+        "nameEn": "Buttressed",
+        "level": 46,
+        "textZh": "增加(56—67)%護甲值",
+        "textEn": "(56—67)% increased Armour",
+        "dropChance": 1000,
+        "statMin": 56,
+        "statMax": 67
+      },
+      {
+        "nameZh": "角鬥士的",
+        "nameEn": "Gladiator's",
+        "level": 46,
+        "textZh": "增加(56—67)%護甲值和閃避",
+        "textEn": "(56—67)% increased Armour and Evasion",
+        "dropChance": 1000,
+        "statMin": 56,
+        "statMax": 67
+      },
+      {
+        "nameZh": "幽靈的",
+        "nameEn": "Wraith's",
+        "level": 46,
+        "textZh": "增加(56—67)%閃避值",
+        "textEn": "(56—67)% increased Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 56,
+        "statMax": 67
+      },
+      {
+        "nameZh": "灌注的",
+        "nameEn": "Infused",
+        "level": 46,
+        "textZh": "增加(56—67)%護甲值和能量護盾",
+        "textEn": "(56—67)% increased Armour and Energy Shield",
+        "dropChance": 1000,
+        "statMin": 56,
+        "statMax": 67
+      },
+      {
+        "nameZh": "幻象的",
+        "nameEn": "Phantasm's",
+        "level": 54,
+        "textZh": "增加(68—79)%閃避值",
+        "textEn": "(68—79)% increased Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 68,
+        "statMax": 79
+      },
+      {
+        "nameZh": "加厚的",
+        "nameEn": "Thickened",
+        "level": 54,
+        "textZh": "增加(68—79)%護甲值",
+        "textEn": "(68—79)% increased Armour",
+        "dropChance": 1000,
+        "statMin": 68,
+        "statMax": 79
+      },
+      {
+        "nameZh": "決鬥的",
+        "nameEn": "Duelist's",
+        "level": 54,
+        "textZh": "增加(68—79)%護甲值和閃避",
+        "textEn": "(68—79)% increased Armour and Evasion",
+        "dropChance": 1000,
+        "statMin": 68,
+        "statMax": 79
+      },
+      {
+        "nameZh": "重灌的",
+        "nameEn": "Inculcated",
+        "level": 54,
+        "textZh": "增加(68—79)%護甲值和能量護盾",
+        "textEn": "(68—79)% increased Armour and Energy Shield",
+        "dropChance": 1000,
+        "statMin": 68,
+        "statMax": 79
+      },
+      {
+        "nameZh": "英雄的",
+        "nameEn": "Hero's",
+        "level": 60,
+        "textZh": "增加(80—91)%護甲值和閃避",
+        "textEn": "(80—91)% increased Armour and Evasion",
+        "dropChance": 1000,
+        "statMin": 80,
+        "statMax": 91
+      },
+      {
+        "nameZh": "圍城的",
+        "nameEn": "Girded",
+        "level": 60,
+        "textZh": "增加(80—91)%護甲值",
+        "textEn": "(80—91)% increased Armour",
+        "dropChance": 1000,
+        "statMin": 80,
+        "statMax": 91
+      },
+      {
+        "nameZh": "夢魘的",
+        "nameEn": "Nightmare's",
+        "level": 60,
+        "textZh": "增加(80—91)%閃避值",
+        "textEn": "(80—91)% increased Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 80,
+        "statMax": 91
+      },
+      {
+        "nameZh": "竄改的",
+        "nameEn": "Interpolated",
+        "level": 60,
+        "textZh": "增加(80—91)%護甲值和能量護盾",
+        "textEn": "(80—91)% increased Armour and Energy Shield",
+        "dropChance": 1000,
+        "statMin": 80,
+        "statMax": 91
+      },
+      {
+        "nameZh": "幻象的",
+        "nameEn": "Mirage's",
+        "level": 65,
+        "textZh": "增加(92—100)%閃避值",
+        "textEn": "(92—100)% increased Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 92,
+        "statMax": 100
+      },
+      {
+        "nameZh": "堅不可摧的",
+        "nameEn": "Impregnable",
+        "level": 65,
+        "textZh": "增加(92—100)%護甲值",
+        "textEn": "(92—100)% increased Armour",
+        "dropChance": 1000,
+        "statMin": 92,
+        "statMax": 100
+      },
+      {
+        "nameZh": "傳說的",
+        "nameEn": "Legend's",
+        "level": 65,
+        "textZh": "增加(92—100)%護甲值和閃避",
+        "textEn": "(92—100)% increased Armour and Evasion",
+        "dropChance": 1000,
+        "statMin": 92,
+        "statMax": 100
+      },
+      {
+        "nameZh": "鼓舞的",
+        "nameEn": "Inspired",
+        "level": 65,
+        "textZh": "增加(92—100)%護甲值和能量護盾",
+        "textEn": "(92—100)% increased Armour and Energy Shield",
+        "dropChance": 1000,
+        "statMin": 92,
+        "statMax": 100
+      },
+      {
+        "nameZh": "幻影的",
+        "nameEn": "Illusion's",
+        "level": 75,
+        "textZh": "增加(101—110)%閃避值",
+        "textEn": "(101—110)% increased Evasion Rating",
+        "dropChance": 1000,
+        "statMin": 101,
+        "statMax": 110
+      },
+      {
+        "nameZh": "勝利的",
+        "nameEn": "Victor's",
+        "level": 75,
+        "textZh": "增加(101—110)%護甲值和閃避",
+        "textEn": "(101—110)% increased Armour and Evasion",
+        "dropChance": 1000,
+        "statMin": 101,
+        "statMax": 110
+      },
+      {
+        "nameZh": "費解的",
+        "nameEn": "Impenetrable",
+        "level": 75,
+        "textZh": "增加(101—110)%護甲值",
+        "textEn": "(101—110)% increased Armour",
+        "dropChance": 1000,
+        "statMin": 101,
+        "statMax": 110
+      },
+      {
+        "nameZh": "滲入的",
+        "nameEn": "Interpermeated",
+        "level": 75,
+        "textZh": "增加(101—110)%護甲值和能量護盾",
+        "textEn": "(101—110)% increased Armour and Energy Shield",
+        "dropChance": 1000,
+        "statMin": 101,
+        "statMax": 110
+      }
+    ],
+    "minLevel": 2,
+    "maxLevel": 75,
+    "tierCount": 32,
+    "weight": 32000
+  },
+  {
+    "id": "DefencesPercentAndStunThreshold|1",
+    "family": "DefencesPercentAndStunThreshold",
+    "generation": "prefix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "armour",
+      "evasion",
+      "energy_shield"
+    ],
+    "tagsZh": [
+      "護甲",
+      "閃避",
+      "能量護盾"
+    ],
+    "labelZh": "甲蟲的",
+    "labelEn": "Beetle's",
+    "textZh": "增加(6—13)%護甲值 暈眩門檻+(8—13)",
+    "textEn": "(6—13)% increased Armour +(8—13) to Stun Threshold",
+    "match": "increased Armour +(8—13) to Stun Threshold",
+    "matchZh": "增加護甲值 暈眩門檻+(8—13)",
+    "kind": "numeric",
+    "numeric": {
+      "format": "percentPrefix",
+      "suggestedMin": 6,
+      "suggestedMax": 42
+    },
+    "tiers": [
+      {
+        "nameZh": "甲蟲的",
+        "nameEn": "Beetle's",
+        "level": 10,
+        "textZh": "增加(6—13)%護甲值 暈眩門檻+(8—13)",
+        "textEn": "(6—13)% increased Armour +(8—13) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 6,
+        "statMax": 13
+      },
+      {
+        "nameZh": "防衛者的",
+        "nameEn": "Defender's",
+        "level": 10,
+        "textZh": "增加(6—13)%護甲值和能量護盾 暈眩門檻+(8—13)",
+        "textEn": "(6—13)% increased Armour and Energy Shield +(8—13) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 6,
+        "statMax": 13
+      },
+      {
+        "nameZh": "蚊子的",
+        "nameEn": "Mosquito's",
+        "level": 10,
+        "textZh": "增加(6—13)%閃避值 暈眩門檻+(8—13)",
+        "textEn": "(6—13)% increased Evasion Rating +(8—13) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 6,
+        "statMax": 13
+      },
+      {
+        "nameZh": "統帥的",
+        "nameEn": "Captain's",
+        "level": 10,
+        "textZh": "增加(6—13)%護甲值和閃避 暈眩門檻+(8—13)",
+        "textEn": "(6—13)% increased Armour and Evasion +(8—13) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 6,
+        "statMax": 13
+      },
+      {
+        "nameZh": "保護者的",
+        "nameEn": "Protector's",
+        "level": 19,
+        "textZh": "增加(14—20)%護甲值和能量護盾 暈眩門檻+(14—24)",
+        "textEn": "(14—20)% increased Armour and Energy Shield +(14—24) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 14,
+        "statMax": 20
+      },
+      {
+        "nameZh": "指揮官的",
+        "nameEn": "Commander's",
+        "level": 19,
+        "textZh": "增加(14—20)%護甲值和閃避 暈眩門檻+(14—24)",
+        "textEn": "(14—20)% increased Armour and Evasion +(14—24) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 14,
+        "statMax": 20
+      },
+      {
+        "nameZh": "飛蛾的",
+        "nameEn": "Moth's",
+        "level": 19,
+        "textZh": "增加(14—20)%閃避值 暈眩門檻+(14—24)",
+        "textEn": "(14—20)% increased Evasion Rating +(14—24) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 14,
+        "statMax": 20
+      },
+      {
+        "nameZh": "螃蟹的",
+        "nameEn": "Crab's",
+        "level": 19,
+        "textZh": "增加(14—20)%護甲值 暈眩門檻+(14—24)",
+        "textEn": "(14—20)% increased Armour +(14—24) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 14,
+        "statMax": 20
+      },
+      {
+        "nameZh": "大亨的",
+        "nameEn": "Magnate's",
+        "level": 38,
+        "textZh": "增加(21—26)%護甲值和閃避 暈眩門檻+(25—40)",
+        "textEn": "(21—26)% increased Armour and Evasion +(25—40) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 21,
+        "statMax": 26
+      },
+      {
+        "nameZh": "犰狳的",
+        "nameEn": "Armadillo's",
+        "level": 38,
+        "textZh": "增加(21—26)%護甲值 暈眩門檻+(25—40)",
+        "textEn": "(21—26)% increased Armour +(25—40) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 21,
+        "statMax": 26
+      },
+      {
+        "nameZh": "守護者的",
+        "nameEn": "Keeper's",
+        "level": 38,
+        "textZh": "增加(21—26)%護甲值和能量護盾 暈眩門檻+(25—40)",
+        "textEn": "(21—26)% increased Armour and Energy Shield +(25—40) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 21,
+        "statMax": 26
+      },
+      {
+        "nameZh": "蝴蝶的",
+        "nameEn": "Butterfly's",
+        "level": 38,
+        "textZh": "增加(21—26)%閃避值 暈眩門檻+(25—40)",
+        "textEn": "(21—26)% increased Evasion Rating +(25—40) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 21,
+        "statMax": 26
+      },
+      {
+        "nameZh": "元帥的",
+        "nameEn": "Marshal's",
+        "level": 48,
+        "textZh": "增加(27—32)%護甲值和閃避 暈眩門檻+(41—63)",
+        "textEn": "(27—32)% increased Armour and Evasion +(41—63) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 27,
+        "statMax": 32
+      },
+      {
+        "nameZh": "守護者的",
+        "nameEn": "Guardian's",
+        "level": 48,
+        "textZh": "增加(27—32)%護甲值和能量護盾 暈眩門檻+(41—63)",
+        "textEn": "(27—32)% increased Armour and Energy Shield +(41—63) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 27,
+        "statMax": 32
+      },
+      {
+        "nameZh": "犀牛的",
+        "nameEn": "Rhino's",
+        "level": 48,
+        "textZh": "增加(27—32)%護甲值 暈眩門檻+(41—63)",
+        "textEn": "(27—32)% increased Armour +(41—63) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 27,
+        "statMax": 32
+      },
+      {
+        "nameZh": "黃蜂的",
+        "nameEn": "Wasp's",
+        "level": 48,
+        "textZh": "增加(27—32)%閃避值 暈眩門檻+(41—63)",
+        "textEn": "(27—32)% increased Evasion Rating +(41—63) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 27,
+        "statMax": 32
+      },
+      {
+        "nameZh": "大象的",
+        "nameEn": "Elephant's",
+        "level": 63,
+        "textZh": "增加(33—38)%護甲值 暈眩門檻+(64—94)",
+        "textEn": "(33—38)% increased Armour +(64—94) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 33,
+        "statMax": 38
+      },
+      {
+        "nameZh": "守護者的",
+        "nameEn": "Warden's",
+        "level": 63,
+        "textZh": "增加(33—38)%護甲值和能量護盾 暈眩門檻+(64—94)",
+        "textEn": "(33—38)% increased Armour and Energy Shield +(64—94) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 33,
+        "statMax": 38
+      },
+      {
+        "nameZh": "將軍的",
+        "nameEn": "General's",
+        "level": 63,
+        "textZh": "增加(33—38)%護甲值和閃避 暈眩門檻+(64—94)",
+        "textEn": "(33—38)% increased Armour and Evasion +(64—94) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 33,
+        "statMax": 38
+      },
+      {
+        "nameZh": "蜻蜓的",
+        "nameEn": "Dragonfly's",
+        "level": 63,
+        "textZh": "增加(33—38)%閃避值 暈眩門檻+(64—94)",
+        "textEn": "(33—38)% increased Evasion Rating +(64—94) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 33,
+        "statMax": 38
+      },
+      {
+        "nameZh": "守望的",
+        "nameEn": "Sentinel's",
+        "level": 74,
+        "textZh": "增加(39—42)%護甲值和能量護盾 暈眩門檻+(95—136)",
+        "textEn": "(39—42)% increased Armour and Energy Shield +(95—136) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 39,
+        "statMax": 42
+      },
+      {
+        "nameZh": "長毛象的",
+        "nameEn": "Mammoth's",
+        "level": 74,
+        "textZh": "增加(39—42)%護甲值 暈眩門檻+(95—136)",
+        "textEn": "(39—42)% increased Armour +(95—136) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 39,
+        "statMax": 42
+      },
+      {
+        "nameZh": "督軍的",
+        "nameEn": "Warlord's",
+        "level": 74,
+        "textZh": "增加(39—42)%護甲值和閃避 暈眩門檻+(95—136)",
+        "textEn": "(39—42)% increased Armour and Evasion +(95—136) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 39,
+        "statMax": 42
+      },
+      {
+        "nameZh": "蜂鳥的",
+        "nameEn": "Hummingbird's",
+        "level": 74,
+        "textZh": "增加(39—42)%閃避值 暈眩門檻+(95—136)",
+        "textEn": "(39—42)% increased Evasion Rating +(95—136) to Stun Threshold",
+        "dropChance": 1000,
+        "statMin": 39,
+        "statMax": 42
+      }
+    ],
+    "minLevel": 10,
+    "maxLevel": 74,
+    "tierCount": 24,
+    "weight": 24000
+  },
+  {
+    "id": "ArmourAppliesToElementalDamage|2",
+    "family": "ArmourAppliesToElementalDamage",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int"
+    ],
+    "tags": [
+      "defences",
+      "armour",
+      "elemental",
+      "damage"
+    ],
+    "tagsZh": [
+      "護甲",
+      "元素",
+      "傷害"
+    ],
+    "labelZh": "覆蓋之",
+    "labelEn": "of Covering",
+    "textZh": "+(14—19)%的護甲值也會套用至元素傷害",
+    "textEn": "+(14—19)% of Armour also applies to Elemental Damage",
+    "match": "of Armour also applies to Elemental Damage",
+    "matchZh": "的護甲值也會套用至元素傷害",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent",
+      "suggestedMin": 14,
+      "suggestedMax": 50
+    },
+    "tiers": [
+      {
+        "nameZh": "覆蓋之",
+        "nameEn": "of Covering",
+        "level": 1,
+        "textZh": "+(14—19)%的護甲值也會套用至元素傷害",
+        "textEn": "+(14—19)% of Armour also applies to Elemental Damage",
+        "dropChance": 1000,
+        "statMin": 14,
+        "statMax": 19
+      },
+      {
+        "nameZh": "覆套之",
+        "nameEn": "of Sheathing",
+        "level": 16,
+        "textZh": "+(20—25)%的護甲值也會套用至元素傷害",
+        "textEn": "+(20—25)% of Armour also applies to Elemental Damage",
+        "dropChance": 1000,
+        "statMin": 20,
+        "statMax": 25
+      },
+      {
+        "nameZh": "內襯之",
+        "nameEn": "of Lining",
+        "level": 36,
+        "textZh": "+(26—31)%的護甲值也會套用至元素傷害",
+        "textEn": "+(26—31)% of Armour also applies to Elemental Damage",
+        "dropChance": 1000,
+        "statMin": 26,
+        "statMax": 31
+      },
+      {
+        "nameZh": "鋪墊之",
+        "nameEn": "of Padding",
+        "level": 48,
+        "textZh": "+(32—37)%的護甲值也會套用至元素傷害",
+        "textEn": "+(32—37)% of Armour also applies to Elemental Damage",
+        "dropChance": 1000,
+        "statMin": 32,
+        "statMax": 37
+      },
+      {
+        "nameZh": "鑲邊之",
+        "nameEn": "of Furring",
+        "level": 66,
+        "textZh": "+(38—43)%的護甲值也會套用至元素傷害",
+        "textEn": "+(38—43)% of Armour also applies to Elemental Damage",
+        "dropChance": 1000,
+        "statMin": 38,
+        "statMax": 43
+      },
+      {
+        "nameZh": "熱反射之",
+        "nameEn": "of Thermokryptance",
+        "level": 81,
+        "textZh": "+(44—50)%的護甲值也會套用至元素傷害",
+        "textEn": "+(44—50)% of Armour also applies to Elemental Damage",
+        "dropChance": 1000,
+        "statMin": 44,
+        "statMax": 50
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 81,
+    "tierCount": 6,
+    "weight": 6000
+  },
+  {
+    "id": "AllResistances|2",
+    "family": "AllResistances",
+    "generation": "suffix",
+    "bases": [
+      "str_int"
+    ],
+    "tags": [
+      "cold_resistance",
+      "elemental_resistance",
+      "fire_resistance",
+      "lightning_resistance",
+      "elemental",
+      "fire",
+      "cold",
+      "lightning",
+      "resistance"
+    ],
+    "tagsZh": [
+      "元素",
+      "火焰",
+      "冰冷",
+      "閃電",
+      "抗性"
+    ],
+    "labelZh": "水晶之",
+    "labelEn": "of the Crystal",
+    "textZh": "+(3—5)%全元素抗性",
+    "textEn": "+(3—5)% to all Elemental Resistances",
+    "match": "to all Elemental Resistances",
+    "matchZh": "全元素抗性",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent",
+      "suggestedMin": 3,
+      "suggestedMax": 18
+    },
+    "tiers": [
+      {
+        "nameZh": "水晶之",
+        "nameEn": "of the Crystal",
+        "level": 12,
+        "textZh": "+(3—5)%全元素抗性",
+        "textEn": "+(3—5)% to all Elemental Resistances",
+        "dropChance": 800,
+        "statMin": 3,
+        "statMax": 5
+      },
+      {
+        "nameZh": "稜鏡之",
+        "nameEn": "of the Prism",
+        "level": 26,
+        "textZh": "+(6—8)%全元素抗性",
+        "textEn": "+(6—8)% to all Elemental Resistances",
+        "dropChance": 800,
+        "statMin": 6,
+        "statMax": 8
+      },
+      {
+        "nameZh": "萬花筒之",
+        "nameEn": "of the Kaleidoscope",
+        "level": 40,
+        "textZh": "+(9—11)%全元素抗性",
+        "textEn": "+(9—11)% to all Elemental Resistances",
+        "dropChance": 800,
+        "statMin": 9,
+        "statMax": 11
+      },
+      {
+        "nameZh": "多彩之",
+        "nameEn": "of Variegation",
+        "level": 54,
+        "textZh": "+(12—14)%全元素抗性",
+        "textEn": "+(12—14)% to all Elemental Resistances",
+        "dropChance": 800,
+        "statMin": 12,
+        "statMax": 14
+      },
+      {
+        "nameZh": "彩虹之",
+        "nameEn": "of the Rainbow",
+        "level": 68,
+        "textZh": "+(15—16)%全元素抗性",
+        "textEn": "+(15—16)% to all Elemental Resistances",
+        "dropChance": 800,
+        "statMin": 15,
+        "statMax": 16
+      },
+      {
+        "nameZh": "廣闊之",
+        "nameEn": "of the Span",
+        "level": 80,
+        "textZh": "+(17—18)%全元素抗性",
+        "textEn": "+(17—18)% to all Elemental Resistances",
+        "dropChance": 800,
+        "statMin": 17,
+        "statMax": 18
+      }
+    ],
+    "minLevel": 12,
+    "maxLevel": 80,
+    "tierCount": 6,
+    "weight": 4800
+  },
+  {
+    "id": "ChaosResistance|2",
+    "family": "ChaosResistance",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "chaos_resistance",
+      "chaos",
+      "resistance"
+    ],
+    "tagsZh": [
+      "混沌",
+      "抗性"
+    ],
+    "labelZh": "失落之",
+    "labelEn": "of the Lost",
+    "textZh": "+(4—7)%混沌抗性",
+    "textEn": "+(4—7)% to Chaos Resistance",
+    "match": "to Chaos Resistance",
+    "matchZh": "混沌抗性",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent",
+      "suggestedMin": 4,
+      "suggestedMax": 27
+    },
+    "tiers": [
+      {
+        "nameZh": "失落之",
+        "nameEn": "of the Lost",
+        "level": 16,
+        "textZh": "+(4—7)%混沌抗性",
+        "textEn": "+(4—7)% to Chaos Resistance",
+        "dropChance": 250,
+        "statMin": 4,
+        "statMax": 7
+      },
+      {
+        "nameZh": "放逐之",
+        "nameEn": "of Banishment",
+        "level": 30,
+        "textZh": "+(8—11)%混沌抗性",
+        "textEn": "+(8—11)% to Chaos Resistance",
+        "dropChance": 250,
+        "statMin": 8,
+        "statMax": 11
+      },
+      {
+        "nameZh": "驅逐之",
+        "nameEn": "of Eviction",
+        "level": 44,
+        "textZh": "+(12—15)%混沌抗性",
+        "textEn": "+(12—15)% to Chaos Resistance",
+        "dropChance": 250,
+        "statMin": 12,
+        "statMax": 15
+      },
+      {
+        "nameZh": "出境之",
+        "nameEn": "of Expulsion",
+        "level": 56,
+        "textZh": "+(16—19)%混沌抗性",
+        "textEn": "+(16—19)% to Chaos Resistance",
+        "dropChance": 250,
+        "statMin": 16,
+        "statMax": 19
+      },
+      {
+        "nameZh": "流亡之",
+        "nameEn": "of Exile",
+        "level": 68,
+        "textZh": "+(20—23)%混沌抗性",
+        "textEn": "+(20—23)% to Chaos Resistance",
+        "dropChance": 250,
+        "statMin": 20,
+        "statMax": 23
+      },
+      {
+        "nameZh": "巴曼斯之",
+        "nameEn": "of Bameth",
+        "level": 81,
+        "textZh": "+(24—27)%混沌抗性",
+        "textEn": "+(24—27)% to Chaos Resistance",
+        "dropChance": 250,
+        "statMin": 24,
+        "statMax": 27
+      }
+    ],
+    "minLevel": 16,
+    "maxLevel": 81,
+    "tierCount": 6,
+    "weight": 1500
+  },
+  {
+    "id": "Strength|2",
+    "family": "Strength",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int"
+    ],
+    "tags": [
+      "attribute"
+    ],
+    "tagsZh": [
+      "能力"
+    ],
+    "labelZh": "野蠻之",
+    "labelEn": "of the Brute",
+    "textZh": "+(5—8)點力量",
+    "textEn": "+(5—8) to Strength",
+    "match": "to Strength",
+    "matchZh": "點力量",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusFlat",
+      "suggestedMin": 5,
+      "suggestedMax": 33
+    },
+    "tiers": [
+      {
+        "nameZh": "野蠻之",
+        "nameEn": "of the Brute",
+        "level": 1,
+        "textZh": "+(5—8)點力量",
+        "textEn": "+(5—8) to Strength",
+        "dropChance": 1000,
+        "statMin": 5,
+        "statMax": 8
+      },
+      {
+        "nameZh": "摔角手之",
+        "nameEn": "of the Wrestler",
+        "level": 11,
+        "textZh": "+(9—12)點力量",
+        "textEn": "+(9—12) to Strength",
+        "dropChance": 1000,
+        "statMin": 9,
+        "statMax": 12
+      },
+      {
+        "nameZh": "熊之",
+        "nameEn": "of the Bear",
+        "level": 22,
+        "textZh": "+(13—16)點力量",
+        "textEn": "+(13—16) to Strength",
+        "dropChance": 1000,
+        "statMin": 13,
+        "statMax": 16
+      },
+      {
+        "nameZh": "獅子之",
+        "nameEn": "of the Lion",
+        "level": 33,
+        "textZh": "+(17—20)點力量",
+        "textEn": "+(17—20) to Strength",
+        "dropChance": 1000,
+        "statMin": 17,
+        "statMax": 20
+      },
+      {
+        "nameZh": "大猩猩之",
+        "nameEn": "of the Gorilla",
+        "level": 44,
+        "textZh": "+(21—24)點力量",
+        "textEn": "+(21—24) to Strength",
+        "dropChance": 1000,
+        "statMin": 21,
+        "statMax": 24
+      },
+      {
+        "nameZh": "巨人之",
+        "nameEn": "of the Goliath",
+        "level": 55,
+        "textZh": "+(25—27)點力量",
+        "textEn": "+(25—27) to Strength",
+        "dropChance": 1000,
+        "statMin": 25,
+        "statMax": 27
+      },
+      {
+        "nameZh": "海獸之",
+        "nameEn": "of the Leviathan",
+        "level": 66,
+        "textZh": "+(28—30)點力量",
+        "textEn": "+(28—30) to Strength",
+        "dropChance": 1000,
+        "statMin": 28,
+        "statMax": 30
+      },
+      {
+        "nameZh": "泰坦之",
+        "nameEn": "of the Titan",
+        "level": 74,
+        "textZh": "+(31—33)點力量",
+        "textEn": "+(31—33) to Strength",
+        "dropChance": 1000,
+        "statMin": 31,
+        "statMax": 33
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 74,
+    "tierCount": 8,
+    "weight": 8000
+  },
+  {
+    "id": "Dexterity|2",
+    "family": "Dexterity",
+    "generation": "suffix",
+    "bases": [
+      "str_dex",
+      "buckler"
+    ],
+    "tags": [
+      "attribute"
+    ],
+    "tagsZh": [
+      "能力"
+    ],
+    "labelZh": "貓鼬之",
+    "labelEn": "of the Mongoose",
+    "textZh": "+(5—8)點敏捷",
+    "textEn": "+(5—8) to Dexterity",
+    "match": "to Dexterity",
+    "matchZh": "點敏捷",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusFlat",
+      "suggestedMin": 5,
+      "suggestedMax": 33
+    },
+    "tiers": [
+      {
+        "nameZh": "貓鼬之",
+        "nameEn": "of the Mongoose",
+        "level": 1,
+        "textZh": "+(5—8)點敏捷",
+        "textEn": "+(5—8) to Dexterity",
+        "dropChance": 500,
+        "statMin": 5,
+        "statMax": 8
+      },
+      {
+        "nameZh": "山貓之",
+        "nameEn": "of the Lynx",
+        "level": 11,
+        "textZh": "+(9—12)點敏捷",
+        "textEn": "+(9—12) to Dexterity",
+        "dropChance": 500,
+        "statMin": 9,
+        "statMax": 12
+      },
+      {
+        "nameZh": "狐狸之",
+        "nameEn": "of the Fox",
+        "level": 22,
+        "textZh": "+(13—16)點敏捷",
+        "textEn": "+(13—16) to Dexterity",
+        "dropChance": 500,
+        "statMin": 13,
+        "statMax": 16
+      },
+      {
+        "nameZh": "獵鷹之",
+        "nameEn": "of the Falcon",
+        "level": 33,
+        "textZh": "+(17—20)點敏捷",
+        "textEn": "+(17—20) to Dexterity",
+        "dropChance": 500,
+        "statMin": 17,
+        "statMax": 20
+      },
+      {
+        "nameZh": "豹之",
+        "nameEn": "of the Panther",
+        "level": 44,
+        "textZh": "+(21—24)點敏捷",
+        "textEn": "+(21—24) to Dexterity",
+        "dropChance": 500,
+        "statMin": 21,
+        "statMax": 24
+      },
+      {
+        "nameZh": "花豹之",
+        "nameEn": "of the Leopard",
+        "level": 55,
+        "textZh": "+(25—27)點敏捷",
+        "textEn": "+(25—27) to Dexterity",
+        "dropChance": 500,
+        "statMin": 25,
+        "statMax": 27
+      },
+      {
+        "nameZh": "美洲豹之",
+        "nameEn": "of the Jaguar",
+        "level": 66,
+        "textZh": "+(28—30)點敏捷",
+        "textEn": "+(28—30) to Dexterity",
+        "dropChance": 500,
+        "statMin": 28,
+        "statMax": 30
+      },
+      {
+        "nameZh": "幻影之",
+        "nameEn": "of the Phantom",
+        "level": 74,
+        "textZh": "+(31—33)點敏捷",
+        "textEn": "+(31—33) to Dexterity",
+        "dropChance": 500,
+        "statMin": 31,
+        "statMax": 33
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 74,
+    "tierCount": 8,
+    "weight": 4000
+  },
+  {
+    "id": "Intelligence|2",
+    "family": "Intelligence",
+    "generation": "suffix",
+    "bases": [
+      "str_int"
+    ],
+    "tags": [
+      "attribute"
+    ],
+    "tagsZh": [
+      "能力"
+    ],
+    "labelZh": "瞳孔之",
+    "labelEn": "of the Pupil",
+    "textZh": "+(5—8)點智慧",
+    "textEn": "+(5—8) to Intelligence",
+    "match": "to Intelligence",
+    "matchZh": "點智慧",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusFlat",
+      "suggestedMin": 5,
+      "suggestedMax": 33
+    },
+    "tiers": [
+      {
+        "nameZh": "瞳孔之",
+        "nameEn": "of the Pupil",
+        "level": 1,
+        "textZh": "+(5—8)點智慧",
+        "textEn": "+(5—8) to Intelligence",
+        "dropChance": 500,
+        "statMin": 5,
+        "statMax": 8
+      },
+      {
+        "nameZh": "學徒之",
+        "nameEn": "of the Student",
+        "level": 11,
+        "textZh": "+(9—12)點智慧",
+        "textEn": "+(9—12) to Intelligence",
+        "dropChance": 500,
+        "statMin": 9,
+        "statMax": 12
+      },
+      {
+        "nameZh": "奇才之",
+        "nameEn": "of the Prodigy",
+        "level": 22,
+        "textZh": "+(13—16)點智慧",
+        "textEn": "+(13—16) to Intelligence",
+        "dropChance": 500,
+        "statMin": 13,
+        "statMax": 16
+      },
+      {
+        "nameZh": "預言之",
+        "nameEn": "of the Augur",
+        "level": 33,
+        "textZh": "+(17—20)點智慧",
+        "textEn": "+(17—20) to Intelligence",
+        "dropChance": 500,
+        "statMin": 17,
+        "statMax": 20
+      },
+      {
+        "nameZh": "哲學家之",
+        "nameEn": "of the Philosopher",
+        "level": 44,
+        "textZh": "+(21—24)點智慧",
+        "textEn": "+(21—24) to Intelligence",
+        "dropChance": 500,
+        "statMin": 21,
+        "statMax": 24
+      },
+      {
+        "nameZh": "聖人之",
+        "nameEn": "of the Sage",
+        "level": 55,
+        "textZh": "+(25—27)點智慧",
+        "textEn": "+(25—27) to Intelligence",
+        "dropChance": 500,
+        "statMin": 25,
+        "statMax": 27
+      },
+      {
+        "nameZh": "大學者之",
+        "nameEn": "of the Savant",
+        "level": 66,
+        "textZh": "+(28—30)點智慧",
+        "textEn": "+(28—30) to Intelligence",
+        "dropChance": 500,
+        "statMin": 28,
+        "statMax": 30
+      },
+      {
+        "nameZh": "神技之",
+        "nameEn": "of the Virtuoso",
+        "level": 74,
+        "textZh": "+(31—33)點智慧",
+        "textEn": "+(31—33) to Intelligence",
+        "dropChance": 500,
+        "statMin": 31,
+        "statMax": 33
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 74,
+    "tierCount": 8,
+    "weight": 4000
+  },
+  {
+    "id": "FireResistance|2",
+    "family": "FireResistance",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "elemental_resistance",
+      "fire_resistance",
+      "elemental",
+      "fire",
+      "resistance"
+    ],
+    "tagsZh": [
+      "元素",
+      "火焰",
+      "抗性"
+    ],
+    "labelZh": "幼龍之",
+    "labelEn": "of the Whelpling",
+    "textZh": "+(6—10)%火焰抗性",
+    "textEn": "+(6—10)% to Fire Resistance",
+    "match": "to Fire Resistance",
+    "matchZh": "火焰抗性",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent",
+      "suggestedMin": 6,
+      "suggestedMax": 45
+    },
+    "tiers": [
+      {
+        "nameZh": "幼龍之",
+        "nameEn": "of the Whelpling",
+        "level": 1,
+        "textZh": "+(6—10)%火焰抗性",
+        "textEn": "+(6—10)% to Fire Resistance",
+        "dropChance": 1000,
+        "statMin": 6,
+        "statMax": 10
+      },
+      {
+        "nameZh": "火蜥蜴之",
+        "nameEn": "of the Salamander",
+        "level": 12,
+        "textZh": "+(11—15)%火焰抗性",
+        "textEn": "+(11—15)% to Fire Resistance",
+        "dropChance": 1000,
+        "statMin": 11,
+        "statMax": 15
+      },
+      {
+        "nameZh": "火龍之",
+        "nameEn": "of the Drake",
+        "level": 24,
+        "textZh": "+(16—20)%火焰抗性",
+        "textEn": "+(16—20)% to Fire Resistance",
+        "dropChance": 1000,
+        "statMin": 16,
+        "statMax": 20
+      },
+      {
+        "nameZh": "窯爐之",
+        "nameEn": "of the Kiln",
+        "level": 36,
+        "textZh": "+(21—25)%火焰抗性",
+        "textEn": "+(21—25)% to Fire Resistance",
+        "dropChance": 1000,
+        "statMin": 21,
+        "statMax": 25
+      },
+      {
+        "nameZh": "爐火之",
+        "nameEn": "of the Furnace",
+        "level": 48,
+        "textZh": "+(26—30)%火焰抗性",
+        "textEn": "+(26—30)% to Fire Resistance",
+        "dropChance": 1000,
+        "statMin": 26,
+        "statMax": 30
+      },
+      {
+        "nameZh": "火山之",
+        "nameEn": "of the Volcano",
+        "level": 60,
+        "textZh": "+(31—35)%火焰抗性",
+        "textEn": "+(31—35)% to Fire Resistance",
+        "dropChance": 1000,
+        "statMin": 31,
+        "statMax": 35
+      },
+      {
+        "nameZh": "熔岩屏障之",
+        "nameEn": "of Magma",
+        "level": 71,
+        "textZh": "+(36—40)%火焰抗性",
+        "textEn": "+(36—40)% to Fire Resistance",
+        "dropChance": 1000,
+        "statMin": 36,
+        "statMax": 40
+      },
+      {
+        "nameZh": "提耶須之",
+        "nameEn": "of Tzteosh",
+        "level": 82,
+        "textZh": "+(41—45)%火焰抗性",
+        "textEn": "+(41—45)% to Fire Resistance",
+        "dropChance": 1000,
+        "statMin": 41,
+        "statMax": 45
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 82,
+    "tierCount": 8,
+    "weight": 8000
+  },
+  {
+    "id": "ColdResistance|2",
+    "family": "ColdResistance",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "cold_resistance",
+      "elemental_resistance",
+      "elemental",
+      "cold",
+      "resistance"
+    ],
+    "tagsZh": [
+      "元素",
+      "冰冷",
+      "抗性"
+    ],
+    "labelZh": "海豹之",
+    "labelEn": "of the Seal",
+    "textZh": "+(6—10)%冰冷抗性",
+    "textEn": "+(6—10)% to Cold Resistance",
+    "match": "to Cold Resistance",
+    "matchZh": "冰冷抗性",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent",
+      "suggestedMin": 6,
+      "suggestedMax": 45
+    },
+    "tiers": [
+      {
+        "nameZh": "海豹之",
+        "nameEn": "of the Seal",
+        "level": 1,
+        "textZh": "+(6—10)%冰冷抗性",
+        "textEn": "+(6—10)% to Cold Resistance",
+        "dropChance": 1000,
+        "statMin": 6,
+        "statMax": 10
+      },
+      {
+        "nameZh": "企鵝之",
+        "nameEn": "of the Penguin",
+        "level": 14,
+        "textZh": "+(11—15)%冰冷抗性",
+        "textEn": "+(11—15)% to Cold Resistance",
+        "dropChance": 1000,
+        "statMin": 11,
+        "statMax": 15
+      },
+      {
+        "nameZh": "獨角鯨之",
+        "nameEn": "of the Narwhal",
+        "level": 26,
+        "textZh": "+(16—20)%冰冷抗性",
+        "textEn": "+(16—20)% to Cold Resistance",
+        "dropChance": 1000,
+        "statMin": 16,
+        "statMax": 20
+      },
+      {
+        "nameZh": "雪人之",
+        "nameEn": "of the Yeti",
+        "level": 38,
+        "textZh": "+(21—25)%冰冷抗性",
+        "textEn": "+(21—25)% to Cold Resistance",
+        "dropChance": 1000,
+        "statMin": 21,
+        "statMax": 25
+      },
+      {
+        "nameZh": "海象之",
+        "nameEn": "of the Walrus",
+        "level": 50,
+        "textZh": "+(26—30)%冰冷抗性",
+        "textEn": "+(26—30)% to Cold Resistance",
+        "dropChance": 1000,
+        "statMin": 26,
+        "statMax": 30
+      },
+      {
+        "nameZh": "北極熊之",
+        "nameEn": "of the Polar Bear",
+        "level": 60,
+        "textZh": "+(31—35)%冰冷抗性",
+        "textEn": "+(31—35)% to Cold Resistance",
+        "dropChance": 1000,
+        "statMin": 31,
+        "statMax": 35
+      },
+      {
+        "nameZh": "冰之",
+        "nameEn": "of the Ice",
+        "level": 71,
+        "textZh": "+(36—40)%冰冷抗性",
+        "textEn": "+(36—40)% to Cold Resistance",
+        "dropChance": 1000,
+        "statMin": 36,
+        "statMax": 40
+      },
+      {
+        "nameZh": "哈斯特之",
+        "nameEn": "of Haast",
+        "level": 82,
+        "textZh": "+(41—45)%冰冷抗性",
+        "textEn": "+(41—45)% to Cold Resistance",
+        "dropChance": 1000,
+        "statMin": 41,
+        "statMax": 45
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 82,
+    "tierCount": 8,
+    "weight": 8000
+  },
+  {
+    "id": "LightningResistance|2",
+    "family": "LightningResistance",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "elemental_resistance",
+      "lightning_resistance",
+      "elemental",
+      "lightning",
+      "resistance"
+    ],
+    "tagsZh": [
+      "元素",
+      "閃電",
+      "抗性"
+    ],
+    "labelZh": "雲朵之",
+    "labelEn": "of the Cloud",
+    "textZh": "+(6—10)%閃電抗性",
+    "textEn": "+(6—10)% to Lightning Resistance",
+    "match": "to Lightning Resistance",
+    "matchZh": "閃電抗性",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent",
+      "suggestedMin": 6,
+      "suggestedMax": 45
+    },
+    "tiers": [
+      {
+        "nameZh": "雲朵之",
+        "nameEn": "of the Cloud",
+        "level": 1,
+        "textZh": "+(6—10)%閃電抗性",
+        "textEn": "+(6—10)% to Lightning Resistance",
+        "dropChance": 1000,
+        "statMin": 6,
+        "statMax": 10
+      },
+      {
+        "nameZh": "冰雹之",
+        "nameEn": "of the Squall",
+        "level": 13,
+        "textZh": "+(11—15)%閃電抗性",
+        "textEn": "+(11—15)% to Lightning Resistance",
+        "dropChance": 1000,
+        "statMin": 11,
+        "statMax": 15
+      },
+      {
+        "nameZh": "暴風之",
+        "nameEn": "of the Storm",
+        "level": 25,
+        "textZh": "+(16—20)%閃電抗性",
+        "textEn": "+(16—20)% to Lightning Resistance",
+        "dropChance": 1000,
+        "statMin": 16,
+        "statMax": 20
+      },
+      {
+        "nameZh": "積雨雲之",
+        "nameEn": "of the Thunderhead",
+        "level": 37,
+        "textZh": "+(21—25)%閃電抗性",
+        "textEn": "+(21—25)% to Lightning Resistance",
+        "dropChance": 1000,
+        "statMin": 21,
+        "statMax": 25
+      },
+      {
+        "nameZh": "暴風雨之",
+        "nameEn": "of the Tempest",
+        "level": 49,
+        "textZh": "+(26—30)%閃電抗性",
+        "textEn": "+(26—30)% to Lightning Resistance",
+        "dropChance": 1000,
+        "statMin": 26,
+        "statMax": 30
+      },
+      {
+        "nameZh": "颱風之",
+        "nameEn": "of the Maelstrom",
+        "level": 60,
+        "textZh": "+(31—35)%閃電抗性",
+        "textEn": "+(31—35)% to Lightning Resistance",
+        "dropChance": 1000,
+        "statMin": 31,
+        "statMax": 35
+      },
+      {
+        "nameZh": "電之",
+        "nameEn": "of the Lightning",
+        "level": 71,
+        "textZh": "+(36—40)%閃電抗性",
+        "textEn": "+(36—40)% to Lightning Resistance",
+        "dropChance": 1000,
+        "statMin": 36,
+        "statMax": 40
+      },
+      {
+        "nameZh": "艾菲吉之",
+        "nameEn": "of Ephij",
+        "level": 82,
+        "textZh": "+(41—45)%閃電抗性",
+        "textEn": "+(41—45)% to Lightning Resistance",
+        "dropChance": 1000,
+        "statMin": 41,
+        "statMax": 45
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 82,
+    "tierCount": 8,
+    "weight": 8000
+  },
+  {
+    "id": "MaximumFireResist|2",
+    "family": "MaximumFireResist",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "elemental_resistance",
+      "fire_resistance",
+      "elemental",
+      "fire",
+      "resistance"
+    ],
+    "tagsZh": [
+      "元素",
+      "火焰",
+      "抗性"
+    ],
+    "labelZh": "叢林大火之",
+    "labelEn": "of the Bushfire",
+    "textZh": "+1%最大火焰抗性",
+    "textEn": "+1% to Maximum Fire Resistance",
+    "match": "to Maximum Fire Resistance",
+    "matchZh": "最大火焰抗性",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent"
+    },
+    "tiers": [
+      {
+        "nameZh": "叢林大火之",
+        "nameEn": "of the Bushfire",
+        "level": 68,
+        "textZh": "+1%最大火焰抗性",
+        "textEn": "+1% to Maximum Fire Resistance",
+        "dropChance": 250
+      },
+      {
+        "nameZh": "熔火之心之",
+        "nameEn": "of the Molten Core",
+        "level": 75,
+        "textZh": "+2%最大火焰抗性",
+        "textEn": "+2% to Maximum Fire Resistance",
+        "dropChance": 250
+      },
+      {
+        "nameZh": "太陽風暴之",
+        "nameEn": "of the Solar Storm",
+        "level": 81,
+        "textZh": "+3%最大火焰抗性",
+        "textEn": "+3% to Maximum Fire Resistance",
+        "dropChance": 250
+      }
+    ],
+    "minLevel": 68,
+    "maxLevel": 81,
+    "tierCount": 3,
+    "weight": 750
+  },
+  {
+    "id": "MaximumResistances|2",
+    "family": "MaximumResistances",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "cold_resistance",
+      "elemental_resistance",
+      "fire_resistance",
+      "lightning_resistance",
+      "elemental",
+      "fire",
+      "cold",
+      "lightning",
+      "resistance"
+    ],
+    "tagsZh": [
+      "元素",
+      "火焰",
+      "冰冷",
+      "閃電",
+      "抗性"
+    ],
+    "labelZh": "永恆之",
+    "labelEn": "of the Deathless",
+    "textZh": "+1%最大全元素抗性",
+    "textEn": "+1% to all Maximum Elemental Resistances",
+    "match": "to all Maximum Elemental Resistances",
+    "matchZh": "最大全元素抗性",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent"
+    },
+    "tiers": [
+      {
+        "nameZh": "永恆之",
+        "nameEn": "of the Deathless",
+        "level": 75,
+        "textZh": "+1%最大全元素抗性",
+        "textEn": "+1% to all Maximum Elemental Resistances",
+        "dropChance": 125
+      },
+      {
+        "nameZh": "永恆之",
+        "nameEn": "of the Everlasting",
+        "level": 81,
+        "textZh": "+2%最大全元素抗性",
+        "textEn": "+2% to all Maximum Elemental Resistances",
+        "dropChance": 125
+      }
+    ],
+    "minLevel": 75,
+    "maxLevel": 81,
+    "tierCount": 2,
+    "weight": 250
+  },
+  {
+    "id": "MaximumColdResist|2",
+    "family": "MaximumColdResist",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "cold_resistance",
+      "elemental_resistance",
+      "elemental",
+      "cold",
+      "resistance"
+    ],
+    "tagsZh": [
+      "元素",
+      "冰冷",
+      "抗性"
+    ],
+    "labelZh": "皮草之",
+    "labelEn": "of Furs",
+    "textZh": "+1%最大冰冷抗性",
+    "textEn": "+1% to Maximum Cold Resistance",
+    "match": "to Maximum Cold Resistance",
+    "matchZh": "最大冰冷抗性",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent"
+    },
+    "tiers": [
+      {
+        "nameZh": "皮草之",
+        "nameEn": "of Furs",
+        "level": 68,
+        "textZh": "+1%最大冰冷抗性",
+        "textEn": "+1% to Maximum Cold Resistance",
+        "dropChance": 250
+      },
+      {
+        "nameZh": "苔原之",
+        "nameEn": "of the Tundra",
+        "level": 75,
+        "textZh": "+2%最大冰冷抗性",
+        "textEn": "+2% to Maximum Cold Resistance",
+        "dropChance": 250
+      },
+      {
+        "nameZh": "猛獁象之",
+        "nameEn": "of the Mammoth",
+        "level": 81,
+        "textZh": "+3%最大冰冷抗性",
+        "textEn": "+3% to Maximum Cold Resistance",
+        "dropChance": 250
+      }
+    ],
+    "minLevel": 68,
+    "maxLevel": 81,
+    "tierCount": 3,
+    "weight": 750
+  },
+  {
+    "id": "MaximumLightningResistance|2",
+    "family": "MaximumLightningResistance",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "elemental_resistance",
+      "lightning_resistance",
+      "elemental",
+      "lightning",
+      "resistance"
+    ],
+    "tagsZh": [
+      "元素",
+      "閃電",
+      "抗性"
+    ],
+    "labelZh": "阻抗之",
+    "labelEn": "of Impedance",
+    "textZh": "+1%最大閃電抗性",
+    "textEn": "+1% to Maximum Lightning Resistance",
+    "match": "to Maximum Lightning Resistance",
+    "matchZh": "最大閃電抗性",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent"
+    },
+    "tiers": [
+      {
+        "nameZh": "阻抗之",
+        "nameEn": "of Impedance",
+        "level": 68,
+        "textZh": "+1%最大閃電抗性",
+        "textEn": "+1% to Maximum Lightning Resistance",
+        "dropChance": 250
+      },
+      {
+        "nameZh": "防震之",
+        "nameEn": "of Shockproofing",
+        "level": 75,
+        "textZh": "+2%最大閃電抗性",
+        "textEn": "+2% to Maximum Lightning Resistance",
+        "dropChance": 250
+      },
+      {
+        "nameZh": "避雷針之",
+        "nameEn": "of the Lightning Rod",
+        "level": 81,
+        "textZh": "+3%最大閃電抗性",
+        "textEn": "+3% to Maximum Lightning Resistance",
+        "dropChance": 250
+      }
+    ],
+    "minLevel": 68,
+    "maxLevel": 81,
+    "tierCount": 3,
+    "weight": 750
+  },
+  {
+    "id": "MaximumChaosResistance|2",
+    "family": "MaximumChaosResistance",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "chaos_resistance",
+      "chaos",
+      "resistance"
+    ],
+    "tagsZh": [
+      "混沌",
+      "抗性"
+    ],
+    "labelZh": "規律性之",
+    "labelEn": "of Regularity",
+    "textZh": "+1%最大混沌抗性",
+    "textEn": "+1% to Maximum Chaos Resistance",
+    "match": "to Maximum Chaos Resistance",
+    "matchZh": "最大混沌抗性",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusPercent"
+    },
+    "tiers": [
+      {
+        "nameZh": "規律性之",
+        "nameEn": "of Regularity",
+        "level": 68,
+        "textZh": "+1%最大混沌抗性",
+        "textEn": "+1% to Maximum Chaos Resistance",
+        "dropChance": 125
+      },
+      {
+        "nameZh": "康科德之",
+        "nameEn": "of Concord",
+        "level": 75,
+        "textZh": "+2%最大混沌抗性",
+        "textEn": "+2% to Maximum Chaos Resistance",
+        "dropChance": 125
+      },
+      {
+        "nameZh": "和諧之",
+        "nameEn": "of Harmony",
+        "level": 81,
+        "textZh": "+3%最大混沌抗性",
+        "textEn": "+3% to Maximum Chaos Resistance",
+        "dropChance": 125
+      }
+    ],
+    "minLevel": 68,
+    "maxLevel": 81,
+    "tierCount": 3,
+    "weight": 375
+  },
+  {
+    "id": "LocalAttributeRequirements|2",
+    "family": "LocalAttributeRequirements",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [
+      "attribute"
+    ],
+    "tagsZh": [
+      "能力"
+    ],
+    "labelZh": "值得之",
+    "labelEn": "of the Worthy",
+    "textZh": "減少15%能力值需求",
+    "textEn": "15% reduced Attribute Requirements",
+    "match": "reduced Attribute Requirements",
+    "matchZh": "減少能力值需求",
+    "kind": "numeric",
+    "numeric": {
+      "format": "percentPrefix"
+    },
+    "tiers": [
+      {
+        "nameZh": "值得之",
+        "nameEn": "of the Worthy",
+        "level": 24,
+        "textZh": "減少15%能力值需求",
+        "textEn": "15% reduced Attribute Requirements",
+        "dropChance": 800
+      },
+      {
+        "nameZh": "容易之",
+        "nameEn": "of the Apt",
+        "level": 32,
+        "textZh": "減少20%能力值需求",
+        "textEn": "20% reduced Attribute Requirements",
+        "dropChance": 800
+      },
+      {
+        "nameZh": "長才之",
+        "nameEn": "of the Talented",
+        "level": 40,
+        "textZh": "減少25%能力值需求",
+        "textEn": "25% reduced Attribute Requirements",
+        "dropChance": 800
+      },
+      {
+        "nameZh": "高超之",
+        "nameEn": "of the Skilled",
+        "level": 52,
+        "textZh": "減少30%能力值需求",
+        "textEn": "30% reduced Attribute Requirements",
+        "dropChance": 800
+      },
+      {
+        "nameZh": "熟習之",
+        "nameEn": "of the Proficient",
+        "level": 60,
+        "textZh": "減少35%能力值需求",
+        "textEn": "35% reduced Attribute Requirements",
+        "dropChance": 800
+      }
+    ],
+    "minLevel": 24,
+    "maxLevel": 60,
+    "tierCount": 5,
+    "weight": 4000
+  },
+  {
+    "id": "StunThreshold|2",
+    "family": "StunThreshold",
+    "generation": "suffix",
+    "bases": [
+      "str",
+      "str_dex",
+      "str_int",
+      "buckler"
+    ],
+    "tags": [],
+    "tagsZh": [],
+    "labelZh": "厚皮之",
+    "labelEn": "of Thick Skin",
+    "textZh": "暈眩門檻+(6—11)",
+    "textEn": "+(6—11) to Stun Threshold",
+    "match": "to Stun Threshold",
+    "matchZh": "暈眩門檻+",
+    "kind": "numeric",
+    "numeric": {
+      "format": "plusFlat",
+      "suggestedMin": 6,
+      "suggestedMax": 304
+    },
+    "tiers": [
+      {
+        "nameZh": "厚皮之",
+        "nameEn": "of Thick Skin",
+        "level": 1,
+        "textZh": "暈眩門檻+(6—11)",
+        "textEn": "+(6—11) to Stun Threshold",
+        "dropChance": 800,
+        "statMin": 6,
+        "statMax": 11
+      },
+      {
+        "nameZh": "韌膚之",
+        "nameEn": "of Reinforced Skin",
+        "level": 8,
+        "textZh": "暈眩門檻+(12—29)",
+        "textEn": "+(12—29) to Stun Threshold",
+        "dropChance": 800,
+        "statMin": 12,
+        "statMax": 29
+      },
+      {
+        "nameZh": "石皮之",
+        "nameEn": "of Stone Skin",
+        "level": 15,
+        "textZh": "暈眩門檻+(30—49)",
+        "textEn": "+(30—49) to Stun Threshold",
+        "dropChance": 800,
+        "statMin": 30,
+        "statMax": 49
+      },
+      {
+        "nameZh": "金屬皮之",
+        "nameEn": "of Iron Skin",
+        "level": 22,
+        "textZh": "暈眩門檻+(50—72)",
+        "textEn": "+(50—72) to Stun Threshold",
+        "dropChance": 800,
+        "statMin": 50,
+        "statMax": 72
+      },
+      {
+        "nameZh": "鋼皮之",
+        "nameEn": "of Steel Skin",
+        "level": 29,
+        "textZh": "暈眩門檻+(73—97)",
+        "textEn": "+(73—97) to Stun Threshold",
+        "dropChance": 800,
+        "statMin": 73,
+        "statMax": 97
+      },
+      {
+        "nameZh": "石膚之",
+        "nameEn": "of Granite Skin",
+        "level": 36,
+        "textZh": "暈眩門檻+(98—124)",
+        "textEn": "+(98—124) to Stun Threshold",
+        "dropChance": 800,
+        "statMin": 98,
+        "statMax": 124
+      },
+      {
+        "nameZh": "鉑膚之",
+        "nameEn": "of Platinum Skin",
+        "level": 45,
+        "textZh": "暈眩門檻+(125—163)",
+        "textEn": "+(125—163) to Stun Threshold",
+        "dropChance": 800,
+        "statMin": 125,
+        "statMax": 163
+      },
+      {
+        "nameZh": "金剛皮之",
+        "nameEn": "of Adamantite Skin",
+        "level": 54,
+        "textZh": "暈眩門檻+(164—206)",
+        "textEn": "+(164—206) to Stun Threshold",
+        "dropChance": 800,
+        "statMin": 164,
+        "statMax": 206
+      },
+      {
+        "nameZh": "玉皮之",
+        "nameEn": "of Corundum Skin",
+        "level": 63,
+        "textZh": "暈眩門檻+(207—253)",
+        "textEn": "+(207—253) to Stun Threshold",
+        "dropChance": 800,
+        "statMin": 207,
+        "statMax": 253
+      },
+      {
+        "nameZh": "曜膚之",
+        "nameEn": "of Obsidian Skin",
+        "level": 72,
+        "textZh": "暈眩門檻+(254—304)",
+        "textEn": "+(254—304) to Stun Threshold",
+        "dropChance": 800,
+        "statMin": 254,
+        "statMax": 304
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 72,
+    "tierCount": 10,
+    "weight": 8000
+  },
+  {
+    "id": "ReducedExtraDamageFromCrits|2",
+    "family": "ReducedExtraDamageFromCrits",
+    "generation": "suffix",
+    "bases": [
+      "str_dex"
+    ],
+    "tags": [
+      "damage",
+      "critical"
+    ],
+    "tagsZh": [
+      "傷害",
+      "暴擊"
+    ],
+    "labelZh": "遲鈍之",
+    "labelEn": "of Dulling",
+    "textZh": "對你的擊中減少(21—27)%暴擊傷害加成",
+    "textEn": "Hits against you have (21—27)% reduced Critical Damage Bonus",
+    "match": "Hits against you have reduced Critical Damage Bonus",
+    "matchZh": "對你的擊中減少暴擊傷害加成",
+    "kind": "numeric",
+    "numeric": {
+      "format": "percentPrefix",
+      "suggestedMin": 21,
+      "suggestedMax": 54
+    },
+    "tiers": [
+      {
+        "nameZh": "遲鈍之",
+        "nameEn": "of Dulling",
+        "level": 33,
+        "textZh": "對你的擊中減少(21—27)%暴擊傷害加成",
+        "textEn": "Hits against you have (21—27)% reduced Critical Damage Bonus",
+        "dropChance": 800,
+        "statMin": 21,
+        "statMax": 27
+      },
+      {
+        "nameZh": "消音之",
+        "nameEn": "of Deadening",
+        "level": 45,
+        "textZh": "對你的擊中減少(28—34)%暴擊傷害加成",
+        "textEn": "Hits against you have (28—34)% reduced Critical Damage Bonus",
+        "dropChance": 800,
+        "statMin": 28,
+        "statMax": 34
+      },
+      {
+        "nameZh": "干擾之",
+        "nameEn": "of Interference",
+        "level": 58,
+        "textZh": "對你的擊中減少(35—41)%暴擊傷害加成",
+        "textEn": "Hits against you have (35—41)% reduced Critical Damage Bonus",
+        "dropChance": 800,
+        "statMin": 35,
+        "statMax": 41
+      },
+      {
+        "nameZh": "障礙物之",
+        "nameEn": "of Obstruction",
+        "level": 69,
+        "textZh": "對你的擊中減少(42—47)%暴擊傷害加成",
+        "textEn": "Hits against you have (42—47)% reduced Critical Damage Bonus",
+        "dropChance": 800,
+        "statMin": 42,
+        "statMax": 47
+      },
+      {
+        "nameZh": "堡壘的",
+        "nameEn": "of the Bastion",
+        "level": 81,
+        "textZh": "對你的擊中減少(48—54)%暴擊傷害加成",
+        "textEn": "Hits against you have (48—54)% reduced Critical Damage Bonus",
+        "dropChance": 800,
+        "statMin": 48,
+        "statMax": 54
+      }
+    ],
+    "minLevel": 33,
+    "maxLevel": 81,
+    "tierCount": 5,
+    "weight": 4000
+  },
+  {
+    "id": "EnergyShieldRegeneration|2",
+    "family": "EnergyShieldRegeneration",
+    "generation": "suffix",
+    "bases": [
+      "str_int"
+    ],
+    "tags": [
+      "defences",
+      "energy_shield"
+    ],
+    "tagsZh": [
+      "能量護盾"
+    ],
+    "labelZh": "緩衝之",
+    "labelEn": "of Buffering",
+    "textZh": "增加(16—19)%能量護盾充能率",
+    "textEn": "(16—19)% increased Energy Shield Recharge Rate",
+    "match": "increased Energy Shield Recharge Rate",
+    "matchZh": "增加能量護盾充能率",
+    "kind": "numeric",
+    "numeric": {
+      "format": "percentPrefix",
+      "suggestedMin": 16,
+      "suggestedMax": 27
+    },
+    "tiers": [
+      {
+        "nameZh": "緩衝之",
+        "nameEn": "of Buffering",
+        "level": 48,
+        "textZh": "增加(16—19)%能量護盾充能率",
+        "textEn": "(16—19)% increased Energy Shield Recharge Rate",
+        "dropChance": 500,
+        "statMin": 16,
+        "statMax": 19
+      },
+      {
+        "nameZh": "熱情之",
+        "nameEn": "of Ardour",
+        "level": 66,
+        "textZh": "增加(20—23)%能量護盾充能率",
+        "textEn": "(20—23)% increased Energy Shield Recharge Rate",
+        "dropChance": 500,
+        "statMin": 20,
+        "statMax": 23
+      },
+      {
+        "nameZh": "遍布之",
+        "nameEn": "of Suffusion",
+        "level": 81,
+        "textZh": "增加(24—27)%能量護盾充能率",
+        "textEn": "(24—27)% increased Energy Shield Recharge Rate",
+        "dropChance": 500,
+        "statMin": 24,
+        "statMax": 27
+      }
+    ],
+    "minLevel": 48,
+    "maxLevel": 81,
+    "tierCount": 3,
+    "weight": 1500
+  },
+  {
+    "id": "EvasionAppliesToDeflection|2",
+    "family": "EvasionAppliesToDeflection",
+    "generation": "suffix",
+    "bases": [
+      "str_dex",
+      "buckler"
+    ],
+    "tags": [
+      "defences",
+      "evasion"
+    ],
+    "tagsZh": [
+      "閃避"
+    ],
+    "labelZh": "偏斜之",
+    "labelEn": "of Deflecting",
+    "textZh": "獲得等同(8—11)%閃避值的偏斜值",
+    "textEn": "Gain Deflection Rating equal to (8—11)% of Evasion Rating",
+    "match": "Gain Deflection Rating equal to of Evasion Rating",
+    "matchZh": "獲得等同閃避值的偏斜值",
+    "kind": "numeric",
+    "numeric": {
+      "format": "percentPrefix",
+      "suggestedMin": 8,
+      "suggestedMax": 26
+    },
+    "tiers": [
+      {
+        "nameZh": "偏斜之",
+        "nameEn": "of Deflecting",
+        "level": 1,
+        "textZh": "獲得等同(8—11)%閃避值的偏斜值",
+        "textEn": "Gain Deflection Rating equal to (8—11)% of Evasion Rating",
+        "dropChance": 500,
+        "statMin": 8,
+        "statMax": 11
+      },
+      {
+        "nameZh": "彎折之",
+        "nameEn": "of Bending",
+        "level": 16,
+        "textZh": "獲得等同(12—14)%閃避值的偏斜值",
+        "textEn": "Gain Deflection Rating equal to (12—14)% of Evasion Rating",
+        "dropChance": 500,
+        "statMin": 12,
+        "statMax": 14
+      },
+      {
+        "nameZh": "彎曲之",
+        "nameEn": "of Curvation",
+        "level": 36,
+        "textZh": "獲得等同(15—17)%閃避值的偏斜值",
+        "textEn": "Gain Deflection Rating equal to (15—17)% of Evasion Rating",
+        "dropChance": 500,
+        "statMin": 15,
+        "statMax": 17
+      },
+      {
+        "nameZh": "繞行之",
+        "nameEn": "of Diversion",
+        "level": 48,
+        "textZh": "獲得等同(18—20)%閃避值的偏斜值",
+        "textEn": "Gain Deflection Rating equal to (18—20)% of Evasion Rating",
+        "dropChance": 500,
+        "statMin": 18,
+        "statMax": 20
+      },
+      {
+        "nameZh": "屈曲之",
+        "nameEn": "of Flexure",
+        "level": 66,
+        "textZh": "獲得等同(21—23)%閃避值的偏斜值",
+        "textEn": "Gain Deflection Rating equal to (21—23)% of Evasion Rating",
+        "dropChance": 500,
+        "statMin": 21,
+        "statMax": 23
+      },
+      {
+        "nameZh": "扭曲之",
+        "nameEn": "of Warping",
+        "level": 81,
+        "textZh": "獲得等同(24—26)%閃避值的偏斜值",
+        "textEn": "Gain Deflection Rating equal to (24—26)% of Evasion Rating",
+        "dropChance": 500,
+        "statMin": 24,
+        "statMax": 26
+      }
+    ],
+    "minLevel": 1,
+    "maxLevel": 81,
+    "tierCount": 6,
+    "weight": 3000
+  },
+  {
+    "id": "ReducedPhysicalDamageTaken|2",
+    "family": "ReducedPhysicalDamageTaken",
+    "generation": "suffix",
+    "bases": [
+      "str"
+    ],
+    "tags": [
+      "physical",
+      "damage"
+    ],
+    "tagsZh": [
+      "物理",
+      "傷害"
+    ],
+    "labelZh": "守望者之",
+    "labelEn": "of the Watchman",
+    "textZh": "額外4%物理傷害減免",
+    "textEn": "4% additional Physical Damage Reduction",
+    "match": "additional Physical Damage Reduction",
+    "matchZh": "額外物理傷害減免",
+    "kind": "numeric",
+    "numeric": {
+      "format": "percentPrefix"
+    },
+    "tiers": [
+      {
+        "nameZh": "守望者之",
+        "nameEn": "of the Watchman",
+        "level": 32,
+        "textZh": "額外4%物理傷害減免",
+        "textEn": "4% additional Physical Damage Reduction",
+        "dropChance": 800
+      },
+      {
+        "nameZh": "看守人之",
+        "nameEn": "of the Custodian",
+        "level": 41,
+        "textZh": "額外5%物理傷害減免",
+        "textEn": "5% additional Physical Damage Reduction",
+        "dropChance": 800
+      },
+      {
+        "nameZh": "哨兵之",
+        "nameEn": "of the Sentry",
+        "level": 53,
+        "textZh": "額外6%物理傷害減免",
+        "textEn": "6% additional Physical Damage Reduction",
+        "dropChance": 800
+      },
+      {
+        "nameZh": "保護者之",
+        "nameEn": "of the Protector",
+        "level": 66,
+        "textZh": "額外7%物理傷害減免",
+        "textEn": "7% additional Physical Damage Reduction",
+        "dropChance": 800
+      },
+      {
+        "nameZh": "管理員之",
+        "nameEn": "of the Conservator",
+        "level": 77,
+        "textZh": "額外8%物理傷害減免",
+        "textEn": "8% additional Physical Damage Reduction",
+        "dropChance": 800
+      }
+    ],
+    "minLevel": 32,
+    "maxLevel": 77,
+    "tierCount": 5,
+    "weight": 4000
+  }
+]
