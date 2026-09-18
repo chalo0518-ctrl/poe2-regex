@@ -58,7 +58,13 @@ type Messages = {
   shieldsPoolAria: string;
   waystonesTitle: string;
   waystonesDesc: string;
-  waystonesPoolAria: string;
+  waystonesStatAria: string;
+  waystonesThresholdHint: string;
+  waystonesMinPlaceholder: string;
+  waystonesEffectNote: (effects: string) => string;
+  waystonesQuantityNote: string;
+  waystonesRegexPlaceholder: string;
+  waystonesActive: (n: number) => string;
   tabletsKindHeading: string;
   tabletsKindHint: string;
   tabletsKindAria: string;
@@ -115,7 +121,7 @@ const zhHant: Messages = {
   homeLead: "依遊玩階段選擇模組。開荒依章節提供商店裝備預設正則；終局已填入換界石與碑牌詞綴正則。",
   homeEarlyBody:
     "章節地圖、商店裝備篩選（各章預設生命／移速／抗性）、流派推薦裝備。盾牌詞綴實驗頁暫放於此。",
-  homeEndgameBody: "換界石（低／中／高階）與八種碑牌詞綴正則。碑牌必須先選種類。",
+  homeEndgameBody: "換界石依物品數量／物品稀有度／怪物效用篩選，與八種碑牌詞綴正則。碑牌必須先選種類。",
   subNavAria: "子頁面",
   earlyChapters: "章節地圖",
   earlyVendor: "商店裝備篩選",
@@ -137,9 +143,17 @@ const zhHant: Messages = {
   shieldsDesc: "對齊編年史 ModifiersCalc：標籤三態篩選、基礎前後綴兩欄。範圍僅限力量塔盾／力敏／力智／輕盾。",
   shieldsImportHint: "貼上倉庫複製的物品文字，將自動勾選目前盾種上對得上的基礎詞綴。",
   shieldsPoolAria: "盾種",
-  waystonesTitle: "換界石詞綴正則",
-  waystonesDesc: "對齊編年史換界石 ModifiersCalc。低階／中階／高階各為獨立詞綴池；點選詞綴後產生倉庫正則。",
-  waystonesPoolAria: "換界石階級",
+  waystonesTitle: "換界石篩選正則",
+  waystonesDesc:
+    "依物品數量、物品稀有度、怪物效用設定最小百分比，產生倉庫／商店正則。不必選低階／中階／高階，也不用翻整份詞綴名單。",
+  waystonesStatAria: "換界石數值篩選",
+  waystonesThresholdHint:
+    "每項填入最小 %（例如 40）。空白則忽略該軸。正則會對上換界石上的總數值，以及詞綴效果裡的「更多稀有度」「更多效用／怪物群大小」。",
+  waystonesMinPlaceholder: "最小",
+  waystonesEffectNote: (effects) => `詞綴效果：${effects}`,
+  waystonesQuantityNote: "詞綴資料沒有獨立的物品數量效果行，改對物品上的「物品數量」數值。",
+  waystonesRegexPlaceholder: "填入最小百分比後，正則會顯示在這裡",
+  waystonesActive: (n) => (n === 0 ? "尚未設定數值" : `已設定 ${n} 項下限`),
   tabletsKindHeading: "碑牌種類",
   tabletsKindHint: "請先選擇碑牌種類。詞綴清單只顯示該種類頁面上可骰出的詞綴，不會把八種碑牌混在一起再假裝篩選。",
   tabletsKindAria: "碑牌種類",
@@ -197,7 +211,8 @@ const en: Messages = {
     "Pick a stage. Campaign chapters ship default shop regexes; endgame has waystone and tablet affix regexes.",
   homeEarlyBody:
     "Chapter maps, vendor gear filters (life / move speed / resists per act), and build presets. The shield lab lives here for now.",
-  homeEndgameBody: "Waystones (low / mid / top) and eight tablet pools. Pick a tablet kind first.",
+  homeEndgameBody:
+    "Waystones by item quantity / item rarity / monster effectiveness, plus eight tablet pools. Pick a tablet kind first.",
   subNavAria: "Subpages",
   earlyChapters: "Chapter maps",
   earlyVendor: "Vendor filter",
@@ -221,10 +236,18 @@ const en: Messages = {
     "Chronicles ModifiersCalc: three-state tags and prefix/suffix columns. Str / str-dex / str-int shields and bucklers only.",
   shieldsImportHint: "Paste clipboard item text to tick matching base affixes on this shield type.",
   shieldsPoolAria: "Shield base",
-  waystonesTitle: "Waystone affix regex",
+  waystonesTitle: "Waystone filter regex",
   waystonesDesc:
-    "Chronicles waystone ModifiersCalc. Low / mid / top are independent pools; clicking an affix builds a stash regex.",
-  waystonesPoolAria: "Waystone tier",
+    "Set minimum item quantity, item rarity, and monster effectiveness to build a stash/shop regex. No low/mid/top picker, and no affix-name list as the main flow.",
+  waystonesStatAria: "Waystone stat filters",
+  waystonesThresholdHint:
+    "Type a minimum % (e.g. 40). Leave a box empty to ignore that axis. The regex matches the waystone totals plus reward lines for more rarity / more effectiveness and pack size.",
+  waystonesMinPlaceholder: "Min",
+  waystonesEffectNote: (effects) => `Affix text: ${effects}`,
+  waystonesQuantityNote:
+    "No item-quantity reward line in the affix scrape — the regex matches the Item Quantity value on the waystone.",
+  waystonesRegexPlaceholder: "Enter a minimum % and the regex shows up here",
+  waystonesActive: (n) => (n === 0 ? "No stats set" : `${n} minimum${n === 1 ? "" : "s"} set`),
   tabletsKindHeading: "Tablet kind",
   tabletsKindHint:
     "Pick a tablet kind first. The list only shows mods from that page — it does not union all eight then fake-filter.",

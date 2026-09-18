@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { integerRangePattern } from "./numbers.js";
+import { integerRangePattern, compactAtLeast } from "./numbers.js";
 
 function matches(pattern: string, n: number): boolean {
   return new RegExp(`^${pattern}$`).test(String(n));
@@ -39,6 +39,17 @@ describe("integerRangePattern", () => {
     expect(matches(p, 100)).toBe(true);
     expect(matches(p, 29)).toBe(false);
     expect(matches(p, 3)).toBe(false);
+  });
+
+  it("compactAtLeast matches the same integers with a shorter pattern", () => {
+    const p = compactAtLeast(40);
+    expect(p.length).toBeLessThan(integerRangePattern(40).length);
+    expect(matches(p, 40)).toBe(true);
+    expect(matches(p, 99)).toBe(true);
+    expect(matches(p, 100)).toBe(true);
+    expect(matches(p, 39)).toBe(false);
+    expect(matches(compactAtLeast(20), 20)).toBe(true);
+    expect(matches(compactAtLeast(20), 19)).toBe(false);
   });
 
   it("swaps inverted bounds", () => {

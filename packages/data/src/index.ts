@@ -85,6 +85,21 @@ export {
   shopModToFamily,
 } from "./campaign.ts";
 
+export {
+  WAYSTONE_STAT_AXES,
+  waystoneAllFamilies,
+  waystoneStatHits,
+  waystoneStatRange,
+  waystoneStatThresholds,
+} from "./waystones.ts";
+export type {
+  WaystoneStatAxis,
+  WaystoneStatEffect,
+  WaystoneStatHit,
+  WaystoneStatId,
+  WaystoneStatThresholdInput,
+} from "./waystones.ts";
+
 export const shieldFamilies = shieldsJson as ShieldFamily[];
 export const harvestTags = tagsJson as HarvestTag[];
 export const dataMeta = metaJson as DataMeta;
