@@ -140,6 +140,7 @@ export function WaystoneStatBuilder() {
               <span className="truncate text-sm font-medium text-gold">{label}</span>
               <input
                 inputMode="numeric"
+                autoComplete="off"
                 value={ranges[axis.id].min}
                 onChange={(e) => setBound(axis.id, "min", e.target.value)}
                 placeholder={t.min}
@@ -148,6 +149,7 @@ export function WaystoneStatBuilder() {
               />
               <input
                 inputMode="numeric"
+                autoComplete="off"
                 value={ranges[axis.id].max}
                 onChange={(e) => setBound(axis.id, "max", e.target.value)}
                 placeholder={t.max}
