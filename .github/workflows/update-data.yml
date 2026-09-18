@@ -1,0 +1,98 @@
+name: Update affix data
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Allow large family-count drops (rare patches)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  parsers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Parser / transformer tests
+        run: pnpm test:pipeline
+      - name: Check frozen JSON
+        run: pnpm fetch-data:check
+      - name: Fixture refresh into temp dir
+        run: pnpm fetch-data -- --from-fixtures --out-dir "$RUNNER_TEMP/poe2-fixture-out"
+
+  refresh:
+    needs: parsers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile
+      - name: Live scrape poe2db.tw + RePoE fallback
+        id: scrape
+        env:
+          FORCE_FLAG: ${{ github.event_name == 'workflow_dispatch' && inputs.force && '--force' || '' }}
+        run: |
+          set +e
+          pnpm fetch-data -- $FORCE_FLAG
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -eq 0 ]; then
+            echo "Live scrape succeeded." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ "$code" -eq 2 ]; then
+            echo "Live scrape blocked or flaky (exit 2). Parser tests already passed; run pnpm fetch-data locally if GitHub egress cannot reach poe2db.tw." >> "$GITHUB_STEP_SUMMARY"
+            echo "See docs/data-update.md for sources and env vars. No secrets are required." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "Live scrape failed with exit $code (parse/validation or other error)." >> "$GITHUB_STEP_SUMMARY"
+          exit "$code"
+      - name: Upload generated snapshot
+        if: steps.scrape.outputs.code == '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-data
+          path: packages/data/generated
+      - name: Open PR if frozen JSON changed
+        if: steps.scrape.outputs.code == '0'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore: refresh poe2db frozen affix data"
+          branch: chore/data-update
+          title: "chore: refresh frozen affix data"
+          body: |
+            Automated refresh from public poe2db.tw ModsView pages (TW + US) with RePoE-fork English match fallback.
+
+            - Idempotent: no PR if only `generatedAt` would change.
+            - Review the diff before merging; this must not invent affix text.
+            - How to re-run locally: `pnpm fetch-data` (see `docs/data-update.md`).
+          add-paths: |
+            packages/data/generated/*.json

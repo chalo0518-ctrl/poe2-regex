@@ -103,6 +103,8 @@ export type DataMeta = {
   tierCount: number;
   bases: ShieldBaseMeta[];
   notes: string;
+  /** Present after a pipeline run that could read the RePoE-fork index. */
+  repoeVersion?: string;
 };
 
 export type WaystoneCatalog = {
@@ -113,6 +115,7 @@ export type WaystoneCatalog = {
   tiers: PoolMeta<WaystoneTierId>[];
   counts: Record<WaystoneTierId, PoolCount>;
   byTier: Record<WaystoneTierId, WaystoneFamily[]>;
+  repoeVersion?: string;
 };
 
 export type TabletCatalog = {
@@ -123,6 +126,7 @@ export type TabletCatalog = {
   kinds: PoolMeta<TabletKindId>[];
   counts: Record<TabletKindId, PoolCount>;
   byKind: Record<TabletKindId, TabletFamily[]>;
+  repoeVersion?: string;
 };
 
 export type TagState = "off" | "include" | "exclude";

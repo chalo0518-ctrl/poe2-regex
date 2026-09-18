@@ -3,190 +3,147 @@
  * Scrape poe2db.tw/tw (and /us) Shields ModifiersCalc into frozen JSON.
  * Public pages, no login. Families are unioned across shield bases.
  */
-import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isMainModule } from "./lib/args.mjs";
+import { SHIELD_BASES } from "./lib/catalogs.mjs";
+import {
+  assertNoCatastrophicDrop,
+  assertShieldPayload,
+  readJsonIfExists,
+  writeGeneratedJson,
+} from "./lib/generated.mjs";
+import { mapLimit } from "./lib/http.mjs";
 import {
   applyRepoeFallback,
-  detect,
-  extractHarvestTags,
-  extractModsView,
-  familyKey,
-  fetchText,
-  indexByTier,
-  inferTagsFromText,
   loadRepoeByType,
-  parseBadges,
-  parseRangeNums,
-  stripHtml,
+  loadRepoeVersion,
+  mergeFamilyRow,
+  parsePageFamilies,
+  scrapeModifiersPage,
 } from "./lib/poe2db.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const OUT_DIR = join(ROOT, "packages/data/generated");
+export const DEFAULT_OUT_DIR = join(ROOT, "packages/data/generated");
 
-const BASES = [
-  { id: "str", labelZh: "力量塔盾", path: "Shields_str" },
-  { id: "str_dex", labelZh: "力／敏盾", path: "Shields_str_dex" },
-  { id: "str_int", labelZh: "力／智盾", path: "Shields_str_int" },
-  { id: "buckler", labelZh: "輕盾", path: "Bucklers" },
-];
+export { SHIELD_BASES as BASES };
 
-async function main() {
-  const [repoe, pages] = await Promise.all([
-    loadRepoeByType(),
-    Promise.all(
-      BASES.map(async (base) => {
-        const twUrl = `https://poe2db.tw/tw/${base.path}`;
-        const usUrl = `https://poe2db.tw/us/${base.path}`;
-        const [twHtml, usHtml] = await Promise.all([fetchText(twUrl), fetchText(usUrl)]);
-        return {
-          base,
-          twHtml,
-          usHtml,
-          twView: extractModsView(twHtml),
-          usView: extractModsView(usHtml),
-          tags: extractHarvestTags(twHtml),
-        };
-      }),
-    ),
-  ]);
-
-  const harvestTags = pages[0].tags;
-  const families = new Map();
-
-  for (const page of pages) {
-    const usIndex = indexByTier(page.usView);
-    for (const tw of page.twView.normal || []) {
-      const fam = familyKey(tw);
-      const us =
-        usIndex.get(`${(tw.ModFamilyList || []).join("|")}|${tw.ModGenerationTypeID}|${tw.Level}`) ||
-        null;
-      const textZh = stripHtml(tw.str);
-      const textEn = us ? stripHtml(us.str) : "";
-      const detected = detect(textEn || textZh);
-      const matchEn = detected.rest || textEn;
-      const matchZh = detect(textZh).rest || textZh;
-      const badges = parseBadges(tw.mod_no);
-      const inferred = inferTagsFromText(textZh, textEn);
-      const harvestIds = [
-        ...new Set([
-          ...(tw.fossil_no || []),
-          ...badges.map((b) => b.id),
-          ...inferred.map((b) => b.id),
-        ]),
-      ];
-      const tagsZh = [
-        ...new Set([...badges.map((b) => b.labelZh), ...inferred.map((b) => b.labelZh)]),
-      ];
-      const nums = parseRangeNums(textZh);
-      const tier = {
-        nameZh: tw.Name,
-        nameEn: us?.Name || "",
-        level: Number(tw.Level) || 0,
-        textZh,
-        textEn,
-        dropChance: Number(tw.DropChance) || 0,
-        statMin: nums.min,
-        statMax: nums.max,
-      };
-
-      if (!families.has(fam)) {
-        const familyName = (tw.ModFamilyList || [])[0] || fam;
-        const repoeText = repoe.get(familyName);
-        const repoeMatch = repoeText ? detect(repoeText).rest : "";
-        families.set(fam, {
-          id: fam,
-          family: familyName,
-          generation: tw.ModGenerationTypeID === "2" ? "suffix" : "prefix",
-          bases: [],
-          tags: harvestIds,
-          tagsZh,
-          labelZh: tw.Name,
-          labelEn: us?.Name || familyName,
-          textZh,
-          textEn: textEn || repoeText || "",
-          match: matchEn || repoeMatch || matchZh,
-          matchZh,
-          kind: detected.format ? "numeric" : "flag",
-          numeric: detected.format
-            ? { format: detected.format, suggestedMin: nums.min, suggestedMax: nums.max }
-            : undefined,
-          tiers: [],
-          seenTiers: new Set(),
-        });
-      }
-
-      const row = families.get(fam);
-      if (!row.bases.includes(page.base.id)) row.bases.push(page.base.id);
-      row.tags = [...new Set([...row.tags, ...harvestIds])];
-      for (const label of tagsZh) {
-        if (!row.tagsZh.includes(label)) row.tagsZh.push(label);
-      }
-      const tk = `${tier.level}|${tier.nameZh}|${tier.textZh}`;
-      if (!row.seenTiers.has(tk)) {
-        row.seenTiers.add(tk);
-        row.tiers.push(tier);
-      }
-      if (row.numeric && nums.min != null) {
-        row.numeric.suggestedMin =
-          row.numeric.suggestedMin == null
-            ? nums.min
-            : Math.min(row.numeric.suggestedMin, nums.min);
-      }
-      if (row.numeric && nums.max != null) {
-        row.numeric.suggestedMax =
-          row.numeric.suggestedMax == null
-            ? nums.max
-            : Math.max(row.numeric.suggestedMax, nums.max);
-      }
-    }
+function attachShieldBases(row, bases) {
+  const out = {};
+  for (const [key, value] of Object.entries(row)) {
+    if (key === "bases") continue;
+    out[key] = value;
+    if (key === "generation") out.bases = bases;
   }
+  if (!("bases" in out)) out.bases = bases;
+  return out;
+}
 
-  const list = [...families.values()].map((row) => {
-    row.tiers.sort((a, b) => a.level - b.level || a.nameZh.localeCompare(b.nameZh, "zh-Hant"));
-    const first = row.tiers[0];
-    const last = row.tiers[row.tiers.length - 1];
-    delete row.seenTiers;
-    return {
-      ...row,
-      labelZh: first?.nameZh || row.labelZh,
-      labelEn: first?.nameEn || row.labelEn,
-      textZh: first?.textZh || row.textZh,
-      textEn: first?.textEn || row.textEn,
-      minLevel: first?.level ?? 0,
-      maxLevel: last?.level ?? 0,
-      tierCount: row.tiers.length,
-      weight: row.tiers.reduce((s, t) => s + (t.dropChance || 0), 0),
-    };
-  });
-  applyRepoeFallback(list, repoe);
-
+function sortShieldList(list) {
   list.sort((a, b) => {
     if (a.generation !== b.generation) return a.generation === "prefix" ? -1 : 1;
     return a.textZh.localeCompare(b.textZh, "zh-Hant");
   });
-
-  const meta = {
-    source: "https://poe2db.tw/tw/",
-    pages: BASES.map((b) => `https://poe2db.tw/tw/${b.path}#ModifiersCalc`),
-    gameVersion: "poe2db.tw scrape",
-    generatedAt: new Date().toISOString(),
-    familyCount: list.length,
-    tierCount: list.reduce((s, f) => s + f.tiers.length, 0),
-    bases: BASES,
-    notes: "Frozen Chronicles ModifiersCalc scrape for str / str_dex / str_int shields and Bucklers. EN names from /us; RePoE used only as match-id fallback.",
-  };
-
-  await mkdir(OUT_DIR, { recursive: true });
-  await writeFile(join(OUT_DIR, "shields.json"), JSON.stringify(list, null, 2) + "\n");
-  await writeFile(join(OUT_DIR, "tags.json"), JSON.stringify(harvestTags, null, 2) + "\n");
-  await writeFile(join(OUT_DIR, "meta.json"), JSON.stringify(meta, null, 2) + "\n");
-  console.log(
-    `Wrote ${list.length} families / ${meta.tierCount} tiers; tags ${harvestTags.length}`,
-  );
+  return list;
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+export async function refreshShields(options = {}) {
+  const bases = options.bases || SHIELD_BASES;
+  const concurrency = Number(options.concurrency) || 3;
+  const generatedAt = options.generatedAt || new Date().toISOString();
+  const io = {
+    origin: options.origin,
+    fetchText: options.fetchText,
+    repoeModsUrl: options.repoeModsUrl,
+    repoeIndexUrl: options.repoeIndexUrl,
+    required: options.requireRepoe,
+  };
+
+  const [repoe, repoeVersion, pages] = await Promise.all([
+    loadRepoeByType(io),
+    options.repoeVersion !== undefined ? Promise.resolve(options.repoeVersion) : loadRepoeVersion(io),
+    mapLimit(bases, concurrency, async (base) => {
+      const page = await scrapeModifiersPage(base.path, io);
+      return { base, ...page };
+    }),
+  ]);
+
+  const harvestTags = pages[0]?.tags || [];
+  const merged = new Map();
+  for (const page of pages) {
+    const { list } = parsePageFamilies(page.twView, page.usView, { skipEmpty: false });
+    for (const row of list) {
+      const withBase = attachShieldBases(row, [page.base.id]);
+      if (!merged.has(withBase.id)) {
+        merged.set(withBase.id, withBase);
+        continue;
+      }
+      const prev = merged.get(withBase.id);
+      const bases = [...new Set([...(prev.bases || []), ...(withBase.bases || [])])];
+      merged.set(withBase.id, attachShieldBases(mergeFamilyRow(prev, withBase), bases));
+    }
+  }
+
+  const list = sortShieldList([...merged.values()]);
+  applyRepoeFallback(list, repoe);
+
+  const meta = {
+    source: `${options.origin || "https://poe2db.tw"}/tw/`,
+    pages: bases.map((b) => `${options.origin || "https://poe2db.tw"}/tw/${b.path}#ModifiersCalc`),
+    gameVersion: repoeVersion ? `RePoE ${repoeVersion}` : "poe2db.tw scrape",
+    generatedAt,
+    familyCount: list.length,
+    tierCount: list.reduce((s, f) => s + f.tiers.length, 0),
+    bases,
+    notes:
+      "Frozen Chronicles ModifiersCalc scrape for str / str_dex / str_int shields and Bucklers. EN names from /us; RePoE used only as match-id fallback.",
+    ...(repoeVersion ? { repoeVersion } : {}),
+  };
+
+  return { list, harvestTags, meta, repoeVersion };
+}
+
+export async function writeShieldOutputs(result, options = {}) {
+  const outDir = options.outDir || DEFAULT_OUT_DIR;
+  const prevList = await readJsonIfExists(join(outDir, "shields.json"));
+  assertShieldPayload(result.list, result.harvestTags, result.meta);
+  assertNoCatastrophicDrop(prevList?.length, result.list.length, "shields", {
+    force: options.force,
+  });
+
+  const writes = [];
+  writes.push(
+    await writeGeneratedJson(join(outDir, "shields.json"), result.list, {
+      dryRun: options.dryRun,
+    }),
+  );
+  writes.push(
+    await writeGeneratedJson(join(outDir, "tags.json"), result.harvestTags, {
+      dryRun: options.dryRun,
+    }),
+  );
+  writes.push(
+    await writeGeneratedJson(join(outDir, "meta.json"), result.meta, {
+      dryRun: options.dryRun,
+    }),
+  );
+  return writes;
+}
+
+export async function run(options = {}) {
+  const result = await refreshShields(options);
+  const writes = await writeShieldOutputs(result, options);
+  const changed = writes.some((w) => w.written);
+  console.log(
+    `Shields: ${result.list.length} families / ${result.meta.tierCount} tiers; tags ${result.harvestTags.length}` +
+      (changed ? "" : " (unchanged)"),
+  );
+  return { result, writes, changed };
+}
+
+if (isMainModule(import.meta.url)) {
+  run({}).catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

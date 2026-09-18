@@ -1,0 +1,32 @@
+{
+  "notes": "Trimmed public poe2db.tw ModsView HTML. Rows are real affix text from live pages; hover metadata stripped. Not a full catalog — never write this over packages/data/generated.",
+  "capturedAt": "2026-09-18",
+  "origin": "https://poe2db.tw",
+  "repoe": "repoe/mods.sample.json",
+  "shields": [
+    {
+      "id": "str",
+      "labelZh": "力量塔盾",
+      "path": "Shields_str"
+    },
+    {
+      "id": "str_dex",
+      "labelZh": "力／敏盾",
+      "path": "Shields_str_dex"
+    }
+  ],
+  "waystones": [
+    {
+      "id": "low",
+      "labelZh": "低階",
+      "path": "Waystones_low_tier"
+    }
+  ],
+  "tablets": [
+    {
+      "id": "breach",
+      "labelZh": "裂痕碑牌",
+      "path": "Breach_Tablet"
+    }
+  ]
+}

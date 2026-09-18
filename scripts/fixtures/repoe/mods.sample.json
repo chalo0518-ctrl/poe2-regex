@@ -1,0 +1,10 @@
+{
+  "Strength1": {
+    "type": "Strength",
+    "text": "+(5-8) to [Strength|Strength]"
+  },
+  "OnlyInRepoe1": {
+    "type": "OnlyInRepoeFamily",
+    "text": "10% increased Movement Speed"
+  }
+}
