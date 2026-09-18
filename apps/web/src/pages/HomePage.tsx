@@ -6,7 +6,7 @@ export default function HomePage() {
       <p className="text-xs tracking-[0.28em] text-gold-dim">PATH OF EXILE 2</p>
       <h1 className="mt-2 text-3xl font-bold text-gold">正則工具</h1>
       <p className="mt-3 max-w-xl text-sm text-muted">
-        依遊玩階段選擇模組。開荒處理章節商店與裝備篩選；終局已填入換界石與碑牌詞綴正則。章節商店預設稍後填入。
+        依遊玩階段選擇模組。開荒依章節提供商店裝備預設正則；終局已填入換界石與碑牌詞綴正則。
       </p>
       <div className="mt-8 grid gap-4 md:grid-cols-2">
         <Link
@@ -16,7 +16,7 @@ export default function HomePage() {
           <p className="text-xs text-gold-dim">CAMPAIGN</p>
           <h2 className="mt-1 text-xl font-bold text-gold">開荒／新手</h2>
           <p className="mt-2 text-sm text-muted">
-            章節地圖、商店裝備篩選、流派推薦裝備。盾牌詞綴實驗頁暫放於此。
+            章節地圖、商店裝備篩選（各章預設生命／移速／抗性）、流派推薦裝備。盾牌詞綴實驗頁暫放於此。
           </p>
         </Link>
         <Link

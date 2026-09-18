@@ -19,6 +19,10 @@ import tabletsJson from "../generated/tablets.json";
 export type {
   AffixFamily,
   AffixTier,
+  CampaignChapter,
+  CampaignMapNode,
+  ChapterId,
+  ChapterShopPick,
   DataMeta,
   HarvestTag,
   ModKind,
@@ -29,6 +33,8 @@ export type {
   ShieldBaseMeta,
   ShieldFamily,
   ShieldTier,
+  ShopMod,
+  ShopPickState,
   TabletCatalog,
   TabletFamily,
   TabletKindId,
@@ -45,6 +51,19 @@ export {
   matchesTagFilter,
   matchesText,
 } from "./filter.ts";
+
+export {
+  CAMPAIGN_GAPS,
+  campaignChapters,
+  defaultPicksForChapter,
+  getChapter,
+  isChapterId,
+  shopFamilies,
+  shopFamilyId,
+  shopModById,
+  shopMods,
+  shopModToFamily,
+} from "./campaign.ts";
 
 export const shieldFamilies = shieldsJson as ShieldFamily[];
 export const harvestTags = tagsJson as HarvestTag[];

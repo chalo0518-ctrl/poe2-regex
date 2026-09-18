@@ -126,3 +126,56 @@ export type TabletCatalog = {
 };
 
 export type TagState = "off" | "include" | "exclude";
+
+export type ChapterId = "act-1" | "act-2" | "act-3" | "act-4" | "act-5";
+
+export type CampaignMapNode = {
+  id: string;
+  labelZh: string;
+  labelEn: string;
+};
+
+export type ShopMod = {
+  id: string;
+  family: string;
+  generation: "prefix" | "suffix";
+  labelZh: string;
+  labelEn: string;
+  textZh: string;
+  textEn: string;
+  match: string;
+  matchZh: string;
+  kind: ModKind;
+  numeric?: {
+    format: NumericFormat;
+    suggestedMin?: number;
+    suggestedMax?: number;
+  };
+  tags: string[];
+  tagsZh: string[];
+  /** poe2db / frozen JSON paths this match string was checked against */
+  sources: string[];
+};
+
+export type ChapterShopPick = {
+  modId: string;
+  polarity: "include" | "exclude";
+  min?: number;
+  max?: number;
+};
+
+export type CampaignChapter = {
+  id: ChapterId;
+  labelZh: string;
+  labelEn: string;
+  summaryZh: string;
+  /** Town / map shop nodes. Empty until campaign map data exists. */
+  maps: CampaignMapNode[];
+  defaultPicks: ChapterShopPick[];
+};
+
+export type ShopPickState = {
+  polarity: "include" | "exclude";
+  min: string;
+  max: string;
+};

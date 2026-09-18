@@ -16,11 +16,13 @@ import {
   type RegexMod,
 } from "@poe2-regex/regex";
 
-type PickState = {
+export type ModPickState = {
   polarity: Polarity;
   min: string;
   max: string;
 };
+
+type PickState = ModPickState;
 
 type MatchLang = "zh" | "en";
 
@@ -85,6 +87,7 @@ export function ChroniclesModBuilder({
   showHideToggle = true,
   showFamilyNames = true,
   showAffixTags = true,
+  defaultPicks,
 }: {
   kicker: string;
   title: string;
@@ -106,6 +109,7 @@ export function ChroniclesModBuilder({
   showHideToggle?: boolean;
   showFamilyNames?: boolean;
   showAffixTags?: boolean;
+  defaultPicks?: Record<string, ModPickState>;
 }) {
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
   const [query, setQuery] = useState("");
@@ -114,7 +118,9 @@ export function ChroniclesModBuilder({
   const [showHidden, setShowHidden] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState("");
-  const [picks, setPicks] = useState<Record<string, PickState>>({});
+  const [picks, setPicks] = useState<Record<string, PickState>>(() => ({
+    ...(defaultPicks ?? {}),
+  }));
   const [lang, setLang] = useState<MatchLang>("zh");
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState("");
@@ -409,7 +415,7 @@ export function ChroniclesModBuilder({
             </div>
             <button
               type="button"
-              onClick={() => setPicks({})}
+              onClick={() => setPicks({ ...(defaultPicks ?? {}) })}
               className="rounded-sm border border-line px-3 py-1.5 text-sm text-muted hover:text-paper"
             >
               重置
