@@ -83,8 +83,6 @@ export function ChapterShopPanel({
         showFilter
         showImport={false}
         showHideToggle={false}
-        showFamilyNames
-        showAffixTags
         prefixTitle="商店前綴"
         suffixTitle="商店後綴"
       />

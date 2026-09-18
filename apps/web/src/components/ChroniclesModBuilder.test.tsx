@@ -100,8 +100,18 @@ describe("ChroniclesModBuilder chrome", () => {
 });
 
 describe("ChroniclesModBuilder affix rows", () => {
-  it("shows family names and affix tags by default", () => {
+  it("shows effect text only by default, not family names or row tags", () => {
     renderBuilder();
+
+    expect(screen.queryAllByText("司庫的")).toHaveLength(0);
+    expect(screen.queryAllByText("Treasurer's", { exact: false })).toHaveLength(0);
+    expect(screen.queryAllByText("召喚物")).toHaveLength(0);
+    expect(screen.getByText("地圖內含有額外的(2—3)個稀有箱子")).toBeInTheDocument();
+    expect(screen.getByText("Map contains (2—3) additional Rare Chests")).toBeInTheDocument();
+  });
+
+  it("can still show family names and affix tags when opted in", () => {
+    renderBuilder({ showFamilyNames: true, showAffixTags: true });
 
     expect(screen.getByText("司庫的")).toBeInTheDocument();
     expect(screen.getByText("Treasurer's", { exact: false })).toBeInTheDocument();
@@ -119,22 +129,23 @@ describe("ChroniclesModBuilder affix rows", () => {
     expect(screen.getByText("Map contains (2—3) additional Rare Chests")).toBeInTheDocument();
   });
 
-  it("still builds regex from match text after include click when names are hidden", async () => {
+  it("builds regex from match text, not family names, after include click", async () => {
     const user = userEvent.setup();
-    renderBuilder(compactChrome);
+    renderBuilder();
 
     await user.click(screen.getByText("地圖內含有額外的(2—3)個稀有箱子"));
 
     const output = document.querySelector(".font-mono.text-gold");
     expect(output?.textContent).toBeTruthy();
     expect(output?.textContent).not.toContain("司庫");
+    expect(output?.textContent).not.toContain("Treasurer");
     expect(output?.textContent).not.toContain("點選詞綴列");
     expect(screen.getByText("正則包含")).toBeInTheDocument();
   });
 
   it("hides family names in expanded tier rows too", async () => {
     const user = userEvent.setup();
-    renderBuilder(compactChrome);
+    renderBuilder();
 
     await user.click(screen.getByRole("button", { name: "展開階層" }));
 
@@ -145,6 +156,30 @@ describe("ChroniclesModBuilder affix rows", () => {
     expect(
       within(expanded as HTMLElement).getByText("地圖內含有額外的(2—3)個稀有箱子"),
     ).toBeInTheDocument();
+  });
+
+  it("imports from effect strings, not family names", async () => {
+    const user = userEvent.setup();
+    renderBuilder();
+
+    await user.click(screen.getByRole("button", { name: "匯入物品" }));
+    const textarea = screen.getByPlaceholderText(/\+73 最大生命/);
+    await user.click(textarea);
+    await user.paste("司庫的\nTreasurer's");
+    await user.click(screen.getByRole("button", { name: "匯入" }));
+
+    expect(screen.queryByText("正則包含")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "匯入物品" }));
+    const again = screen.getByPlaceholderText(/\+73 最大生命/);
+    await user.click(again);
+    await user.paste("地圖內含有額外的(2—3)個稀有箱子");
+    await user.click(screen.getByRole("button", { name: "匯入" }));
+
+    expect(screen.getByText("正則包含")).toBeInTheDocument();
+    const output = document.querySelector(".font-mono.text-gold");
+    expect(output?.textContent).not.toContain("司庫");
+    expect(output?.textContent).not.toContain("Treasurer");
   });
 });
 
