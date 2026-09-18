@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import {
   tabletCatalog,
   tabletFamilies,
-  tabletHarvestTags,
   tabletKinds,
   type TabletKindId,
 } from "@poe2-regex/data";
@@ -56,12 +55,16 @@ export default function TabletsPage() {
           key={kind}
           kicker="CHRONICLES · TABLETS"
           title={`${meta?.labelZh ?? "碑牌"}詞綴正則`}
-          description="種類已鎖定目前碑牌。標籤為該種類內的二次篩選；前後綴兩欄與盾牌實驗頁相同。"
+          description="種類已鎖定目前碑牌。點選詞綴列以包含或排除，底部產生倉庫正則。"
           statsNote={`${count?.families ?? 0} 組詞綴 · ${count?.tiers ?? 0} 階`}
           sourceNote={`來源 poe2db.tw/tw · ${meta?.path}`}
-          harvestTags={tabletHarvestTags}
           families={families}
-          importHint="貼上倉庫複製的碑牌文字，將自動勾選目前種類上對得上的基礎詞綴。"
+          showTags={false}
+          showFilter={false}
+          showImport={false}
+          showHideToggle={false}
+          showFamilyNames={false}
+          showAffixTags={false}
         />
       )}
     </div>
