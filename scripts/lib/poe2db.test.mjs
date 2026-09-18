@@ -60,6 +60,12 @@ describe("extractHarvestTags + stripHtml", () => {
 });
 
 describe("detect / parseRangeNums / inferTags", () => {
+  it("tidies leftover plus signs from 简中 suffix rest", () => {
+    assert.equal(detect("火焰抗性 +(6—10)%").rest, "火焰抗性");
+    assert.equal(detect("所有元素抗性 +(3—5)%").rest, "所有元素抗性");
+    assert.equal(detect("+(10—19) 生命上限").rest, "生命上限");
+  });
+
   it("classifies plusFlat / plusPercent / percentPrefix from real effect text", () => {
     assert.equal(detect("+ (5—8)點力量").format, "plusFlat");
     assert.equal(detect("+(6—10)%火焰抗性").format, "plusPercent");
@@ -69,7 +75,11 @@ describe("detect / parseRangeNums / inferTags", () => {
   });
 
   it("infers harvest-style tags from real zh/en blobs", () => {
-    const tags = inferTagsFromText("+(6—10)%火焰抗性", "+(6—10)% to Fire Resistance");
+    const tags = inferTagsFromText(
+      "+(6—10)%火焰抗性",
+      "+(6—10)% to Fire Resistance",
+      "火焰抗性 +(6—10)%",
+    );
     const ids = tags.map((t) => t.id);
     assert.ok(ids.includes("fire"));
     assert.ok(ids.includes("resistance"));
@@ -77,16 +87,19 @@ describe("detect / parseRangeNums / inferTags", () => {
 });
 
 describe("parsePageFamilies", () => {
-  it("pairs TW/US rows and builds match strings from real effect text", async () => {
+  it("pairs TW/US/CN rows and builds match strings from real effect text", async () => {
     const tw = extractModsView(await loadPage("tw", "Shields_str"));
     const us = extractModsView(await loadPage("us", "Shields_str"));
-    const { list, skippedEmpty } = parsePageFamilies(tw, us, { skipEmpty: false });
+    const cn = extractModsView(await loadPage("cn", "Shields_str"));
+    const { list, skippedEmpty } = parsePageFamilies(tw, us, { skipEmpty: false, cnView: cn });
     assert.equal(skippedEmpty, 0);
     const life = list.find((f) => f.family === "IncreasedLife");
     assert.ok(life);
     assert.equal(life.generation, "prefix");
     assert.equal(life.matchZh, "最大生命");
     assert.equal(life.match, "to maximum Life");
+    assert.equal(life.matchZhHans, "生命上限");
+    assert.equal(life.textZhHans, "+(10—19) 生命上限");
     assert.equal(life.kind, "numeric");
     assert.equal(life.numeric.format, "plusFlat");
     assert.equal(life.tierCount, 2);
@@ -95,6 +108,8 @@ describe("parsePageFamilies", () => {
     const fire = list.find((f) => f.family === "FireResistance");
     assert.equal(fire.generation, "suffix");
     assert.equal(fire.matchZh, "火焰抗性");
+    assert.equal(fire.matchZhHans, "火焰抗性");
+    assert.equal(fire.textZhHans, "火焰抗性 +(6—10)%");
     assert.equal(fire.numeric.format, "plusPercent");
   });
 
@@ -104,6 +119,7 @@ describe("parsePageFamilies", () => {
     const { list, skippedEmpty } = parsePageFamilies(tw, us, {
       skipEmpty: true,
       extraIdPrefix: "waystone:low",
+      cnView: extractModsView(await loadPage("cn", "Waystones_low_tier")),
     });
     assert.equal(skippedEmpty, 1);
     assert.equal(list.length, 2);
@@ -161,6 +177,8 @@ describe("fixture fetcher", () => {
     const page = await scrapeModifiersPage("Shields_str", { fetchText, origin: "https://poe2db.tw" });
     assert.ok(page.twView.normal.length > 0);
     assert.ok(page.usView.normal.length > 0);
+    assert.ok(page.cnView.normal.length > 0);
     assert.ok(page.tags.length > 0);
+    assert.ok(page.tags.some((t) => t.id === "cold" && t.labelZhHans === "冰霜"));
   });
 });

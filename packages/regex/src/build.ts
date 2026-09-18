@@ -24,6 +24,9 @@ function fragmentFor(mod: RegexMod, corpus: string[]): string {
     mod.numeric?.min,
     mod.numeric?.max,
   );
+  if (mod.numeric?.placement === "after") {
+    return `${escaped}.+${prefix}`;
+  }
   return `${prefix}.+${escaped}`;
 }
 
@@ -49,7 +52,7 @@ export function buildRegex(
   const excludes = selection.filter((m) => m.polarity === "exclude" && m.match);
 
   if (selection.some((m) => !m.match)) {
-    warnings.push("部分詞綴缺少匹配文本，已跳過");
+    warnings.push("missing-match");
   }
 
   if (includes.length === 0 && excludes.length === 0) {
@@ -82,7 +85,7 @@ export function buildRegex(
   const length = pattern.length;
   const overLimit = length > maxLength;
   if (overLimit) {
-    warnings.push(`已超過 ${maxLength} 字限制，請取消部分詞綴或放寬數值範圍`);
+    warnings.push("over-limit");
   }
 
   return { pattern, length, overLimit, warnings };

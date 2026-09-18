@@ -1,17 +1,18 @@
 import { Outlet } from "react-router-dom";
 import { PageShell, SubNav } from "../components/PageChrome.tsx";
-
-const ITEMS = [
-  { to: "/early/chapters", label: "章節地圖" },
-  { to: "/early/vendor", label: "商店裝備篩選" },
-  { to: "/early/builds", label: "流派推薦裝備" },
-  { to: "/early/shields", label: "實驗：盾牌詞綴" },
-];
+import { useLocale } from "../i18n.tsx";
 
 export default function EarlyLayout() {
+  const { t } = useLocale();
+  const items = [
+    { to: "/early/chapters", label: t.earlyChapters },
+    { to: "/early/vendor", label: t.earlyVendor },
+    { to: "/early/builds", label: t.earlyBuilds },
+    { to: "/early/shields", label: t.earlyShields },
+  ];
   return (
-    <PageShell kicker="EARLY GAME" title="開荒／新手">
-      <SubNav items={ITEMS} />
+    <PageShell kicker="EARLY GAME" title={t.early}>
+      <SubNav items={items} />
       <Outlet />
     </PageShell>
   );

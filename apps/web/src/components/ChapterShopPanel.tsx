@@ -1,14 +1,17 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
-  CAMPAIGN_GAPS,
+  CAMPAIGN_GAPS_I18N,
   campaignChapters,
+  chapterLabel,
+  chapterSummary,
   defaultPicksForChapter,
   getChapter,
   shopFamilies,
   type ChapterId,
 } from "@poe2-regex/data";
 import { ChroniclesModBuilder } from "./ChroniclesModBuilder.tsx";
+import { useLocale } from "../i18n.tsx";
 
 const shopFamiliesList = shopFamilies();
 
@@ -19,8 +22,9 @@ export function ChapterTabs({
   value: ChapterId;
   onChange: (id: ChapterId) => void;
 }) {
+  const { locale, t } = useLocale();
   return (
-    <div className="mb-4 flex flex-wrap gap-1.5" role="tablist" aria-label="章節">
+    <div className="mb-4 flex flex-wrap gap-1.5" role="tablist" aria-label={t.chapterAria}>
       {campaignChapters.map((chapter, index) => (
         <button
           key={chapter.id}
@@ -37,7 +41,7 @@ export function ChapterTabs({
           <span className="mr-2 font-mono text-xs text-gold-dim">
             {String(index + 1).padStart(2, "0")}
           </span>
-          {chapter.labelZh}
+          {chapterLabel(chapter, locale)}
         </button>
       ))}
     </div>
@@ -57,45 +61,46 @@ export function ChapterShopPanel({
   title: string;
   extra?: ReactNode;
 }) {
+  const { locale, t } = useLocale();
   const chapter = getChapter(chapterId);
   const defaultPicks = defaultPicksForChapter(chapterId);
 
   return (
     <div>
       <ChapterTabs value={chapterId} onChange={onChapterChange} />
-      <p className="mb-2 max-w-2xl text-sm text-muted">{chapter.summaryZh}</p>
+      <p className="mb-2 max-w-2xl text-sm text-muted">{chapterSummary(chapter, locale)}</p>
       {chapter.maps.length === 0 && (
-        <p className="mb-4 text-xs text-gold-dim">
-          此章尚無獨立地圖／商店節點資料，預設套用整章商店裝備正則。
-        </p>
+        <p className="mb-4 text-xs text-gold-dim">{t.chapterNoMaps}</p>
       )}
       {extra}
       <ChroniclesModBuilder
         key={chapterId}
         kicker={kicker}
         title={title}
-        description="預設已勾選該章通用商店詞綴。點列可改為排除或取消；也可加選清單中的能力值／能量護盾／施法速度。"
-        statsNote={`${shopFamiliesList.length} 組商店詞綴 · ${chapter.defaultPicks.length} 項預設包含`}
-        sourceNote="match／matchZh 核對 shields.json 與 poe2db.tw 靴／飾品／護甲"
+        description={t.chapterShopDesc}
+        statsNote={t.shopStats(shopFamiliesList.length, chapter.defaultPicks.length)}
+        sourceNote={t.sourceShop}
         families={shopFamiliesList}
         defaultPicks={defaultPicks}
         showTags={false}
         showFilter
         showImport={false}
         showHideToggle={false}
-        prefixTitle="商店前綴"
-        suffixTitle="商店後綴"
+        prefixTitle={t.shopPrefix}
+        suffixTitle={t.shopSuffix}
       />
     </div>
   );
 }
 
 export function CampaignGapsNote() {
+  const { locale, t } = useLocale();
+  const gaps = CAMPAIGN_GAPS_I18N[locale];
   return (
     <details className="mb-4 rounded-sm border border-line bg-panel px-3 py-2 text-xs text-muted">
-      <summary className="cursor-pointer text-gold-dim">已知缺口</summary>
+      <summary className="cursor-pointer text-gold-dim">{t.knownGaps}</summary>
       <ul className="mt-2 list-disc space-y-1 pl-5">
-        {CAMPAIGN_GAPS.map((gap) => (
+        {gaps.map((gap) => (
           <li key={gap}>{gap}</li>
         ))}
       </ul>
@@ -104,12 +109,13 @@ export function CampaignGapsNote() {
 }
 
 export function VendorChapterLink({ chapterId }: { chapterId: ChapterId }) {
+  const { t } = useLocale();
   return (
     <Link
       to={`/early/vendor?chapter=${chapterId}`}
       className="mb-4 inline-flex w-fit rounded-sm border border-gold px-3 py-2 text-sm text-gold hover:bg-gold/10"
     >
-      在商店頁編輯此章正則
+      {t.vendorEditLink}
     </Link>
   );
 }

@@ -1,8 +1,21 @@
-# 流放之路 2 正則工具
+# 流亡 2 / 流放之路 2 正则工具
 
-依遊玩階段分成兩個模組。終局換界石與碑牌已填入編年史風格詞綴正則；開荒章節／商店已有各章預設裝備正則，流派仍為佔位，盾牌實驗頁可用。
+按游玩阶段分成两个模块。终局引路石与石板已填入编年史风格词缀正则；开荒章节／商店已有各章默认装备正则，流派仍为占位，盾牌实验页可用。
 
-## 本地執行
+界面默认 **简中**，可切 **繁中** / **EN**。词缀效果与匹配字串来自 poe2db `/cn` + `/tw` + `/us`（不是机器简繁转换）。
+
+## 语言覆盖
+
+| 层 | 简中 (zh-Hans) | 繁中 (zh-Hant) | English |
+|---|---|---|---|
+| 界面 chrome | 默认 | 可切换 | 可切换 |
+| 词缀效果 / 匹配 | poe2db `/cn` → `textZhHans` / `matchZhHans` | poe2db `/tw` → `textZh` / `matchZh` | poe2db `/us` → `textEn` / `match` |
+| 商店预设 | 手抄自 `/cn` 真实词条 | 既有 `/tw` 核对 | 既有 `/us` 核对 |
+| 数值范围正则 | `placement: after`（如 `火焰抗性 +35%`） | `placement: before`（如 `+35%火焰抗性`） | `placement: before` |
+
+`/cn` 与 `/tw` 不是同一套词。例如生命是「生命上限」对「最大生命」，冰抗是「冰霜抗性」对「冰冷抗性」，终局地图石是「引路石」对「换界石」。缺 `matchZhHans` 时 UI 回退繁中，不会编造简中词缀。
+
+## 本地执行
 
 需要 Node 20+ 與 [pnpm](https://pnpm.io/)。
 
@@ -18,7 +31,7 @@ pnpm test
 pnpm build
 ```
 
-更新凍結資料（poe2db.tw 公開 `ModsView`，另抓 `/us` 做 EN 匹配；RePoE 僅作 match 後備）：
+更新冻结资料（poe2db.tw 公开 `ModsView`：`/tw` 繁中、`/cn` 简中、`/us` EN；RePoE 仅作 EN match 后备）：
 
 ```bash
 pnpm fetch-data
@@ -49,7 +62,7 @@ pnpm fetch-data:check
 
 ## 開荒：章節商店預設
 
-`/early/chapters` 與 `/early/vendor` 共用 `packages/data` 的章節預設（資料驅動，不寫死在頁面元件裡）。清單詞綴的 `match` / `matchZh` 與現有正則引擎相同。
+`/early/chapters` 与 `/early/vendor` 共用 `packages/data` 的章节默认（资料驱动，不写死在页面元件里）。清单词缀的 `match` / `matchZh` / `matchZhHans` 与现有正则引擎相同。
 
 | 章節 | 預設包含 |
 |---|---|
@@ -69,7 +82,7 @@ pnpm fetch-data:check
 - [中階](https://poe2db.tw/tw/Waystones_mid_tier#ModifiersCalc)
 - [高階](https://poe2db.tw/tw/Waystones_top_tier#ModifiersCalc)
 
-三個階級是獨立詞綴池（不是合併後再篩）。操作與盾牌實驗相同：標籤三態 → 前後綴兩欄 → 正則／250／複製。預設繁中匹配，可切 EN match。
+三个阶级是独立词缀池（不是合并后再筛）。操作与盾牌实验相同：标签三态 → 前后缀两栏 → 正则／250／复制。默认简中匹配，可切繁中 / EN match。
 
 凍結數量：
 
@@ -104,7 +117,7 @@ pnpm fetch-data:check
 
 1. 點標籤：第一次包含（紫）、第二次排除、第三次還原；多個包含為聯集。
 2. 點詞綴列切換正則包含／排除；可填數值範圍。
-3. 底部即時正則、長度／250、複製。預設繁中匹配。
+3. 底部即时正则、长度／250、复制。默认简中匹配，可切繁中 / EN。
 
 ## 部署
 

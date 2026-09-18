@@ -1,20 +1,35 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
+  affixTagLabels,
   cycleTagState,
+  effectText,
+  effectTextSecondary,
+  familyLabel,
+  familyLabelSecondary,
+  importNeedles,
+  matchLangForLocale,
   matchesIlvl,
   matchesTagFilter,
   matchesText,
+  matchText,
+  poolLabel,
+  tagLabel,
+  tierEffect,
+  tierName,
   type AffixFamily,
   type HarvestTag,
+  type MatchLang,
   type PoolMeta,
   type TagState,
 } from "@poe2-regex/data";
 import {
   buildRegex,
+  inferNumericPlacement,
   MAX_LENGTH,
   type Polarity,
   type RegexMod,
 } from "@poe2-regex/regex";
+import { useLocale } from "../i18n.tsx";
 
 export type ModPickState = {
   polarity: Polarity;
@@ -23,8 +38,6 @@ export type ModPickState = {
 };
 
 type PickState = ModPickState;
-
-type MatchLang = "zh" | "en";
 
 const TAG_TINT: Record<string, string> = {
   fire: "#e07048",
@@ -54,14 +67,21 @@ function parseBound(raw: string): number | undefined {
 function toRegexMod(family: AffixFamily, pick: PickState, lang: MatchLang): RegexMod {
   const min = parseBound(pick.min);
   const max = parseBound(pick.max);
+  const match = matchText(family, lang);
+  const source = effectText(family, lang);
   return {
     id: family.id,
-    match: lang === "zh" ? family.matchZh || family.match : family.match,
+    match,
     polarity: pick.polarity,
     kind: family.kind,
     numeric:
       family.kind === "numeric" && pick.polarity === "include"
-        ? { format: family.numeric?.format, min, max }
+        ? {
+            format: family.numeric?.format,
+            min,
+            max,
+            placement: inferNumericPlacement(source, match),
+          }
         : undefined,
   };
 }
@@ -79,8 +99,8 @@ export function ChroniclesModBuilder({
   onPoolChange,
   poolAriaLabel,
   importHint,
-  prefixTitle = "基礎前綴",
-  suffixTitle = "基礎後綴",
+  prefixTitle,
+  suffixTitle,
   showTags = true,
   showFilter = true,
   showImport = true,
@@ -111,6 +131,7 @@ export function ChroniclesModBuilder({
   showAffixTags?: boolean;
   defaultPicks?: Record<string, ModPickState>;
 }) {
+  const { locale, t } = useLocale();
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
   const [query, setQuery] = useState("");
   const [minIlvl, setMinIlvl] = useState("");
@@ -121,7 +142,11 @@ export function ChroniclesModBuilder({
   const [picks, setPicks] = useState<Record<string, PickState>>(() => ({
     ...(defaultPicks ?? {}),
   }));
-  const [lang, setLang] = useState<MatchLang>("zh");
+  const [lang, setLang] = useState<MatchLang>(() => matchLangForLocale(locale));
+
+  useEffect(() => {
+    setLang(matchLangForLocale(locale));
+  }, [locale]);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -144,8 +169,11 @@ export function ChroniclesModBuilder({
   const prefixes = listed.filter((r) => r.family.generation === "prefix");
   const suffixes = listed.filter((r) => r.family.generation === "suffix");
 
+  const prefixHeading = prefixTitle ?? t.prefixTitle;
+  const suffixHeading = suffixTitle ?? t.suffixTitle;
+
   const corpus = useMemo(
-    () => families.map((f) => (lang === "zh" ? f.matchZh || f.match : f.match)),
+    () => families.map((f) => matchText(f, lang)),
     [families, lang],
   );
 
@@ -169,7 +197,7 @@ export function ChroniclesModBuilder({
       setCopyError("");
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
-      setCopyError("複製失敗，請手動選取");
+      setCopyError(t.copyFail);
     }
   }
 
@@ -201,8 +229,7 @@ export function ChroniclesModBuilder({
     setPicks((prev) => {
       const next = { ...prev };
       for (const family of families) {
-        const needles = [family.matchZh, family.textZh, family.match, family.textEn]
-          .filter(Boolean)
+        const needles = importNeedles(family)
           .map((s) => s.toLowerCase());
         if (needles.some((n) => n.length >= 2 && blob.includes(n))) {
           next[family.id] = next[family.id] ?? {
@@ -256,7 +283,7 @@ export function ChroniclesModBuilder({
                   : "border-line text-muted hover:text-paper"
               }`}
             >
-              {item.labelZh}
+              {poolLabel(item, locale)}
             </button>
           ))}
         </div>
@@ -276,7 +303,7 @@ export function ChroniclesModBuilder({
                 style={state === "off" && tint ? { color: tint, borderColor: tint } : undefined}
                 onClick={() => cycleTag(tag.id)}
               >
-                {tag.labelZh}
+                {tagLabel(tag, locale)}
               </button>
             );
           })}
@@ -288,7 +315,7 @@ export function ChroniclesModBuilder({
           {showFilter && (
             <>
               <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-muted">
-                Filter:
+                {t.filter}
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -296,7 +323,7 @@ export function ChroniclesModBuilder({
                 />
               </label>
               <label className="flex items-center gap-1 text-sm text-muted">
-                Min iLvL:
+                {t.minIlvl}
                 <input
                   inputMode="numeric"
                   value={minIlvl}
@@ -305,7 +332,7 @@ export function ChroniclesModBuilder({
                 />
               </label>
               <label className="flex items-center gap-1 text-sm text-muted">
-                Max iLvL:
+                {t.maxIlvl}
                 <input
                   inputMode="numeric"
                   value={maxIlvl}
@@ -321,7 +348,7 @@ export function ChroniclesModBuilder({
               onClick={() => setImportOpen(true)}
               className="rounded-sm bg-[#2f6fbf] px-3 py-1.5 text-sm text-white"
             >
-              匯入物品
+              {t.importItem}
             </button>
           )}
           {showHideToggle && (
@@ -332,24 +359,22 @@ export function ChroniclesModBuilder({
                 showHidden ? "bg-gold text-ink" : "bg-[#8a6a3a] text-paper"
               }`}
             >
-              切換隱藏
+              {t.toggleHidden}
             </button>
           )}
         </div>
       )}
 
       <p className="mb-3 text-xs text-muted">
-        顯示 {listed.filter((r) => r.matched).length} 列
-        {showHideToggle && showHidden
-          ? `（另顯示 ${listed.filter((r) => !r.matched).length} 列隱藏）`
-          : ""}
-        。正則包含 {includeN} · 排除 {excludeN}
-        {showTags ? "。標籤：第一次包含（紫）· 第二次排除 · 第三次還原；多個包含為聯集。" : ""}
+        {t.listed(listed.filter((r) => r.matched).length)}
+        {showHideToggle && showHidden ? t.listedHidden(listed.filter((r) => !r.matched).length) : ""}
+        {t.regexCounts(includeN, excludeN)}
+        {showTags ? t.tagHelp : ""}
       </p>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <AffixColumn
-          title={prefixTitle}
+          title={prefixHeading}
           rows={prefixes}
           picks={picks}
           expanded={expanded}
@@ -362,7 +387,7 @@ export function ChroniclesModBuilder({
           }
         />
         <AffixColumn
-          title={suffixTitle}
+          title={suffixHeading}
           rows={suffixes}
           picks={picks}
           expanded={expanded}
@@ -394,17 +419,24 @@ export function ChroniclesModBuilder({
             <div className="flex overflow-hidden rounded-sm border border-line text-xs">
               <button
                 type="button"
-                onClick={() => setLang("zh")}
-                className={`px-2 py-1 ${lang === "zh" ? "bg-gold text-ink" : "text-muted"}`}
+                onClick={() => setLang("zh-Hans")}
+                className={`px-2 py-1 ${lang === "zh-Hans" ? "bg-gold text-ink" : "text-muted"}`}
               >
-                繁中匹配
+                {t.matchZhHans}
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang("zh-Hant")}
+                className={`px-2 py-1 ${lang === "zh-Hant" ? "bg-gold text-ink" : "text-muted"}`}
+              >
+                {t.matchZhHant}
               </button>
               <button
                 type="button"
                 onClick={() => setLang("en")}
                 className={`px-2 py-1 ${lang === "en" ? "bg-gold text-ink" : "text-muted"}`}
               >
-                EN match
+                {t.matchEn}
               </button>
             </div>
             <button
@@ -412,7 +444,7 @@ export function ChroniclesModBuilder({
               onClick={() => setPicks({ ...(defaultPicks ?? {}) })}
               className="rounded-sm border border-line px-3 py-1.5 text-sm text-muted hover:text-paper"
             >
-              重置
+              {t.reset}
             </button>
             <button
               type="button"
@@ -420,17 +452,26 @@ export function ChroniclesModBuilder({
               onClick={() => void copyPattern()}
               className="rounded-sm bg-gold px-3 py-1.5 text-sm font-medium text-ink disabled:opacity-40"
             >
-              {copied ? "已複製" : "複製"}
+              {copied ? t.copied : t.copy}
             </button>
           </div>
           <div className="overflow-x-auto rounded-sm border border-line bg-ink px-3 py-2 font-mono text-sm text-gold">
-            {result.pattern || (
-              <span className="text-muted">點選詞綴列以包含／排除，正則會顯示在這裡</span>
-            )}
+            {result.pattern || <span className="text-muted">{t.regexPlaceholder}</span>}
           </div>
           {(result.warnings.length > 0 || copyError) && (
             <p className="text-xs text-exclude">
-              {[...result.warnings, copyError].filter(Boolean).join(" · ")}
+              {[
+                ...result.warnings.map((w) =>
+                  w === "over-limit"
+                    ? t.warningOverLimit(MAX_LENGTH)
+                    : w === "missing-match"
+                      ? t.warningMissing
+                      : w,
+                ),
+                copyError,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
             </p>
           )}
         </div>
@@ -439,16 +480,20 @@ export function ChroniclesModBuilder({
       {showImport && importOpen && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-lg rounded-md border border-line bg-panel p-4">
-            <h2 className="mb-2 text-lg text-gold">匯入物品</h2>
-            <p className="mb-2 text-xs text-muted">
-              {importHint ?? "貼上倉庫複製的物品文字，將自動勾選目前清單上對得上的基礎詞綴。"}
-            </p>
+            <h2 className="mb-2 text-lg text-gold">{t.importTitle}</h2>
+            <p className="mb-2 text-xs text-muted">{importHint ?? t.importDefaultHint}</p>
             <textarea
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
               rows={8}
               className="mb-3 w-full rounded-sm border border-line bg-ink px-2 py-2 font-mono text-sm text-paper outline-none focus:border-gold"
-              placeholder={"+73 最大生命\n+40% 火焰抗性"}
+              placeholder={
+                locale === "en"
+                  ? "+73 to maximum Life\n+40% to Fire Resistance"
+                  : locale === "zh-Hans"
+                    ? "+73 生命上限\n火焰抗性 +40%"
+                    : "+73 最大生命\n+40% 火焰抗性"
+              }
             />
             <div className="flex justify-end gap-2">
               <button
@@ -456,14 +501,14 @@ export function ChroniclesModBuilder({
                 onClick={() => setImportOpen(false)}
                 className="rounded-sm border border-line px-3 py-1.5 text-sm text-muted"
               >
-                取消
+                {t.cancel}
               </button>
               <button
                 type="button"
                 onClick={importItem}
                 className="rounded-sm bg-[#2f6fbf] px-3 py-1.5 text-sm text-white"
               >
-                匯入
+                {t.importConfirm}
               </button>
             </div>
           </div>
@@ -494,6 +539,7 @@ function AffixColumn({
   onExpand: (id: string) => void;
   onBound: (id: string, key: "min" | "max", value: string) => void;
 }) {
+  const { t } = useLocale();
   return (
     <section className="overflow-hidden rounded-sm border border-line bg-panel">
       <h2 className="flex items-center justify-between border-b border-line bg-raised px-3 py-2 text-sm font-medium text-gold">
@@ -501,7 +547,7 @@ function AffixColumn({
         <span className="text-xs font-normal text-muted">{rows.filter((r) => r.matched).length}</span>
       </h2>
       {rows.length === 0 ? (
-        <p className="px-3 py-8 text-center text-sm text-muted">沒有符合的詞綴</p>
+        <p className="px-3 py-8 text-center text-sm text-muted">{t.noAffixes}</p>
       ) : (
         <ul>
           {rows.map(({ family, matched }) => (
@@ -545,7 +591,11 @@ function AffixRow({
   onExpand: () => void;
   onBound: (key: "min" | "max", value: string) => void;
 }) {
+  const { locale, t } = useLocale();
   const include = pick?.polarity === "include";
+  const primary = effectText(family, locale);
+  const secondary = effectTextSecondary(family, locale);
+  const tags = affixTagLabels(family, locale);
 
   return (
     <li
@@ -555,10 +605,12 @@ function AffixRow({
       <div className="flex items-start gap-2 px-2 py-2">
         <button type="button" onClick={onCycle} className="min-w-0 flex-1 text-left">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            {showFamilyNames && <span className="text-sm text-gold">{family.labelZh}</span>}
-            <span className="text-sm text-paper">{family.textZh}</span>
+            {showFamilyNames && (
+              <span className="text-sm text-gold">{familyLabel(family, locale)}</span>
+            )}
+            <span className="text-sm text-paper">{primary}</span>
             {showAffixTags &&
-              family.tagsZh.map((tag) => (
+              tags.map((tag) => (
                 <span
                   key={tag}
                   className="rounded-sm bg-[#2a3344] px-1.5 py-0.5 text-[10px] text-[#9ec3ff]"
@@ -572,15 +624,15 @@ function AffixRow({
           </div>
           <div className="mt-0.5 text-xs text-muted">
             {showFamilyNames
-              ? `${family.labelEn}${family.textEn ? ` · ${family.textEn}` : ""}`
-              : family.textEn}
+              ? `${familyLabelSecondary(family, locale)}${secondary ? ` · ${secondary}` : ""}`
+              : secondary}
           </div>
         </button>
         <button
           type="button"
           onClick={onExpand}
           className="shrink-0 px-1 text-xs text-muted"
-          aria-label="展開階層"
+          aria-label={t.expandTiers}
         >
           {open ? "▴" : "▾"}
         </button>
@@ -588,7 +640,7 @@ function AffixRow({
       {pick && (
         <div className="flex flex-wrap items-center gap-2 px-2 pb-2 pl-2 text-xs">
           <span className={include ? "text-include" : "text-exclude"}>
-            {include ? "正則包含" : "正則排除"}
+            {include ? t.include : t.exclude}
           </span>
           {family.kind === "numeric" && include && (
             <>
@@ -597,7 +649,7 @@ function AffixRow({
                 value={pick.min}
                 onChange={(e) => onBound("min", e.target.value)}
                 onClick={(e) => e.stopPropagation()}
-                placeholder="最小"
+                placeholder={t.min}
                 className="w-16 rounded-sm border border-line bg-ink px-1.5 py-1 text-paper outline-none placeholder:text-muted focus:border-gold"
               />
               <span>–</span>
@@ -606,12 +658,12 @@ function AffixRow({
                 value={pick.max}
                 onChange={(e) => onBound("max", e.target.value)}
                 onClick={(e) => e.stopPropagation()}
-                placeholder="最大"
+                placeholder={t.max}
                 className="w-16 rounded-sm border border-line bg-ink px-1.5 py-1 text-paper outline-none placeholder:text-muted focus:border-gold"
               />
               {family.numeric?.suggestedMin != null && (
                 <span className="text-muted">
-                  常見 {family.numeric.suggestedMin}–{family.numeric.suggestedMax}
+                  {t.commonRange(family.numeric.suggestedMin, family.numeric.suggestedMax ?? family.numeric.suggestedMin)}
                 </span>
               )}
             </>
@@ -623,9 +675,11 @@ function AffixRow({
           {family.tiers.map((tier) => (
             <li key={`${tier.level}-${tier.nameZh}`} className="flex flex-wrap gap-x-2 py-0.5">
               <span className="text-gold-dim">iLvL {tier.level}</span>
-              {showFamilyNames && <span className="text-paper">{tier.nameZh}</span>}
-              <span>{tier.textZh}</span>
-              {showFamilyNames && <span className="text-muted">{tier.nameEn}</span>}
+              {showFamilyNames && <span className="text-paper">{tierName(tier, locale)}</span>}
+              <span>{tierEffect(tier, locale)}</span>
+              {showFamilyNames && locale !== "en" && (
+                <span className="text-muted">{tier.nameEn}</span>
+              )}
             </li>
           ))}
         </ul>

@@ -8,10 +8,18 @@ export type NumericFormat =
   | "percentPrefix"
   | "bare";
 
+/** Where the rolled number sits relative to the unique match fragment. */
+export type NumericPlacement = "before" | "after";
+
 export type NumericConstraint = {
   min?: number;
   max?: number;
   format?: NumericFormat;
+  /**
+   * EN/繁中 resists are `+N% rest`; 简中 often uses `rest +N%`.
+   * Default `before` keeps existing stash patterns.
+   */
+  placement?: NumericPlacement;
 };
 
 export type RegexMod = {

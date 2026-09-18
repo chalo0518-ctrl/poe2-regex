@@ -34,6 +34,7 @@ async function scrapePool(meta, extraField, extraValue, extraIdPrefix, repoe, io
   const { list, skippedEmpty } = parsePageFamilies(page.twView, page.usView, {
     skipEmpty: true,
     extraIdPrefix,
+    cnView: page.cnView,
   });
   applyRepoeFallback(list, repoe);
   for (const row of list) {
@@ -103,10 +104,10 @@ export async function refreshEndgame(options = {}) {
   }
 
   const waystones = {
-    source: `${origin}/tw/`,
+    source: `${origin}/tw/ + /cn/ + /us/`,
     generatedAt,
     notes:
-      "Independent waystone pools from Waystones_low/mid/top_tier ModifiersCalc. Not unioned. EN from /us; RePoE match fallback only.",
+      "Independent waystone pools from Waystones_low/mid/top_tier ModifiersCalc. Not unioned. 繁中 `/tw`, 简中 `/cn`, EN `/us`; RePoE match fallback only.",
     harvestTags,
     tiers: waystoneTiers,
     counts: waystoneCounts,
@@ -115,10 +116,10 @@ export async function refreshEndgame(options = {}) {
   };
 
   const tablets = {
-    source: `${origin}/tw/`,
+    source: `${origin}/tw/ + /cn/ + /us/`,
     generatedAt,
     notes:
-      "Each tablet kind is a separate ModsView scrape. UI must gate on kind; do not union-all then fake-filter. EN from /us; RePoE match fallback only.",
+      "Each tablet kind is a separate ModsView scrape. UI must gate on kind; do not union-all then fake-filter. 繁中 `/tw`, 简中 `/cn`, EN `/us`; RePoE match fallback only.",
     harvestTags,
     kinds: tabletKinds,
     counts: tabletCounts,

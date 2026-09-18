@@ -8,7 +8,9 @@ describe("frozen generated JSON invariants", () => {
     expect(shieldFamilies.length).toBeGreaterThan(10);
     expect(shieldFamilies.every((f) => f.bases.length > 0)).toBe(true);
     expect(shieldFamilies.every((f) => Boolean(f.matchZh && (f.match || f.textEn)))).toBe(true);
+    expect(shieldFamilies.every((f) => Boolean(f.matchZhHans && f.textZhHans))).toBe(true);
     expect(harvestTags.some((t) => t.id === "fire")).toBe(true);
+    expect(harvestTags.some((t) => t.id === "cold" && t.labelZhHans === "冰霜")).toBe(true);
   });
 
   it("keeps independent waystone pools with matching counts", () => {
@@ -18,6 +20,7 @@ describe("frozen generated JSON invariants", () => {
       expect(list.every((f) => f.tier === tier.id)).toBe(true);
       expect(list.every((f) => f.id.startsWith(`waystone:${tier.id}|`))).toBe(true);
       expect(list.every((f) => f.matchZh && f.textZh)).toBe(true);
+      expect(list.every((f) => f.matchZhHans && f.textZhHans)).toBe(true);
     }
   });
 
@@ -28,6 +31,7 @@ describe("frozen generated JSON invariants", () => {
       expect(list.every((f) => f.tabletKind === kind.id)).toBe(true);
       expect(list.every((f) => f.id.startsWith(`tablet:${kind.id}|`))).toBe(true);
       expect(list.every((f) => f.matchZh && f.textZh)).toBe(true);
+      expect(list.every((f) => f.matchZhHans && f.textZhHans)).toBe(true);
     }
   });
 });
