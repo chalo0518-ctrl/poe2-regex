@@ -51,7 +51,7 @@ describe("endgame tablets page", () => {
 });
 
 describe("endgame waystones page", () => {
-  it("uses quantity / rarity / effectiveness mins and drops the tier picker", async () => {
+  it("uses market min/max filters and drops the affix-pool tier picker", async () => {
     const user = userEvent.setup();
     renderPage(<WaystonesPage />);
 
@@ -62,26 +62,35 @@ describe("endgame waystones page", () => {
     expectEndgameChromeGone();
     expectRegexTools();
 
-    expect(screen.getByRole("group", { name: "換界石數值篩選" })).toBeInTheDocument();
-    expect(screen.getByLabelText("物品數量")).toBeInTheDocument();
-    expect(screen.getByLabelText("物品稀有度")).toBeInTheDocument();
-    expect(screen.getByLabelText("怪物效用")).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "換界石終局篩選" })).toBeInTheDocument();
+    expect(screen.getByLabelText("換界石階級 最小")).toBeInTheDocument();
+    expect(screen.getByLabelText("怪物效用 最小")).toBeInTheDocument();
+    expect(screen.getByLabelText("怪物稀有度 最大")).toBeInTheDocument();
+    expect(screen.getByLabelText("換界石掉落率 最小")).toBeInTheDocument();
+    expect(screen.getByLabelText("換界石經驗 最小")).toBeInTheDocument();
+    expect(screen.getByLabelText("換界石怪物群大小 最小")).toBeInTheDocument();
+    expect(screen.getByLabelText("物品稀有度 最小")).toBeInTheDocument();
+    expect(screen.getByLabelText("換界石復活 最大")).toBeInTheDocument();
+    expect(screen.getByLabelText("換界石金幣 最小")).toBeInTheDocument();
+    expect(screen.getByLabelText("混沌試煉")).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "不限" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "勝利之運" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("物品數量 最小")).not.toBeInTheDocument();
     expect(screen.queryAllByText("強韌的")).toHaveLength(0);
     expect(screen.queryAllByText("Tough", { exact: false })).toHaveLength(0);
     expect(screen.queryByText(/更多怪物生命/)).not.toBeInTheDocument();
 
     const output = document.querySelector(".font-mono.text-gold");
-    expect(output?.textContent).toMatch(/填入最小百分比/);
+    expect(output?.textContent).toMatch(/填入數值或選擇試煉/);
 
-    await user.type(screen.getByLabelText("物品稀有度"), "40");
+    await user.type(screen.getByLabelText("物品稀有度 最小"), "40");
     expect(output?.textContent).toContain("物品稀有度");
-    expect(output?.textContent).toContain("更多稀有度");
+    expect(output?.textContent).not.toContain("更多稀有度");
     expect(output?.textContent).not.toContain("充盈的");
     expect(output?.textContent).not.toContain("強韌");
 
     await user.click(screen.getByRole("button", { name: "EN match" }));
     expect(output?.textContent).toContain("Item Rarity");
-    expect(output?.textContent).toContain("more Rarity of Items");
     expect(output?.textContent).not.toContain("物品稀有度");
   });
 
@@ -89,12 +98,11 @@ describe("endgame waystones page", () => {
     const user = userEvent.setup();
     renderPage(<WaystonesPage />);
 
-    await user.type(screen.getByLabelText("物品稀有度"), "40");
-    await user.type(screen.getByLabelText("怪物效用"), "20");
+    await user.type(screen.getByLabelText("物品稀有度 最小"), "40");
+    await user.type(screen.getByLabelText("怪物效用 最小"), "20");
 
     const pattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
     const juicy = [
-      "物品數量: +62%",
       "物品稀有度: +45%",
       "怪物效用: +29%",
       "此區域找到的物品擁有14%更多稀有度",
@@ -105,19 +113,22 @@ describe("endgame waystones page", () => {
     expect(matchesItem(pattern, low)).toBe(false);
   });
 
-  it("ignores empty axes and ANDs filled thresholds", async () => {
+  it("ignores empty axes and ANDs filled min/max plus ultimatum", async () => {
     const user = userEvent.setup();
     renderPage(<WaystonesPage />);
 
-    await user.type(screen.getByLabelText("物品數量"), "50");
-    await user.type(screen.getByLabelText("怪物效用"), "20");
+    await user.type(screen.getByLabelText("換界石階級 最小"), "14");
+    await user.type(screen.getByLabelText("換界石階級 最大"), "16");
+    await user.type(screen.getByLabelText("怪物效用 最小"), "20");
+    await user.selectOptions(screen.getByLabelText("混沌試煉"), "Deadly");
 
     const output = document.querySelector(".font-mono.text-gold");
-    expect(output?.textContent).toContain("物品數量");
+    expect(output?.textContent).toContain("階級");
     expect(output?.textContent).toContain("怪物效用");
+    expect(output?.textContent).toContain("致命之運");
     expect(output?.textContent).not.toContain("物品稀有度");
     expect(output?.textContent?.includes('"')).toBe(true);
-    expect((output?.textContent?.match(/"/g) ?? []).length).toBeGreaterThanOrEqual(4);
+    expect((output?.textContent?.match(/"/g) ?? []).length).toBeGreaterThanOrEqual(6);
   });
 });
 

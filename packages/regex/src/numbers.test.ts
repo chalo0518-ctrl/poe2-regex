@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { integerRangePattern, compactAtLeast } from "./numbers.js";
+import { integerRangePattern, compactAtLeast, compactIntegerRange } from "./numbers.js";
 
 function matches(pattern: string, n: number): boolean {
   return new RegExp(`^${pattern}$`).test(String(n));
@@ -50,6 +50,26 @@ describe("integerRangePattern", () => {
     expect(matches(p, 39)).toBe(false);
     expect(matches(compactAtLeast(20), 20)).toBe(true);
     expect(matches(compactAtLeast(20), 19)).toBe(false);
+  });
+
+  it("compactIntegerRange handles min, max, and both", () => {
+    expect(compactIntegerRange()).toBe("\\d+");
+    const minOnly = compactIntegerRange(40);
+    expect(matches(minOnly, 40)).toBe(true);
+    expect(matches(minOnly, 39)).toBe(false);
+    const closed = compactIntegerRange(14, 16);
+    expect(matches(closed, 14)).toBe(true);
+    expect(matches(closed, 16)).toBe(true);
+    expect(matches(closed, 13)).toBe(false);
+    expect(matches(closed, 17)).toBe(false);
+    const maxOnly = compactIntegerRange(undefined, 2);
+    expect(matches(maxOnly, 0)).toBe(true);
+    expect(matches(maxOnly, 2)).toBe(true);
+    expect(matches(maxOnly, 3)).toBe(false);
+    expect(matches(compactAtLeast(200), 200)).toBe(true);
+    expect(matches(compactAtLeast(200), 199)).toBe(false);
+    expect(matches(compactAtLeast(500), 800)).toBe(true);
+    expect(matches(compactAtLeast(500), 499)).toBe(false);
   });
 
   it("swaps inverted bounds", () => {

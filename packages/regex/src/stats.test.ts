@@ -3,30 +3,39 @@ import { matchesItem } from "./match.js";
 import { buildStatThresholdRegex } from "./stats.js";
 
 const RARITY_ZH = {
-  id: "rarity",
+  id: "itemRarity",
   min: 40,
   header: "物品稀有度",
-  effects: [{ text: "更多稀有度", numberSide: "before" as const }],
 };
 
 const EFF_ZH = {
   id: "effectiveness",
   min: 20,
   header: "怪物效用",
-  effects: [{ text: "更多效用", numberSide: "before" as const }],
 };
 
-const QUANTITY_ZH = {
-  id: "quantity",
-  min: 50,
-  header: "物品數量",
+const PACK_ZH = {
+  id: "packSize",
+  min: 10,
+  header: "怪物群大小",
+};
+
+const TIER_ZH = {
+  id: "tier",
+  min: 14,
+  max: 16,
+  header: "階級",
+  numberStyle: "bare" as const,
 };
 
 const SAMPLE_ZH = [
   "換界石（階級 15）",
-  "物品數量: +62%",
   "物品稀有度: +45%",
+  "怪物稀有度: +23%",
   "怪物效用: +29%",
+  "怪物群大小: +18%",
+  "換界石掉落率: +40%",
+  "可用的復活: 2",
   "此區域找到的物品擁有14%更多稀有度",
   "怪物擁有16%更多效用",
   "7%更多怪物群大小",
@@ -49,10 +58,10 @@ describe("buildStatThresholdRegex", () => {
     ).toBe(false);
   });
 
-  it("matches waystone header rarity at or above min, not a low roll", () => {
+  it("matches waystone header rarity at or above min, not a low total", () => {
     const r = buildStatThresholdRegex([RARITY_ZH]);
     expect(r.pattern).toContain("物品稀有度");
-    expect(r.pattern).toContain("更多稀有度");
+    expect(r.pattern).not.toContain("更多稀有度");
     expect(matchesItem(r.pattern, SAMPLE_ZH)).toBe(true);
     expect(matchesItem(r.pattern, "物品稀有度: +12%")).toBe(false);
     expect(matchesItem(r.pattern, "此區域找到的物品擁有14%更多稀有度")).toBe(
@@ -60,8 +69,67 @@ describe("buildStatThresholdRegex", () => {
     );
   });
 
-  it("matches affix reward lines when the min sits in that range", () => {
-    const r = buildStatThresholdRegex([{ ...RARITY_ZH, min: 14 }]);
+  it("matches a closed min/max range and rejects a higher total", () => {
+    const r = buildStatThresholdRegex([{ ...RARITY_ZH, min: 40, max: 50 }]);
+    expect(matchesItem(r.pattern, "物品稀有度: +45%")).toBe(true);
+    expect(matchesItem(r.pattern, "物品稀有度: +62%")).toBe(false);
+    expect(matchesItem(r.pattern, "物品稀有度: +150%")).toBe(false);
+  });
+
+  it("matches waystone tier from the item name, not affix-pool tabs", () => {
+    const r = buildStatThresholdRegex([TIER_ZH]);
+    expect(matchesItem(r.pattern, SAMPLE_ZH)).toBe(true);
+    expect(matchesItem(r.pattern, "換界石（階級 8）")).toBe(false);
+    expect(matchesItem(r.pattern, "換界石（階級 16）")).toBe(true);
+  });
+
+  it("matches revives as a bare count and gold/xp unique-map lines", () => {
+    const revives = buildStatThresholdRegex([
+      { id: "revives", max: 0, header: "可用的復活", numberStyle: "bare" },
+    ]);
+    expect(matchesItem(revives.pattern, "可用的復活: 0")).toBe(true);
+    expect(matchesItem(revives.pattern, "可用的復活: 2")).toBe(false);
+
+    const gold = buildStatThresholdRegex([
+      {
+        id: "gold",
+        min: 500,
+        header: "金幣的掉落",
+        headerNumberSide: "before",
+        headerGap: "loose",
+      },
+    ]);
+    expect(matchesItem(gold.pattern, "增加800%本區域中金幣的掉落量")).toBe(true);
+    expect(matchesItem(gold.pattern, "增加200%本區域中金幣的掉落量")).toBe(false);
+
+    const xp = buildStatThresholdRegex([
+      {
+        id: "experience",
+        min: 200,
+        header: "經驗獲得",
+        headerNumberSide: "before",
+        headerGap: "tight",
+      },
+    ]);
+    expect(matchesItem(xp.pattern, "增加400%經驗獲得")).toBe(true);
+    expect(matchesItem(xp.pattern, "增加50%經驗獲得")).toBe(false);
+  });
+
+  it("matches ultimatum trial as a literal flag", () => {
+    const r = buildStatThresholdRegex([{ id: "ultimatum", flag: "致命之運" }]);
+    expect(r.pattern).toBe('"致命之運"');
+    expect(matchesItem(r.pattern, "島嶼傳言: 致命之運")).toBe(true);
+    expect(matchesItem(r.pattern, "勝利之運")).toBe(false);
+  });
+
+  it("still ORs affix reward lines when effects are supplied", () => {
+    const r = buildStatThresholdRegex([
+      {
+        ...RARITY_ZH,
+        min: 14,
+        effects: [{ text: "更多稀有度", numberSide: "before" }],
+      },
+    ]);
     expect(matchesItem(r.pattern, "此區域找到的物品擁有14%更多稀有度")).toBe(
       true,
     );
@@ -70,33 +138,17 @@ describe("buildStatThresholdRegex", () => {
     );
   });
 
-  it("matches quantity from the item header only", () => {
-    const r = buildStatThresholdRegex([QUANTITY_ZH]);
-    expect(r.pattern).toContain("物品數量");
-    expect(r.pattern).not.toContain("更多換界石");
-    expect(matchesItem(r.pattern, SAMPLE_ZH)).toBe(true);
-    expect(matchesItem(r.pattern, "物品數量: +40%")).toBe(false);
-  });
-
-  it("matches EN headers and effect text", () => {
+  it("matches EN headers", () => {
     const r = buildStatThresholdRegex([
-      {
-        id: "rarity",
-        min: 40,
-        header: "Item Rarity",
-        effects: [{ text: "more Rarity of Items", numberSide: "before" }],
-      },
-      {
-        id: "effectiveness",
-        min: 20,
-        header: "Monster Effectiveness",
-        effects: [{ text: "more Effectiveness", numberSide: "before" }],
-      },
+      { id: "itemRarity", min: 40, header: "Item Rarity" },
+      { id: "effectiveness", min: 20, header: "Monster Effectiveness" },
+      { id: "packSize", min: 10, header: "Pack Size" },
     ]);
     const item = [
-      "Item Quantity: +62%",
+      "Waystone (Tier 15)",
       "Item Rarity: +45%",
       "Monster Effectiveness: +29%",
+      "Pack Size: +18%",
       "14% more Rarity of Items found in this Area",
       "Monsters have 16% more Effectiveness",
     ].join("\n");
@@ -104,13 +156,47 @@ describe("buildStatThresholdRegex", () => {
     expect(matchesItem(r.pattern, "Item Rarity: +12%")).toBe(false);
   });
 
-  it("keeps the pattern under the 250-character stash cap for the three axes", () => {
-    const r = buildStatThresholdRegex([
-      QUANTITY_ZH,
-      RARITY_ZH,
+  it("keeps a typical juice AND under the 250-character stash cap", () => {
+    const typical = buildStatThresholdRegex([
+      TIER_ZH,
+      PACK_ZH,
       EFF_ZH,
+      RARITY_ZH,
+      { id: "monsterRarity", min: 20, header: "怪物稀有度" },
+      { id: "dropChance", min: 20, header: "掉落率" },
     ]);
-    expect(r.length).toBeLessThanOrEqual(250);
-    expect(r.overLimit).toBe(false);
+    expect(typical.length).toBeLessThanOrEqual(250);
+    expect(typical.overLimit).toBe(false);
+    expect(typical.pattern.split(" ").length).toBe(6);
+  });
+
+  it("ANDs every market axis even if the 250 cap is tight", () => {
+    const r = buildStatThresholdRegex([
+      TIER_ZH,
+      PACK_ZH,
+      EFF_ZH,
+      RARITY_ZH,
+      { id: "monsterRarity", min: 20, header: "怪物稀有度" },
+      { id: "revives", max: 2, header: "可用的復活", numberStyle: "bare" },
+      { id: "dropChance", min: 20, header: "掉落率" },
+      {
+        id: "gold",
+        min: 500,
+        header: "金幣的掉落",
+        headerNumberSide: "before",
+        headerGap: "loose",
+      },
+      {
+        id: "experience",
+        min: 200,
+        header: "經驗獲得",
+        headerNumberSide: "before",
+        headerGap: "tight",
+      },
+      { id: "ultimatum", flag: "致命之運" },
+    ]);
+    expect(r.pattern.split(" ").length).toBe(10);
+    expect(r.pattern.startsWith('"')).toBe(true);
+    if (r.overLimit) expect(r.warnings).toContain("over-limit");
   });
 });

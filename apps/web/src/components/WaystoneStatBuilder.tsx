@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  WAYSTONE_RANGE_AXES,
   WAYSTONE_STAT_AXES,
+  isWaystoneRangeAxis,
   matchLangForLocale,
   waystoneStatThresholds,
   type MatchLang,
-  type WaystoneStatId,
+  type WaystoneRangeId,
 } from "@poe2-regex/data";
 import {
   buildStatThresholdRegex,
@@ -12,7 +14,15 @@ import {
 } from "@poe2-regex/regex";
 import { useLocale } from "../i18n.tsx";
 
-function parseMin(raw: string): number | undefined {
+type RangeFields = Record<WaystoneRangeId, { min: string; max: string }>;
+
+function emptyRanges(): RangeFields {
+  return Object.fromEntries(
+    WAYSTONE_RANGE_AXES.map((axis) => [axis.id, { min: "", max: "" }]),
+  ) as RangeFields;
+}
+
+function parseBound(raw: string): number | undefined {
   if (raw.trim() === "") return undefined;
   const n = Number(raw);
   if (!Number.isFinite(n) || n < 0) return undefined;
@@ -21,11 +31,8 @@ function parseMin(raw: string): number | undefined {
 
 export function WaystoneStatBuilder() {
   const { locale, t } = useLocale();
-  const [mins, setMins] = useState<Record<WaystoneStatId, string>>({
-    quantity: "",
-    rarity: "",
-    effectiveness: "",
-  });
+  const [ranges, setRanges] = useState<RangeFields>(emptyRanges);
+  const [ultimatum, setUltimatum] = useState("");
   const [lang, setLang] = useState<MatchLang>(() => matchLangForLocale(locale));
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState("");
@@ -35,13 +42,18 @@ export function WaystoneStatBuilder() {
   }, [locale]);
 
   const thresholds = useMemo(() => {
-    const parsed: Partial<Record<WaystoneStatId, number>> = {};
-    for (const axis of WAYSTONE_STAT_AXES) {
-      const min = parseMin(mins[axis.id]);
-      if (min != null) parsed[axis.id] = min;
+    const parsed: Partial<Record<WaystoneRangeId, { min?: number; max?: number }>> =
+      {};
+    for (const axis of WAYSTONE_RANGE_AXES) {
+      const min = parseBound(ranges[axis.id].min);
+      const max = parseBound(ranges[axis.id].max);
+      if (min != null || max != null) parsed[axis.id] = { min, max };
     }
-    return waystoneStatThresholds(parsed, lang);
-  }, [mins, lang]);
+    return waystoneStatThresholds(
+      { ranges: parsed, ultimatum: ultimatum || undefined },
+      lang,
+    );
+  }, [ranges, ultimatum, lang]);
 
   const result = useMemo(
     () => buildStatThresholdRegex(thresholds),
@@ -64,7 +76,15 @@ export function WaystoneStatBuilder() {
   }
 
   function reset() {
-    setMins({ quantity: "", rarity: "", effectiveness: "" });
+    setRanges(emptyRanges());
+    setUltimatum("");
+  }
+
+  function setBound(id: WaystoneRangeId, side: "min" | "max", value: string) {
+    setRanges((prev) => ({
+      ...prev,
+      [id]: { ...prev[id], [side]: value },
+    }));
   }
 
   return (
@@ -83,41 +103,58 @@ export function WaystoneStatBuilder() {
       <p className="mb-3 text-xs text-muted">{t.waystonesThresholdHint}</p>
 
       <div
-        className="mb-4 grid gap-3 md:grid-cols-3"
+        className="mb-4 grid gap-1 sm:grid-cols-2"
         role="group"
         aria-label={t.waystonesStatAria}
       >
         {WAYSTONE_STAT_AXES.map((axis) => {
           const label = locale === "en" ? axis.labelEn : axis.labelZh;
-          const effects = (locale === "en" ? axis.effectsEn : axis.effectsZh)
-            .map((effect) => effect.text)
-            .join(" · ");
-          return (
-            <label
-              key={axis.id}
-              className="flex flex-col gap-2 rounded-sm border border-line bg-panel p-3"
-            >
-              <span className="text-sm font-medium text-gold">{label}</span>
-              <span className="flex items-center gap-2 text-sm text-muted">
-                ≥
-                <input
-                  inputMode="numeric"
-                  value={mins[axis.id]}
-                  onChange={(e) =>
-                    setMins((prev) => ({ ...prev, [axis.id]: e.target.value }))
-                  }
-                  placeholder={t.waystonesMinPlaceholder}
+          if (!isWaystoneRangeAxis(axis)) {
+            return (
+              <label
+                key={axis.id}
+                className="grid grid-cols-[minmax(0,1fr)_8.5rem] items-center gap-1 rounded-sm border border-line bg-panel px-2 py-1.5"
+              >
+                <span className="truncate text-sm font-medium text-gold">{label}</span>
+                <select
+                  value={ultimatum}
+                  onChange={(e) => setUltimatum(e.target.value)}
                   aria-label={label}
-                  className="w-full rounded-sm border border-line bg-ink px-2 py-1.5 text-paper outline-none placeholder:text-muted focus:border-gold"
-                />
-                %
-              </span>
-              {effects ? (
-                <span className="text-[11px] text-muted">{t.waystonesEffectNote(effects)}</span>
-              ) : (
-                <span className="text-[11px] text-muted">{t.waystonesQuantityNote}</span>
-              )}
-            </label>
+                  className="rounded-sm border border-line bg-ink px-2 py-1 text-sm text-paper outline-none focus:border-gold"
+                >
+                  <option value="">{t.waystonesAny}</option>
+                  {axis.options.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {locale === "en" ? option.labelEn : option.labelZh}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            );
+          }
+          return (
+            <div
+              key={axis.id}
+              className="grid grid-cols-[minmax(0,1fr)_4.5rem_4.5rem] items-center gap-1 rounded-sm border border-line bg-panel px-2 py-1.5"
+            >
+              <span className="truncate text-sm font-medium text-gold">{label}</span>
+              <input
+                inputMode="numeric"
+                value={ranges[axis.id].min}
+                onChange={(e) => setBound(axis.id, "min", e.target.value)}
+                placeholder={t.min}
+                aria-label={`${label} ${t.min}`}
+                className="w-full rounded-sm border border-line bg-ink px-2 py-1 text-center text-sm text-paper outline-none placeholder:text-muted focus:border-gold"
+              />
+              <input
+                inputMode="numeric"
+                value={ranges[axis.id].max}
+                onChange={(e) => setBound(axis.id, "max", e.target.value)}
+                placeholder={t.max}
+                aria-label={`${label} ${t.max}`}
+                className="w-full rounded-sm border border-line bg-ink px-2 py-1 text-center text-sm text-paper outline-none placeholder:text-muted focus:border-gold"
+              />
+            </div>
           );
         })}
       </div>
@@ -172,7 +209,9 @@ export function WaystoneStatBuilder() {
             </button>
           </div>
           <div className="overflow-x-auto rounded-sm border border-line bg-ink px-3 py-2 font-mono text-sm text-gold">
-            {result.pattern || <span className="text-muted">{t.waystonesRegexPlaceholder}</span>}
+            {result.pattern || (
+              <span className="text-muted">{t.waystonesRegexPlaceholder}</span>
+            )}
           </div>
           {(result.warnings.length > 0 || copyError) && (
             <p className="text-xs text-exclude">

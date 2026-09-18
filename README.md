@@ -1,6 +1,6 @@
 # 流亡 2 / 流放之路 2 正則工具
 
-按遊玩階段分成兩個模組。終局換界石依物品數量／物品稀有度／怪物效用篩選；碑牌為編年史風格詞綴正則。開荒章節／商店已有各章預設裝備正則，流派仍為佔位，盾牌實驗頁可用。
+按遊玩階段分成兩個模組。終局換界石依市集終局篩選（階級／效用／稀有度／掉落率／經驗／群大小／復活／金幣／混沌試煉）產生倉庫正則；碑牌為編年史風格詞綴正則。開荒章節／商店已有各章預設裝備正則，流派仍為佔位，盾牌實驗頁可用。
 
 界面預設 **繁中**，可切 **EN**。詞綴效果與匹配字串來自 poe2db `/tw` + `/us`。此倉庫不含簡中（zh-Hans）界面、匹配模式或 `/cn` 資料路徑；簡中會另開平行專案。
 
@@ -54,7 +54,7 @@ pnpm fetch-data:check
 | `/early/builds` | 流派推薦裝備佔位 |
 | `/early/shields` | 實驗：盾牌詞綴（編年史風格） |
 | `/endgame` | 終局模組（導向換界石） |
-| `/endgame/waystones` | **換界石** 依物品數量／物品稀有度／怪物效用下限產生正則 |
+| `/endgame/waystones` | **換界石** 依市集終局篩選 Min/Max（加混沌試煉下拉）產生正則 |
 | `/endgame/tablets` | **碑牌** 先選種類再出詞綴正則 |
 | `/campaign` | 別名，導向 `/early` |
 
@@ -76,15 +76,24 @@ pnpm fetch-data:check
 
 ## 終局：換界石
 
-`/endgame/waystones` 不再切低／中／高階詞綴池。玩家用三個最小百分比篩換界石，空白則忽略該軸：
+`/endgame/waystones` 不再切低／中／高階詞綴池。畫面對齊市集 **ENDGAME FILTERS**（trade2 `map_filters`）：每軸 Min/Max，空白則忽略；混沌試煉為下拉（預設不限）。已填的軸以 AND 組合成倉庫正則，對**物品上的總數值**，預設繁中匹配，可切 EN match。
 
-| 篩選 | 倉庫對照（繁中 / EN） | 資料裡的詞綴效果 |
-|---|---|---|
-| **物品數量** | `物品數量` / `Item Quantity` | 換界石詞綴沒有獨立的物品數量效果行；對物品上的總數值 |
-| **物品稀有度** | `物品稀有度` / `Item Rarity` | `更多稀有度` / `more Rarity of Items`（`map_item_rarity`） |
-| **怪物效用** | `怪物效用` / `Monster Effectiveness` | `更多效用` / `more Effectiveness`（`map_monster_potency`），以及同軸的 `更多怪物群大小` / `more Pack size` |
+| 篩選 | 市集 id | 倉庫對照（繁中 / EN） | 編年史詞綴效果（waystones.json） |
+|---|---|---|---|
+| **換界石階級** | `map_tier` | `階級` / `Tier`（物品名 `換界石（階級 N）`） | 無。這是物品地圖階級 1–16，不是舊的低／中／高詞綴池 |
+| **怪物效用** | `map_magic_monsters` | `怪物效用` / `Monster Effectiveness` | `更多效用` / `more Effectiveness` |
+| **怪物稀有度** | `map_rare_monsters` | `怪物稀有度` / `Monster Rarity` | 詞綴行是 `更多魔法和稀有怪物`、`更多怪物詞綴機率`、`增加N%稀有怪物的數量`，**沒有**寫「怪物稀有度」四字；poe2db 詞條名為怪物稀有度 |
+| **換界石掉落率** | `map_bonus` | `掉落率` / `Drop Chance` | `更多換界石` / `more Waystones found in Area`（幾乎每條前綴都有 10–25% 單條骰值；正則仍對總數值標頭） |
+| **換界石經驗** | `map_experience` | `經驗獲得` / `Experience gain` | **前綴／後綴池沒有。** poe2db 換界石頁的獨特地圖有 `增加(200—400)%經驗獲得` |
+| **換界石怪物群大小** | `map_packsize` | `怪物群大小` / `Pack Size` | `更多怪物群大小` / `more Pack size`（與效用分開） |
+| **物品稀有度** | `map_iir` | `物品稀有度` / `Item Rarity` | `更多稀有度` / `more Rarity of Items` |
+| **換界石復活** | `map_revives` | `可用的復活` / `Revives Available` | **不是骰出的詞綴**；詞綴數量會減少復活次數（poe2db「可用的復活」） |
+| **換界石金幣** | `map_gold` | `金幣的掉落` / `Gold found in this Area` | **前綴／後綴池沒有。** 獨特地圖有 `增加(500—1000)%本區域中金幣的掉落量` |
+| **混沌試煉** | `ultimatum_hint` | 勝利之運／怯懦之運／致命之運 | **詞綴池沒有。** 選項來自 trade2 `Victorious` / `Cowardly` / `Deadly`（poe2db 終局混沌試煉 Fate 名） |
 
-低／中／高階仍分別刮自 poe2db，產生正則時合併成一個池來對這三軸，不必先選階級。預設繁中匹配，可切 EN match。
+**物品數量**沒有做成篩選：市集 `map_filters` 沒有此軸；凍結詞綴也沒有「物品數量／Quantity of Items found」效果行。0.5.0 起物品掉落數量是怪物效用的衍生加成。若要篩數量，請用怪物效用。
+
+低／中／高階仍分別刮自 poe2db，僅供對詞綴效果分類，畫面不會再選。
 
 凍結數量（資料來源，非畫面分頁）：
 

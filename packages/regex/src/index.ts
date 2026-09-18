@@ -1,6 +1,11 @@
 export { MAX_LENGTH } from "./constants.js";
 export { buildRegex } from "./build.js";
-export { integerRangePattern, compactAtLeast, numericPrefix } from "./numbers.js";
+export {
+  integerRangePattern,
+  compactAtLeast,
+  compactIntegerRange,
+  numericPrefix,
+} from "./numbers.js";
 export { inferNumericPlacement } from "./placement.js";
 export { shortestUnique } from "./shorten.js";
 export { escapeRegex } from "./escape.js";
