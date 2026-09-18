@@ -115,11 +115,11 @@ describe("buildStatThresholdRegex", () => {
     expect(matchesItem(xp.pattern, "增加50%經驗獲得")).toBe(false);
   });
 
-  it("matches ultimatum trial as a literal flag", () => {
-    const r = buildStatThresholdRegex([{ id: "ultimatum", flag: "致命之運" }]);
-    expect(r.pattern).toBe('"致命之運"');
-    expect(matchesItem(r.pattern, "島嶼傳言: 致命之運")).toBe(true);
-    expect(matchesItem(r.pattern, "勝利之運")).toBe(false);
+  it("matches a generic literal flag when supplied", () => {
+    const r = buildStatThresholdRegex([{ id: "note", flag: "Unique Map" }]);
+    expect(r.pattern).toBe('"Unique Map"');
+    expect(matchesItem(r.pattern, "Map Tier: 16\nUnique Map")).toBe(true);
+    expect(matchesItem(r.pattern, "Map Tier: 16")).toBe(false);
   });
 
   it("still ORs affix reward lines when effects are supplied", () => {
@@ -193,10 +193,10 @@ describe("buildStatThresholdRegex", () => {
         headerNumberSide: "before",
         headerGap: "tight",
       },
-      { id: "ultimatum", flag: "致命之運" },
     ]);
-    expect(r.pattern.split(" ").length).toBe(10);
+    expect(r.pattern.split(" ").length).toBe(9);
     expect(r.pattern.startsWith('"')).toBe(true);
+    expect(r.pattern).not.toContain("致命之運");
     if (r.overLimit) expect(r.warnings).toContain("over-limit");
   });
 });

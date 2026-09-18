@@ -172,7 +172,7 @@ export type ShopMod = {
 
 export type ChapterShopPick = {
   modId: string;
-  polarity: "include" | "exclude";
+  polarity: "include" | "or" | "exclude";
   min?: number;
   max?: number;
 };
@@ -189,7 +189,7 @@ export type CampaignChapter = {
 };
 
 export type ShopPickState = {
-  polarity: "include" | "exclude";
+  polarity: "include" | "or" | "exclude";
   min: string;
   max: string;
 };

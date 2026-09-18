@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   WAYSTONE_RANGE_AXES,
-  WAYSTONE_STAT_AXES,
-  isWaystoneRangeAxis,
   matchLangForLocale,
   waystoneStatThresholds,
   type MatchLang,
@@ -32,7 +30,6 @@ function parseBound(raw: string): number | undefined {
 export function WaystoneStatBuilder() {
   const { locale, t } = useLocale();
   const [ranges, setRanges] = useState<RangeFields>(emptyRanges);
-  const [ultimatum, setUltimatum] = useState("");
   const [lang, setLang] = useState<MatchLang>(() => matchLangForLocale(locale));
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState("");
@@ -50,10 +47,10 @@ export function WaystoneStatBuilder() {
       if (min != null || max != null) parsed[axis.id] = { min, max };
     }
     return waystoneStatThresholds(
-      { ranges: parsed, ultimatum: ultimatum || undefined },
+      { ranges: parsed },
       lang,
     );
-  }, [ranges, ultimatum, lang]);
+  }, [ranges, lang]);
 
   const result = useMemo(
     () => buildStatThresholdRegex(thresholds),
@@ -77,7 +74,6 @@ export function WaystoneStatBuilder() {
 
   function reset() {
     setRanges(emptyRanges());
-    setUltimatum("");
   }
 
   function setBound(id: WaystoneRangeId, side: "min" | "max", value: string) {
@@ -107,31 +103,8 @@ export function WaystoneStatBuilder() {
         role="group"
         aria-label={t.waystonesStatAria}
       >
-        {WAYSTONE_STAT_AXES.map((axis) => {
+        {WAYSTONE_RANGE_AXES.map((axis) => {
           const label = locale === "en" ? axis.labelEn : axis.labelZh;
-          if (!isWaystoneRangeAxis(axis)) {
-            return (
-              <label
-                key={axis.id}
-                className="grid grid-cols-[minmax(0,1fr)_8.5rem] items-center gap-1 rounded-sm border border-line bg-panel px-2 py-1.5"
-              >
-                <span className="truncate text-sm font-medium text-gold">{label}</span>
-                <select
-                  value={ultimatum}
-                  onChange={(e) => setUltimatum(e.target.value)}
-                  aria-label={label}
-                  className="rounded-sm border border-line bg-ink px-2 py-1 text-sm text-paper outline-none focus:border-gold"
-                >
-                  <option value="">{t.waystonesAny}</option>
-                  {axis.options.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {locale === "en" ? option.labelEn : option.labelZh}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            );
-          }
           return (
             <div
               key={axis.id}

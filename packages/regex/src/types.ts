@@ -1,4 +1,4 @@
-export type Polarity = "include" | "exclude";
+export type Polarity = "include" | "or" | "exclude";
 export type ModKind = "flag" | "numeric";
 export type CombineMode = "or" | "and";
 
