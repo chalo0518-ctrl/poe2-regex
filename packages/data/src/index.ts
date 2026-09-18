@@ -25,6 +25,7 @@ export type {
   ChapterShopPick,
   DataMeta,
   HarvestTag,
+  MatchLang,
   ModKind,
   NumericFormat,
   PoolCount,
@@ -39,6 +40,7 @@ export type {
   TabletFamily,
   TabletKindId,
   TagState,
+  UiLocale,
   WaystoneCatalog,
   WaystoneFamily,
   WaystoneTierId,
@@ -53,7 +55,25 @@ export {
 } from "./filter.ts";
 
 export {
+  affixTagLabels,
+  chapterLabel,
+  chapterSummary,
+  effectText,
+  effectTextSecondary,
+  familyLabel,
+  familyLabelSecondary,
+  importNeedles,
+  matchLangForLocale,
+  matchText,
+  poolLabel,
+  tagLabel,
+  tierEffect,
+  tierName,
+} from "./locale.ts";
+
+export {
   CAMPAIGN_GAPS,
+  CAMPAIGN_GAPS_I18N,
   campaignChapters,
   defaultPicksForChapter,
   getChapter,

@@ -1,131 +1,191 @@
 {
-  "source": "https://poe2db.tw/tw/",
-  "generatedAt": "2026-09-17T10:16:07.553Z",
-  "notes": "Independent waystone pools from Waystones_low/mid/top_tier ModifiersCalc. Not unioned. EN from /us; RePoE match fallback only.",
+  "source": "https://poe2db.tw/tw/ + /cn/ + /us/",
+  "generatedAt": "2026-09-18T02:33:14.515Z",
+  "notes": "Independent waystone pools from Waystones_low/mid/top_tier ModifiersCalc. Not unioned. 繁中 `/tw`, 简中 `/cn`, EN `/us`; RePoE match fallback only.",
   "harvestTags": [
     {
       "id": "ulaman_mod",
-      "labelZh": "Ulaman"
+      "labelZh": "Ulaman",
+      "labelZhHans": "Ulaman",
+      "labelEn": "Ulaman"
     },
     {
       "id": "amanamu_mod",
-      "labelZh": "Amanamu"
+      "labelZh": "Amanamu",
+      "labelZhHans": "Amanamu",
+      "labelEn": "Amanamu"
     },
     {
       "id": "kurgal_mod",
-      "labelZh": "Kurgal"
+      "labelZh": "Kurgal",
+      "labelZhHans": "Kurgal",
+      "labelEn": "Kurgal"
     },
     {
       "id": "armour",
-      "labelZh": "護甲"
+      "labelZh": "護甲",
+      "labelZhHans": "护甲",
+      "labelEn": "Armour"
     },
     {
       "id": "gem",
-      "labelZh": "寶石"
+      "labelZh": "寶石",
+      "labelZhHans": "宝石",
+      "labelEn": "Gem"
     },
     {
       "id": "caster",
-      "labelZh": "法術"
+      "labelZh": "法術",
+      "labelZhHans": "施法",
+      "labelEn": "Caster"
     },
     {
       "id": "fire",
-      "labelZh": "火焰"
+      "labelZh": "火焰",
+      "labelZhHans": "火焰",
+      "labelEn": "Fire"
     },
     {
       "id": "cold",
-      "labelZh": "冰冷"
+      "labelZh": "冰冷",
+      "labelZhHans": "冰霜",
+      "labelEn": "Cold"
     },
     {
       "id": "lightning",
-      "labelZh": "閃電"
+      "labelZh": "閃電",
+      "labelZhHans": "闪电",
+      "labelEn": "Lightning"
     },
     {
       "id": "chaos",
-      "labelZh": "混沌"
+      "labelZh": "混沌",
+      "labelZhHans": "混沌",
+      "labelEn": "Chaos"
     },
     {
       "id": "physical",
-      "labelZh": "物理"
+      "labelZh": "物理",
+      "labelZhHans": "物理",
+      "labelEn": "Physical"
     },
     {
       "id": "life",
-      "labelZh": "生命"
+      "labelZh": "生命",
+      "labelZhHans": "生命",
+      "labelEn": "Life"
     },
     {
       "id": "elemental",
-      "labelZh": "元素"
+      "labelZh": "元素",
+      "labelZhHans": "元素",
+      "labelEn": "Elemental"
     },
     {
       "id": "attack",
-      "labelZh": "攻擊"
+      "labelZh": "攻擊",
+      "labelZhHans": "攻击",
+      "labelEn": "Attack"
     },
     {
       "id": "minion",
-      "labelZh": "召喚物"
+      "labelZh": "召喚物",
+      "labelZhHans": "召唤生物",
+      "labelEn": "Minion"
     },
     {
       "id": "aura",
-      "labelZh": "光環"
+      "labelZh": "光環",
+      "labelZhHans": "光环",
+      "labelEn": "Aura"
     },
     {
       "id": "mana",
-      "labelZh": "魔力"
+      "labelZh": "魔力",
+      "labelZhHans": "魔力",
+      "labelEn": "Mana"
     },
     {
       "id": "speed",
-      "labelZh": "速度"
+      "labelZh": "速度",
+      "labelZhHans": "速度",
+      "labelEn": "Speed"
     },
     {
       "id": "critical",
-      "labelZh": "暴擊"
+      "labelZh": "暴擊",
+      "labelZhHans": "暴击",
+      "labelEn": "Critical"
     },
     {
       "id": "evasion",
-      "labelZh": "閃避"
+      "labelZh": "閃避",
+      "labelZhHans": "闪避",
+      "labelEn": "Evasion"
     },
     {
       "id": "energy_shield",
-      "labelZh": "能量護盾"
+      "labelZh": "能量護盾",
+      "labelZhHans": "能量护盾",
+      "labelEn": "Energy Shield"
     },
     {
       "id": "damage",
-      "labelZh": "傷害"
+      "labelZh": "傷害",
+      "labelZhHans": "伤害",
+      "labelEn": "Damage"
     },
     {
       "id": "resistance",
-      "labelZh": "抗性"
+      "labelZh": "抗性",
+      "labelZhHans": "抗性",
+      "labelEn": "Resistance"
     },
     {
       "id": "attribute",
-      "labelZh": "能力"
+      "labelZh": "能力",
+      "labelZhHans": "属性",
+      "labelEn": "Attribute"
     },
     {
       "id": "ailment",
-      "labelZh": "異常狀態"
+      "labelZh": "異常狀態",
+      "labelZhHans": "异常状态",
+      "labelEn": "Ailment"
     },
     {
       "id": "curse",
-      "labelZh": "詛咒"
+      "labelZh": "詛咒",
+      "labelZhHans": "诅咒",
+      "labelEn": "Curse"
     },
     {
       "id": "charm",
-      "labelZh": "護符"
+      "labelZh": "護符",
+      "labelZhHans": "咒符",
+      "labelEn": "Charm"
     }
   ],
   "tiers": [
     {
       "id": "low",
       "labelZh": "低階",
+      "labelZhHans": "低阶",
+      "labelEn": "Low",
       "path": "Waystones_low_tier"
     },
     {
       "id": "mid",
       "labelZh": "中階",
+      "labelZhHans": "中阶",
+      "labelEn": "Mid",
       "path": "Waystones_mid_tier"
     },
     {
       "id": "top",
       "labelZh": "高階",
+      "labelZhHans": "高阶",
+      "labelEn": "Top",
       "path": "Waystones_top_tier"
     }
   ],
@@ -162,12 +222,18 @@
         "tagsZh": [
           "生命"
         ],
+        "tagsZhHans": [
+          "生命"
+        ],
         "labelZh": "強韌的",
         "labelEn": "Tough",
+        "labelZhHans": "粗硬的",
         "textZh": "(10—14)%更多怪物生命 23%更多魔法和稀有怪物 稀有怪物有23%更多怪物詞綴機率 此區域找到15%更多換界石",
         "textEn": "(10—14)% more Monster Life 23% more Magic and Rare Monsters Rare Monsters have 23% more chance of Monster Modifiers 15% more Waystones found in Area",
+        "textZhHans": "怪物生命总增 (10—14)% 魔法和稀有怪物总增 23% 稀有怪物有怪物词缀的几率总增 23% 区域内找到的引路石数量总增 15%",
         "match": "more Monster Life 23% more Magic and Rare Monsters Rare Monsters have 23% more chance of Monster Modifiers 15% more Waystones found in Area",
         "matchZh": "更多怪物生命 23%更多魔法和稀有怪物 稀有怪物有23%更多怪物詞綴機率 此區域找到15%更多換界石",
+        "matchZhHans": "怪物生命总增 魔法和稀有怪物总增 23% 稀有怪物有怪物词缀的几率总增 23% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -178,9 +244,11 @@
           {
             "nameZh": "強韌的",
             "nameEn": "Tough",
+            "nameZhHans": "粗硬的",
             "level": 1,
             "textZh": "(10—14)%更多怪物生命 23%更多魔法和稀有怪物 稀有怪物有23%更多怪物詞綴機率 此區域找到15%更多換界石",
             "textEn": "(10—14)% more Monster Life 23% more Magic and Rare Monsters Rare Monsters have 23% more chance of Monster Modifiers 15% more Waystones found in Area",
+            "textZhHans": "怪物生命总增 (10—14)% 魔法和稀有怪物总增 23% 稀有怪物有怪物词缀的几率总增 23% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 10,
             "statMax": 14
@@ -200,12 +268,16 @@
           "map_pack_size"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "猛毒的",
         "labelEn": "Venomous",
+        "labelZhHans": "剧毒的",
         "textZh": "怪物有(13—19)%機率在擊中時造成中毒 7%更多怪物群大小 此區域找到10%更多換界石",
         "textEn": "Monsters have (13—19)% chance to Poison on Hit 7% more Pack size 10% more Waystones found in Area",
+        "textZhHans": "怪物的击中有 (13—19)% 的几率造成中毒 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have chance to Poison on Hit 7% more Pack size 10% more Waystones found in Area",
         "matchZh": "怪物有機率在擊中時造成中毒 7%更多怪物群大小 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的击中有 的几率造成中毒 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -216,9 +288,11 @@
           {
             "nameZh": "猛毒的",
             "nameEn": "Venomous",
+            "nameZhHans": "剧毒的",
             "level": 1,
             "textZh": "怪物有(13—19)%機率在擊中時造成中毒 7%更多怪物群大小 此區域找到10%更多換界石",
             "textEn": "Monsters have (13—19)% chance to Poison on Hit 7% more Pack size 10% more Waystones found in Area",
+            "textZhHans": "怪物的击中有 (13—19)% 的几率造成中毒 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 13,
             "statMax": 19
@@ -238,12 +312,16 @@
           "map_monster_potency"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "穿孔的",
         "labelEn": "Puncturing",
+        "labelZhHans": "穿孔的",
         "textZh": "怪物有(5—10)%機率在擊中時引起流血 怪物擁有13%更多效用 此區域找到10%更多換界石",
         "textEn": "Monsters have (5—10)% chance to inflict Bleeding on Hit Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+        "textZhHans": "怪物的击中有 (5—10)% 的几率造成流血 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have chance to inflict Bleeding on Hit Monsters have 13% more Effectiveness 10% more Waystones found in Area",
         "matchZh": "怪物有機率在擊中時引起流血 怪物擁有13%更多效用 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的击中有 的几率造成流血 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -254,9 +332,11 @@
           {
             "nameZh": "穿孔的",
             "nameEn": "Puncturing",
+            "nameZhHans": "穿孔的",
             "level": 1,
             "textZh": "怪物有(5—10)%機率在擊中時引起流血 怪物擁有13%更多效用 此區域找到10%更多換界石",
             "textEn": "Monsters have (5—10)% chance to inflict Bleeding on Hit Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+            "textZhHans": "怪物的击中有 (5—10)% 的几率造成流血 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 5,
             "statMax": 10
@@ -283,12 +363,20 @@
           "物理",
           "傷害"
         ],
+        "tagsZhHans": [
+          "护甲",
+          "物理",
+          "伤害"
+        ],
         "labelZh": "粉碎的",
         "labelEn": "Shattering",
+        "labelZhHans": "碎离的",
         "textZh": "怪物破壞的護甲值等同於造成的(15—20)%物理傷害 19%更多魔法和稀有怪物 稀有怪物有19%更多怪物詞綴機率 此區域找到10%更多換界石",
         "textEn": "Monsters Break Armour equal to (15—20)% of Physical Damage dealt 19% more Magic and Rare Monsters Rare Monsters have 19% more chance of Monster Modifiers 10% more Waystones found in Area",
+        "textZhHans": "怪物粉碎护甲，相当于造成物理伤害的 (15—20)% 魔法和稀有怪物总增 19% 稀有怪物有怪物词缀的几率总增 19% 区域内找到的引路石数量总增 10%",
         "match": "Monsters Break Armour equal to of Physical Damage dealt 19% more Magic and Rare Monsters Rare Monsters have 19% more chance of Monster Modifiers 10% more Waystones found in Area",
         "matchZh": "怪物破壞的護甲值等同於造成的物理傷害 19%更多魔法和稀有怪物 稀有怪物有19%更多怪物詞綴機率 此區域找到10%更多換界石",
+        "matchZhHans": "怪物粉碎护甲，相当于造成物理伤害的 魔法和稀有怪物总增 19% 稀有怪物有怪物词缀的几率总增 19% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -299,9 +387,11 @@
           {
             "nameZh": "粉碎的",
             "nameEn": "Shattering",
+            "nameZhHans": "碎离的",
             "level": 1,
             "textZh": "怪物破壞的護甲值等同於造成的(15—20)%物理傷害 19%更多魔法和稀有怪物 稀有怪物有19%更多怪物詞綴機率 此區域找到10%更多換界石",
             "textEn": "Monsters Break Armour equal to (15—20)% of Physical Damage dealt 19% more Magic and Rare Monsters Rare Monsters have 19% more chance of Monster Modifiers 10% more Waystones found in Area",
+            "textZhHans": "怪物粉碎护甲，相当于造成物理伤害的 (15—20)% 魔法和稀有怪物总增 19% 稀有怪物有怪物词缀的几率总增 19% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 15,
             "statMax": 20
@@ -326,12 +416,19 @@
           "火焰",
           "傷害"
         ],
+        "tagsZhHans": [
+          "火焰",
+          "伤害"
+        ],
         "labelZh": "煉獄的",
         "labelEn": "Infernal",
+        "labelZhHans": "狱炎的",
         "textZh": "怪物造成等同於傷害(5—9)%的額外火焰傷害 怪物擁有16%更多效用 此區域找到15%更多換界石",
         "textEn": "Monsters deal (5—9)% of Damage as Extra Fire Monsters have 16% more Effectiveness 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (5—9)% 的额外火焰伤害 怪物的效能总增 16% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Fire Monsters have 16% more Effectiveness 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外火焰傷害 怪物擁有16%更多效用 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外火焰伤害 怪物的效能总增 16% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -342,9 +439,11 @@
           {
             "nameZh": "煉獄的",
             "nameEn": "Infernal",
+            "nameZhHans": "狱炎的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(5—9)%的額外火焰傷害 怪物擁有16%更多效用 此區域找到15%更多換界石",
             "textEn": "Monsters deal (5—9)% of Damage as Extra Fire Monsters have 16% more Effectiveness 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (5—9)% 的额外火焰伤害 怪物的效能总增 16% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 5,
             "statMax": 9
@@ -369,12 +468,19 @@
           "冰冷",
           "傷害"
         ],
+        "tagsZhHans": [
+          "冰霜",
+          "伤害"
+        ],
         "labelZh": "凍傷的",
         "labelEn": "Frostbitten",
+        "labelZhHans": "霜噬的",
         "textZh": "怪物造成等同於傷害(5—9)%的額外冰冷傷害 此區域找到的物品擁有14%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Monsters deal (5—9)% of Damage as Extra Cold 14% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (5—9)% 的额外冰霜伤害 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Cold 14% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外冰冷傷害 此區域找到的物品擁有14%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外冰霜伤害 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -385,9 +491,11 @@
           {
             "nameZh": "凍傷的",
             "nameEn": "Frostbitten",
+            "nameZhHans": "霜噬的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(5—9)%的額外冰冷傷害 此區域找到的物品擁有14%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Monsters deal (5—9)% of Damage as Extra Cold 14% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (5—9)% 的额外冰霜伤害 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 5,
             "statMax": 9
@@ -412,12 +520,19 @@
           "閃電",
           "傷害"
         ],
+        "tagsZhHans": [
+          "闪电",
+          "伤害"
+        ],
         "labelZh": "雷霆的",
         "labelEn": "Thunderous",
+        "labelZhHans": "雷鸣的",
         "textZh": "怪物造成等同於傷害(5—9)%的額外閃電傷害 8%更多怪物群大小 此區域找到15%更多換界石",
         "textEn": "Monsters deal (5—9)% of Damage as Extra Lightning 8% more Pack size 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (5—9)% 的额外闪电伤害 怪物群规模总增 8% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Lightning 8% more Pack size 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外閃電傷害 8%更多怪物群大小 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外闪电伤害 怪物群规模总增 8% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -428,9 +543,11 @@
           {
             "nameZh": "雷霆的",
             "nameEn": "Thunderous",
+            "nameZhHans": "雷鸣的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(5—9)%的額外閃電傷害 8%更多怪物群大小 此區域找到15%更多換界石",
             "textEn": "Monsters deal (5—9)% of Damage as Extra Lightning 8% more Pack size 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (5—9)% 的额外闪电伤害 怪物群规模总增 8% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 5,
             "statMax": 9
@@ -455,12 +572,19 @@
           "混沌",
           "傷害"
         ],
+        "tagsZhHans": [
+          "混沌",
+          "伤害"
+        ],
         "labelZh": "粗陋的",
         "labelEn": "Profane",
+        "labelZhHans": "渎神的",
         "textZh": "怪物造成等同於傷害(5—9)%的額外混沌傷害 此區域找到的物品擁有15%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Monsters deal (5—9)% of Damage as Extra Chaos 15% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (5—9)% 的额外混沌伤害 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Chaos 15% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外混沌傷害 此區域找到的物品擁有15%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外混沌伤害 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -471,9 +595,11 @@
           {
             "nameZh": "粗陋的",
             "nameEn": "Profane",
+            "nameZhHans": "渎神的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(5—9)%的額外混沌傷害 此區域找到的物品擁有15%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Monsters deal (5—9)% of Damage as Extra Chaos 15% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (5—9)% 的额外混沌伤害 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 5,
             "statMax": 9
@@ -496,12 +622,18 @@
         "tagsZh": [
           "火焰"
         ],
+        "tagsZhHans": [
+          "火焰"
+        ],
         "labelZh": "分裂的",
         "labelEn": "Splitting",
+        "labelZhHans": "分裂的",
         "textZh": "怪物發射2個額外投射物 9%更多怪物群大小 此區域找到25%更多換界石",
         "textEn": "Monsters fire 2 additional Projectiles 9% more Pack size 25% more Waystones found in Area",
+        "textZhHans": "怪物可以发射 2 个额外投射物 怪物群规模总增 9% 区域内找到的引路石数量总增 25%",
         "match": "Monsters fire 2 additional Projectiles more Pack size 25% more Waystones found in Area",
         "matchZh": "怪物發射2個額外投射物 更多怪物群大小 此區域找到25%更多換界石",
+        "matchZhHans": "怪物可以发射 2 个额外投射物 怪物群规模总增 区域内找到的引路石数量总增 25%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -510,9 +642,11 @@
           {
             "nameZh": "分裂的",
             "nameEn": "Splitting",
+            "nameZhHans": "分裂的",
             "level": 1,
             "textZh": "怪物發射2個額外投射物 9%更多怪物群大小 此區域找到25%更多換界石",
             "textEn": "Monsters fire 2 additional Projectiles 9% more Pack size 25% more Waystones found in Area",
+            "textZhHans": "怪物可以发射 2 个额外投射物 怪物群规模总增 9% 区域内找到的引路石数量总增 25%",
             "dropChance": 0
           }
         ],
@@ -530,19 +664,30 @@
           "map_item_rarity",
           "resistance",
           "elemental",
-          "damage"
+          "damage",
+          "minion"
         ],
         "tagsZh": [
           "抗性",
           "元素",
-          "傷害"
+          "傷害",
+          "召喚物"
+        ],
+        "tagsZhHans": [
+          "抗性",
+          "元素",
+          "伤害",
+          "召唤生物"
         ],
         "labelZh": "穿透的",
         "labelEn": "Penetrating",
+        "labelZhHans": "穿透的",
         "textZh": "怪物傷害穿透(6—8)%元素抗性 此區域找到的物品擁有16%更多稀有度 此區域找到20%更多換界石",
         "textEn": "Monster Damage Penetrates (6—8)% Elemental Resistances 16% more Rarity of Items found in this Area 20% more Waystones found in Area",
+        "textZhHans": "召唤生物的伤害穿透 (6—8)% 元素抗性 该区域内物品稀有度总增 16% 区域内找到的引路石数量总增 20%",
         "match": "Monster Damage Penetrates Elemental Resistances 16% more Rarity of Items found in this Area 20% more Waystones found in Area",
         "matchZh": "怪物傷害穿透元素抗性 此區域找到的物品擁有16%更多稀有度 此區域找到20%更多換界石",
+        "matchZhHans": "召唤生物的伤害穿透 元素抗性 该区域内物品稀有度总增 16% 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -553,9 +698,11 @@
           {
             "nameZh": "穿透的",
             "nameEn": "Penetrating",
+            "nameZhHans": "穿透的",
             "level": 1,
             "textZh": "怪物傷害穿透(6—8)%元素抗性 此區域找到的物品擁有16%更多稀有度 此區域找到20%更多換界石",
             "textEn": "Monster Damage Penetrates (6—8)% Elemental Resistances 16% more Rarity of Items found in this Area 20% more Waystones found in Area",
+            "textZhHans": "召唤生物的伤害穿透 (6—8)% 元素抗性 该区域内物品稀有度总增 16% 区域内找到的引路石数量总增 20%",
             "dropChance": 0,
             "statMin": 6,
             "statMax": 8
@@ -575,12 +722,16 @@
           "map_pack_size"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "精確的",
         "labelEn": "Precise",
+        "labelZhHans": "精确的",
         "textZh": "怪物增加(10—20)%命中值 7%更多怪物群大小 此區域找到10%更多換界石",
         "textEn": "Monsters have (10—20)% increased Accuracy Rating 7% more Pack size 10% more Waystones found in Area",
+        "textZhHans": "怪物的命中值提高 (10—20)% 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have increased Accuracy Rating 7% more Pack size 10% more Waystones found in Area",
         "matchZh": "怪物增加命中值 7%更多怪物群大小 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的命中值提高 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -591,9 +742,11 @@
           {
             "nameZh": "精確的",
             "nameEn": "Precise",
+            "nameZhHans": "精确的",
             "level": 1,
             "textZh": "怪物增加(10—20)%命中值 7%更多怪物群大小 此區域找到10%更多換界石",
             "textEn": "Monsters have (10—20)% increased Accuracy Rating 7% more Pack size 10% more Waystones found in Area",
+            "textZhHans": "怪物的命中值提高 (10—20)% 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 10,
             "statMax": 20
@@ -616,12 +769,18 @@
         "tagsZh": [
           "傷害"
         ],
+        "tagsZhHans": [
+          "伤害"
+        ],
         "labelZh": "痛苦的",
         "labelEn": "Painful",
+        "labelZhHans": "痛苦的",
         "textZh": "增加(5—9)%怪物傷害 25%更多魔法和稀有怪物 稀有怪物有25%更多怪物詞綴機率 此區域找到20%更多換界石",
         "textEn": "(5—9)% increased Monster Damage 25% more Magic and Rare Monsters Rare Monsters have 25% more chance of Monster Modifiers 20% more Waystones found in Area",
+        "textZhHans": "怪物伤害提高 (5—9)% 魔法和稀有怪物总增 25% 稀有怪物有怪物词缀的几率总增 25% 区域内找到的引路石数量总增 20%",
         "match": "increased Monster Damage 25% more Magic and Rare Monsters Rare Monsters have 25% more chance of Monster Modifiers 20% more Waystones found in Area",
         "matchZh": "增加怪物傷害 25%更多魔法和稀有怪物 稀有怪物有25%更多怪物詞綴機率 此區域找到20%更多換界石",
+        "matchZhHans": "怪物伤害提高 魔法和稀有怪物总增 25% 稀有怪物有怪物词缀的几率总增 25% 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -632,9 +791,11 @@
           {
             "nameZh": "痛苦的",
             "nameEn": "Painful",
+            "nameZhHans": "痛苦的",
             "level": 1,
             "textZh": "增加(5—9)%怪物傷害 25%更多魔法和稀有怪物 稀有怪物有25%更多怪物詞綴機率 此區域找到20%更多換界石",
             "textEn": "(5—9)% increased Monster Damage 25% more Magic and Rare Monsters Rare Monsters have 25% more chance of Monster Modifiers 20% more Waystones found in Area",
+            "textZhHans": "怪物伤害提高 (5—9)% 魔法和稀有怪物总增 25% 稀有怪物有怪物词缀的几率总增 25% 区域内找到的引路石数量总增 20%",
             "dropChance": 0,
             "statMin": 5,
             "statMax": 9
@@ -654,12 +815,16 @@
           "map_monster_potency"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "衝擊的",
         "labelEn": "Impacting",
+        "labelZhHans": "冲击的",
         "textZh": "增加(50—60)%怪物的暈眩累積 怪物擁有13%更多效用 此區域找到15%更多換界石",
         "textEn": "Monsters have (50—60)% increased Stun Buildup Monsters have 13% more Effectiveness 15% more Waystones found in Area",
+        "textZhHans": "怪物的晕眩积蓄提高 (50—60)% 怪物的效能总增 13% 区域内找到的引路石数量总增 15%",
         "match": "Monsters have increased Stun Buildup Monsters have 13% more Effectiveness 15% more Waystones found in Area",
         "matchZh": "增加怪物的暈眩累積 怪物擁有13%更多效用 此區域找到15%更多換界石",
+        "matchZhHans": "怪物的晕眩积蓄提高 怪物的效能总增 13% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -670,9 +835,11 @@
           {
             "nameZh": "衝擊的",
             "nameEn": "Impacting",
+            "nameZhHans": "冲击的",
             "level": 1,
             "textZh": "增加(50—60)%怪物的暈眩累積 怪物擁有13%更多效用 此區域找到15%更多換界石",
             "textEn": "Monsters have (50—60)% increased Stun Buildup Monsters have 13% more Effectiveness 15% more Waystones found in Area",
+            "textZhHans": "怪物的晕眩积蓄提高 (50—60)% 怪物的效能总增 13% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 50,
             "statMax": 60
@@ -697,12 +864,19 @@
           "傷害",
           "暴擊"
         ],
+        "tagsZhHans": [
+          "伤害",
+          "暴击"
+        ],
         "labelZh": "毀滅的",
         "labelEn": "Destructive",
+        "labelZhHans": "灭绝的",
         "textZh": "增加(80—120)%怪物的暴擊率 +(11—15)%怪物暴擊傷害加成 9%更多怪物群大小 此區域找到15%更多換界石",
         "textEn": "Monsters have (80—120)% increased Critical Hit Chance Monsters have +(11—15)% Critical Damage Bonus 9% more Pack size 15% more Waystones found in Area",
+        "textZhHans": "怪物暴击率提高 (80—120)% +(11—15)% 怪物暴击伤害加成 怪物群规模总增 9% 区域内找到的引路石数量总增 15%",
         "match": "Monsters have increased Critical Hit Chance Monsters have +(11—15)% Critical Damage Bonus 9% more Pack size 15% more Waystones found in Area",
         "matchZh": "增加怪物的暴擊率 +(11—15)%怪物暴擊傷害加成 9%更多怪物群大小 此區域找到15%更多換界石",
+        "matchZhHans": "怪物暴击率提高 +(11—15)% 怪物暴击伤害加成 怪物群规模总增 9% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -713,9 +887,11 @@
           {
             "nameZh": "毀滅的",
             "nameEn": "Destructive",
+            "nameZhHans": "灭绝的",
             "level": 1,
             "textZh": "增加(80—120)%怪物的暴擊率 +(11—15)%怪物暴擊傷害加成 9%更多怪物群大小 此區域找到15%更多換界石",
             "textEn": "Monsters have (80—120)% increased Critical Hit Chance Monsters have +(11—15)% Critical Damage Bonus 9% more Pack size 15% more Waystones found in Area",
+            "textZhHans": "怪物暴击率提高 (80—120)% +(11—15)% 怪物暴击伤害加成 怪物群规模总增 9% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 80,
             "statMax": 120
@@ -740,12 +916,19 @@
           "抗性",
           "元素"
         ],
+        "tagsZhHans": [
+          "抗性",
+          "元素"
+        ],
         "labelZh": "稜鏡之",
         "labelEn": "of the Prism",
+        "labelZhHans": "棱镜之",
         "textZh": "+(20—24)%怪物元素抗性 此區域找到的物品擁有14%更多稀有度 此區域找到10%更多換界石",
         "textEn": "+(20—24)% Monster Elemental Resistances 14% more Rarity of Items found in this Area 10% more Waystones found in Area",
+        "textZhHans": "+(20—24)% 怪物的元素抗性 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 10%",
         "match": "Monster Elemental Resistances 14% more Rarity of Items found in this Area 10% more Waystones found in Area",
         "matchZh": "怪物元素抗性 此區域找到的物品擁有14%更多稀有度 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的元素抗性 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "plusPercent",
@@ -756,9 +939,11 @@
           {
             "nameZh": "稜鏡之",
             "nameEn": "of the Prism",
+            "nameZhHans": "棱镜之",
             "level": 1,
             "textZh": "+(20—24)%怪物元素抗性 此區域找到的物品擁有14%更多稀有度 此區域找到10%更多換界石",
             "textEn": "+(20—24)% Monster Elemental Resistances 14% more Rarity of Items found in this Area 10% more Waystones found in Area",
+            "textZhHans": "+(20—24)% 怪物的元素抗性 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 20,
             "statMax": 24
@@ -778,12 +963,16 @@
           "map_item_rarity"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "魔抗之",
         "labelEn": "of Hexwarding",
+        "labelZhHans": "辟邪之",
         "textZh": "怪物身上的詛咒具有(20—30)%更少效果 此區域找到的物品擁有10%更多稀有度 此區域找到10%更多換界石",
         "textEn": "(20—30)% less effect of Curses on Monsters 10% more Rarity of Items found in this Area 10% more Waystones found in Area",
+        "textZhHans": "怪物受到的诅咒效果总降 (20—30)% 该区域内物品稀有度总增 10% 区域内找到的引路石数量总增 10%",
         "match": "less effect of Curses on Monsters 10% more Rarity of Items found in this Area 10% more Waystones found in Area",
         "matchZh": "怪物身上的詛咒具有更少效果 此區域找到的物品擁有10%更多稀有度 此區域找到10%更多換界石",
+        "matchZhHans": "怪物受到的诅咒效果总降 该区域内物品稀有度总增 10% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -794,9 +983,11 @@
           {
             "nameZh": "魔抗之",
             "nameEn": "of Hexwarding",
+            "nameZhHans": "辟邪之",
             "level": 1,
             "textZh": "怪物身上的詛咒具有(20—30)%更少效果 此區域找到的物品擁有10%更多稀有度 此區域找到10%更多換界石",
             "textEn": "(20—30)% less effect of Curses on Monsters 10% more Rarity of Items found in this Area 10% more Waystones found in Area",
+            "textZhHans": "怪物受到的诅咒效果总降 (20—30)% 该区域内物品稀有度总增 10% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 20,
             "statMax": 30
@@ -819,12 +1010,18 @@
         "tagsZh": [
           "閃避"
         ],
+        "tagsZhHans": [
+          "闪避"
+        ],
         "labelZh": "閃避之",
         "labelEn": "of Evasion",
+        "labelZhHans": "闪避之",
         "textZh": "怪物為閃避的 6%更多怪物群大小 此區域找到15%更多換界石",
         "textEn": "Monsters are Evasive 6% more Pack size 15% more Waystones found in Area",
+        "textZhHans": "怪物具有闪避 怪物群规模总增 6% 区域内找到的引路石数量总增 15%",
         "match": "Monsters are Evasive more Pack size 15% more Waystones found in Area",
         "matchZh": "怪物為閃避的 更多怪物群大小 此區域找到15%更多換界石",
+        "matchZhHans": "怪物具有闪避 怪物群规模总增 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -833,9 +1030,11 @@
           {
             "nameZh": "閃避之",
             "nameEn": "of Evasion",
+            "nameZhHans": "闪避之",
             "level": 1,
             "textZh": "怪物為閃避的 6%更多怪物群大小 此區域找到15%更多換界石",
             "textEn": "Monsters are Evasive 6% more Pack size 15% more Waystones found in Area",
+            "textZhHans": "怪物具有闪避 怪物群规模总增 6% 区域内找到的引路石数量总增 15%",
             "dropChance": 0
           }
         ],
@@ -856,12 +1055,18 @@
         "tagsZh": [
           "護甲"
         ],
+        "tagsZhHans": [
+          "护甲"
+        ],
         "labelZh": "耐久之",
         "labelEn": "of Enduring",
+        "labelZhHans": "持久之",
         "textZh": "怪物為裝甲的 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到15%更多換界石",
         "textEn": "Monsters are Armoured 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 15% more Waystones found in Area",
+        "textZhHans": "怪物具有护甲 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 15%",
         "match": "Monsters are Armoured more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 15% more Waystones found in Area",
         "matchZh": "怪物為裝甲的 更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到15%更多換界石",
+        "matchZhHans": "怪物具有护甲 魔法和稀有怪物总增 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -870,9 +1075,11 @@
           {
             "nameZh": "耐久之",
             "nameEn": "of Enduring",
+            "nameZhHans": "持久之",
             "level": 1,
             "textZh": "怪物為裝甲的 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到15%更多換界石",
             "textEn": "Monsters are Armoured 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 15% more Waystones found in Area",
+            "textZhHans": "怪物具有护甲 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 15%",
             "dropChance": 0
           }
         ],
@@ -893,12 +1100,18 @@
         "tagsZh": [
           "元素"
         ],
+        "tagsZhHans": [
+          "元素"
+        ],
         "labelZh": "強盛之",
         "labelEn": "of Overpowering",
+        "labelZhHans": "强威之",
         "textZh": "怪物增加(60—79)%元素異常狀態施加 此區域找到的物品擁有11%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Monster have (60—79)% increased Elemental Ailment Application 11% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "怪物的元素异常状态应用提高 (60—79)% 该区域内物品稀有度总增 11% 区域内找到的引路石数量总增 15%",
         "match": "Monster have increased Elemental Ailment Application 11% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "怪物增加元素異常狀態施加 此區域找到的物品擁有11%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "怪物的元素异常状态应用提高 该区域内物品稀有度总增 11% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -909,9 +1122,11 @@
           {
             "nameZh": "強盛之",
             "nameEn": "of Overpowering",
+            "nameZhHans": "强威之",
             "level": 1,
             "textZh": "怪物增加(60—79)%元素異常狀態施加 此區域找到的物品擁有11%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Monster have (60—79)% increased Elemental Ailment Application 11% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "怪物的元素异常状态应用提高 (60—79)% 该区域内物品稀有度总增 11% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 60,
             "statMax": 79
@@ -936,12 +1151,19 @@
           "傷害",
           "暴擊"
         ],
+        "tagsZhHans": [
+          "伤害",
+          "暴击"
+        ],
         "labelZh": "障礙物之",
         "labelEn": "of Obstruction",
+        "labelZhHans": "阻挠之",
         "textZh": "怪物遭暴擊時，減少(15—19)%承受的額外傷害 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到10%更多換界石",
         "textEn": "Monsters take (15—19)% reduced Extra Damage from Critical Hits 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 10% more Waystones found in Area",
+        "textZhHans": "怪物受到的暴击伤害降低 (15—19)% 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 10%",
         "match": "Monsters take reduced Extra Damage from Critical Hits 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 10% more Waystones found in Area",
         "matchZh": "怪物遭暴擊時，減少承受的額外傷害 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到10%更多換界石",
+        "matchZhHans": "怪物受到的暴击伤害降低 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -952,9 +1174,11 @@
           {
             "nameZh": "障礙物之",
             "nameEn": "of Obstruction",
+            "nameZhHans": "阻挠之",
             "level": 1,
             "textZh": "怪物遭暴擊時，減少(15—19)%承受的額外傷害 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到10%更多換界石",
             "textEn": "Monsters take (15—19)% reduced Extra Damage from Critical Hits 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 10% more Waystones found in Area",
+            "textZhHans": "怪物受到的暴击伤害降低 (15—19)% 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 15,
             "statMax": 19
@@ -979,12 +1203,19 @@
           "能量護盾",
           "生命"
         ],
+        "tagsZhHans": [
+          "能量护盾",
+          "生命"
+        ],
         "labelZh": "緩衝之",
         "labelEn": "of Buffering",
+        "labelZhHans": "缓冲之",
         "textZh": "怪物獲得等同於最大生命(12—25)%的額外最大能量護盾 此區域找到的物品擁有13%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Monsters gain (12—25)% of maximum Life as Extra maximum Energy Shield 13% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "怪物将生命上限的 (12—25)% 转化为额外能量护盾上限 该区域内物品稀有度总增 13% 区域内找到的引路石数量总增 15%",
         "match": "Monsters gain of maximum Life as Extra maximum Energy Shield 13% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "怪物獲得等同於最大生命的額外最大能量護盾 此區域找到的物品擁有13%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "怪物将生命上限的 转化为额外能量护盾上限 该区域内物品稀有度总增 13% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -995,9 +1226,11 @@
           {
             "nameZh": "緩衝之",
             "nameEn": "of Buffering",
+            "nameZhHans": "缓冲之",
             "level": 1,
             "textZh": "怪物獲得等同於最大生命(12—25)%的額外最大能量護盾 此區域找到的物品擁有13%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Monsters gain (12—25)% of maximum Life as Extra maximum Energy Shield 13% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "怪物将生命上限的 (12—25)% 转化为额外能量护盾上限 该区域内物品稀有度总增 13% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 12,
             "statMax": 25
@@ -1020,12 +1253,18 @@
         "tagsZh": [
           "抗性"
         ],
+        "tagsZhHans": [
+          "抗性"
+        ],
         "labelZh": "曝曬之",
         "labelEn": "of Exposure",
+        "labelZhHans": "曝露之",
         "textZh": "玩家(-4—-3)%最大抗性 10%更多怪物群大小 此區域找到25%更多換界石",
         "textEn": "(-4—-3)% maximum Player Resistances 10% more Pack size 25% more Waystones found in Area",
+        "textZhHans": "玩家的抗性上限 (-4—-3)% 怪物群规模总增 10% 区域内找到的引路石数量总增 25%",
         "match": "maximum Player Resistances 10% more Pack size 25% more Waystones found in Area",
         "matchZh": "玩家最大抗性 10%更多怪物群大小 此區域找到25%更多換界石",
+        "matchZhHans": "玩家的抗性上限 怪物群规模总增 10% 区域内找到的引路石数量总增 25%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -1034,9 +1273,11 @@
           {
             "nameZh": "曝曬之",
             "nameEn": "of Exposure",
+            "nameZhHans": "曝露之",
             "level": 1,
             "textZh": "玩家(-4—-3)%最大抗性 10%更多怪物群大小 此區域找到25%更多換界石",
             "textEn": "(-4—-3)% maximum Player Resistances 10% more Pack size 25% more Waystones found in Area",
+            "textZhHans": "玩家的抗性上限 (-4—-3)% 怪物群规模总增 10% 区域内找到的引路石数量总增 25%",
             "dropChance": 0
           }
         ],
@@ -1057,12 +1298,18 @@
         "tagsZh": [
           "元素"
         ],
+        "tagsZhHans": [
+          "元素"
+        ],
         "labelZh": "侵蝕之",
         "labelEn": "of Erosion",
+        "labelZhHans": "侵蚀之",
         "textZh": "玩家正在持續被元素要害詛咒 此區域找到的物品擁有13%更多稀有度 此區域找到20%更多換界石",
         "textEn": "Players are periodically Cursed with Elemental Weakness 13% more Rarity of Items found in this Area 20% more Waystones found in Area",
+        "textZhHans": "玩家周期性受到元素要害诅咒 该区域内物品稀有度总增 13% 区域内找到的引路石数量总增 20%",
         "match": "Players are periodically Cursed with Elemental Weakness more Rarity of Items found in this Area 20% more Waystones found in Area",
         "matchZh": "玩家正在持續被元素要害詛咒 此區域找到的物品擁有更多稀有度 此區域找到20%更多換界石",
+        "matchZhHans": "玩家周期性受到元素要害诅咒 该区域内物品稀有度总增 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -1071,9 +1318,11 @@
           {
             "nameZh": "侵蝕之",
             "nameEn": "of Erosion",
+            "nameZhHans": "侵蚀之",
             "level": 1,
             "textZh": "玩家正在持續被元素要害詛咒 此區域找到的物品擁有13%更多稀有度 此區域找到20%更多換界石",
             "textEn": "Players are periodically Cursed with Elemental Weakness 13% more Rarity of Items found in this Area 20% more Waystones found in Area",
+            "textZhHans": "玩家周期性受到元素要害诅咒 该区域内物品稀有度总增 13% 区域内找到的引路石数量总增 20%",
             "dropChance": 0
           }
         ],
@@ -1091,12 +1340,16 @@
           "map_pack_size"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "減慢之",
         "labelEn": "of Slowing",
+        "labelZhHans": "缓慢之",
         "textZh": "玩家正在持續被時空鎖鏈詛咒 8%更多怪物群大小 此區域找到20%更多換界石",
         "textEn": "Players are periodically Cursed with Temporal Chains 8% more Pack size 20% more Waystones found in Area",
+        "textZhHans": "玩家周期性受到时空锁链诅咒 怪物群规模总增 8% 区域内找到的引路石数量总增 20%",
         "match": "Players are periodically Cursed with Temporal Chains more Pack size 20% more Waystones found in Area",
         "matchZh": "玩家正在持續被時空鎖鏈詛咒 更多怪物群大小 此區域找到20%更多換界石",
+        "matchZhHans": "玩家周期性受到时空锁链诅咒 怪物群规模总增 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -1105,9 +1358,11 @@
           {
             "nameZh": "減慢之",
             "nameEn": "of Slowing",
+            "nameZhHans": "缓慢之",
             "level": 1,
             "textZh": "玩家正在持續被時空鎖鏈詛咒 8%更多怪物群大小 此區域找到20%更多換界石",
             "textEn": "Players are periodically Cursed with Temporal Chains 8% more Pack size 20% more Waystones found in Area",
+            "textZhHans": "玩家周期性受到时空锁链诅咒 怪物群规模总增 8% 区域内找到的引路石数量总增 20%",
             "dropChance": 0
           }
         ],
@@ -1125,12 +1380,16 @@
           "map_monster_potency"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "衰弱之",
         "labelEn": "of Enfeebling",
+        "labelZhHans": "衰弱之",
         "textZh": "玩家正在持續被衰弱詛咒 怪物擁有16%更多效用 此區域找到20%更多換界石",
         "textEn": "Players are periodically Cursed with Enfeeble Monsters have 16% more Effectiveness 20% more Waystones found in Area",
+        "textZhHans": "玩家周期性受到衰弱诅咒 怪物的效能总增 16% 区域内找到的引路石数量总增 20%",
         "match": "Players are periodically Cursed with Enfeeble Monsters have more Effectiveness 20% more Waystones found in Area",
         "matchZh": "玩家正在持續被衰弱詛咒 怪物擁有更多效用 此區域找到20%更多換界石",
+        "matchZhHans": "玩家周期性受到衰弱诅咒 怪物的效能总增 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -1139,9 +1398,11 @@
           {
             "nameZh": "衰弱之",
             "nameEn": "of Enfeebling",
+            "nameZhHans": "衰弱之",
             "level": 1,
             "textZh": "玩家正在持續被衰弱詛咒 怪物擁有16%更多效用 此區域找到20%更多換界石",
             "textEn": "Players are periodically Cursed with Enfeeble Monsters have 16% more Effectiveness 20% more Waystones found in Area",
+            "textZhHans": "玩家周期性受到衰弱诅咒 怪物的效能总增 16% 区域内找到的引路石数量总增 20%",
             "dropChance": 0
           }
         ],
@@ -1159,12 +1420,16 @@
           "map_item_rarity"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "疲勞之",
         "labelEn": "of Fatigue",
+        "labelZhHans": "疲惫之",
         "textZh": "玩家有(15—20)%更少冷卻時間恢復率 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Players have (15—20)% less Cooldown Recovery Rate 12% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "玩家的冷却回复率总降 (15—20)% 该区域内物品稀有度总增 12% 区域内找到的引路石数量总增 15%",
         "match": "Players have less Cooldown Recovery Rate 12% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "玩家有更少冷卻時間恢復率 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "玩家的冷却回复率总降 该区域内物品稀有度总增 12% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1175,9 +1440,11 @@
           {
             "nameZh": "疲勞之",
             "nameEn": "of Fatigue",
+            "nameZhHans": "疲惫之",
             "level": 1,
             "textZh": "玩家有(15—20)%更少冷卻時間恢復率 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Players have (15—20)% less Cooldown Recovery Rate 12% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "玩家的冷却回复率总降 (15—20)% 该区域内物品稀有度总增 12% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 15,
             "statMax": 20
@@ -1196,18 +1463,28 @@
         "tags": [
           "map_item_rarity",
           "energy_shield",
-          "life"
+          "life",
+          "speed"
         ],
         "tagsZh": [
           "能量護盾",
-          "生命"
+          "生命",
+          "速度"
+        ],
+        "tagsZhHans": [
+          "能量护盾",
+          "生命",
+          "速度"
         ],
         "labelZh": "窒息之",
         "labelEn": "of Smothering",
+        "labelZhHans": "窒息之",
         "textZh": "玩家擁有(20—29)%更少生命和能量護盾恢復率 此區域找到的物品擁有15%更多稀有度 此區域找到20%更多換界石",
         "textEn": "Players have (20—29)% less Recovery Rate of Life and Energy Shield 15% more Rarity of Items found in this Area 20% more Waystones found in Area",
+        "textZhHans": "玩家的生命和能量护盾总回复速度总降 (20—29)% 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 20%",
         "match": "Players have less Recovery Rate of Life and Energy Shield 15% more Rarity of Items found in this Area 20% more Waystones found in Area",
         "matchZh": "玩家擁有更少生命和能量護盾恢復率 此區域找到的物品擁有15%更多稀有度 此區域找到20%更多換界石",
+        "matchZhHans": "玩家的生命和能量护盾总回复速度总降 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1218,9 +1495,11 @@
           {
             "nameZh": "窒息之",
             "nameEn": "of Smothering",
+            "nameZhHans": "窒息之",
             "level": 1,
             "textZh": "玩家擁有(20—29)%更少生命和能量護盾恢復率 此區域找到的物品擁有15%更多稀有度 此區域找到20%更多換界石",
             "textEn": "Players have (20—29)% less Recovery Rate of Life and Energy Shield 15% more Rarity of Items found in this Area 20% more Waystones found in Area",
+            "textZhHans": "玩家的生命和能量护盾总回复速度总降 (20—29)% 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 20%",
             "dropChance": 0,
             "statMin": 20,
             "statMax": 29
@@ -1238,21 +1517,28 @@
         "generation": "suffix",
         "tags": [
           "map_monster_potency",
+          "map_pack_size",
           "fire",
           "lightning",
-          "map_item_rarity",
-          "map_pack_size"
+          "map_item_rarity"
         ],
         "tagsZh": [
           "火焰",
           "閃電"
         ],
+        "tagsZhHans": [
+          "火焰",
+          "闪电"
+        ],
         "labelZh": "支電震",
         "labelEn": "of Shocking",
+        "labelZhHans": "导电之",
         "textZh": "區域會有多塊感電地面 7%更多怪物群大小 此區域找到15%更多換界石 ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
         "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
+        "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
         "match": "Area has patches of Shocked Ground more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
         "matchZh": "區域中有多個點燃地面 怪物擁有更多效用 此區域找到15%更多換界石 ground fire art variation [1033] map ground effect patches per 100 tiles [4] map ground effect radius [20]",
+        "matchZhHans": "区域内有感电地面 怪物群规模总增 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -1261,25 +1547,31 @@
           {
             "nameZh": "支電震",
             "nameEn": "of Shocking",
+            "nameZhHans": "导电之",
             "level": 1,
             "textZh": "區域會有多塊感電地面 7%更多怪物群大小 此區域找到15%更多換界石 ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
             "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
+            "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
             "dropChance": 0
           },
           {
             "nameZh": "雨雪之",
             "nameEn": "of Shocking",
+            "nameZhHans": "导电之",
             "level": 1,
             "textZh": "區域會有多塊冰緩地面 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石 ground ice art variation [1014] map ground effect patches per 100 tiles [3] map ground effect radius [26]",
             "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
+            "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
             "dropChance": 0
           },
           {
             "nameZh": "烈火之",
             "nameEn": "of Shocking",
+            "nameZhHans": "导电之",
             "level": 1,
             "textZh": "區域中有多個點燃地面 怪物擁有15%更多效用 此區域找到15%更多換界石 ground fire art variation [1033] map ground effect patches per 100 tiles [4] map ground effect radius [20]",
             "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
+            "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [5] map ground effect radius [17]",
             "dropChance": 0
           }
         ],
@@ -1297,12 +1589,16 @@
           "map_pack_size"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "乾旱之",
         "labelEn": "of Drought",
+        "labelZhHans": "干枯之",
         "textZh": "減少(20—24)%玩家獲得的藥劑充能 7%更多怪物群大小 此區域找到15%更多換界石",
         "textEn": "Players gain (20—24)% reduced Flask Charges 7% more Pack size 15% more Waystones found in Area",
+        "textZhHans": "玩家获得的药剂充能降低 (20—24)% 怪物群规模总增 7% 区域内找到的引路石数量总增 15%",
         "match": "Players gain reduced Flask Charges 7% more Pack size 15% more Waystones found in Area",
         "matchZh": "減少玩家獲得的藥劑充能 7%更多怪物群大小 此區域找到15%更多換界石",
+        "matchZhHans": "玩家获得的药剂充能降低 怪物群规模总增 7% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1313,9 +1609,11 @@
           {
             "nameZh": "乾旱之",
             "nameEn": "of Drought",
+            "nameZhHans": "干枯之",
             "level": 1,
             "textZh": "減少(20—24)%玩家獲得的藥劑充能 7%更多怪物群大小 此區域找到15%更多換界石",
             "textEn": "Players gain (20—24)% reduced Flask Charges 7% more Pack size 15% more Waystones found in Area",
+            "textZhHans": "玩家获得的药剂充能降低 (20—24)% 怪物群规模总增 7% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 20,
             "statMax": 24
@@ -1335,12 +1633,16 @@
           "map_monster_rarity"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "死敵之",
         "labelEn": "of Nemeses",
+        "labelZhHans": "复仇之",
         "textZh": "稀有怪物有1個額外詞綴 增加25%稀有怪物的數量 增加10%此區域找到的換界石",
         "textEn": "Rare Monsters have 1 additional Modifiers 25% increased number of Rare Monsters 10% increased Waystones found in Area",
+        "textZhHans": "稀有怪物额外具有 1 个词缀 稀有怪物的数量提高25% 区域内找到的引路石数量提高 10%",
         "match": "Rare Monsters have 1 additional Modifiers increased number of Rare Monsters 10% increased Waystones found in Area",
         "matchZh": "稀有怪物有1個額外詞綴 增加稀有怪物的數量 增加10%此區域找到的換界石",
+        "matchZhHans": "稀有怪物额外具有 1 个词缀 稀有怪物的数量提高区域内找到的引路石数量提高 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -1349,9 +1651,11 @@
           {
             "nameZh": "死敵之",
             "nameEn": "of Nemeses",
+            "nameZhHans": "复仇之",
             "level": 1,
             "textZh": "稀有怪物有1個額外詞綴 增加25%稀有怪物的數量 增加10%此區域找到的換界石",
             "textEn": "Rare Monsters have 1 additional Modifiers 25% increased number of Rare Monsters 10% increased Waystones found in Area",
+            "textZhHans": "稀有怪物额外具有 1 个词缀 稀有怪物的数量提高25% 区域内找到的引路石数量提高 10%",
             "dropChance": 0
           }
         ],
@@ -1369,12 +1673,16 @@
           "map_monster_potency"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "堅定不移之",
         "labelEn": "of the Unwavering",
+        "labelZhHans": "不懈之",
         "textZh": "增加(30—39)%怪物異常狀態門檻 增加(30—39)%怪物的暈眩門檻 怪物擁有13%更多效用 此區域找到10%更多換界石",
         "textEn": "Monsters have (30—39)% increased Ailment Threshold Monsters have (30—39)% increased Stun Threshold Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+        "textZhHans": "怪物的异常状态阈值提高 (30—39)% 怪物的晕眩阈值提高 (30—39)% 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have increased Ailment Threshold Monsters have (30—39)% increased Stun Threshold Monsters have 13% more Effectiveness 10% more Waystones found in Area",
         "matchZh": "增加怪物異常狀態門檻 增加(30—39)%怪物的暈眩門檻 怪物擁有13%更多效用 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的异常状态阈值提高 怪物的晕眩阈值提高 (30—39)% 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1385,9 +1693,11 @@
           {
             "nameZh": "堅定不移之",
             "nameEn": "of the Unwavering",
+            "nameZhHans": "不懈之",
             "level": 1,
             "textZh": "增加(30—39)%怪物異常狀態門檻 增加(30—39)%怪物的暈眩門檻 怪物擁有13%更多效用 此區域找到10%更多換界石",
             "textEn": "Monsters have (30—39)% increased Ailment Threshold Monsters have (30—39)% increased Stun Threshold Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+            "textZhHans": "怪物的异常状态阈值提高 (30—39)% 怪物的晕眩阈值提高 (30—39)% 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 30,
             "statMax": 39
@@ -1405,12 +1715,16 @@
         "generation": "suffix",
         "tags": [],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "巨人之",
         "labelEn": "of Giants",
+        "labelZhHans": "巨人之",
         "textZh": "增加怪物50%範圍效果 此區域找到20%更多換界石",
         "textEn": "Monsters have 50% increased Area of Effect 20% more Waystones found in Area",
+        "textZhHans": "怪物效果区域的提高 50% 区域内找到的引路石数量总增 20%",
         "match": "Monsters have increased Area of Effect 20% more Waystones found in Area",
         "matchZh": "增加怪物範圍效果 此區域找到20%更多換界石",
+        "matchZhHans": "怪物效果区域的提高 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -1419,9 +1733,11 @@
           {
             "nameZh": "巨人之",
             "nameEn": "of Giants",
+            "nameZhHans": "巨人之",
             "level": 1,
             "textZh": "增加怪物50%範圍效果 此區域找到20%更多換界石",
             "textEn": "Monsters have 50% increased Area of Effect 20% more Waystones found in Area",
+            "textZhHans": "怪物效果区域的提高 50% 区域内找到的引路石数量总增 20%",
             "dropChance": 0
           }
         ],
@@ -1444,12 +1760,18 @@
         "tagsZh": [
           "生命"
         ],
+        "tagsZhHans": [
+          "生命"
+        ],
         "labelZh": "強韌的",
         "labelEn": "Tough",
+        "labelZhHans": "粗硬的",
         "textZh": "(15—19)%更多怪物生命 23%更多魔法和稀有怪物 稀有怪物有23%更多怪物詞綴機率 此區域找到15%更多換界石",
         "textEn": "(15—19)% more Monster Life 23% more Magic and Rare Monsters Rare Monsters have 23% more chance of Monster Modifiers 15% more Waystones found in Area",
+        "textZhHans": "怪物生命总增 (15—19)% 魔法和稀有怪物总增 23% 稀有怪物有怪物词缀的几率总增 23% 区域内找到的引路石数量总增 15%",
         "match": "more Monster Life 23% more Magic and Rare Monsters Rare Monsters have 23% more chance of Monster Modifiers 15% more Waystones found in Area",
         "matchZh": "更多怪物生命 23%更多魔法和稀有怪物 稀有怪物有23%更多怪物詞綴機率 此區域找到15%更多換界石",
+        "matchZhHans": "怪物生命总增 魔法和稀有怪物总增 23% 稀有怪物有怪物词缀的几率总增 23% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1460,9 +1782,11 @@
           {
             "nameZh": "強韌的",
             "nameEn": "Tough",
+            "nameZhHans": "粗硬的",
             "level": 1,
             "textZh": "(15—19)%更多怪物生命 23%更多魔法和稀有怪物 稀有怪物有23%更多怪物詞綴機率 此區域找到15%更多換界石",
             "textEn": "(15—19)% more Monster Life 23% more Magic and Rare Monsters Rare Monsters have 23% more chance of Monster Modifiers 15% more Waystones found in Area",
+            "textZhHans": "怪物生命总增 (15—19)% 魔法和稀有怪物总增 23% 稀有怪物有怪物词缀的几率总增 23% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 15,
             "statMax": 19
@@ -1482,12 +1806,16 @@
           "map_monster_potency"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "穿孔的",
         "labelEn": "Puncturing",
+        "labelZhHans": "穿孔的",
         "textZh": "怪物有(10—15)%機率在擊中時引起流血 怪物擁有13%更多效用 此區域找到10%更多換界石",
         "textEn": "Monsters have (10—15)% chance to inflict Bleeding on Hit Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+        "textZhHans": "怪物的击中有 (10—15)% 的几率造成流血 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have chance to inflict Bleeding on Hit Monsters have 13% more Effectiveness 10% more Waystones found in Area",
         "matchZh": "怪物有機率在擊中時引起流血 怪物擁有13%更多效用 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的击中有 的几率造成流血 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1498,9 +1826,11 @@
           {
             "nameZh": "穿孔的",
             "nameEn": "Puncturing",
+            "nameZhHans": "穿孔的",
             "level": 1,
             "textZh": "怪物有(10—15)%機率在擊中時引起流血 怪物擁有13%更多效用 此區域找到10%更多換界石",
             "textEn": "Monsters have (10—15)% chance to inflict Bleeding on Hit Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+            "textZhHans": "怪物的击中有 (10—15)% 的几率造成流血 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 10,
             "statMax": 15
@@ -1520,12 +1850,16 @@
           "map_pack_size"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "猛毒的",
         "labelEn": "Venomous",
+        "labelZhHans": "剧毒的",
         "textZh": "怪物有(20—26)%機率在擊中時造成中毒 7%更多怪物群大小 此區域找到10%更多換界石",
         "textEn": "Monsters have (20—26)% chance to Poison on Hit 7% more Pack size 10% more Waystones found in Area",
+        "textZhHans": "怪物的击中有 (20—26)% 的几率造成中毒 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have chance to Poison on Hit 7% more Pack size 10% more Waystones found in Area",
         "matchZh": "怪物有機率在擊中時造成中毒 7%更多怪物群大小 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的击中有 的几率造成中毒 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1536,9 +1870,11 @@
           {
             "nameZh": "猛毒的",
             "nameEn": "Venomous",
+            "nameZhHans": "剧毒的",
             "level": 1,
             "textZh": "怪物有(20—26)%機率在擊中時造成中毒 7%更多怪物群大小 此區域找到10%更多換界石",
             "textEn": "Monsters have (20—26)% chance to Poison on Hit 7% more Pack size 10% more Waystones found in Area",
+            "textZhHans": "怪物的击中有 (20—26)% 的几率造成中毒 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 20,
             "statMax": 26
@@ -1565,12 +1901,20 @@
           "物理",
           "傷害"
         ],
+        "tagsZhHans": [
+          "护甲",
+          "物理",
+          "伤害"
+        ],
         "labelZh": "粉碎的",
         "labelEn": "Shattering",
+        "labelZhHans": "碎离的",
         "textZh": "怪物破壞的護甲值等同於造成的(20—25)%物理傷害 19%更多魔法和稀有怪物 稀有怪物有19%更多怪物詞綴機率 此區域找到10%更多換界石",
         "textEn": "Monsters Break Armour equal to (20—25)% of Physical Damage dealt 19% more Magic and Rare Monsters Rare Monsters have 19% more chance of Monster Modifiers 10% more Waystones found in Area",
+        "textZhHans": "怪物粉碎护甲，相当于造成物理伤害的 (20—25)% 魔法和稀有怪物总增 19% 稀有怪物有怪物词缀的几率总增 19% 区域内找到的引路石数量总增 10%",
         "match": "Monsters Break Armour equal to of Physical Damage dealt 19% more Magic and Rare Monsters Rare Monsters have 19% more chance of Monster Modifiers 10% more Waystones found in Area",
         "matchZh": "怪物破壞的護甲值等同於造成的物理傷害 19%更多魔法和稀有怪物 稀有怪物有19%更多怪物詞綴機率 此區域找到10%更多換界石",
+        "matchZhHans": "怪物粉碎护甲，相当于造成物理伤害的 魔法和稀有怪物总增 19% 稀有怪物有怪物词缀的几率总增 19% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1581,9 +1925,11 @@
           {
             "nameZh": "粉碎的",
             "nameEn": "Shattering",
+            "nameZhHans": "碎离的",
             "level": 1,
             "textZh": "怪物破壞的護甲值等同於造成的(20—25)%物理傷害 19%更多魔法和稀有怪物 稀有怪物有19%更多怪物詞綴機率 此區域找到10%更多換界石",
             "textEn": "Monsters Break Armour equal to (20—25)% of Physical Damage dealt 19% more Magic and Rare Monsters Rare Monsters have 19% more chance of Monster Modifiers 10% more Waystones found in Area",
+            "textZhHans": "怪物粉碎护甲，相当于造成物理伤害的 (20—25)% 魔法和稀有怪物总增 19% 稀有怪物有怪物词缀的几率总增 19% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 20,
             "statMax": 25
@@ -1608,12 +1954,19 @@
           "火焰",
           "傷害"
         ],
+        "tagsZhHans": [
+          "火焰",
+          "伤害"
+        ],
         "labelZh": "煉獄的",
         "labelEn": "Infernal",
+        "labelZhHans": "狱炎的",
         "textZh": "怪物造成等同於傷害(10—14)%的額外火焰傷害 怪物擁有16%更多效用 此區域找到15%更多換界石",
         "textEn": "Monsters deal (10—14)% of Damage as Extra Fire Monsters have 16% more Effectiveness 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (10—14)% 的额外火焰伤害 怪物的效能总增 16% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Fire Monsters have 16% more Effectiveness 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外火焰傷害 怪物擁有16%更多效用 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外火焰伤害 怪物的效能总增 16% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1624,9 +1977,11 @@
           {
             "nameZh": "煉獄的",
             "nameEn": "Infernal",
+            "nameZhHans": "狱炎的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(10—14)%的額外火焰傷害 怪物擁有16%更多效用 此區域找到15%更多換界石",
             "textEn": "Monsters deal (10—14)% of Damage as Extra Fire Monsters have 16% more Effectiveness 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (10—14)% 的额外火焰伤害 怪物的效能总增 16% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 10,
             "statMax": 14
@@ -1651,12 +2006,19 @@
           "冰冷",
           "傷害"
         ],
+        "tagsZhHans": [
+          "冰霜",
+          "伤害"
+        ],
         "labelZh": "凍傷的",
         "labelEn": "Frostbitten",
+        "labelZhHans": "霜噬的",
         "textZh": "怪物造成等同於傷害(10—14)%的額外冰冷傷害 此區域找到的物品擁有14%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Monsters deal (10—14)% of Damage as Extra Cold 14% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (10—14)% 的额外冰霜伤害 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Cold 14% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外冰冷傷害 此區域找到的物品擁有14%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外冰霜伤害 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1667,9 +2029,11 @@
           {
             "nameZh": "凍傷的",
             "nameEn": "Frostbitten",
+            "nameZhHans": "霜噬的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(10—14)%的額外冰冷傷害 此區域找到的物品擁有14%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Monsters deal (10—14)% of Damage as Extra Cold 14% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (10—14)% 的额外冰霜伤害 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 10,
             "statMax": 14
@@ -1694,12 +2058,19 @@
           "閃電",
           "傷害"
         ],
+        "tagsZhHans": [
+          "闪电",
+          "伤害"
+        ],
         "labelZh": "雷霆的",
         "labelEn": "Thunderous",
+        "labelZhHans": "雷鸣的",
         "textZh": "怪物造成等同於傷害(10—14)%的額外閃電傷害 8%更多怪物群大小 此區域找到15%更多換界石",
         "textEn": "Monsters deal (10—14)% of Damage as Extra Lightning 8% more Pack size 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (10—14)% 的额外闪电伤害 怪物群规模总增 8% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Lightning 8% more Pack size 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外閃電傷害 8%更多怪物群大小 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外闪电伤害 怪物群规模总增 8% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1710,9 +2081,11 @@
           {
             "nameZh": "雷霆的",
             "nameEn": "Thunderous",
+            "nameZhHans": "雷鸣的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(10—14)%的額外閃電傷害 8%更多怪物群大小 此區域找到15%更多換界石",
             "textEn": "Monsters deal (10—14)% of Damage as Extra Lightning 8% more Pack size 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (10—14)% 的额外闪电伤害 怪物群规模总增 8% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 10,
             "statMax": 14
@@ -1737,12 +2110,19 @@
           "混沌",
           "傷害"
         ],
+        "tagsZhHans": [
+          "混沌",
+          "伤害"
+        ],
         "labelZh": "粗陋的",
         "labelEn": "Profane",
+        "labelZhHans": "渎神的",
         "textZh": "怪物造成等同於傷害(10—14)%的額外混沌傷害 此區域找到的物品擁有15%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Monsters deal (10—14)% of Damage as Extra Chaos 15% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (10—14)% 的额外混沌伤害 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Chaos 15% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外混沌傷害 此區域找到的物品擁有15%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外混沌伤害 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1753,9 +2133,11 @@
           {
             "nameZh": "粗陋的",
             "nameEn": "Profane",
+            "nameZhHans": "渎神的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(10—14)%的額外混沌傷害 此區域找到的物品擁有15%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Monsters deal (10—14)% of Damage as Extra Chaos 15% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (10—14)% 的额外混沌伤害 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 10,
             "statMax": 14
@@ -1778,12 +2160,18 @@
         "tagsZh": [
           "火焰"
         ],
+        "tagsZhHans": [
+          "火焰"
+        ],
         "labelZh": "分裂的",
         "labelEn": "Splitting",
+        "labelZhHans": "分裂的",
         "textZh": "怪物發射2個額外投射物 9%更多怪物群大小 此區域找到25%更多換界石",
         "textEn": "Monsters fire 2 additional Projectiles 9% more Pack size 25% more Waystones found in Area",
+        "textZhHans": "怪物可以发射 2 个额外投射物 怪物群规模总增 9% 区域内找到的引路石数量总增 25%",
         "match": "Monsters fire 2 additional Projectiles more Pack size 25% more Waystones found in Area",
         "matchZh": "怪物發射2個額外投射物 更多怪物群大小 此區域找到25%更多換界石",
+        "matchZhHans": "怪物可以发射 2 个额外投射物 怪物群规模总增 区域内找到的引路石数量总增 25%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -1792,9 +2180,11 @@
           {
             "nameZh": "分裂的",
             "nameEn": "Splitting",
+            "nameZhHans": "分裂的",
             "level": 1,
             "textZh": "怪物發射2個額外投射物 9%更多怪物群大小 此區域找到25%更多換界石",
             "textEn": "Monsters fire 2 additional Projectiles 9% more Pack size 25% more Waystones found in Area",
+            "textZhHans": "怪物可以发射 2 个额外投射物 怪物群规模总增 9% 区域内找到的引路石数量总增 25%",
             "dropChance": 0
           }
         ],
@@ -1812,19 +2202,30 @@
           "map_item_rarity",
           "resistance",
           "elemental",
-          "damage"
+          "damage",
+          "minion"
         ],
         "tagsZh": [
           "抗性",
           "元素",
-          "傷害"
+          "傷害",
+          "召喚物"
+        ],
+        "tagsZhHans": [
+          "抗性",
+          "元素",
+          "伤害",
+          "召唤生物"
         ],
         "labelZh": "穿透的",
         "labelEn": "Penetrating",
+        "labelZhHans": "穿透的",
         "textZh": "怪物傷害穿透(9—11)%元素抗性 此區域找到的物品擁有16%更多稀有度 此區域找到20%更多換界石",
         "textEn": "Monster Damage Penetrates (9—11)% Elemental Resistances 16% more Rarity of Items found in this Area 20% more Waystones found in Area",
+        "textZhHans": "召唤生物的伤害穿透 (9—11)% 元素抗性 该区域内物品稀有度总增 16% 区域内找到的引路石数量总增 20%",
         "match": "Monster Damage Penetrates Elemental Resistances 16% more Rarity of Items found in this Area 20% more Waystones found in Area",
         "matchZh": "怪物傷害穿透元素抗性 此區域找到的物品擁有16%更多稀有度 此區域找到20%更多換界石",
+        "matchZhHans": "召唤生物的伤害穿透 元素抗性 该区域内物品稀有度总增 16% 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1835,9 +2236,11 @@
           {
             "nameZh": "穿透的",
             "nameEn": "Penetrating",
+            "nameZhHans": "穿透的",
             "level": 1,
             "textZh": "怪物傷害穿透(9—11)%元素抗性 此區域找到的物品擁有16%更多稀有度 此區域找到20%更多換界石",
             "textEn": "Monster Damage Penetrates (9—11)% Elemental Resistances 16% more Rarity of Items found in this Area 20% more Waystones found in Area",
+            "textZhHans": "召唤生物的伤害穿透 (9—11)% 元素抗性 该区域内物品稀有度总增 16% 区域内找到的引路石数量总增 20%",
             "dropChance": 0,
             "statMin": 9,
             "statMax": 11
@@ -1857,12 +2260,16 @@
           "map_pack_size"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "精確的",
         "labelEn": "Precise",
+        "labelZhHans": "精确的",
         "textZh": "怪物增加(20—30)%命中值 7%更多怪物群大小 此區域找到10%更多換界石",
         "textEn": "Monsters have (20—30)% increased Accuracy Rating 7% more Pack size 10% more Waystones found in Area",
+        "textZhHans": "怪物的命中值提高 (20—30)% 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have increased Accuracy Rating 7% more Pack size 10% more Waystones found in Area",
         "matchZh": "怪物增加命中值 7%更多怪物群大小 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的命中值提高 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1873,9 +2280,11 @@
           {
             "nameZh": "精確的",
             "nameEn": "Precise",
+            "nameZhHans": "精确的",
             "level": 1,
             "textZh": "怪物增加(20—30)%命中值 7%更多怪物群大小 此區域找到10%更多換界石",
             "textEn": "Monsters have (20—30)% increased Accuracy Rating 7% more Pack size 10% more Waystones found in Area",
+            "textZhHans": "怪物的命中值提高 (20—30)% 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 20,
             "statMax": 30
@@ -1898,12 +2307,18 @@
         "tagsZh": [
           "傷害"
         ],
+        "tagsZhHans": [
+          "伤害"
+        ],
         "labelZh": "痛苦的",
         "labelEn": "Painful",
+        "labelZhHans": "痛苦的",
         "textZh": "增加(10—14)%怪物傷害 25%更多魔法和稀有怪物 稀有怪物有25%更多怪物詞綴機率 此區域找到20%更多換界石",
         "textEn": "(10—14)% increased Monster Damage 25% more Magic and Rare Monsters Rare Monsters have 25% more chance of Monster Modifiers 20% more Waystones found in Area",
+        "textZhHans": "怪物伤害提高 (10—14)% 魔法和稀有怪物总增 25% 稀有怪物有怪物词缀的几率总增 25% 区域内找到的引路石数量总增 20%",
         "match": "increased Monster Damage 25% more Magic and Rare Monsters Rare Monsters have 25% more chance of Monster Modifiers 20% more Waystones found in Area",
         "matchZh": "增加怪物傷害 25%更多魔法和稀有怪物 稀有怪物有25%更多怪物詞綴機率 此區域找到20%更多換界石",
+        "matchZhHans": "怪物伤害提高 魔法和稀有怪物总增 25% 稀有怪物有怪物词缀的几率总增 25% 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1914,9 +2329,11 @@
           {
             "nameZh": "痛苦的",
             "nameEn": "Painful",
+            "nameZhHans": "痛苦的",
             "level": 1,
             "textZh": "增加(10—14)%怪物傷害 25%更多魔法和稀有怪物 稀有怪物有25%更多怪物詞綴機率 此區域找到20%更多換界石",
             "textEn": "(10—14)% increased Monster Damage 25% more Magic and Rare Monsters Rare Monsters have 25% more chance of Monster Modifiers 20% more Waystones found in Area",
+            "textZhHans": "怪物伤害提高 (10—14)% 魔法和稀有怪物总增 25% 稀有怪物有怪物词缀的几率总增 25% 区域内找到的引路石数量总增 20%",
             "dropChance": 0,
             "statMin": 10,
             "statMax": 14
@@ -1941,12 +2358,19 @@
           "傷害",
           "暴擊"
         ],
+        "tagsZhHans": [
+          "伤害",
+          "暴击"
+        ],
         "labelZh": "毀滅的",
         "labelEn": "Destructive",
+        "labelZhHans": "灭绝的",
         "textZh": "增加(140—180)%怪物的暴擊率 +(16—20)%怪物暴擊傷害加成 9%更多怪物群大小 此區域找到15%更多換界石",
         "textEn": "Monsters have (140—180)% increased Critical Hit Chance Monsters have +(16—20)% Critical Damage Bonus 9% more Pack size 15% more Waystones found in Area",
+        "textZhHans": "怪物暴击率提高 (140—180)% +(16—20)% 怪物暴击伤害加成 怪物群规模总增 9% 区域内找到的引路石数量总增 15%",
         "match": "Monsters have increased Critical Hit Chance Monsters have +(16—20)% Critical Damage Bonus 9% more Pack size 15% more Waystones found in Area",
         "matchZh": "增加怪物的暴擊率 +(16—20)%怪物暴擊傷害加成 9%更多怪物群大小 此區域找到15%更多換界石",
+        "matchZhHans": "怪物暴击率提高 +(16—20)% 怪物暴击伤害加成 怪物群规模总增 9% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1957,9 +2381,11 @@
           {
             "nameZh": "毀滅的",
             "nameEn": "Destructive",
+            "nameZhHans": "灭绝的",
             "level": 1,
             "textZh": "增加(140—180)%怪物的暴擊率 +(16—20)%怪物暴擊傷害加成 9%更多怪物群大小 此區域找到15%更多換界石",
             "textEn": "Monsters have (140—180)% increased Critical Hit Chance Monsters have +(16—20)% Critical Damage Bonus 9% more Pack size 15% more Waystones found in Area",
+            "textZhHans": "怪物暴击率提高 (140—180)% +(16—20)% 怪物暴击伤害加成 怪物群规模总增 9% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 140,
             "statMax": 180
@@ -1979,12 +2405,16 @@
           "map_monster_potency"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "衝擊的",
         "labelEn": "Impacting",
+        "labelZhHans": "冲击的",
         "textZh": "增加(70—80)%怪物的暈眩累積 怪物擁有13%更多效用 此區域找到15%更多換界石",
         "textEn": "Monsters have (70—80)% increased Stun Buildup Monsters have 13% more Effectiveness 15% more Waystones found in Area",
+        "textZhHans": "怪物的晕眩积蓄提高 (70—80)% 怪物的效能总增 13% 区域内找到的引路石数量总增 15%",
         "match": "Monsters have increased Stun Buildup Monsters have 13% more Effectiveness 15% more Waystones found in Area",
         "matchZh": "增加怪物的暈眩累積 怪物擁有13%更多效用 此區域找到15%更多換界石",
+        "matchZhHans": "怪物的晕眩积蓄提高 怪物的效能总增 13% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -1995,9 +2425,11 @@
           {
             "nameZh": "衝擊的",
             "nameEn": "Impacting",
+            "nameZhHans": "冲击的",
             "level": 1,
             "textZh": "增加(70—80)%怪物的暈眩累積 怪物擁有13%更多效用 此區域找到15%更多換界石",
             "textEn": "Monsters have (70—80)% increased Stun Buildup Monsters have 13% more Effectiveness 15% more Waystones found in Area",
+            "textZhHans": "怪物的晕眩积蓄提高 (70—80)% 怪物的效能总增 13% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 70,
             "statMax": 80
@@ -2022,12 +2454,19 @@
           "抗性",
           "元素"
         ],
+        "tagsZhHans": [
+          "抗性",
+          "元素"
+        ],
         "labelZh": "稜鏡之",
         "labelEn": "of the Prism",
+        "labelZhHans": "棱镜之",
         "textZh": "+(25—29)%怪物元素抗性 此區域找到的物品擁有14%更多稀有度 此區域找到10%更多換界石",
         "textEn": "+(25—29)% Monster Elemental Resistances 14% more Rarity of Items found in this Area 10% more Waystones found in Area",
+        "textZhHans": "+(25—29)% 怪物的元素抗性 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 10%",
         "match": "Monster Elemental Resistances 14% more Rarity of Items found in this Area 10% more Waystones found in Area",
         "matchZh": "怪物元素抗性 此區域找到的物品擁有14%更多稀有度 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的元素抗性 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "plusPercent",
@@ -2038,9 +2477,11 @@
           {
             "nameZh": "稜鏡之",
             "nameEn": "of the Prism",
+            "nameZhHans": "棱镜之",
             "level": 1,
             "textZh": "+(25—29)%怪物元素抗性 此區域找到的物品擁有14%更多稀有度 此區域找到10%更多換界石",
             "textEn": "+(25—29)% Monster Elemental Resistances 14% more Rarity of Items found in this Area 10% more Waystones found in Area",
+            "textZhHans": "+(25—29)% 怪物的元素抗性 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 25,
             "statMax": 29
@@ -2060,12 +2501,16 @@
           "map_item_rarity"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "禦魔之",
         "labelEn": "of Hexwarding",
+        "labelZhHans": "辟邪之",
         "textZh": "怪物身上的詛咒具有(30—40)%更少效果 此區域找到的物品擁有10%更多稀有度 此區域找到10%更多換界石",
         "textEn": "(30—40)% less effect of Curses on Monsters 10% more Rarity of Items found in this Area 10% more Waystones found in Area",
+        "textZhHans": "怪物受到的诅咒效果总降 (30—40)% 该区域内物品稀有度总增 10% 区域内找到的引路石数量总增 10%",
         "match": "less effect of Curses on Monsters 10% more Rarity of Items found in this Area 10% more Waystones found in Area",
         "matchZh": "怪物身上的詛咒具有更少效果 此區域找到的物品擁有10%更多稀有度 此區域找到10%更多換界石",
+        "matchZhHans": "怪物受到的诅咒效果总降 该区域内物品稀有度总增 10% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2076,9 +2521,11 @@
           {
             "nameZh": "禦魔之",
             "nameEn": "of Hexwarding",
+            "nameZhHans": "辟邪之",
             "level": 1,
             "textZh": "怪物身上的詛咒具有(30—40)%更少效果 此區域找到的物品擁有10%更多稀有度 此區域找到10%更多換界石",
             "textEn": "(30—40)% less effect of Curses on Monsters 10% more Rarity of Items found in this Area 10% more Waystones found in Area",
+            "textZhHans": "怪物受到的诅咒效果总降 (30—40)% 该区域内物品稀有度总增 10% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 30,
             "statMax": 40
@@ -2101,12 +2548,18 @@
         "tagsZh": [
           "元素"
         ],
+        "tagsZhHans": [
+          "元素"
+        ],
         "labelZh": "強盛之",
         "labelEn": "of Overpowering",
+        "labelZhHans": "强威之",
         "textZh": "怪物增加(80—99)%元素異常狀態施加 此區域找到的物品擁有11%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Monster have (80—99)% increased Elemental Ailment Application 11% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "怪物的元素异常状态应用提高 (80—99)% 该区域内物品稀有度总增 11% 区域内找到的引路石数量总增 15%",
         "match": "Monster have increased Elemental Ailment Application 11% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "怪物增加元素異常狀態施加 此區域找到的物品擁有11%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "怪物的元素异常状态应用提高 该区域内物品稀有度总增 11% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2117,9 +2570,11 @@
           {
             "nameZh": "強盛之",
             "nameEn": "of Overpowering",
+            "nameZhHans": "强威之",
             "level": 1,
             "textZh": "怪物增加(80—99)%元素異常狀態施加 此區域找到的物品擁有11%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Monster have (80—99)% increased Elemental Ailment Application 11% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "怪物的元素异常状态应用提高 (80—99)% 该区域内物品稀有度总增 11% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 80,
             "statMax": 99
@@ -2144,12 +2599,19 @@
           "傷害",
           "暴擊"
         ],
+        "tagsZhHans": [
+          "伤害",
+          "暴击"
+        ],
         "labelZh": "障礙物之",
         "labelEn": "of Obstruction",
+        "labelZhHans": "阻挠之",
         "textZh": "怪物遭暴擊時，減少(20—25)%承受的額外傷害 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到10%更多換界石",
         "textEn": "Monsters take (20—25)% reduced Extra Damage from Critical Hits 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 10% more Waystones found in Area",
+        "textZhHans": "怪物受到的暴击伤害降低 (20—25)% 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 10%",
         "match": "Monsters take reduced Extra Damage from Critical Hits 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 10% more Waystones found in Area",
         "matchZh": "怪物遭暴擊時，減少承受的額外傷害 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到10%更多換界石",
+        "matchZhHans": "怪物受到的暴击伤害降低 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2160,9 +2622,11 @@
           {
             "nameZh": "障礙物之",
             "nameEn": "of Obstruction",
+            "nameZhHans": "阻挠之",
             "level": 1,
             "textZh": "怪物遭暴擊時，減少(20—25)%承受的額外傷害 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到10%更多換界石",
             "textEn": "Monsters take (20—25)% reduced Extra Damage from Critical Hits 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 10% more Waystones found in Area",
+            "textZhHans": "怪物受到的暴击伤害降低 (20—25)% 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 20,
             "statMax": 25
@@ -2185,12 +2649,18 @@
         "tagsZh": [
           "抗性"
         ],
+        "tagsZhHans": [
+          "抗性"
+        ],
         "labelZh": "曝曬之",
         "labelEn": "of Exposure",
+        "labelZhHans": "曝露之",
         "textZh": "玩家(-6—-4)%最大抗性 10%更多怪物群大小 此區域找到25%更多換界石",
         "textEn": "(-6—-4)% maximum Player Resistances 10% more Pack size 25% more Waystones found in Area",
+        "textZhHans": "玩家的抗性上限 (-6—-4)% 怪物群规模总增 10% 区域内找到的引路石数量总增 25%",
         "match": "maximum Player Resistances 10% more Pack size 25% more Waystones found in Area",
         "matchZh": "玩家最大抗性 10%更多怪物群大小 此區域找到25%更多換界石",
+        "matchZhHans": "玩家的抗性上限 怪物群规模总增 10% 区域内找到的引路石数量总增 25%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -2199,9 +2669,11 @@
           {
             "nameZh": "曝曬之",
             "nameEn": "of Exposure",
+            "nameZhHans": "曝露之",
             "level": 1,
             "textZh": "玩家(-6—-4)%最大抗性 10%更多怪物群大小 此區域找到25%更多換界石",
             "textEn": "(-6—-4)% maximum Player Resistances 10% more Pack size 25% more Waystones found in Area",
+            "textZhHans": "玩家的抗性上限 (-6—-4)% 怪物群规模总增 10% 区域内找到的引路石数量总增 25%",
             "dropChance": 0
           }
         ],
@@ -2219,12 +2691,16 @@
           "map_item_rarity"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "疲勞之",
         "labelEn": "of Fatigue",
+        "labelZhHans": "疲惫之",
         "textZh": "玩家有(20—25)%更少冷卻時間恢復率 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Players have (20—25)% less Cooldown Recovery Rate 12% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "玩家的冷却回复率总降 (20—25)% 该区域内物品稀有度总增 12% 区域内找到的引路石数量总增 15%",
         "match": "Players have less Cooldown Recovery Rate 12% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "玩家有更少冷卻時間恢復率 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "玩家的冷却回复率总降 该区域内物品稀有度总增 12% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2235,9 +2711,11 @@
           {
             "nameZh": "疲勞之",
             "nameEn": "of Fatigue",
+            "nameZhHans": "疲惫之",
             "level": 1,
             "textZh": "玩家有(20—25)%更少冷卻時間恢復率 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Players have (20—25)% less Cooldown Recovery Rate 12% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "玩家的冷却回复率总降 (20—25)% 该区域内物品稀有度总增 12% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 20,
             "statMax": 25
@@ -2256,18 +2734,28 @@
         "tags": [
           "map_item_rarity",
           "energy_shield",
-          "life"
+          "life",
+          "speed"
         ],
         "tagsZh": [
           "能量護盾",
-          "生命"
+          "生命",
+          "速度"
+        ],
+        "tagsZhHans": [
+          "能量护盾",
+          "生命",
+          "速度"
         ],
         "labelZh": "窒息之",
         "labelEn": "of Smothering",
+        "labelZhHans": "窒息之",
         "textZh": "玩家擁有(30—35)%更少生命和能量護盾恢復率 此區域找到的物品擁有15%更多稀有度 此區域找到20%更多換界石",
         "textEn": "Players have (30—35)% less Recovery Rate of Life and Energy Shield 15% more Rarity of Items found in this Area 20% more Waystones found in Area",
+        "textZhHans": "玩家的生命和能量护盾总回复速度总降 (30—35)% 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 20%",
         "match": "Players have less Recovery Rate of Life and Energy Shield 15% more Rarity of Items found in this Area 20% more Waystones found in Area",
         "matchZh": "玩家擁有更少生命和能量護盾恢復率 此區域找到的物品擁有15%更多稀有度 此區域找到20%更多換界石",
+        "matchZhHans": "玩家的生命和能量护盾总回复速度总降 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2278,9 +2766,11 @@
           {
             "nameZh": "窒息之",
             "nameEn": "of Smothering",
+            "nameZhHans": "窒息之",
             "level": 1,
             "textZh": "玩家擁有(30—35)%更少生命和能量護盾恢復率 此區域找到的物品擁有15%更多稀有度 此區域找到20%更多換界石",
             "textEn": "Players have (30—35)% less Recovery Rate of Life and Energy Shield 15% more Rarity of Items found in this Area 20% more Waystones found in Area",
+            "textZhHans": "玩家的生命和能量护盾总回复速度总降 (30—35)% 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 20%",
             "dropChance": 0,
             "statMin": 30,
             "statMax": 35
@@ -2298,21 +2788,28 @@
         "generation": "suffix",
         "tags": [
           "map_monster_potency",
+          "map_pack_size",
           "fire",
           "lightning",
-          "map_item_rarity",
-          "map_pack_size"
+          "map_item_rarity"
         ],
         "tagsZh": [
           "火焰",
           "閃電"
         ],
+        "tagsZhHans": [
+          "火焰",
+          "闪电"
+        ],
         "labelZh": "雨雪的",
         "labelEn": "Shocking",
+        "labelZhHans": "感电的",
         "textZh": "區域會有多塊冰緩地面 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石 ground ice art variation [1014] map ground effect patches per 100 tiles [4] map ground effect radius [26]",
         "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
+        "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
         "match": "Area has patches of Shocked Ground more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
         "matchZh": "區域中有多個點燃地面 怪物擁有更多效用 此區域找到15%更多換界石 ground fire art variation [1033] map ground effect patches per 100 tiles [5] map ground effect radius [20]",
+        "matchZhHans": "区域内有感电地面 怪物群规模总增 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -2321,25 +2818,31 @@
           {
             "nameZh": "雨雪的",
             "nameEn": "Shocking",
+            "nameZhHans": "感电的",
             "level": 1,
             "textZh": "區域會有多塊冰緩地面 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石 ground ice art variation [1014] map ground effect patches per 100 tiles [4] map ground effect radius [26]",
             "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
+            "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
             "dropChance": 0
           },
           {
             "nameZh": "烈火的",
             "nameEn": "Shocking",
+            "nameZhHans": "感电的",
             "level": 1,
             "textZh": "區域中有多個點燃地面 怪物擁有15%更多效用 此區域找到15%更多換界石 ground fire art variation [1033] map ground effect patches per 100 tiles [5] map ground effect radius [20]",
             "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
+            "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
             "dropChance": 0
           },
           {
             "nameZh": "電震的",
             "nameEn": "Shocking",
+            "nameZhHans": "感电的",
             "level": 1,
             "textZh": "區域會有多塊感電地面 7%更多怪物群大小 此區域找到15%更多換界石 ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
             "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
+            "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [6] map ground effect radius [17]",
             "dropChance": 0
           }
         ],
@@ -2357,12 +2860,16 @@
           "map_pack_size"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "乾旱之",
         "labelEn": "of Drought",
+        "labelZhHans": "干枯之",
         "textZh": "減少(25—29)%玩家獲得的藥劑充能 7%更多怪物群大小 此區域找到15%更多換界石",
         "textEn": "Players gain (25—29)% reduced Flask Charges 7% more Pack size 15% more Waystones found in Area",
+        "textZhHans": "玩家获得的药剂充能降低 (25—29)% 怪物群规模总增 7% 区域内找到的引路石数量总增 15%",
         "match": "Players gain reduced Flask Charges 7% more Pack size 15% more Waystones found in Area",
         "matchZh": "減少玩家獲得的藥劑充能 7%更多怪物群大小 此區域找到15%更多換界石",
+        "matchZhHans": "玩家获得的药剂充能降低 怪物群规模总增 7% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2373,9 +2880,11 @@
           {
             "nameZh": "乾旱之",
             "nameEn": "of Drought",
+            "nameZhHans": "干枯之",
             "level": 1,
             "textZh": "減少(25—29)%玩家獲得的藥劑充能 7%更多怪物群大小 此區域找到15%更多換界石",
             "textEn": "Players gain (25—29)% reduced Flask Charges 7% more Pack size 15% more Waystones found in Area",
+            "textZhHans": "玩家获得的药剂充能降低 (25—29)% 怪物群规模总增 7% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 25,
             "statMax": 29
@@ -2395,12 +2904,16 @@
           "map_monster_potency"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "堅定不移之",
         "labelEn": "of the Unwavering",
+        "labelZhHans": "不懈之",
         "textZh": "增加(50—59)%怪物異常狀態門檻 增加(40—49)%怪物的暈眩門檻 怪物擁有13%更多效用 此區域找到10%更多換界石",
         "textEn": "Monsters have (50—59)% increased Ailment Threshold Monsters have (40—49)% increased Stun Threshold Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+        "textZhHans": "怪物的异常状态阈值提高 (50—59)% 怪物的晕眩阈值提高 (40—49)% 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have increased Ailment Threshold Monsters have (40—49)% increased Stun Threshold Monsters have 13% more Effectiveness 10% more Waystones found in Area",
         "matchZh": "增加怪物異常狀態門檻 增加(40—49)%怪物的暈眩門檻 怪物擁有13%更多效用 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的异常状态阈值提高 怪物的晕眩阈值提高 (40—49)% 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2411,9 +2924,11 @@
           {
             "nameZh": "堅定不移之",
             "nameEn": "of the Unwavering",
+            "nameZhHans": "不懈之",
             "level": 1,
             "textZh": "增加(50—59)%怪物異常狀態門檻 增加(40—49)%怪物的暈眩門檻 怪物擁有13%更多效用 此區域找到10%更多換界石",
             "textEn": "Monsters have (50—59)% increased Ailment Threshold Monsters have (40—49)% increased Stun Threshold Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+            "textZhHans": "怪物的异常状态阈值提高 (50—59)% 怪物的晕眩阈值提高 (40—49)% 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 50,
             "statMax": 59
@@ -2438,12 +2953,18 @@
         "tagsZh": [
           "生命"
         ],
+        "tagsZhHans": [
+          "生命"
+        ],
         "labelZh": "強韌的",
         "labelEn": "Tough",
+        "labelZhHans": "粗硬的",
         "textZh": "(20—25)%更多怪物生命 23%更多魔法和稀有怪物 稀有怪物有23%更多怪物詞綴機率 此區域找到15%更多換界石",
         "textEn": "(20—25)% more Monster Life 23% more Magic and Rare Monsters Rare Monsters have 23% more chance of Monster Modifiers 15% more Waystones found in Area",
+        "textZhHans": "怪物生命总增 (20—25)% 魔法和稀有怪物总增 23% 稀有怪物有怪物词缀的几率总增 23% 区域内找到的引路石数量总增 15%",
         "match": "more Monster Life 23% more Magic and Rare Monsters Rare Monsters have 23% more chance of Monster Modifiers 15% more Waystones found in Area",
         "matchZh": "更多怪物生命 23%更多魔法和稀有怪物 稀有怪物有23%更多怪物詞綴機率 此區域找到15%更多換界石",
+        "matchZhHans": "怪物生命总增 魔法和稀有怪物总增 23% 稀有怪物有怪物词缀的几率总增 23% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2454,9 +2975,11 @@
           {
             "nameZh": "強韌的",
             "nameEn": "Tough",
+            "nameZhHans": "粗硬的",
             "level": 1,
             "textZh": "(20—25)%更多怪物生命 23%更多魔法和稀有怪物 稀有怪物有23%更多怪物詞綴機率 此區域找到15%更多換界石",
             "textEn": "(20—25)% more Monster Life 23% more Magic and Rare Monsters Rare Monsters have 23% more chance of Monster Modifiers 15% more Waystones found in Area",
+            "textZhHans": "怪物生命总增 (20—25)% 魔法和稀有怪物总增 23% 稀有怪物有怪物词缀的几率总增 23% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 20,
             "statMax": 25
@@ -2476,12 +2999,16 @@
           "map_monster_potency"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "穿孔的",
         "labelEn": "Puncturing",
+        "labelZhHans": "穿孔的",
         "textZh": "怪物有(15—20)%機率在擊中時引起流血 怪物擁有13%更多效用 此區域找到10%更多換界石",
         "textEn": "Monsters have (15—20)% chance to inflict Bleeding on Hit Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+        "textZhHans": "怪物的击中有 (15—20)% 的几率造成流血 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have chance to inflict Bleeding on Hit Monsters have 13% more Effectiveness 10% more Waystones found in Area",
         "matchZh": "怪物有機率在擊中時引起流血 怪物擁有13%更多效用 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的击中有 的几率造成流血 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2492,9 +3019,11 @@
           {
             "nameZh": "穿孔的",
             "nameEn": "Puncturing",
+            "nameZhHans": "穿孔的",
             "level": 1,
             "textZh": "怪物有(15—20)%機率在擊中時引起流血 怪物擁有13%更多效用 此區域找到10%更多換界石",
             "textEn": "Monsters have (15—20)% chance to inflict Bleeding on Hit Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+            "textZhHans": "怪物的击中有 (15—20)% 的几率造成流血 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 15,
             "statMax": 20
@@ -2514,12 +3043,16 @@
           "map_pack_size"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "猛毒的",
         "labelEn": "Venomous",
+        "labelZhHans": "剧毒的",
         "textZh": "怪物有(27—33)%機率在擊中時造成中毒 7%更多怪物群大小 此區域找到10%更多換界石",
         "textEn": "Monsters have (27—33)% chance to Poison on Hit 7% more Pack size 10% more Waystones found in Area",
+        "textZhHans": "怪物的击中有 (27—33)% 的几率造成中毒 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have chance to Poison on Hit 7% more Pack size 10% more Waystones found in Area",
         "matchZh": "怪物有機率在擊中時造成中毒 7%更多怪物群大小 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的击中有 的几率造成中毒 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2530,9 +3063,11 @@
           {
             "nameZh": "猛毒的",
             "nameEn": "Venomous",
+            "nameZhHans": "剧毒的",
             "level": 1,
             "textZh": "怪物有(27—33)%機率在擊中時造成中毒 7%更多怪物群大小 此區域找到10%更多換界石",
             "textEn": "Monsters have (27—33)% chance to Poison on Hit 7% more Pack size 10% more Waystones found in Area",
+            "textZhHans": "怪物的击中有 (27—33)% 的几率造成中毒 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 27,
             "statMax": 33
@@ -2559,12 +3094,20 @@
           "物理",
           "傷害"
         ],
+        "tagsZhHans": [
+          "护甲",
+          "物理",
+          "伤害"
+        ],
         "labelZh": "粉碎的",
         "labelEn": "Shattering",
+        "labelZhHans": "碎离的",
         "textZh": "怪物破壞的護甲值等同於造成的(25—30)%物理傷害 19%更多魔法和稀有怪物 稀有怪物有19%更多怪物詞綴機率 此區域找到10%更多換界石",
         "textEn": "Monsters Break Armour equal to (25—30)% of Physical Damage dealt 19% more Magic and Rare Monsters Rare Monsters have 19% more chance of Monster Modifiers 10% more Waystones found in Area",
+        "textZhHans": "怪物粉碎护甲，相当于造成物理伤害的 (25—30)% 魔法和稀有怪物总增 19% 稀有怪物有怪物词缀的几率总增 19% 区域内找到的引路石数量总增 10%",
         "match": "Monsters Break Armour equal to of Physical Damage dealt 19% more Magic and Rare Monsters Rare Monsters have 19% more chance of Monster Modifiers 10% more Waystones found in Area",
         "matchZh": "怪物破壞的護甲值等同於造成的物理傷害 19%更多魔法和稀有怪物 稀有怪物有19%更多怪物詞綴機率 此區域找到10%更多換界石",
+        "matchZhHans": "怪物粉碎护甲，相当于造成物理伤害的 魔法和稀有怪物总增 19% 稀有怪物有怪物词缀的几率总增 19% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2575,9 +3118,11 @@
           {
             "nameZh": "粉碎的",
             "nameEn": "Shattering",
+            "nameZhHans": "碎离的",
             "level": 1,
             "textZh": "怪物破壞的護甲值等同於造成的(25—30)%物理傷害 19%更多魔法和稀有怪物 稀有怪物有19%更多怪物詞綴機率 此區域找到10%更多換界石",
             "textEn": "Monsters Break Armour equal to (25—30)% of Physical Damage dealt 19% more Magic and Rare Monsters Rare Monsters have 19% more chance of Monster Modifiers 10% more Waystones found in Area",
+            "textZhHans": "怪物粉碎护甲，相当于造成物理伤害的 (25—30)% 魔法和稀有怪物总增 19% 稀有怪物有怪物词缀的几率总增 19% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 25,
             "statMax": 30
@@ -2602,12 +3147,19 @@
           "火焰",
           "傷害"
         ],
+        "tagsZhHans": [
+          "火焰",
+          "伤害"
+        ],
         "labelZh": "煉獄的",
         "labelEn": "Infernal",
+        "labelZhHans": "狱炎的",
         "textZh": "怪物造成等同於傷害(15—19)%的額外火焰傷害 怪物擁有16%更多效用 此區域找到15%更多換界石",
         "textEn": "Monsters deal (15—19)% of Damage as Extra Fire Monsters have 16% more Effectiveness 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (15—19)% 的额外火焰伤害 怪物的效能总增 16% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Fire Monsters have 16% more Effectiveness 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外火焰傷害 怪物擁有16%更多效用 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外火焰伤害 怪物的效能总增 16% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2618,9 +3170,11 @@
           {
             "nameZh": "煉獄的",
             "nameEn": "Infernal",
+            "nameZhHans": "狱炎的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(15—19)%的額外火焰傷害 怪物擁有16%更多效用 此區域找到15%更多換界石",
             "textEn": "Monsters deal (15—19)% of Damage as Extra Fire Monsters have 16% more Effectiveness 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (15—19)% 的额外火焰伤害 怪物的效能总增 16% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 15,
             "statMax": 19
@@ -2645,12 +3199,19 @@
           "冰冷",
           "傷害"
         ],
+        "tagsZhHans": [
+          "冰霜",
+          "伤害"
+        ],
         "labelZh": "凍傷的",
         "labelEn": "Frostbitten",
+        "labelZhHans": "霜噬的",
         "textZh": "怪物造成等同於傷害(15—19)%的額外冰冷傷害 此區域找到的物品擁有14%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Monsters deal (15—19)% of Damage as Extra Cold 14% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (15—19)% 的额外冰霜伤害 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Cold 14% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外冰冷傷害 此區域找到的物品擁有14%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外冰霜伤害 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2661,9 +3222,11 @@
           {
             "nameZh": "凍傷的",
             "nameEn": "Frostbitten",
+            "nameZhHans": "霜噬的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(15—19)%的額外冰冷傷害 此區域找到的物品擁有14%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Monsters deal (15—19)% of Damage as Extra Cold 14% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (15—19)% 的额外冰霜伤害 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 15,
             "statMax": 19
@@ -2688,12 +3251,19 @@
           "閃電",
           "傷害"
         ],
+        "tagsZhHans": [
+          "闪电",
+          "伤害"
+        ],
         "labelZh": "雷霆的",
         "labelEn": "Thunderous",
+        "labelZhHans": "雷鸣的",
         "textZh": "怪物造成等同於傷害(15—19)%的額外閃電傷害 8%更多怪物群大小 此區域找到15%更多換界石",
         "textEn": "Monsters deal (15—19)% of Damage as Extra Lightning 8% more Pack size 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (15—19)% 的额外闪电伤害 怪物群规模总增 8% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Lightning 8% more Pack size 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外閃電傷害 8%更多怪物群大小 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外闪电伤害 怪物群规模总增 8% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2704,9 +3274,11 @@
           {
             "nameZh": "雷霆的",
             "nameEn": "Thunderous",
+            "nameZhHans": "雷鸣的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(15—19)%的額外閃電傷害 8%更多怪物群大小 此區域找到15%更多換界石",
             "textEn": "Monsters deal (15—19)% of Damage as Extra Lightning 8% more Pack size 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (15—19)% 的额外闪电伤害 怪物群规模总增 8% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 15,
             "statMax": 19
@@ -2731,12 +3303,19 @@
           "混沌",
           "傷害"
         ],
+        "tagsZhHans": [
+          "混沌",
+          "伤害"
+        ],
         "labelZh": "粗陋的",
         "labelEn": "Profane",
+        "labelZhHans": "渎神的",
         "textZh": "怪物造成等同於傷害(15—19)%的額外混沌傷害 此區域找到的物品擁有15%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Monsters deal (15—19)% of Damage as Extra Chaos 15% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "怪物造成相当于伤害 (15—19)% 的额外混沌伤害 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 15%",
         "match": "Monsters deal of Damage as Extra Chaos 15% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "怪物造成等同於傷害的額外混沌傷害 此區域找到的物品擁有15%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "怪物造成相当于伤害 的额外混沌伤害 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2747,9 +3326,11 @@
           {
             "nameZh": "粗陋的",
             "nameEn": "Profane",
+            "nameZhHans": "渎神的",
             "level": 1,
             "textZh": "怪物造成等同於傷害(15—19)%的額外混沌傷害 此區域找到的物品擁有15%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Monsters deal (15—19)% of Damage as Extra Chaos 15% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "怪物造成相当于伤害 (15—19)% 的额外混沌伤害 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 15,
             "statMax": 19
@@ -2772,12 +3353,18 @@
         "tagsZh": [
           "火焰"
         ],
+        "tagsZhHans": [
+          "火焰"
+        ],
         "labelZh": "分裂的",
         "labelEn": "Splitting",
+        "labelZhHans": "分裂的",
         "textZh": "怪物發射3個額外投射物 9%更多怪物群大小 此區域找到25%更多換界石",
         "textEn": "Monsters fire 3 additional Projectiles 9% more Pack size 25% more Waystones found in Area",
+        "textZhHans": "怪物可以发射 3 个额外投射物 怪物群规模总增 9% 区域内找到的引路石数量总增 25%",
         "match": "Monsters fire 3 additional Projectiles more Pack size 25% more Waystones found in Area",
         "matchZh": "怪物發射3個額外投射物 更多怪物群大小 此區域找到25%更多換界石",
+        "matchZhHans": "怪物可以发射 3 个额外投射物 怪物群规模总增 区域内找到的引路石数量总增 25%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -2786,9 +3373,11 @@
           {
             "nameZh": "分裂的",
             "nameEn": "Splitting",
+            "nameZhHans": "分裂的",
             "level": 1,
             "textZh": "怪物發射3個額外投射物 9%更多怪物群大小 此區域找到25%更多換界石",
             "textEn": "Monsters fire 3 additional Projectiles 9% more Pack size 25% more Waystones found in Area",
+            "textZhHans": "怪物可以发射 3 个额外投射物 怪物群规模总增 9% 区域内找到的引路石数量总增 25%",
             "dropChance": 0
           }
         ],
@@ -2806,19 +3395,30 @@
           "map_item_rarity",
           "resistance",
           "elemental",
-          "damage"
+          "damage",
+          "minion"
         ],
         "tagsZh": [
           "抗性",
           "元素",
-          "傷害"
+          "傷害",
+          "召喚物"
+        ],
+        "tagsZhHans": [
+          "抗性",
+          "元素",
+          "伤害",
+          "召唤生物"
         ],
         "labelZh": "穿透的",
         "labelEn": "Penetrating",
+        "labelZhHans": "穿透的",
         "textZh": "怪物傷害穿透(12—14)%元素抗性 此區域找到的物品擁有16%更多稀有度 此區域找到20%更多換界石",
         "textEn": "Monster Damage Penetrates (12—14)% Elemental Resistances 16% more Rarity of Items found in this Area 20% more Waystones found in Area",
+        "textZhHans": "召唤生物的伤害穿透 (12—14)% 元素抗性 该区域内物品稀有度总增 16% 区域内找到的引路石数量总增 20%",
         "match": "Monster Damage Penetrates Elemental Resistances 16% more Rarity of Items found in this Area 20% more Waystones found in Area",
         "matchZh": "怪物傷害穿透元素抗性 此區域找到的物品擁有16%更多稀有度 此區域找到20%更多換界石",
+        "matchZhHans": "召唤生物的伤害穿透 元素抗性 该区域内物品稀有度总增 16% 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2829,9 +3429,11 @@
           {
             "nameZh": "穿透的",
             "nameEn": "Penetrating",
+            "nameZhHans": "穿透的",
             "level": 1,
             "textZh": "怪物傷害穿透(12—14)%元素抗性 此區域找到的物品擁有16%更多稀有度 此區域找到20%更多換界石",
             "textEn": "Monster Damage Penetrates (12—14)% Elemental Resistances 16% more Rarity of Items found in this Area 20% more Waystones found in Area",
+            "textZhHans": "召唤生物的伤害穿透 (12—14)% 元素抗性 该区域内物品稀有度总增 16% 区域内找到的引路石数量总增 20%",
             "dropChance": 0,
             "statMin": 12,
             "statMax": 14
@@ -2849,19 +3451,29 @@
         "generation": "prefix",
         "tags": [
           "map_pack_size",
+          "caster",
           "attack",
           "speed"
         ],
         "tagsZh": [
+          "法術",
           "攻擊",
+          "速度"
+        ],
+        "tagsZhHans": [
+          "施法",
+          "攻击",
           "速度"
         ],
         "labelZh": "短暫的",
         "labelEn": "Fleeting",
+        "labelZhHans": "飞驰的",
         "textZh": "怪物增加(10—15)%攻擊、施放、移動速度 9%更多怪物群大小 此區域找到25%更多換界石",
         "textEn": "Monsters have (10—15)% increased Attack, Cast and Movement Speed 9% more Pack size 25% more Waystones found in Area",
+        "textZhHans": "怪物的攻击，施法，移动速度提高 (10—15)% 怪物群规模总增 9% 区域内找到的引路石数量总增 25%",
         "match": "Monsters have increased Attack, Cast and Movement Speed 9% more Pack size 25% more Waystones found in Area",
         "matchZh": "怪物增加攻擊、施放、移動速度 9%更多怪物群大小 此區域找到25%更多換界石",
+        "matchZhHans": "怪物的攻击，施法，移动速度提高 怪物群规模总增 9% 区域内找到的引路石数量总增 25%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2872,9 +3484,11 @@
           {
             "nameZh": "短暫的",
             "nameEn": "Fleeting",
+            "nameZhHans": "飞驰的",
             "level": 1,
             "textZh": "怪物增加(10—15)%攻擊、施放、移動速度 9%更多怪物群大小 此區域找到25%更多換界石",
             "textEn": "Monsters have (10—15)% increased Attack, Cast and Movement Speed 9% more Pack size 25% more Waystones found in Area",
+            "textZhHans": "怪物的攻击，施法，移动速度提高 (10—15)% 怪物群规模总增 9% 区域内找到的引路石数量总增 25%",
             "dropChance": 0,
             "statMin": 10,
             "statMax": 15
@@ -2894,12 +3508,16 @@
           "map_pack_size"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "精確的",
         "labelEn": "Precise",
+        "labelZhHans": "精确的",
         "textZh": "怪物增加(30—40)%命中值 7%更多怪物群大小 此區域找到10%更多換界石",
         "textEn": "Monsters have (30—40)% increased Accuracy Rating 7% more Pack size 10% more Waystones found in Area",
+        "textZhHans": "怪物的命中值提高 (30—40)% 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have increased Accuracy Rating 7% more Pack size 10% more Waystones found in Area",
         "matchZh": "怪物增加命中值 7%更多怪物群大小 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的命中值提高 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2910,9 +3528,11 @@
           {
             "nameZh": "精確的",
             "nameEn": "Precise",
+            "nameZhHans": "精确的",
             "level": 1,
             "textZh": "怪物增加(30—40)%命中值 7%更多怪物群大小 此區域找到10%更多換界石",
             "textEn": "Monsters have (30—40)% increased Accuracy Rating 7% more Pack size 10% more Waystones found in Area",
+            "textZhHans": "怪物的命中值提高 (30—40)% 怪物群规模总增 7% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 30,
             "statMax": 40
@@ -2935,12 +3555,18 @@
         "tagsZh": [
           "傷害"
         ],
+        "tagsZhHans": [
+          "伤害"
+        ],
         "labelZh": "痛苦的",
         "labelEn": "Painful",
+        "labelZhHans": "痛苦的",
         "textZh": "增加(15—19)%怪物傷害 25%更多魔法和稀有怪物 稀有怪物有25%更多怪物詞綴機率 此區域找到20%更多換界石",
         "textEn": "(15—19)% increased Monster Damage 25% more Magic and Rare Monsters Rare Monsters have 25% more chance of Monster Modifiers 20% more Waystones found in Area",
+        "textZhHans": "怪物伤害提高 (15—19)% 魔法和稀有怪物总增 25% 稀有怪物有怪物词缀的几率总增 25% 区域内找到的引路石数量总增 20%",
         "match": "increased Monster Damage 25% more Magic and Rare Monsters Rare Monsters have 25% more chance of Monster Modifiers 20% more Waystones found in Area",
         "matchZh": "增加怪物傷害 25%更多魔法和稀有怪物 稀有怪物有25%更多怪物詞綴機率 此區域找到20%更多換界石",
+        "matchZhHans": "怪物伤害提高 魔法和稀有怪物总增 25% 稀有怪物有怪物词缀的几率总增 25% 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2951,9 +3577,11 @@
           {
             "nameZh": "痛苦的",
             "nameEn": "Painful",
+            "nameZhHans": "痛苦的",
             "level": 1,
             "textZh": "增加(15—19)%怪物傷害 25%更多魔法和稀有怪物 稀有怪物有25%更多怪物詞綴機率 此區域找到20%更多換界石",
             "textEn": "(15—19)% increased Monster Damage 25% more Magic and Rare Monsters Rare Monsters have 25% more chance of Monster Modifiers 20% more Waystones found in Area",
+            "textZhHans": "怪物伤害提高 (15—19)% 魔法和稀有怪物总增 25% 稀有怪物有怪物词缀的几率总增 25% 区域内找到的引路石数量总增 20%",
             "dropChance": 0,
             "statMin": 15,
             "statMax": 19
@@ -2978,12 +3606,19 @@
           "傷害",
           "暴擊"
         ],
+        "tagsZhHans": [
+          "伤害",
+          "暴击"
+        ],
         "labelZh": "毀滅的",
         "labelEn": "Destructive",
+        "labelZhHans": "灭绝的",
         "textZh": "增加(200—240)%怪物的暴擊率 +(21—25)%怪物暴擊傷害加成 9%更多怪物群大小 此區域找到15%更多換界石",
         "textEn": "Monsters have (200—240)% increased Critical Hit Chance Monsters have +(21—25)% Critical Damage Bonus 9% more Pack size 15% more Waystones found in Area",
+        "textZhHans": "怪物暴击率提高 (200—240)% +(21—25)% 怪物暴击伤害加成 怪物群规模总增 9% 区域内找到的引路石数量总增 15%",
         "match": "Monsters have increased Critical Hit Chance Monsters have +(21—25)% Critical Damage Bonus 9% more Pack size 15% more Waystones found in Area",
         "matchZh": "增加怪物的暴擊率 +(21—25)%怪物暴擊傷害加成 9%更多怪物群大小 此區域找到15%更多換界石",
+        "matchZhHans": "怪物暴击率提高 +(21—25)% 怪物暴击伤害加成 怪物群规模总增 9% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -2994,9 +3629,11 @@
           {
             "nameZh": "毀滅的",
             "nameEn": "Destructive",
+            "nameZhHans": "灭绝的",
             "level": 1,
             "textZh": "增加(200—240)%怪物的暴擊率 +(21—25)%怪物暴擊傷害加成 9%更多怪物群大小 此區域找到15%更多換界石",
             "textEn": "Monsters have (200—240)% increased Critical Hit Chance Monsters have +(21—25)% Critical Damage Bonus 9% more Pack size 15% more Waystones found in Area",
+            "textZhHans": "怪物暴击率提高 (200—240)% +(21—25)% 怪物暴击伤害加成 怪物群规模总增 9% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 200,
             "statMax": 240
@@ -3016,12 +3653,16 @@
           "map_monster_potency"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "衝擊的",
         "labelEn": "Impacting",
+        "labelZhHans": "冲击的",
         "textZh": "增加(90—100)%怪物的暈眩累積 怪物擁有13%更多效用 此區域找到15%更多換界石",
         "textEn": "Monsters have (90—100)% increased Stun Buildup Monsters have 13% more Effectiveness 15% more Waystones found in Area",
+        "textZhHans": "怪物的晕眩积蓄提高 (90—100)% 怪物的效能总增 13% 区域内找到的引路石数量总增 15%",
         "match": "Monsters have increased Stun Buildup Monsters have 13% more Effectiveness 15% more Waystones found in Area",
         "matchZh": "增加怪物的暈眩累積 怪物擁有13%更多效用 此區域找到15%更多換界石",
+        "matchZhHans": "怪物的晕眩积蓄提高 怪物的效能总增 13% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -3032,9 +3673,11 @@
           {
             "nameZh": "衝擊的",
             "nameEn": "Impacting",
+            "nameZhHans": "冲击的",
             "level": 1,
             "textZh": "增加(90—100)%怪物的暈眩累積 怪物擁有13%更多效用 此區域找到15%更多換界石",
             "textEn": "Monsters have (90—100)% increased Stun Buildup Monsters have 13% more Effectiveness 15% more Waystones found in Area",
+            "textZhHans": "怪物的晕眩积蓄提高 (90—100)% 怪物的效能总增 13% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 90,
             "statMax": 100
@@ -3059,12 +3702,19 @@
           "抗性",
           "元素"
         ],
+        "tagsZhHans": [
+          "抗性",
+          "元素"
+        ],
         "labelZh": "稜鏡之",
         "labelEn": "of the Prism",
+        "labelZhHans": "棱镜之",
         "textZh": "+(30—34)%怪物元素抗性 此區域找到的物品擁有14%更多稀有度 此區域找到10%更多換界石",
         "textEn": "+(30—34)% Monster Elemental Resistances 14% more Rarity of Items found in this Area 10% more Waystones found in Area",
+        "textZhHans": "+(30—34)% 怪物的元素抗性 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 10%",
         "match": "Monster Elemental Resistances 14% more Rarity of Items found in this Area 10% more Waystones found in Area",
         "matchZh": "怪物元素抗性 此區域找到的物品擁有14%更多稀有度 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的元素抗性 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "plusPercent",
@@ -3075,9 +3725,11 @@
           {
             "nameZh": "稜鏡之",
             "nameEn": "of the Prism",
+            "nameZhHans": "棱镜之",
             "level": 1,
             "textZh": "+(30—34)%怪物元素抗性 此區域找到的物品擁有14%更多稀有度 此區域找到10%更多換界石",
             "textEn": "+(30—34)% Monster Elemental Resistances 14% more Rarity of Items found in this Area 10% more Waystones found in Area",
+            "textZhHans": "+(30—34)% 怪物的元素抗性 该区域内物品稀有度总增 14% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 30,
             "statMax": 34
@@ -3097,12 +3749,16 @@
           "map_item_rarity"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "禦魔之",
         "labelEn": "of Hexwarding",
+        "labelZhHans": "辟邪之",
         "textZh": "怪物身上的詛咒具有(40—50)%更少效果 此區域找到的物品擁有10%更多稀有度 此區域找到10%更多換界石",
         "textEn": "(40—50)% less effect of Curses on Monsters 10% more Rarity of Items found in this Area 10% more Waystones found in Area",
+        "textZhHans": "怪物受到的诅咒效果总降 (40—50)% 该区域内物品稀有度总增 10% 区域内找到的引路石数量总增 10%",
         "match": "less effect of Curses on Monsters 10% more Rarity of Items found in this Area 10% more Waystones found in Area",
         "matchZh": "怪物身上的詛咒具有更少效果 此區域找到的物品擁有10%更多稀有度 此區域找到10%更多換界石",
+        "matchZhHans": "怪物受到的诅咒效果总降 该区域内物品稀有度总增 10% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -3113,9 +3769,11 @@
           {
             "nameZh": "禦魔之",
             "nameEn": "of Hexwarding",
+            "nameZhHans": "辟邪之",
             "level": 1,
             "textZh": "怪物身上的詛咒具有(40—50)%更少效果 此區域找到的物品擁有10%更多稀有度 此區域找到10%更多換界石",
             "textEn": "(40—50)% less effect of Curses on Monsters 10% more Rarity of Items found in this Area 10% more Waystones found in Area",
+            "textZhHans": "怪物受到的诅咒效果总降 (40—50)% 该区域内物品稀有度总增 10% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 40,
             "statMax": 50
@@ -3138,12 +3796,18 @@
         "tagsZh": [
           "元素"
         ],
+        "tagsZhHans": [
+          "元素"
+        ],
         "labelZh": "強盛之",
         "labelEn": "of Overpowering",
+        "labelZhHans": "强威之",
         "textZh": "怪物增加(100—119)%元素異常狀態施加 此區域找到的物品擁有11%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Monster have (100—119)% increased Elemental Ailment Application 11% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "怪物的元素异常状态应用提高 (100—119)% 该区域内物品稀有度总增 11% 区域内找到的引路石数量总增 15%",
         "match": "Monster have increased Elemental Ailment Application 11% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "怪物增加元素異常狀態施加 此區域找到的物品擁有11%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "怪物的元素异常状态应用提高 该区域内物品稀有度总增 11% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -3154,9 +3818,11 @@
           {
             "nameZh": "強盛之",
             "nameEn": "of Overpowering",
+            "nameZhHans": "强威之",
             "level": 1,
             "textZh": "怪物增加(100—119)%元素異常狀態施加 此區域找到的物品擁有11%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Monster have (100—119)% increased Elemental Ailment Application 11% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "怪物的元素异常状态应用提高 (100—119)% 该区域内物品稀有度总增 11% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 100,
             "statMax": 119
@@ -3181,12 +3847,19 @@
           "傷害",
           "暴擊"
         ],
+        "tagsZhHans": [
+          "伤害",
+          "暴击"
+        ],
         "labelZh": "障礙物之",
         "labelEn": "of Obstruction",
+        "labelZhHans": "阻挠之",
         "textZh": "怪物遭暴擊時，減少(26—30)%承受的額外傷害 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到10%更多換界石",
         "textEn": "Monsters take (26—30)% reduced Extra Damage from Critical Hits 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 10% more Waystones found in Area",
+        "textZhHans": "怪物受到的暴击伤害降低 (26—30)% 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 10%",
         "match": "Monsters take reduced Extra Damage from Critical Hits 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 10% more Waystones found in Area",
         "matchZh": "怪物遭暴擊時，減少承受的額外傷害 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到10%更多換界石",
+        "matchZhHans": "怪物受到的暴击伤害降低 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -3197,9 +3870,11 @@
           {
             "nameZh": "障礙物之",
             "nameEn": "of Obstruction",
+            "nameZhHans": "阻挠之",
             "level": 1,
             "textZh": "怪物遭暴擊時，減少(26—30)%承受的額外傷害 18%更多魔法和稀有怪物 稀有怪物有18%更多怪物詞綴機率 此區域找到10%更多換界石",
             "textEn": "Monsters take (26—30)% reduced Extra Damage from Critical Hits 18% more Magic and Rare Monsters Rare Monsters have 18% more chance of Monster Modifiers 10% more Waystones found in Area",
+            "textZhHans": "怪物受到的暴击伤害降低 (26—30)% 魔法和稀有怪物总增 18% 稀有怪物有怪物词缀的几率总增 18% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 26,
             "statMax": 30
@@ -3222,12 +3897,18 @@
         "tagsZh": [
           "抗性"
         ],
+        "tagsZhHans": [
+          "抗性"
+        ],
         "labelZh": "曝曬之",
         "labelEn": "of Exposure",
+        "labelZhHans": "曝露之",
         "textZh": "玩家(-8—-6)%最大抗性 10%更多怪物群大小 此區域找到25%更多換界石",
         "textEn": "(-8—-6)% maximum Player Resistances 10% more Pack size 25% more Waystones found in Area",
+        "textZhHans": "玩家的抗性上限 (-8—-6)% 怪物群规模总增 10% 区域内找到的引路石数量总增 25%",
         "match": "maximum Player Resistances 10% more Pack size 25% more Waystones found in Area",
         "matchZh": "玩家最大抗性 10%更多怪物群大小 此區域找到25%更多換界石",
+        "matchZhHans": "玩家的抗性上限 怪物群规模总增 10% 区域内找到的引路石数量总增 25%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -3236,9 +3917,11 @@
           {
             "nameZh": "曝曬之",
             "nameEn": "of Exposure",
+            "nameZhHans": "曝露之",
             "level": 1,
             "textZh": "玩家(-8—-6)%最大抗性 10%更多怪物群大小 此區域找到25%更多換界石",
             "textEn": "(-8—-6)% maximum Player Resistances 10% more Pack size 25% more Waystones found in Area",
+            "textZhHans": "玩家的抗性上限 (-8—-6)% 怪物群规模总增 10% 区域内找到的引路石数量总增 25%",
             "dropChance": 0
           }
         ],
@@ -3256,12 +3939,16 @@
           "map_item_rarity"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "疲勞之",
         "labelEn": "of Fatigue",
+        "labelZhHans": "疲惫之",
         "textZh": "玩家有(25—30)%更少冷卻時間恢復率 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石",
         "textEn": "Players have (25—30)% less Cooldown Recovery Rate 12% more Rarity of Items found in this Area 15% more Waystones found in Area",
+        "textZhHans": "玩家的冷却回复率总降 (25—30)% 该区域内物品稀有度总增 12% 区域内找到的引路石数量总增 15%",
         "match": "Players have less Cooldown Recovery Rate 12% more Rarity of Items found in this Area 15% more Waystones found in Area",
         "matchZh": "玩家有更少冷卻時間恢復率 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石",
+        "matchZhHans": "玩家的冷却回复率总降 该区域内物品稀有度总增 12% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -3272,9 +3959,11 @@
           {
             "nameZh": "疲勞之",
             "nameEn": "of Fatigue",
+            "nameZhHans": "疲惫之",
             "level": 1,
             "textZh": "玩家有(25—30)%更少冷卻時間恢復率 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石",
             "textEn": "Players have (25—30)% less Cooldown Recovery Rate 12% more Rarity of Items found in this Area 15% more Waystones found in Area",
+            "textZhHans": "玩家的冷却回复率总降 (25—30)% 该区域内物品稀有度总增 12% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 25,
             "statMax": 30
@@ -3293,18 +3982,28 @@
         "tags": [
           "map_item_rarity",
           "energy_shield",
-          "life"
+          "life",
+          "speed"
         ],
         "tagsZh": [
           "能量護盾",
-          "生命"
+          "生命",
+          "速度"
+        ],
+        "tagsZhHans": [
+          "能量护盾",
+          "生命",
+          "速度"
         ],
         "labelZh": "窒息之",
         "labelEn": "of Smothering",
+        "labelZhHans": "窒息之",
         "textZh": "玩家擁有(36—40)%更少生命和能量護盾恢復率 此區域找到的物品擁有15%更多稀有度 此區域找到20%更多換界石",
         "textEn": "Players have (36—40)% less Recovery Rate of Life and Energy Shield 15% more Rarity of Items found in this Area 20% more Waystones found in Area",
+        "textZhHans": "玩家的生命和能量护盾总回复速度总降 (36—40)% 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 20%",
         "match": "Players have less Recovery Rate of Life and Energy Shield 15% more Rarity of Items found in this Area 20% more Waystones found in Area",
         "matchZh": "玩家擁有更少生命和能量護盾恢復率 此區域找到的物品擁有15%更多稀有度 此區域找到20%更多換界石",
+        "matchZhHans": "玩家的生命和能量护盾总回复速度总降 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 20%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -3315,9 +4014,11 @@
           {
             "nameZh": "窒息之",
             "nameEn": "of Smothering",
+            "nameZhHans": "窒息之",
             "level": 1,
             "textZh": "玩家擁有(36—40)%更少生命和能量護盾恢復率 此區域找到的物品擁有15%更多稀有度 此區域找到20%更多換界石",
             "textEn": "Players have (36—40)% less Recovery Rate of Life and Energy Shield 15% more Rarity of Items found in this Area 20% more Waystones found in Area",
+            "textZhHans": "玩家的生命和能量护盾总回复速度总降 (36—40)% 该区域内物品稀有度总增 15% 区域内找到的引路石数量总增 20%",
             "dropChance": 0,
             "statMin": 36,
             "statMax": 40
@@ -3335,21 +4036,28 @@
         "generation": "suffix",
         "tags": [
           "map_monster_potency",
+          "map_pack_size",
           "fire",
           "lightning",
-          "map_item_rarity",
-          "map_pack_size"
+          "map_item_rarity"
         ],
         "tagsZh": [
           "火焰",
           "閃電"
         ],
+        "tagsZhHans": [
+          "火焰",
+          "闪电"
+        ],
         "labelZh": "雨雪的",
         "labelEn": "Shocking",
+        "labelZhHans": "感电的",
         "textZh": "區域會有多塊冰緩地面 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石 ground ice art variation [1014] map ground effect patches per 100 tiles [5] map ground effect radius [26]",
         "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
+        "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
         "match": "Area has patches of Shocked Ground more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
         "matchZh": "區域中有多個點燃地面 怪物擁有更多效用 此區域找到15%更多換界石 ground fire art variation [1033] map ground effect patches per 100 tiles [6] map ground effect radius [20]",
+        "matchZhHans": "区域内有感电地面 怪物群规模总增 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix"
@@ -3358,25 +4066,31 @@
           {
             "nameZh": "雨雪的",
             "nameEn": "Shocking",
+            "nameZhHans": "感电的",
             "level": 1,
             "textZh": "區域會有多塊冰緩地面 此區域找到的物品擁有12%更多稀有度 此區域找到15%更多換界石 ground ice art variation [1014] map ground effect patches per 100 tiles [5] map ground effect radius [26]",
             "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
+            "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
             "dropChance": 0
           },
           {
             "nameZh": "烈火的",
             "nameEn": "Shocking",
+            "nameZhHans": "感电的",
             "level": 1,
             "textZh": "區域中有多個點燃地面 怪物擁有15%更多效用 此區域找到15%更多換界石 ground fire art variation [1033] map ground effect patches per 100 tiles [6] map ground effect radius [20]",
             "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
+            "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
             "dropChance": 0
           },
           {
             "nameZh": "電震的",
             "nameEn": "Shocking",
+            "nameZhHans": "感电的",
             "level": 1,
             "textZh": "區域會有多塊感電地面 7%更多怪物群大小 此區域找到15%更多換界石 ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
             "textEn": "Area has patches of Shocked Ground 7% more Pack size 15% more Waystones found in Area ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
+            "textZhHans": "区域内有感电地面 怪物群规模总增 7% 区域内找到的引路石数量总增 15% ground lightning art variation [1011] map ground effect patches per 100 tiles [7] map ground effect radius [17]",
             "dropChance": 0
           }
         ],
@@ -3394,12 +4108,16 @@
           "map_pack_size"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "乾旱之",
         "labelEn": "of Drought",
+        "labelZhHans": "干枯之",
         "textZh": "減少(30—35)%玩家獲得的藥劑充能 7%更多怪物群大小 此區域找到15%更多換界石",
         "textEn": "Players gain (30—35)% reduced Flask Charges 7% more Pack size 15% more Waystones found in Area",
+        "textZhHans": "玩家获得的药剂充能降低 (30—35)% 怪物群规模总增 7% 区域内找到的引路石数量总增 15%",
         "match": "Players gain reduced Flask Charges 7% more Pack size 15% more Waystones found in Area",
         "matchZh": "減少玩家獲得的藥劑充能 7%更多怪物群大小 此區域找到15%更多換界石",
+        "matchZhHans": "玩家获得的药剂充能降低 怪物群规模总增 7% 区域内找到的引路石数量总增 15%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -3410,9 +4128,11 @@
           {
             "nameZh": "乾旱之",
             "nameEn": "of Drought",
+            "nameZhHans": "干枯之",
             "level": 1,
             "textZh": "減少(30—35)%玩家獲得的藥劑充能 7%更多怪物群大小 此區域找到15%更多換界石",
             "textEn": "Players gain (30—35)% reduced Flask Charges 7% more Pack size 15% more Waystones found in Area",
+            "textZhHans": "玩家获得的药剂充能降低 (30—35)% 怪物群规模总增 7% 区域内找到的引路石数量总增 15%",
             "dropChance": 0,
             "statMin": 30,
             "statMax": 35
@@ -3432,12 +4152,16 @@
           "map_monster_potency"
         ],
         "tagsZh": [],
+        "tagsZhHans": [],
         "labelZh": "堅定不移之",
         "labelEn": "of the Unwavering",
+        "labelZhHans": "不懈之",
         "textZh": "增加(70—79)%怪物異常狀態門檻 增加(60—69)%怪物的暈眩門檻 怪物擁有13%更多效用 此區域找到10%更多換界石",
         "textEn": "Monsters have (70—79)% increased Ailment Threshold Monsters have (60—69)% increased Stun Threshold Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+        "textZhHans": "怪物的异常状态阈值提高 (70—79)% 怪物的晕眩阈值提高 (60—69)% 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "match": "Monsters have increased Ailment Threshold Monsters have (60—69)% increased Stun Threshold Monsters have 13% more Effectiveness 10% more Waystones found in Area",
         "matchZh": "增加怪物異常狀態門檻 增加(60—69)%怪物的暈眩門檻 怪物擁有13%更多效用 此區域找到10%更多換界石",
+        "matchZhHans": "怪物的异常状态阈值提高 怪物的晕眩阈值提高 (60—69)% 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
         "kind": "numeric",
         "numeric": {
           "format": "percentPrefix",
@@ -3448,9 +4172,11 @@
           {
             "nameZh": "堅定不移之",
             "nameEn": "of the Unwavering",
+            "nameZhHans": "不懈之",
             "level": 1,
             "textZh": "增加(70—79)%怪物異常狀態門檻 增加(60—69)%怪物的暈眩門檻 怪物擁有13%更多效用 此區域找到10%更多換界石",
             "textEn": "Monsters have (70—79)% increased Ailment Threshold Monsters have (60—69)% increased Stun Threshold Monsters have 13% more Effectiveness 10% more Waystones found in Area",
+            "textZhHans": "怪物的异常状态阈值提高 (70—79)% 怪物的晕眩阈值提高 (60—69)% 怪物的效能总增 13% 区域内找到的引路石数量总增 10%",
             "dropChance": 0,
             "statMin": 70,
             "statMax": 79
@@ -3463,5 +4189,6 @@
         "tier": "top"
       }
     ]
-  }
+  },
+  "repoeVersion": "4.5.5.2"
 }

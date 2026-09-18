@@ -152,4 +152,31 @@ describe("buildRegex", () => {
     expect(matchesItem(r.pattern, "+10% to Fire Resistance")).toBe(true);
     expect(matchesItem(r.pattern, "+10% to Cold Resistance")).toBe(false);
   });
+
+  it("places numeric bounds after the fragment for 简中 suffix stats", () => {
+    const r = buildRegex(
+      [
+        {
+          id: "fire-cn",
+          match: "火焰抗性",
+          polarity: "include",
+          kind: "numeric",
+          numeric: { format: "plusPercent", min: 30, placement: "after" },
+        },
+      ],
+      { corpus: ["火焰抗性", "冰霜抗性", "闪电抗性"] },
+    );
+    expect(matchesItem(r.pattern, "火焰抗性 +35%")).toBe(true);
+    expect(matchesItem(r.pattern, "火焰抗性 +12%")).toBe(false);
+    expect(matchesItem(r.pattern, "+35% to Fire Resistance")).toBe(false);
+  });
+
+  it("keeps default placement before the fragment for EN/繁中", () => {
+    const r = buildRegex(
+      [{ ...FIRE, numeric: { format: "plusPercent", min: 30 } }],
+      { corpus: CORPUS },
+    );
+    expect(matchesItem(r.pattern, "+35% to Fire Resistance")).toBe(true);
+    expect(matchesItem(r.pattern, "火焰抗性 +35%")).toBe(false);
+  });
 });

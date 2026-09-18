@@ -38,7 +38,7 @@ Usage:
   node scripts/update-data.mjs [options]
 
 Sources:
-  - poe2db.tw Chronicles unpack (public /tw and /us ModsView HTML). No login.
+  - poe2db.tw Chronicles unpack (public /tw, /cn, and /us ModsView HTML). No login.
   - RePoE-fork (https://repoe-fork.github.io/poe2/) — English match fallback + version label only.
 
 Options:

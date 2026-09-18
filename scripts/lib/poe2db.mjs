@@ -139,63 +139,73 @@ export function parseBadges(modNo) {
   return tags;
 }
 
-export function inferTagsFromText(textZh, textEn) {
-  const blob = `${textZh} ${textEn}`;
+export function inferTagsFromText(textZh, textEn, textZhHans = "") {
+  const blob = `${textZh} ${textEn} ${textZhHans}`;
   const found = [];
   const rules = [
-    [/護甲|Armour/i, "armour", "護甲"],
-    [/閃避|Evasion/i, "evasion", "閃避"],
-    [/能量護盾|Energy Shield/i, "energy_shield", "能量護盾"],
-    [/最大生命|to maximum Life|生命/i, "life", "生命"],
-    [/火焰|Fire/i, "fire", "火焰"],
-    [/冰冷|Cold/i, "cold", "冰冷"],
-    [/閃電|Lightning/i, "lightning", "閃電"],
-    [/混沌|Chaos/i, "chaos", "混沌"],
-    [/抗性|Resistance/i, "resistance", "抗性"],
-    [/元素|Elemental/i, "elemental", "元素"],
-    [/物理|Physical/i, "physical", "物理"],
-    [/傷害|Damage/i, "damage", "傷害"],
-    [/力量|敏捷|智慧|Strength|Dexterity|Intelligence|能力/i, "attribute", "能力"],
-    [/暴擊|Critical/i, "critical", "暴擊"],
-    [/法術|Spell/i, "caster", "法術"],
-    [/魔力|Mana/i, "mana", "魔力"],
-    [/攻擊|Attack/i, "attack", "攻擊"],
-    [/召喚|召喚物|Minion/i, "minion", "召喚物"],
-    [/速度|Speed/i, "speed", "速度"],
-    [/寶石|Gem/i, "gem", "寶石"],
+    [/護甲|护甲|Armour/i, "armour", "護甲", "护甲"],
+    [/閃避|闪避|Evasion/i, "evasion", "閃避", "闪避"],
+    [/能量護盾|能量护盾|Energy Shield/i, "energy_shield", "能量護盾", "能量护盾"],
+    [/最大生命|生命上限|to maximum Life|生命/i, "life", "生命", "生命"],
+    [/火焰|Fire/i, "fire", "火焰", "火焰"],
+    [/冰冷|冰霜|Cold/i, "cold", "冰冷", "冰霜"],
+    [/閃電|闪电|Lightning/i, "lightning", "閃電", "闪电"],
+    [/混沌|Chaos/i, "chaos", "混沌", "混沌"],
+    [/抗性|Resistance/i, "resistance", "抗性", "抗性"],
+    [/元素|Elemental/i, "elemental", "元素", "元素"],
+    [/物理|Physical/i, "physical", "物理", "物理"],
+    [/傷害|伤害|Damage/i, "damage", "傷害", "伤害"],
+    [/力量|敏捷|智慧|Strength|Dexterity|Intelligence|能力|属性/i, "attribute", "能力", "属性"],
+    [/暴擊|暴击|Critical/i, "critical", "暴擊", "暴击"],
+    [/法術|法术|施法|Spell|Caster/i, "caster", "法術", "施法"],
+    [/魔力|Mana/i, "mana", "魔力", "魔力"],
+    [/攻擊|攻击|Attack/i, "attack", "攻擊", "攻击"],
+    [/召喚|召唤|召喚物|Minion/i, "minion", "召喚物", "召唤生物"],
+    [/速度|Speed/i, "speed", "速度", "速度"],
+    [/寶石|宝石|Gem/i, "gem", "寶石", "宝石"],
   ];
-  for (const [re, id, labelZh] of rules) {
-    if (re.test(blob)) found.push({ id, labelZh });
+  for (const [re, id, labelZh, labelZhHans] of rules) {
+    if (re.test(blob)) found.push({ id, labelZh, labelZhHans });
   }
   return found;
 }
 
 export function detect(cleaned) {
-  if (/^\+\s*(\([^)]+\)|\d+)\s*%/.test(cleaned)) {
+  const text = String(cleaned || "").replace(/\s+/g, " ").trim();
+  if (/^\+\s*(\([^)]+\)|\d+)\s*%/.test(text)) {
     return {
       format: "plusPercent",
-      rest: cleaned.replace(/^\+\s*(\([^)]+\)|\d+)\s*%\s*/, "").trim(),
+      rest: tidyRest(text.replace(/^\+\s*(\([^)]+\)|\d+)\s*%\s*/, "")),
     };
   }
-  if (/^\+\s*(\([^)]+\)|\d+)/.test(cleaned)) {
+  if (/^\+\s*(\([^)]+\)|\d+)/.test(text)) {
     return {
       format: "plusFlat",
-      rest: cleaned.replace(/^\+\s*(\([^)]+\)|\d+)\s*/, "").trim(),
+      rest: tidyRest(text.replace(/^\+\s*(\([^)]+\)|\d+)\s*/, "")),
     };
   }
-  if (/(\([^)]+\)|\d+)\s*%/.test(cleaned)) {
+  if (/(\([^)]+\)|\d+)\s*%/.test(text)) {
     return {
       format: "percentPrefix",
-      rest: cleaned.replace(/(\([^)]+\)|\d+)\s*%\s*/, "").trim(),
+      rest: tidyRest(text.replace(/(\([^)]+\)|\d+)\s*%\s*/, "")),
     };
   }
-  if (/\([^)]*[—–\-][^)]*\)/.test(cleaned)) {
+  if (/\([^)]*[—–\-][^)]*\)/.test(text)) {
     return {
       format: "bare",
-      rest: cleaned.replace(/\([^)]+\)/g, "").replace(/\s+/g, " ").trim(),
+      rest: tidyRest(text.replace(/\([^)]+\)/g, "")),
     };
   }
-  return { format: undefined, rest: cleaned };
+  return { format: undefined, rest: tidyRest(text) };
+}
+
+/** Drop leftover +/- punctuation so 简中 `火焰抗性 +` becomes `火焰抗性`. */
+export function tidyRest(cleaned) {
+  return String(cleaned || "")
+    .replace(/^[+\s]+/, "")
+    .replace(/[+\s]+$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function parseRangeNums(text) {
@@ -273,6 +283,32 @@ export function indexByTier(view) {
   return map;
 }
 
+export function mergeHarvestTags(twTags = [], cnTags = [], usTags = []) {
+  const byId = new Map();
+  const take = (list, field) => {
+    for (const tag of list || []) {
+      if (!tag?.id) continue;
+      const prev = byId.get(tag.id) || { id: tag.id, labelZh: "" };
+      const label = tag.labelZh || tag[field] || "";
+      if (field === "labelZh" && label) prev.labelZh = prev.labelZh || label;
+      if (field === "labelZhHans" && label) prev.labelZhHans = prev.labelZhHans || label;
+      if (field === "labelEn" && label) prev.labelEn = prev.labelEn || label;
+      if (!prev.labelZh && label) prev.labelZh = label;
+      byId.set(tag.id, prev);
+    }
+  };
+  take(twTags, "labelZh");
+  take(cnTags, "labelZhHans");
+  take(usTags, "labelEn");
+  const found = [...byId.values()];
+  found.sort((a, b) => {
+    const ia = TAG_ORDER.indexOf(a.id);
+    const ib = TAG_ORDER.indexOf(b.id);
+    return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+  });
+  return found;
+}
+
 function sortFamilies(list) {
   list.sort((a, b) => {
     if (a.generation !== b.generation) return a.generation === "prefix" ? -1 : 1;
@@ -290,8 +326,10 @@ export function finalizeFamilyRow(row) {
     ...row,
     labelZh: first?.nameZh || row.labelZh,
     labelEn: first?.nameEn || row.labelEn,
+    labelZhHans: first?.nameZhHans || row.labelZhHans,
     textZh: first?.textZh || row.textZh,
     textEn: first?.textEn || row.textEn,
+    textZhHans: first?.textZhHans || row.textZhHans,
     minLevel: first?.level ?? 0,
     maxLevel: last?.level ?? 0,
     tierCount: row.tiers.length,
@@ -300,40 +338,64 @@ export function finalizeFamilyRow(row) {
 }
 
 export function parsePageFamilies(twView, usView, options = {}) {
-  const { skipEmpty = true, extraIdPrefix = "" } = options;
+  const { skipEmpty = true, extraIdPrefix = "", cnView = { normal: [] } } = options;
   const usIndex = indexByTier(usView);
+  const cnIndex = indexByTier(cnView);
   const families = new Map();
   let skippedEmpty = 0;
 
   for (const tw of twView.normal || []) {
     const fam = familyKey(tw);
-    const us =
-      usIndex.get(`${(tw.ModFamilyList || []).join("|")}|${tw.ModGenerationTypeID}|${tw.Level}`) ||
-      null;
+    const key = `${(tw.ModFamilyList || []).join("|")}|${tw.ModGenerationTypeID}|${tw.Level}`;
+    const us = usIndex.get(key) || null;
+    const cn = cnIndex.get(key) || null;
     const textZh = stripHtml(tw.str);
     const textEn = us ? stripHtml(us.str) : "";
+    const textZhHans = cn ? stripHtml(cn.str) : "";
     if (skipEmpty && !textZh && !textEn) {
       skippedEmpty += 1;
       continue;
     }
-    const detected = detect(textEn || textZh);
+    const detected = detect(textEn || textZh || textZhHans);
     const matchEn = detected.rest || textEn;
     const matchZh = detect(textZh).rest || textZh;
+    const matchZhHans = textZhHans ? detect(textZhHans).rest || textZhHans : "";
     const badges = parseBadges(tw.mod_no);
-    const inferred = inferTagsFromText(textZh, textEn);
+    const badgesCn = parseBadges(cn?.mod_no);
+    const inferred = inferTagsFromText(textZh, textEn, textZhHans);
     const harvestIds = [
-      ...new Set([...(tw.fossil_no || []), ...badges.map((b) => b.id), ...inferred.map((b) => b.id)]),
+      ...new Set([
+        ...(tw.fossil_no || []),
+        ...(cn?.fossil_no || []),
+        ...badges.map((b) => b.id),
+        ...inferred.map((b) => b.id),
+      ]),
     ];
     const tagsZh = [
       ...new Set([...badges.map((b) => b.labelZh), ...inferred.map((b) => b.labelZh)]),
     ];
+    const tagsZhHans = [
+      ...new Set([
+        ...badgesCn.map((b) => b.labelZh),
+        ...inferred.map((b) => b.labelZhHans).filter(Boolean),
+      ]),
+    ];
     const nums = parseRangeNums(textZh);
+    if (nums.min == null) {
+      const fromHans = parseRangeNums(textZhHans);
+      if (fromHans.min != null) {
+        nums.min = fromHans.min;
+        nums.max = fromHans.max;
+      }
+    }
     const tier = {
       nameZh: tw.Name,
       nameEn: us?.Name || "",
+      nameZhHans: cn?.Name || "",
       level: Number(tw.Level) || 0,
       textZh,
       textEn,
+      textZhHans,
       dropChance: Number(tw.DropChance) || 0,
       statMin: nums.min,
       statMax: nums.max,
@@ -347,12 +409,16 @@ export function parsePageFamilies(twView, usView, options = {}) {
         generation: tw.ModGenerationTypeID === "2" ? "suffix" : "prefix",
         tags: harvestIds,
         tagsZh,
+        tagsZhHans,
         labelZh: tw.Name,
         labelEn: us?.Name || familyName,
+        labelZhHans: cn?.Name || "",
         textZh,
         textEn,
-        match: matchEn || matchZh,
+        textZhHans,
+        match: matchEn || matchZh || matchZhHans,
         matchZh,
+        matchZhHans,
         kind: detected.format ? "numeric" : "flag",
         numeric: detected.format
           ? { format: detected.format, suggestedMin: nums.min, suggestedMax: nums.max }
@@ -367,6 +433,13 @@ export function parsePageFamilies(twView, usView, options = {}) {
     for (const label of tagsZh) {
       if (!row.tagsZh.includes(label)) row.tagsZh.push(label);
     }
+    row.tagsZhHans = row.tagsZhHans || [];
+    for (const label of tagsZhHans) {
+      if (!row.tagsZhHans.includes(label)) row.tagsZhHans.push(label);
+    }
+    if (!row.matchZhHans && matchZhHans) row.matchZhHans = matchZhHans;
+    if (!row.textZhHans && textZhHans) row.textZhHans = textZhHans;
+    if (!row.labelZhHans && cn?.Name) row.labelZhHans = cn.Name;
     const tk = `${tier.level}|${tier.nameZh}|${tier.textZh}`;
     if (!row.seenTiers.has(tk)) {
       row.seenTiers.add(tk);
@@ -418,15 +491,23 @@ export function mergeFamilyRow(a, b, extra = {}) {
   for (const label of b.tagsZh) {
     if (!tagsZh.includes(label)) tagsZh.push(label);
   }
+  const tagsZhHans = [...(a.tagsZhHans || [])];
+  for (const label of b.tagsZhHans || []) {
+    if (!tagsZhHans.includes(label)) tagsZhHans.push(label);
+  }
   const merged = {
     ...a,
     ...extra,
     tags: [...new Set([...a.tags, ...b.tags])],
     tagsZh,
+    tagsZhHans,
     match: a.match || b.match,
     matchZh: a.matchZh || b.matchZh,
+    matchZhHans: a.matchZhHans || b.matchZhHans,
     textEn: a.textEn || b.textEn,
+    textZhHans: a.textZhHans || b.textZhHans,
     labelEn: a.labelEn || b.labelEn,
+    labelZhHans: a.labelZhHans || b.labelZhHans,
     kind: a.kind === "numeric" || b.kind === "numeric" ? "numeric" : a.kind,
     numeric: mergeNumeric(a.numeric, b.numeric),
     tiers,
@@ -453,16 +534,43 @@ export async function scrapeModifiersPage(path, options = {}) {
   const fetchFn = options.fetchText || fetchText;
   const twUrl = `${origin}/tw/${path}`;
   const usUrl = `${origin}/us/${path}`;
-  const [twHtml, usHtml] = await Promise.all([fetchFn(twUrl), fetchFn(usUrl)]);
+  const cnUrl = `${origin}/cn/${path}`;
+  const [twHtml, usHtml, cnResult] = await Promise.all([
+    fetchFn(twUrl),
+    fetchFn(usUrl),
+    fetchFn(cnUrl).then(
+      (html) => ({ html, error: null }),
+      (err) => ({ html: "", error: err }),
+    ),
+  ]);
+  let cnView = { normal: [] };
+  let cnHtml = "";
+  if (cnResult.error) {
+    console.warn(`CN page skipped (${cnUrl}): ${cnResult.error?.message || cnResult.error}`);
+  } else {
+    cnHtml = cnResult.html;
+    try {
+      cnView = extractModsView(cnHtml, cnUrl);
+    } catch (err) {
+      console.warn(`CN ModsView skipped (${cnUrl}): ${err?.message || err}`);
+    }
+  }
   return {
     path,
     twUrl,
     usUrl,
+    cnUrl,
     twHtml,
     usHtml,
+    cnHtml,
     twView: extractModsView(twHtml, twUrl),
     usView: extractModsView(usHtml, usUrl),
-    tags: extractHarvestTags(twHtml),
+    cnView,
+    tags: mergeHarvestTags(
+      extractHarvestTags(twHtml),
+      cnHtml ? extractHarvestTags(cnHtml) : [],
+      extractHarvestTags(usHtml),
+    ),
   };
 }
 
@@ -488,7 +596,7 @@ export function createFixtureFetcher(fixtureDir) {
     } catch {
       throw new FetchError(`Cannot map fixture URL ${url}`, { url, code: "fixture" });
     }
-    if (!page || (locale !== "tw" && locale !== "us")) {
+    if (!page || (locale !== "tw" && locale !== "us" && locale !== "cn")) {
       throw new FetchError(`No fixture mapping for ${url}`, { url, code: "fixture" });
     }
     try {

@@ -1,15 +1,17 @@
 import type { ReactNode } from "react";
 import { NavLink } from "react-router-dom";
+import { useLocale } from "../i18n.tsx";
 
 export function SubNav({
   items,
 }: {
   items: { to: string; label: string; end?: boolean }[];
 }) {
+  const { t } = useLocale();
   return (
     <nav
       className="mb-6 flex flex-wrap gap-1 border-b border-line pb-3"
-      aria-label="子頁面"
+      aria-label={t.subNavAria}
     >
       {items.map((item) => (
         <NavLink
@@ -38,11 +40,12 @@ export function EmptyState({
   title: string;
   description: string;
 }) {
+  const { t } = useLocale();
   return (
     <section className="rounded-sm border border-dashed border-line bg-panel px-5 py-10">
       <h2 className="text-lg font-medium text-gold">{title}</h2>
       <p className="mt-2 max-w-xl text-sm text-muted">{description}</p>
-      <p className="mt-4 text-sm text-gold-dim">內容稍後填入</p>
+      <p className="mt-4 text-sm text-gold-dim">{t.emptyLater}</p>
     </section>
   );
 }
