@@ -1,6 +1,6 @@
 # 流亡 2 / 流放之路 2 正則工具
 
-按遊玩階段分成兩個模組。終局換界石與碑牌已填入編年史風格詞綴正則；開荒章節／商店已有各章預設裝備正則，流派仍為佔位，盾牌實驗頁可用。
+按遊玩階段分成兩個模組。終局換界石依物品數量／物品稀有度／怪物效用篩選；碑牌為編年史風格詞綴正則。開荒章節／商店已有各章預設裝備正則，流派仍為佔位，盾牌實驗頁可用。
 
 界面預設 **繁中**，可切 **EN**。詞綴效果與匹配字串來自 poe2db `/tw` + `/us`。此倉庫不含簡中（zh-Hans）界面、匹配模式或 `/cn` 資料路徑；簡中會另開平行專案。
 
@@ -54,7 +54,7 @@ pnpm fetch-data:check
 | `/early/builds` | 流派推薦裝備佔位 |
 | `/early/shields` | 實驗：盾牌詞綴（編年史風格） |
 | `/endgame` | 終局模組（導向換界石） |
-| `/endgame/waystones` | **換界石** 低／中／高階詞綴正則 |
+| `/endgame/waystones` | **換界石** 依物品數量／物品稀有度／怪物效用下限產生正則 |
 | `/endgame/tablets` | **碑牌** 先選種類再出詞綴正則 |
 | `/campaign` | 別名，導向 `/early` |
 
@@ -76,15 +76,17 @@ pnpm fetch-data:check
 
 ## 終局：換界石
 
-`/endgame/waystones` 對齊：
+`/endgame/waystones` 不再切低／中／高階詞綴池。玩家用三個最小百分比篩換界石，空白則忽略該軸：
 
-- [低階](https://poe2db.tw/tw/Waystones_low_tier#ModifiersCalc)
-- [中階](https://poe2db.tw/tw/Waystones_mid_tier#ModifiersCalc)
-- [高階](https://poe2db.tw/tw/Waystones_top_tier#ModifiersCalc)
+| 篩選 | 倉庫對照（繁中 / EN） | 資料裡的詞綴效果 |
+|---|---|---|
+| **物品數量** | `物品數量` / `Item Quantity` | 換界石詞綴沒有獨立的物品數量效果行；對物品上的總數值 |
+| **物品稀有度** | `物品稀有度` / `Item Rarity` | `更多稀有度` / `more Rarity of Items`（`map_item_rarity`） |
+| **怪物效用** | `怪物效用` / `Monster Effectiveness` | `更多效用` / `more Effectiveness`（`map_monster_potency`），以及同軸的 `更多怪物群大小` / `more Pack size` |
 
-三個階級是獨立詞綴池（不是合併後再篩）。操作與盾牌實驗相同：標籤三態 → 前後綴兩欄 → 正則／250／複製。預設繁中匹配，可切 EN match。
+低／中／高階仍分別刮自 poe2db，產生正則時合併成一個池來對這三軸，不必先選階級。預設繁中匹配，可切 EN match。
 
-凍結數量：
+凍結數量（資料來源，非畫面分頁）：
 
 | 階級 | 詞綴組 | 階層 |
 |---|---:|---:|

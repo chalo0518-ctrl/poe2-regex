@@ -1,4 +1,4 @@
-/** Compact chrome for endgame tablet / waystone builders. Shields keep defaults. */
+/** Compact chrome for endgame tablet builders. Shields keep defaults. */
 export const endgameModBuilderChrome = {
   showTags: false,
   showFilter: false,

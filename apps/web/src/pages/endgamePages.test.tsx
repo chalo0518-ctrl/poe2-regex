@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactElement } from "react";
 import { describe, expect, it } from "vitest";
+import { matchesItem } from "@poe2-regex/regex";
 import TabletsPage from "./TabletsPage.tsx";
 import WaystonesPage from "./WaystonesPage.tsx";
 import ShieldsDemo from "./ShieldsDemo.tsx";
@@ -50,16 +51,73 @@ describe("endgame tablets page", () => {
 });
 
 describe("endgame waystones page", () => {
-  it("keeps tier picker and hides harvest/filter chrome and family names", () => {
+  it("uses quantity / rarity / effectiveness mins and drops the tier picker", async () => {
+    const user = userEvent.setup();
     renderPage(<WaystonesPage />);
 
-    expect(screen.getByRole("tablist", { name: "換界石階級" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "低階" })).toBeInTheDocument();
+    expect(screen.queryByRole("tablist", { name: "換界石階級" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "低階" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "中階" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "高階" })).not.toBeInTheDocument();
     expectEndgameChromeGone();
     expectRegexTools();
+
+    expect(screen.getByRole("group", { name: "換界石數值篩選" })).toBeInTheDocument();
+    expect(screen.getByLabelText("物品數量")).toBeInTheDocument();
+    expect(screen.getByLabelText("物品稀有度")).toBeInTheDocument();
+    expect(screen.getByLabelText("怪物效用")).toBeInTheDocument();
     expect(screen.queryAllByText("強韌的")).toHaveLength(0);
     expect(screen.queryAllByText("Tough", { exact: false })).toHaveLength(0);
-    expect(screen.getByText(/更多怪物生命/)).toBeInTheDocument();
+    expect(screen.queryByText(/更多怪物生命/)).not.toBeInTheDocument();
+
+    const output = document.querySelector(".font-mono.text-gold");
+    expect(output?.textContent).toMatch(/填入最小百分比/);
+
+    await user.type(screen.getByLabelText("物品稀有度"), "40");
+    expect(output?.textContent).toContain("物品稀有度");
+    expect(output?.textContent).toContain("更多稀有度");
+    expect(output?.textContent).not.toContain("充盈的");
+    expect(output?.textContent).not.toContain("強韌");
+
+    await user.click(screen.getByRole("button", { name: "EN match" }));
+    expect(output?.textContent).toContain("Item Rarity");
+    expect(output?.textContent).toContain("more Rarity of Items");
+    expect(output?.textContent).not.toContain("物品稀有度");
+  });
+
+  it("generated regex matches juiced waystone text and ignores empty axes", async () => {
+    const user = userEvent.setup();
+    renderPage(<WaystonesPage />);
+
+    await user.type(screen.getByLabelText("物品稀有度"), "40");
+    await user.type(screen.getByLabelText("怪物效用"), "20");
+
+    const pattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
+    const juicy = [
+      "物品數量: +62%",
+      "物品稀有度: +45%",
+      "怪物效用: +29%",
+      "此區域找到的物品擁有14%更多稀有度",
+      "怪物擁有16%更多效用",
+    ].join("\n");
+    const low = "物品稀有度: +12%\n怪物效用: +8%";
+    expect(matchesItem(pattern, juicy)).toBe(true);
+    expect(matchesItem(pattern, low)).toBe(false);
+  });
+
+  it("ignores empty axes and ANDs filled thresholds", async () => {
+    const user = userEvent.setup();
+    renderPage(<WaystonesPage />);
+
+    await user.type(screen.getByLabelText("物品數量"), "50");
+    await user.type(screen.getByLabelText("怪物效用"), "20");
+
+    const output = document.querySelector(".font-mono.text-gold");
+    expect(output?.textContent).toContain("物品數量");
+    expect(output?.textContent).toContain("怪物效用");
+    expect(output?.textContent).not.toContain("物品稀有度");
+    expect(output?.textContent?.includes('"')).toBe(true);
+    expect((output?.textContent?.match(/"/g) ?? []).length).toBeGreaterThanOrEqual(4);
   });
 });
 
