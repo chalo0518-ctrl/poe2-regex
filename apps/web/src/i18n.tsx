@@ -97,6 +97,13 @@ type Messages = {
   regexPlaceholder: string;
   include: string;
   exclude: string;
+  polarityYes: string;
+  polarityNo: string;
+  polarityOff: string;
+  polarityGroup: string;
+  polarityYesTitle: string;
+  polarityNoTitle: string;
+  polarityOffTitle: string;
   min: string;
   max: string;
   commonRange: (min: number, max: number) => string;
@@ -133,13 +140,15 @@ const zhHant: Messages = {
   buildsBody: "主流開荒流派的裝備正則稍後填入。此頁暫不提供建議或預設。",
   chapterAria: "章節",
   chapterShopTitle: (label) => `${label}商店正則`,
-  chapterShopDesc: "預設已勾選該章通用商店詞綴。點列可改為排除或取消；也可加選清單中的能力值／能量護盾／施法速度。",
+  chapterShopDesc:
+    "預設已勾選該章通用商店詞綴。每列右側選「是」包含、「否」排除、「空」不限；包含項以 AND 合成正則。也可加選清單中的能力值／能量護盾／施法速度。",
   chapterNoMaps: "此章尚無獨立地圖／商店節點資料，預設套用整章商店裝備正則。",
   knownGaps: "已知缺口",
   vendorTitle: "商店裝備篩選",
   vendorEditLink: "在商店頁編輯此章正則",
   shieldsTitle: "盾牌詞綴正則",
-  shieldsDesc: "對齊編年史 ModifiersCalc：標籤三態篩選、基礎前後綴兩欄。範圍僅限力量塔盾／力敏／力智／輕盾。",
+  shieldsDesc:
+    "對齊編年史 ModifiersCalc：標籤三態篩選、基礎前後綴兩欄。每列右側「是／否／空」決定是否寫入正則。範圍僅限力量塔盾／力敏／力智／輕盾。",
   shieldsImportHint: "貼上倉庫複製的物品文字，將自動勾選目前盾種上對得上的基礎詞綴。",
   shieldsPoolAria: "盾種",
   waystonesTitle: "換界石篩選正則",
@@ -157,7 +166,7 @@ const zhHant: Messages = {
   tabletsEmptyTitle: "尚未選擇碑牌",
   tabletsEmptyBody: "選一種碑牌後才會載入該頁的前綴／後綴。裂痕碑牌不會看到探險專屬詞綴，以此類推。",
   tabletsTitle: (label) => `${label}詞綴正則`,
-  tabletsDesc: "種類已鎖定目前碑牌。點選詞綴列以包含或排除，底部產生倉庫正則。",
+  tabletsDesc: "種類已鎖定目前碑牌。每列右側選「是」包含、「否」排除、「空」不限；底部以 AND 產生倉庫正則。",
   statsFamilies: (families, tiers) => `${families} 組詞綴 · ${tiers} 階`,
   shopStats: (mods, defaults) => `${mods} 組商店詞綴 · ${defaults} 項預設包含`,
   sourcePoe2db: (path) => `來源 poe2db.tw /tw /us · ${path}`,
@@ -182,9 +191,16 @@ const zhHant: Messages = {
   copy: "複製",
   copied: "已複製",
   copyFail: "複製失敗，請手動選取",
-  regexPlaceholder: "點選詞綴列以包含／排除，正則會顯示在這裡",
+  regexPlaceholder: "每列選「是」或「否」，正則會顯示在這裡",
   include: "正則包含",
   exclude: "正則排除",
+  polarityYes: "是",
+  polarityNo: "否",
+  polarityOff: "空",
+  polarityGroup: "詞條取捨",
+  polarityYesTitle: "包含此詞條",
+  polarityNoTitle: "排除此詞條",
+  polarityOffTitle: "不限（不寫入正則）",
   min: "最小",
   max: "最大",
   commonRange: (min, max) => `常見 ${min}–${max}`,
@@ -223,14 +239,14 @@ const en: Messages = {
   chapterAria: "Chapters",
   chapterShopTitle: (label) => `${label} shop regex`,
   chapterShopDesc:
-    "Default shop affixes for this act are pre-checked. Click a row to exclude or clear; attributes / ES / cast speed are optional.",
+    "Default shop affixes for this act are pre-checked. Use Yes / No / Any on each row; Yes fragments are AND’d. Attributes / ES / cast speed stay optional.",
   chapterNoMaps: "This act has no per-map shop nodes yet, so the whole-act shop regex is used.",
   knownGaps: "Known gaps",
   vendorTitle: "Vendor filter",
   vendorEditLink: "Edit this act’s regex on the vendor page",
   shieldsTitle: "Shield affix regex",
   shieldsDesc:
-    "Chronicles ModifiersCalc: three-state tags and prefix/suffix columns. Str / str-dex / str-int shields and bucklers only.",
+    "Chronicles ModifiersCalc: three-state tags, prefix/suffix columns, and Yes / No / Any on each affix. Str / str-dex / str-int shields and bucklers only.",
   shieldsImportHint: "Paste clipboard item text to tick matching base affixes on this shield type.",
   shieldsPoolAria: "Shield base",
   waystonesTitle: "Waystone filter regex",
@@ -249,7 +265,8 @@ const en: Messages = {
   tabletsEmptyTitle: "No tablet selected",
   tabletsEmptyBody: "Choose a kind to load that page’s prefixes/suffixes. Breach will not show Expedition-only mods.",
   tabletsTitle: (label) => `${label} affix regex`,
-  tabletsDesc: "Kind is locked. Click rows to include or exclude; the stash regex appears at the bottom.",
+  tabletsDesc:
+    "Kind is locked. Use Yes / No / Any on each row; Yes fragments are AND’d into the stash regex.",
   statsFamilies: (families, tiers) => `${families} families · ${tiers} tiers`,
   shopStats: (mods, defaults) => `${mods} shop mods · ${defaults} default includes`,
   sourcePoe2db: (path) => `Source poe2db.tw /tw /us · ${path}`,
@@ -269,9 +286,16 @@ const en: Messages = {
   copy: "Copy",
   copied: "Copied",
   copyFail: "Copy failed — select the text manually",
-  regexPlaceholder: "Click affix rows to include/exclude; the regex shows up here",
+  regexPlaceholder: "Choose Yes or No on a row; the regex shows up here",
   include: "Include",
   exclude: "Exclude",
+  polarityYes: "Yes",
+  polarityNo: "No",
+  polarityOff: "Any",
+  polarityGroup: "Affix include",
+  polarityYesTitle: "Include this affix",
+  polarityNoTitle: "Exclude this affix",
+  polarityOffTitle: "Ignore this affix",
   min: "Min",
   max: "Max",
   commonRange: (min, max) => `Typical ${min}–${max}`,

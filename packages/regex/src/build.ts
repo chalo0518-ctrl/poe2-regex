@@ -38,7 +38,7 @@ function joinOr(parts: string[]): string {
  * Build a Path of Exile 2 stash/vendor search string.
  *
  * Includes are combined with `|` (OR) or as separate quoted groups (AND).
- * Excludes use PoE2's `!` operator: `"!(a|b)"`.
+ * The affix-row UI uses AND. Excludes reuse PoE2's `!` operator: `"!(a|b)"`.
  */
 export function buildRegex(
   selection: RegexMod[],

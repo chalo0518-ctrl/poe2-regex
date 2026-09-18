@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactElement } from "react";
 import { describe, expect, it } from "vitest";
@@ -47,6 +47,41 @@ describe("endgame tablets page", () => {
     expect(screen.getByText("地圖內含有額外的1個召喚法陣")).toBeInTheDocument();
     expect(screen.getByText("Map contains (2—3) additional Rare Chests")).toBeInTheDocument();
     expect(screen.queryAllByText("召喚物")).toHaveLength(0);
+
+    const chestRow = screen.getByText("地圖內含有額外的(2—3)個稀有箱子").closest("li");
+    expect(chestRow).toBeTruthy();
+    expect(within(chestRow as HTMLElement).getByRole("button", { name: "是" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    expect(within(chestRow as HTMLElement).getByRole("button", { name: "否" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    expect(within(chestRow as HTMLElement).getByRole("button", { name: "空" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  });
+
+  it("ANDs 是 rows and !-excludes 否 rows from the live tablet regex", async () => {
+    const user = userEvent.setup();
+    renderPage(<TabletsPage />);
+    await user.click(screen.getByRole("option", { name: /裂痕碑牌/ }));
+
+    const chest = screen.getByText("地圖內含有額外的(2—3)個稀有箱子").closest("li") as HTMLElement;
+    const summon = screen.getByText("地圖內含有額外的1個召喚法陣").closest("li") as HTMLElement;
+    await user.click(within(chest).getByRole("button", { name: "是" }));
+    await user.click(within(summon).getByRole("button", { name: "否" }));
+
+    const pattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
+    expect(pattern).toContain("!");
+    expect(pattern).toMatch(/箱子/);
+    expect((pattern.match(/"/g) ?? []).length).toBeGreaterThanOrEqual(4);
+    expect(matchesItem(pattern, "地圖內含有額外的個稀有箱子")).toBe(true);
+    expect(
+      matchesItem(pattern, "地圖內含有額外的個稀有箱子\n地圖內含有額外的個召喚法陣"),
+    ).toBe(false);
   });
 });
 
@@ -76,6 +111,9 @@ describe("endgame waystones page", () => {
     expect(screen.getByRole("option", { name: "不限" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "勝利之運" })).toBeInTheDocument();
     expect(screen.queryByLabelText("物品數量 最小")).not.toBeInTheDocument();
+    expect(screen.queryAllByRole("group", { name: "詞條取捨" })).toHaveLength(0);
+    expect(screen.queryAllByRole("button", { name: "是" })).toHaveLength(0);
+    expect(screen.queryAllByRole("button", { name: "否" })).toHaveLength(0);
     expect(screen.queryAllByText("強韌的")).toHaveLength(0);
     expect(screen.queryAllByText("Tough", { exact: false })).toHaveLength(0);
     expect(screen.queryByText(/更多怪物生命/)).not.toBeInTheDocument();

@@ -185,7 +185,7 @@ export function ChroniclesModBuilder({
   const result = useMemo(() => {
     return buildRegex(
       selected.map((f) => toRegexMod(f, picks[f.id], lang)),
-      { combine: "or", corpus },
+      { combine: "and", corpus },
     );
   }, [selected, picks, lang, corpus]);
 
@@ -208,18 +208,26 @@ export function ChroniclesModBuilder({
     }));
   }
 
-  function cyclePick(family: AffixFamily) {
+  function setPickPolarity(family: AffixFamily, next: Polarity | "off") {
     setPicks((prev) => {
       const cur = prev[family.id];
-      if (!cur) {
-        return { ...prev, [family.id]: { polarity: "include", min: "", max: "" } };
-      }
-      if (cur.polarity === "include") {
-        return { ...prev, [family.id]: { ...cur, polarity: "exclude" } };
-      }
-      const next = { ...prev };
-      delete next[family.id];
-      return next;
+      const clear = () => {
+        if (!cur) return prev;
+        const copy = { ...prev };
+        delete copy[family.id];
+        return copy;
+      };
+      if (next === "off") return clear();
+      // Re-clicking 是 / 否 returns to 空.
+      if (cur?.polarity === next) return clear();
+      return {
+        ...prev,
+        [family.id]: {
+          polarity: next,
+          min: cur?.min ?? "",
+          max: cur?.max ?? "",
+        },
+      };
     });
   }
 
@@ -380,7 +388,7 @@ export function ChroniclesModBuilder({
           expanded={expanded}
           showFamilyNames={showFamilyNames}
           showAffixTags={showAffixTags}
-          onCycle={cyclePick}
+          onPolarity={setPickPolarity}
           onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
           onBound={(id, key, value) =>
             setPicks((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], [key]: value } } : prev))
@@ -393,7 +401,7 @@ export function ChroniclesModBuilder({
           expanded={expanded}
           showFamilyNames={showFamilyNames}
           showAffixTags={showAffixTags}
-          onCycle={cyclePick}
+          onPolarity={setPickPolarity}
           onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
           onBound={(id, key, value) =>
             setPicks((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], [key]: value } } : prev))
@@ -516,7 +524,7 @@ function AffixColumn({
   expanded,
   showFamilyNames,
   showAffixTags,
-  onCycle,
+  onPolarity,
   onExpand,
   onBound,
 }: {
@@ -526,7 +534,7 @@ function AffixColumn({
   expanded: Record<string, boolean>;
   showFamilyNames: boolean;
   showAffixTags: boolean;
-  onCycle: (family: AffixFamily) => void;
+  onPolarity: (family: AffixFamily, next: Polarity | "off") => void;
   onExpand: (id: string) => void;
   onBound: (id: string, key: "min" | "max", value: string) => void;
 }) {
@@ -550,7 +558,7 @@ function AffixColumn({
               open={Boolean(expanded[family.id])}
               showFamilyNames={showFamilyNames}
               showAffixTags={showAffixTags}
-              onCycle={() => onCycle(family)}
+              onPolarity={(next) => onPolarity(family, next)}
               onExpand={() => onExpand(family.id)}
               onBound={(key, value) => onBound(family.id, key, value)}
             />
@@ -561,6 +569,42 @@ function AffixColumn({
   );
 }
 
+function PolarityToggle({
+  value,
+  onChange,
+}: {
+  value: Polarity | "off";
+  onChange: (next: Polarity | "off") => void;
+}) {
+  const { t } = useLocale();
+  const options: { id: Polarity | "off"; label: string; title: string }[] = [
+    { id: "include", label: t.polarityYes, title: t.polarityYesTitle },
+    { id: "exclude", label: t.polarityNo, title: t.polarityNoTitle },
+    { id: "off", label: t.polarityOff, title: t.polarityOffTitle },
+  ];
+  return (
+    <div
+      className="flex shrink-0 items-center gap-0.5"
+      role="group"
+      aria-label={t.polarityGroup}
+    >
+      {options.map((opt) => (
+        <button
+          key={opt.id}
+          type="button"
+          className="polarity-btn"
+          data-polarity={opt.id}
+          title={opt.title}
+          aria-pressed={value === opt.id}
+          onClick={() => onChange(opt.id)}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 function AffixRow({
   family,
   dimmed,
@@ -568,7 +612,7 @@ function AffixRow({
   open,
   showFamilyNames,
   showAffixTags,
-  onCycle,
+  onPolarity,
   onExpand,
   onBound,
 }: {
@@ -578,7 +622,7 @@ function AffixRow({
   open: boolean;
   showFamilyNames: boolean;
   showAffixTags: boolean;
-  onCycle: () => void;
+  onPolarity: (next: Polarity | "off") => void;
   onExpand: () => void;
   onBound: (key: "min" | "max", value: string) => void;
 }) {
@@ -591,10 +635,10 @@ function AffixRow({
   return (
     <li
       className={`affix-row border-b border-line last:border-b-0 ${dimmed ? "opacity-40" : ""}`}
-      data-pick={pick?.polarity ?? ""}
+      data-pick={pick?.polarity ?? "off"}
     >
       <div className="flex items-start gap-2 px-2 py-2">
-        <button type="button" onClick={onCycle} className="min-w-0 flex-1 text-left">
+        <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             {showFamilyNames && (
               <span className="text-sm text-gold">{familyLabel(family, locale)}</span>
@@ -618,7 +662,8 @@ function AffixRow({
               ? `${familyLabelSecondary(family, locale)}${secondary ? ` · ${secondary}` : ""}`
               : secondary}
           </div>
-        </button>
+        </div>
+        <PolarityToggle value={pick?.polarity ?? "off"} onChange={onPolarity} />
         <button
           type="button"
           onClick={onExpand}
@@ -628,36 +673,27 @@ function AffixRow({
           {open ? "▴" : "▾"}
         </button>
       </div>
-      {pick && (
-        <div className="flex flex-wrap items-center gap-2 px-2 pb-2 pl-2 text-xs">
-          <span className={include ? "text-include" : "text-exclude"}>
-            {include ? t.include : t.exclude}
-          </span>
-          {family.kind === "numeric" && include && (
-            <>
-              <input
-                inputMode="numeric"
-                value={pick.min}
-                onChange={(e) => onBound("min", e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-                placeholder={t.min}
-                className="w-16 rounded-sm border border-line bg-ink px-1.5 py-1 text-paper outline-none placeholder:text-muted focus:border-gold"
-              />
-              <span>–</span>
-              <input
-                inputMode="numeric"
-                value={pick.max}
-                onChange={(e) => onBound("max", e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-                placeholder={t.max}
-                className="w-16 rounded-sm border border-line bg-ink px-1.5 py-1 text-paper outline-none placeholder:text-muted focus:border-gold"
-              />
-              {family.numeric?.suggestedMin != null && (
-                <span className="text-muted">
-                  {t.commonRange(family.numeric.suggestedMin, family.numeric.suggestedMax ?? family.numeric.suggestedMin)}
-                </span>
-              )}
-            </>
+      {include && family.kind === "numeric" && pick && (
+        <div className="flex flex-wrap items-center gap-2 px-2 pb-2 text-xs">
+          <input
+            inputMode="numeric"
+            value={pick.min}
+            onChange={(e) => onBound("min", e.target.value)}
+            placeholder={t.min}
+            className="w-16 rounded-sm border border-line bg-ink px-1.5 py-1 text-paper outline-none placeholder:text-muted focus:border-gold"
+          />
+          <span>–</span>
+          <input
+            inputMode="numeric"
+            value={pick.max}
+            onChange={(e) => onBound("max", e.target.value)}
+            placeholder={t.max}
+            className="w-16 rounded-sm border border-line bg-ink px-1.5 py-1 text-paper outline-none placeholder:text-muted focus:border-gold"
+          />
+          {family.numeric?.suggestedMin != null && (
+            <span className="text-muted">
+              {t.commonRange(family.numeric.suggestedMin, family.numeric.suggestedMax ?? family.numeric.suggestedMin)}
+            </span>
           )}
         </div>
       )}
