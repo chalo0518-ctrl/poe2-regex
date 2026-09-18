@@ -70,7 +70,7 @@ export function ChroniclesModBuilder({
   description,
   sourceNote,
   statsNote,
-  harvestTags,
+  harvestTags = [],
   families,
   pools,
   pool,
@@ -79,13 +79,19 @@ export function ChroniclesModBuilder({
   importHint,
   prefixTitle = "基礎前綴",
   suffixTitle = "基礎後綴",
+  showTags = true,
+  showFilter = true,
+  showImport = true,
+  showHideToggle = true,
+  showFamilyNames = true,
+  showAffixTags = true,
 }: {
   kicker: string;
   title: string;
   description: string;
   sourceNote: string;
   statsNote: string;
-  harvestTags: HarvestTag[];
+  harvestTags?: HarvestTag[];
   families: AffixFamily[];
   pools?: PoolMeta[];
   pool?: string;
@@ -94,6 +100,12 @@ export function ChroniclesModBuilder({
   importHint?: string;
   prefixTitle?: string;
   suffixTitle?: string;
+  showTags?: boolean;
+  showFilter?: boolean;
+  showImport?: boolean;
+  showHideToggle?: boolean;
+  showFamilyNames?: boolean;
+  showAffixTags?: boolean;
 }) {
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
   const [query, setQuery] = useState("");
@@ -250,75 +262,89 @@ export function ChroniclesModBuilder({
         </div>
       )}
 
-      <div className="mb-3 flex flex-wrap gap-1">
-        {harvestTags.map((tag) => {
-          const state = tagStates[tag.id] ?? "off";
-          const tint = TAG_TINT[tag.id];
-          return (
-            <button
-              key={tag.id}
-              type="button"
-              className="tag-chip"
-              data-state={state}
-              style={state === "off" && tint ? { color: tint, borderColor: tint } : undefined}
-              onClick={() => cycleTag(tag.id)}
-            >
-              {tag.labelZh}
-            </button>
-          );
-        })}
-      </div>
+      {showTags && harvestTags.length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-1">
+          {harvestTags.map((tag) => {
+            const state = tagStates[tag.id] ?? "off";
+            const tint = TAG_TINT[tag.id];
+            return (
+              <button
+                key={tag.id}
+                type="button"
+                className="tag-chip"
+                data-state={state}
+                style={state === "off" && tint ? { color: tint, borderColor: tint } : undefined}
+                onClick={() => cycleTag(tag.id)}
+              >
+                {tag.labelZh}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
-      <div className="mb-4 flex flex-col gap-2 lg:flex-row lg:items-center">
-        <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-muted">
-          Filter:
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-sm border border-line bg-raised px-2 py-1.5 text-paper outline-none focus:border-gold"
-          />
-        </label>
-        <label className="flex items-center gap-1 text-sm text-muted">
-          Min iLvL:
-          <input
-            inputMode="numeric"
-            value={minIlvl}
-            onChange={(e) => setMinIlvl(e.target.value)}
-            className="w-20 rounded-sm border border-line bg-raised px-2 py-1.5 text-paper outline-none focus:border-gold"
-          />
-        </label>
-        <label className="flex items-center gap-1 text-sm text-muted">
-          Max iLvL:
-          <input
-            inputMode="numeric"
-            value={maxIlvl}
-            onChange={(e) => setMaxIlvl(e.target.value)}
-            className="w-20 rounded-sm border border-line bg-raised px-2 py-1.5 text-paper outline-none focus:border-gold"
-          />
-        </label>
-        <button
-          type="button"
-          onClick={() => setImportOpen(true)}
-          className="rounded-sm bg-[#2f6fbf] px-3 py-1.5 text-sm text-white"
-        >
-          匯入物品
-        </button>
-        <button
-          type="button"
-          onClick={() => setShowHidden((v) => !v)}
-          className={`rounded-sm px-3 py-1.5 text-sm ${
-            showHidden ? "bg-gold text-ink" : "bg-[#8a6a3a] text-paper"
-          }`}
-        >
-          切換隱藏
-        </button>
-      </div>
+      {(showFilter || showImport || showHideToggle) && (
+        <div className="mb-4 flex flex-col gap-2 lg:flex-row lg:items-center">
+          {showFilter && (
+            <>
+              <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-muted">
+                Filter:
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="w-full rounded-sm border border-line bg-raised px-2 py-1.5 text-paper outline-none focus:border-gold"
+                />
+              </label>
+              <label className="flex items-center gap-1 text-sm text-muted">
+                Min iLvL:
+                <input
+                  inputMode="numeric"
+                  value={minIlvl}
+                  onChange={(e) => setMinIlvl(e.target.value)}
+                  className="w-20 rounded-sm border border-line bg-raised px-2 py-1.5 text-paper outline-none focus:border-gold"
+                />
+              </label>
+              <label className="flex items-center gap-1 text-sm text-muted">
+                Max iLvL:
+                <input
+                  inputMode="numeric"
+                  value={maxIlvl}
+                  onChange={(e) => setMaxIlvl(e.target.value)}
+                  className="w-20 rounded-sm border border-line bg-raised px-2 py-1.5 text-paper outline-none focus:border-gold"
+                />
+              </label>
+            </>
+          )}
+          {showImport && (
+            <button
+              type="button"
+              onClick={() => setImportOpen(true)}
+              className="rounded-sm bg-[#2f6fbf] px-3 py-1.5 text-sm text-white"
+            >
+              匯入物品
+            </button>
+          )}
+          {showHideToggle && (
+            <button
+              type="button"
+              onClick={() => setShowHidden((v) => !v)}
+              className={`rounded-sm px-3 py-1.5 text-sm ${
+                showHidden ? "bg-gold text-ink" : "bg-[#8a6a3a] text-paper"
+              }`}
+            >
+              切換隱藏
+            </button>
+          )}
+        </div>
+      )}
 
       <p className="mb-3 text-xs text-muted">
         顯示 {listed.filter((r) => r.matched).length} 列
-        {showHidden ? `（另顯示 ${listed.filter((r) => !r.matched).length} 列隱藏）` : ""}
+        {showHideToggle && showHidden
+          ? `（另顯示 ${listed.filter((r) => !r.matched).length} 列隱藏）`
+          : ""}
         。正則包含 {includeN} · 排除 {excludeN}
-        。標籤：第一次包含（紫）· 第二次排除 · 第三次還原；多個包含為聯集。
+        {showTags ? "。標籤：第一次包含（紫）· 第二次排除 · 第三次還原；多個包含為聯集。" : ""}
       </p>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -327,6 +353,8 @@ export function ChroniclesModBuilder({
           rows={prefixes}
           picks={picks}
           expanded={expanded}
+          showFamilyNames={showFamilyNames}
+          showAffixTags={showAffixTags}
           onCycle={cyclePick}
           onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
           onBound={(id, key, value) =>
@@ -338,6 +366,8 @@ export function ChroniclesModBuilder({
           rows={suffixes}
           picks={picks}
           expanded={expanded}
+          showFamilyNames={showFamilyNames}
+          showAffixTags={showAffixTags}
           onCycle={cyclePick}
           onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
           onBound={(id, key, value) =>
@@ -406,7 +436,7 @@ export function ChroniclesModBuilder({
         </div>
       </div>
 
-      {importOpen && (
+      {showImport && importOpen && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/60 p-4">
           <div className="w-full max-w-lg rounded-md border border-line bg-panel p-4">
             <h2 className="mb-2 text-lg text-gold">匯入物品</h2>
@@ -448,6 +478,8 @@ function AffixColumn({
   rows,
   picks,
   expanded,
+  showFamilyNames,
+  showAffixTags,
   onCycle,
   onExpand,
   onBound,
@@ -456,6 +488,8 @@ function AffixColumn({
   rows: { family: AffixFamily; matched: boolean }[];
   picks: Record<string, PickState>;
   expanded: Record<string, boolean>;
+  showFamilyNames: boolean;
+  showAffixTags: boolean;
   onCycle: (family: AffixFamily) => void;
   onExpand: (id: string) => void;
   onBound: (id: string, key: "min" | "max", value: string) => void;
@@ -477,6 +511,8 @@ function AffixColumn({
               dimmed={!matched}
               pick={picks[family.id]}
               open={Boolean(expanded[family.id])}
+              showFamilyNames={showFamilyNames}
+              showAffixTags={showAffixTags}
               onCycle={() => onCycle(family)}
               onExpand={() => onExpand(family.id)}
               onBound={(key, value) => onBound(family.id, key, value)}
@@ -493,6 +529,8 @@ function AffixRow({
   dimmed,
   pick,
   open,
+  showFamilyNames,
+  showAffixTags,
   onCycle,
   onExpand,
   onBound,
@@ -501,6 +539,8 @@ function AffixRow({
   dimmed: boolean;
   pick?: PickState;
   open: boolean;
+  showFamilyNames: boolean;
+  showAffixTags: boolean;
   onCycle: () => void;
   onExpand: () => void;
   onBound: (key: "min" | "max", value: string) => void;
@@ -515,23 +555,25 @@ function AffixRow({
       <div className="flex items-start gap-2 px-2 py-2">
         <button type="button" onClick={onCycle} className="min-w-0 flex-1 text-left">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-sm text-gold">{family.labelZh}</span>
+            {showFamilyNames && <span className="text-sm text-gold">{family.labelZh}</span>}
             <span className="text-sm text-paper">{family.textZh}</span>
-            {family.tagsZh.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-sm bg-[#2a3344] px-1.5 py-0.5 text-[10px] text-[#9ec3ff]"
-              >
-                {tag}
-              </span>
-            ))}
+            {showAffixTags &&
+              family.tagsZh.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-sm bg-[#2a3344] px-1.5 py-0.5 text-[10px] text-[#9ec3ff]"
+                >
+                  {tag}
+                </span>
+              ))}
             <span className="ml-auto font-mono text-[11px] text-muted">
               {family.tierCount} {family.maxLevel} {family.weight}
             </span>
           </div>
           <div className="mt-0.5 text-xs text-muted">
-            {family.labelEn}
-            {family.textEn ? ` · ${family.textEn}` : ""}
+            {showFamilyNames
+              ? `${family.labelEn}${family.textEn ? ` · ${family.textEn}` : ""}`
+              : family.textEn}
           </div>
         </button>
         <button
@@ -581,9 +623,9 @@ function AffixRow({
           {family.tiers.map((tier) => (
             <li key={`${tier.level}-${tier.nameZh}`} className="flex flex-wrap gap-x-2 py-0.5">
               <span className="text-gold-dim">iLvL {tier.level}</span>
-              <span className="text-paper">{tier.nameZh}</span>
+              {showFamilyNames && <span className="text-paper">{tier.nameZh}</span>}
               <span>{tier.textZh}</span>
-              <span className="text-muted">{tier.nameEn}</span>
+              {showFamilyNames && <span className="text-muted">{tier.nameEn}</span>}
             </li>
           ))}
         </ul>
