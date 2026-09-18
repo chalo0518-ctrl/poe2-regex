@@ -267,7 +267,8 @@ describe("buildRegex", () => {
       { corpus: CORPUS, combine: "and" },
     );
     expect(r.pattern.includes("|")).toBe(true);
-    expect(r.pattern.split(" ").length).toBe(1);
+    expect((r.pattern.match(/"/g) ?? []).length).toBe(2);
+    expect(r.pattern.startsWith('"')).toBe(true);
     expect(matchesItem(r.pattern, "+35% to Fire Resistance")).toBe(true);
     expect(matchesItem(r.pattern, "+40% to Cold Resistance")).toBe(true);
     expect(matchesItem(r.pattern, "+80 to maximum Life")).toBe(false);

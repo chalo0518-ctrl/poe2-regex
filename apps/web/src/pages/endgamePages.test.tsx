@@ -80,8 +80,7 @@ describe("endgame tablets page", () => {
     const pattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
     expect(pattern).toContain("!");
     expect(pattern).toMatch(/箱子/);
-    expect(pattern).toMatch(/法陣|稀有度/);
-    expect((pattern.match(/"/g) ?? []).length).toBeGreaterThanOrEqual(4);
+    expect((pattern.match(/"/g) ?? []).length).toBe(6);
     expect(matchesItem(pattern, "地圖內含有額外的個稀有箱子\n地圖內含有額外的個召喚法陣")).toBe(
       true,
     );

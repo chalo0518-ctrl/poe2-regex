@@ -375,8 +375,8 @@ describe("ChroniclesModBuilder polarity controls", () => {
     const mixed = regexOutput();
     expect(mixed).toMatch(/箱子/);
     expect(mixed).toMatch(/法陣/);
-    expect(mixed).toMatch(/稀有度/);
     expect(mixed).toContain("!");
+    expect((mixed.match(/"/g) ?? []).length).toBe(6);
     expectPolarity(CHEST_ZH, "yes");
     expectPolarity(SUMMON_ZH, "or");
     expectPolarity(RARITY_ZH, "no");
