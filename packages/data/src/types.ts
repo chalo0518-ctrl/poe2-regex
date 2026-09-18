@@ -20,16 +20,14 @@ export type TabletKindId =
   | "abyss"
   | "temple";
 
-export type UiLocale = "zh-Hant" | "zh-Hans" | "en";
+export type UiLocale = "zh-Hant" | "en";
 
-export type MatchLang = "zh-Hant" | "zh-Hans" | "en";
+export type MatchLang = "zh-Hant" | "en";
 
 export type HarvestTag = {
   id: string;
   /** Traditional Chinese label from poe2db `/tw`. */
   labelZh: string;
-  /** Simplified Chinese label from poe2db `/cn`. */
-  labelZhHans?: string;
   /** English label from poe2db `/us`. */
   labelEn?: string;
 };
@@ -37,11 +35,9 @@ export type HarvestTag = {
 export type AffixTier = {
   nameZh: string;
   nameEn: string;
-  nameZhHans?: string;
   level: number;
   textZh: string;
   textEn: string;
-  textZhHans?: string;
   dropChance: number;
   statMin?: number;
   statMax?: number;
@@ -53,16 +49,12 @@ export type AffixFamily = {
   generation: "prefix" | "suffix";
   tags: string[];
   tagsZh: string[];
-  tagsZhHans?: string[];
   labelZh: string;
   labelEn: string;
-  labelZhHans?: string;
   textZh: string;
   textEn: string;
-  textZhHans?: string;
   match: string;
   matchZh: string;
-  matchZhHans?: string;
   kind: ModKind;
   numeric?: {
     format: NumericFormat;
@@ -93,7 +85,6 @@ export type TabletFamily = AffixFamily & {
 export type ShieldBaseMeta = {
   id: ShieldBaseId;
   labelZh: string;
-  labelZhHans?: string;
   labelEn?: string;
   path: string;
 };
@@ -101,7 +92,6 @@ export type ShieldBaseMeta = {
 export type PoolMeta<Id extends string = string> = {
   id: Id;
   labelZh: string;
-  labelZhHans?: string;
   labelEn?: string;
   path: string;
 };
@@ -156,7 +146,6 @@ export type CampaignMapNode = {
   id: string;
   labelZh: string;
   labelEn: string;
-  labelZhHans?: string;
 };
 
 export type ShopMod = {
@@ -165,13 +154,10 @@ export type ShopMod = {
   generation: "prefix" | "suffix";
   labelZh: string;
   labelEn: string;
-  labelZhHans?: string;
   textZh: string;
   textEn: string;
-  textZhHans?: string;
   match: string;
   matchZh: string;
-  matchZhHans?: string;
   kind: ModKind;
   numeric?: {
     format: NumericFormat;
@@ -180,7 +166,6 @@ export type ShopMod = {
   };
   tags: string[];
   tagsZh: string[];
-  tagsZhHans?: string[];
   /** poe2db / frozen JSON paths this match string was checked against */
   sources: string[];
 };
@@ -196,9 +181,7 @@ export type CampaignChapter = {
   id: ChapterId;
   labelZh: string;
   labelEn: string;
-  labelZhHans?: string;
   summaryZh: string;
-  summaryZhHans?: string;
   summaryEn?: string;
   /** Town / map shop nodes. Empty until campaign map data exists. */
   maps: CampaignMapNode[];

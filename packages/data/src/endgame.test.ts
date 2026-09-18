@@ -60,7 +60,7 @@ describe("tablet kind pools", () => {
     expect(irradiated.length).toBeLessThan(unionSize);
     expect(tabletFamilies("breach").length).not.toBe(unionSize);
     const breachOnly = tabletFamilies("breach").filter((f) =>
-      /裂痕|裂隙|Breach|巢裔|胎贈/.test(`${f.textZh} ${f.textEn} ${f.textZhHans ?? ""}`),
+      /裂痕|裂隙|Breach|巢裔|胎贈/.test(`${f.textZh} ${f.textEn}`),
     );
     const expeditionHasBreach = tabletFamilies("expedition").filter((f) =>
       /裂痕|巢裔之血|胎贈/.test(f.textZh),

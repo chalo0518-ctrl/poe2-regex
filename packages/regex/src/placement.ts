@@ -2,8 +2,8 @@ import type { NumericPlacement } from "./types.js";
 
 /**
  * Decide whether the rolled number sits before or after the unique match
- * fragment in a real effect string. Used so 简中 `火焰抗性 +35%` still
- * works with numeric bounds (EN/繁中 keep `+35% …`).
+ * fragment in a real effect string. Used so `rest +N%` (suffix numbers)
+ * still works with numeric bounds (prefix `+N% rest` stays `before`).
  */
 export function inferNumericPlacement(
   sourceText: string,

@@ -1,5 +1,5 @@
 {
-  "source": "https://poe2db.tw/tw/ + /cn/ + /us/",
+  "source": "https://poe2db.tw/tw/ + /us/",
   "pages": [
     "https://poe2db.tw/tw/Shields_str#ModifiersCalc",
     "https://poe2db.tw/tw/Shields_str_dex#ModifiersCalc",
@@ -14,32 +14,28 @@
     {
       "id": "str",
       "labelZh": "力量塔盾",
-      "labelZhHans": "力量塔盾",
       "labelEn": "Str Shield",
       "path": "Shields_str"
     },
     {
       "id": "str_dex",
       "labelZh": "力／敏盾",
-      "labelZhHans": "力/敏盾",
       "labelEn": "Str/Dex Shield",
       "path": "Shields_str_dex"
     },
     {
       "id": "str_int",
       "labelZh": "力／智盾",
-      "labelZhHans": "力/智盾",
       "labelEn": "Str/Int Shield",
       "path": "Shields_str_int"
     },
     {
       "id": "buckler",
       "labelZh": "輕盾",
-      "labelZhHans": "轻盾",
       "labelEn": "Buckler",
       "path": "Bucklers"
     }
   ],
-  "notes": "Frozen Chronicles ModifiersCalc scrape for str / str_dex / str_int shields and Bucklers. 繁中 `/tw`, 简中 `/cn`, EN `/us`; RePoE used only as match-id fallback.",
+  "notes": "Frozen Chronicles ModifiersCalc scrape for str / str_dex / str_int shields and Bucklers. 繁中 `/tw`, EN `/us`; RePoE used only as match-id fallback.",
   "repoeVersion": "4.5.5.2"
 }

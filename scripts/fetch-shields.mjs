@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Scrape poe2db.tw /tw /cn /us Shields ModifiersCalc into frozen JSON.
+ * Scrape poe2db.tw /tw /us Shields ModifiersCalc into frozen JSON.
  * Public pages, no login. Families are unioned across shield bases.
  */
 import { dirname, join } from "node:path";
@@ -73,7 +73,6 @@ export async function refreshShields(options = {}) {
   for (const page of pages) {
     const { list } = parsePageFamilies(page.twView, page.usView, {
       skipEmpty: false,
-      cnView: page.cnView,
     });
     for (const row of list) {
       const withBase = attachShieldBases(row, [page.base.id]);
@@ -91,7 +90,7 @@ export async function refreshShields(options = {}) {
   applyRepoeFallback(list, repoe);
 
   const meta = {
-    source: `${options.origin || "https://poe2db.tw"}/tw/ + /cn/ + /us/`,
+    source: `${options.origin || "https://poe2db.tw"}/tw/ + /us/`,
     pages: bases.map((b) => `${options.origin || "https://poe2db.tw"}/tw/${b.path}#ModifiersCalc`),
     gameVersion: repoeVersion ? `RePoE ${repoeVersion}` : "poe2db.tw scrape",
     generatedAt,
@@ -99,7 +98,7 @@ export async function refreshShields(options = {}) {
     tierCount: list.reduce((s, f) => s + f.tiers.length, 0),
     bases,
     notes:
-      "Frozen Chronicles ModifiersCalc scrape for str / str_dex / str_int shields and Bucklers. 繁中 `/tw`, 简中 `/cn`, EN `/us`; RePoE used only as match-id fallback.",
+      "Frozen Chronicles ModifiersCalc scrape for str / str_dex / str_int shields and Bucklers. 繁中 `/tw`, EN `/us`; RePoE used only as match-id fallback.",
     ...(repoeVersion ? { repoeVersion } : {}),
   };
 

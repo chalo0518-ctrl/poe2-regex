@@ -30,7 +30,7 @@ describe("campaign shop catalog", () => {
     }
     expect(CAMPAIGN_GAPS.length).toBeGreaterThan(0);
     expect(CAMPAIGN_GAPS.some((g) => /地圖|map/i.test(g))).toBe(true);
-    expect(CAMPAIGN_GAPS_I18N["zh-Hans"].length).toBe(CAMPAIGN_GAPS.length);
+    expect(CAMPAIGN_GAPS_I18N["zh-Hant"].length).toBe(CAMPAIGN_GAPS.length);
     expect(CAMPAIGN_GAPS_I18N.en.some((g) => /map/i.test(g))).toBe(true);
   });
 
@@ -96,9 +96,6 @@ describe("campaign shop catalog", () => {
       expect(shield, family).toBeTruthy();
       expect(shop.match).toBe(shield!.match);
       expect(shop.matchZh).toBe(shield!.matchZh);
-      if (shield!.matchZhHans) {
-        expect(shop.matchZhHans).toBe(shield!.matchZhHans);
-      }
     }
   });
 
@@ -106,11 +103,9 @@ describe("campaign shop catalog", () => {
     const ms = shopModById("movement_speed");
     expect(ms.match).toBe("increased Movement Speed");
     expect(ms.matchZh).toBe("移動速度");
-    expect(ms.matchZhHans).toBe("移动速度提高");
     expect(ms.sources.some((s) => /Boots/i.test(s))).toBe(true);
     expect("增加10%移動速度".includes(ms.matchZh)).toBe(true);
     expect("10% increased Movement Speed".includes(ms.match)).toBe(true);
-    expect("移动速度提高 10%".includes(ms.matchZhHans!)).toBe(true);
   });
 
   it("builds AffixFamily rows the regex builder can consume", () => {
@@ -120,6 +115,5 @@ describe("campaign shop catalog", () => {
     expect(families.some((f) => f.generation === "prefix")).toBe(true);
     expect(families.some((f) => f.generation === "suffix")).toBe(true);
     expect(families.every((f) => f.match && f.matchZh)).toBe(true);
-    expect(families.every((f) => f.matchZhHans && f.textZhHans)).toBe(true);
   });
 });

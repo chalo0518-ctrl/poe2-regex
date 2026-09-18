@@ -2,163 +2,136 @@
   {
     "id": "ulaman_mod",
     "labelZh": "Ulaman",
-    "labelZhHans": "Ulaman",
     "labelEn": "Ulaman"
   },
   {
     "id": "amanamu_mod",
     "labelZh": "Amanamu",
-    "labelZhHans": "Amanamu",
     "labelEn": "Amanamu"
   },
   {
     "id": "kurgal_mod",
     "labelZh": "Kurgal",
-    "labelZhHans": "Kurgal",
     "labelEn": "Kurgal"
   },
   {
     "id": "armour",
     "labelZh": "護甲",
-    "labelZhHans": "护甲",
     "labelEn": "Armour"
   },
   {
     "id": "gem",
     "labelZh": "寶石",
-    "labelZhHans": "宝石",
     "labelEn": "Gem"
   },
   {
     "id": "caster",
     "labelZh": "法術",
-    "labelZhHans": "施法",
     "labelEn": "Caster"
   },
   {
     "id": "fire",
     "labelZh": "火焰",
-    "labelZhHans": "火焰",
     "labelEn": "Fire"
   },
   {
     "id": "cold",
     "labelZh": "冰冷",
-    "labelZhHans": "冰霜",
     "labelEn": "Cold"
   },
   {
     "id": "lightning",
     "labelZh": "閃電",
-    "labelZhHans": "闪电",
     "labelEn": "Lightning"
   },
   {
     "id": "chaos",
     "labelZh": "混沌",
-    "labelZhHans": "混沌",
     "labelEn": "Chaos"
   },
   {
     "id": "physical",
     "labelZh": "物理",
-    "labelZhHans": "物理",
     "labelEn": "Physical"
   },
   {
     "id": "life",
     "labelZh": "生命",
-    "labelZhHans": "生命",
     "labelEn": "Life"
   },
   {
     "id": "elemental",
     "labelZh": "元素",
-    "labelZhHans": "元素",
     "labelEn": "Elemental"
   },
   {
     "id": "attack",
     "labelZh": "攻擊",
-    "labelZhHans": "攻击",
     "labelEn": "Attack"
   },
   {
     "id": "minion",
     "labelZh": "召喚物",
-    "labelZhHans": "召唤生物",
     "labelEn": "Minion"
   },
   {
     "id": "aura",
     "labelZh": "光環",
-    "labelZhHans": "光环",
     "labelEn": "Aura"
   },
   {
     "id": "mana",
     "labelZh": "魔力",
-    "labelZhHans": "魔力",
     "labelEn": "Mana"
   },
   {
     "id": "speed",
     "labelZh": "速度",
-    "labelZhHans": "速度",
     "labelEn": "Speed"
   },
   {
     "id": "critical",
     "labelZh": "暴擊",
-    "labelZhHans": "暴击",
     "labelEn": "Critical"
   },
   {
     "id": "evasion",
     "labelZh": "閃避",
-    "labelZhHans": "闪避",
     "labelEn": "Evasion"
   },
   {
     "id": "energy_shield",
     "labelZh": "能量護盾",
-    "labelZhHans": "能量护盾",
     "labelEn": "Energy Shield"
   },
   {
     "id": "damage",
     "labelZh": "傷害",
-    "labelZhHans": "伤害",
     "labelEn": "Damage"
   },
   {
     "id": "resistance",
     "labelZh": "抗性",
-    "labelZhHans": "抗性",
     "labelEn": "Resistance"
   },
   {
     "id": "attribute",
     "labelZh": "能力",
-    "labelZhHans": "属性",
     "labelEn": "Attribute"
   },
   {
     "id": "ailment",
     "labelZh": "異常狀態",
-    "labelZhHans": "异常状态",
     "labelEn": "Ailment"
   },
   {
     "id": "curse",
     "labelZh": "詛咒",
-    "labelZhHans": "诅咒",
     "labelEn": "Curse"
   },
   {
     "id": "charm",
     "labelZh": "護符",
-    "labelZhHans": "咒符",
     "labelEn": "Charm"
   }
 ]

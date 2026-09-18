@@ -38,24 +38,13 @@ export function matchesText(family: AffixFamily, query: string): boolean {
   const blob = [
     family.labelZh,
     family.labelEn,
-    family.labelZhHans,
     family.textZh,
     family.textEn,
-    family.textZhHans,
     family.match,
     family.matchZh,
-    family.matchZhHans,
     family.family,
     ...family.tagsZh,
-    ...(family.tagsZhHans ?? []),
-    ...family.tiers.flatMap((t) => [
-      t.nameZh,
-      t.nameEn,
-      t.nameZhHans,
-      t.textZh,
-      t.textEn,
-      t.textZhHans,
-    ]),
+    ...family.tiers.flatMap((t) => [t.nameZh, t.nameEn, t.textZh, t.textEn]),
   ]
     .join(" ")
     .toLowerCase();
