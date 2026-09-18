@@ -39,7 +39,7 @@ describe("campaign shop catalog", () => {
     for (const chapter of campaignChapters) {
       for (const pick of chapter.defaultPicks) {
         expect(ids.has(pick.modId), `${chapter.id} → ${pick.modId}`).toBe(true);
-        expect(pick.polarity === "include" || pick.polarity === "exclude").toBe(true);
+        expect(pick.polarity === "include" || pick.polarity === "or" || pick.polarity === "exclude").toBe(true);
       }
       const resolved = defaultPicksForChapter(chapter.id);
       expect(Object.keys(resolved).length).toBe(chapter.defaultPicks.length);

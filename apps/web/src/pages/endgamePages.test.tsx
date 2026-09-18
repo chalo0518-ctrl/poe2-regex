@@ -54,33 +54,42 @@ describe("endgame tablets page", () => {
       "aria-pressed",
       "false",
     );
+    expect(within(chestRow as HTMLElement).getByRole("button", { name: "或" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
     expect(within(chestRow as HTMLElement).getByRole("button", { name: "否" })).toHaveAttribute(
       "aria-pressed",
       "false",
     );
-    expect(within(chestRow as HTMLElement).getByRole("button", { name: "空" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
+    expect(within(chestRow as HTMLElement).queryByRole("button", { name: "空" })).not.toBeInTheDocument();
   });
 
-  it("ANDs 是 rows and !-excludes 否 rows from the live tablet regex", async () => {
+  it("ANDs 是 rows, ORs 或 rows, and !-excludes 否 rows from the live tablet regex", async () => {
     const user = userEvent.setup();
     renderPage(<TabletsPage />);
     await user.click(screen.getByRole("option", { name: /裂痕碑牌/ }));
 
     const chest = screen.getByText("地圖內含有額外的(2—3)個稀有箱子").closest("li") as HTMLElement;
     const summon = screen.getByText("地圖內含有額外的1個召喚法陣").closest("li") as HTMLElement;
+    const rarity = screen.getByText("地圖增加(15—20)%怪物稀有度").closest("li") as HTMLElement;
     await user.click(within(chest).getByRole("button", { name: "是" }));
-    await user.click(within(summon).getByRole("button", { name: "否" }));
+    await user.click(within(summon).getByRole("button", { name: "或" }));
+    await user.click(within(rarity).getByRole("button", { name: "否" }));
 
     const pattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
     expect(pattern).toContain("!");
     expect(pattern).toMatch(/箱子/);
-    expect((pattern.match(/"/g) ?? []).length).toBeGreaterThanOrEqual(4);
-    expect(matchesItem(pattern, "地圖內含有額外的個稀有箱子")).toBe(true);
+    expect((pattern.match(/"/g) ?? []).length).toBe(6);
+    expect(matchesItem(pattern, "地圖內含有額外的個稀有箱子\n地圖內含有額外的個召喚法陣")).toBe(
+      true,
+    );
+    expect(matchesItem(pattern, "地圖內含有額外的個稀有箱子")).toBe(false);
     expect(
-      matchesItem(pattern, "地圖內含有額外的個稀有箱子\n地圖內含有額外的個召喚法陣"),
+      matchesItem(
+        pattern,
+        "地圖內含有額外的個稀有箱子\n地圖內含有額外的個召喚法陣\n地圖增加怪物稀有度",
+      ),
     ).toBe(false);
   });
 });
@@ -107,19 +116,21 @@ describe("endgame waystones page", () => {
     expect(screen.getByLabelText("物品稀有度 最小")).toBeInTheDocument();
     expect(screen.getByLabelText("換界石復活 最大")).toBeInTheDocument();
     expect(screen.getByLabelText("換界石金幣 最小")).toBeInTheDocument();
-    expect(screen.getByLabelText("混沌試煉")).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "不限" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "勝利之運" })).toBeInTheDocument();
+    expect(screen.queryByLabelText("混沌試煉")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Ultimatum Trial")).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "勝利之運" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "不限" })).not.toBeInTheDocument();
     expect(screen.queryByLabelText("物品數量 最小")).not.toBeInTheDocument();
     expect(screen.queryAllByRole("group", { name: "詞條取捨" })).toHaveLength(0);
     expect(screen.queryAllByRole("button", { name: "是" })).toHaveLength(0);
+    expect(screen.queryAllByRole("button", { name: "或" })).toHaveLength(0);
     expect(screen.queryAllByRole("button", { name: "否" })).toHaveLength(0);
     expect(screen.queryAllByText("強韌的")).toHaveLength(0);
     expect(screen.queryAllByText("Tough", { exact: false })).toHaveLength(0);
     expect(screen.queryByText(/更多怪物生命/)).not.toBeInTheDocument();
 
     const output = document.querySelector(".font-mono.text-gold");
-    expect(output?.textContent).toMatch(/填入數值或選擇試煉/);
+    expect(output?.textContent).toMatch(/填入數值後/);
 
     await user.type(screen.getByLabelText("物品稀有度 最小"), "40");
     expect(output?.textContent).toContain("物品稀有度");
@@ -151,22 +162,21 @@ describe("endgame waystones page", () => {
     expect(matchesItem(pattern, low)).toBe(false);
   });
 
-  it("ignores empty axes and ANDs filled min/max plus ultimatum", async () => {
+  it("ignores empty axes and ANDs filled min/max", async () => {
     const user = userEvent.setup();
     renderPage(<WaystonesPage />);
 
     await user.type(screen.getByLabelText("換界石階級 最小"), "14");
     await user.type(screen.getByLabelText("換界石階級 最大"), "16");
     await user.type(screen.getByLabelText("怪物效用 最小"), "20");
-    await user.selectOptions(screen.getByLabelText("混沌試煉"), "Deadly");
 
     const output = document.querySelector(".font-mono.text-gold");
     expect(output?.textContent).toContain("階級");
     expect(output?.textContent).toContain("怪物效用");
-    expect(output?.textContent).toContain("致命之運");
+    expect(output?.textContent).not.toContain("致命之運");
     expect(output?.textContent).not.toContain("物品稀有度");
     expect(output?.textContent?.includes('"')).toBe(true);
-    expect((output?.textContent?.match(/"/g) ?? []).length).toBeGreaterThanOrEqual(6);
+    expect((output?.textContent?.match(/"/g) ?? []).length).toBeGreaterThanOrEqual(4);
   });
 });
 

@@ -27,8 +27,8 @@ function polarityOn(text: string) {
   if (!row) throw new Error(`row not found: ${text}`);
   return {
     yes: within(row).getByRole("button", { name: "是" }),
+    or: within(row).getByRole("button", { name: "或" }),
     no: within(row).getByRole("button", { name: "否" }),
-    off: within(row).getByRole("button", { name: "空" }),
   };
 }
 
@@ -84,6 +84,10 @@ describe("early vendor page", () => {
       "true",
     );
     expect(polarityOn(shopModById("life").textZh).yes).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    expect(polarityOn(shopModById("life").textZh).or).toHaveAttribute(
       "aria-pressed",
       "false",
     );

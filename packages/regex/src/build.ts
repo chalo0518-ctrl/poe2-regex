@@ -34,11 +34,16 @@ function joinOr(parts: string[]): string {
   return parts.join("|");
 }
 
+function orGroup(parts: string[]): string {
+  return parts.length === 1 ? parts[0] : `(${joinOr(parts)})`;
+}
+
 /**
  * Build a Path of Exile 2 stash/vendor search string.
  *
- * Includes are combined with `|` (OR) or as separate quoted groups (AND).
- * The affix-row UI uses AND. Excludes reuse PoE2's `!` operator: `"!(a|b)"`.
+ * `include` polarity is combined with `|` (OR) or as separate quoted groups
+ * (AND). `or` polarity is always one `|` group, then AND’d with the includes.
+ * Excludes reuse PoE2's `!` operator: `"!(a|b)"`.
  */
 export function buildRegex(
   selection: RegexMod[],
@@ -49,13 +54,14 @@ export function buildRegex(
   const combine = options.combine ?? "or";
 
   const includes = selection.filter((m) => m.polarity === "include" && m.match);
+  const ors = selection.filter((m) => m.polarity === "or" && m.match);
   const excludes = selection.filter((m) => m.polarity === "exclude" && m.match);
 
   if (selection.some((m) => !m.match)) {
     warnings.push("missing-match");
   }
 
-  if (includes.length === 0 && excludes.length === 0) {
+  if (includes.length === 0 && ors.length === 0 && excludes.length === 0) {
     return { pattern: "", length: 0, overLimit: false, warnings };
   }
 
@@ -63,6 +69,7 @@ export function buildRegex(
   const corpus = [...new Set([...(options.corpus ?? []), ...selectedMatches])];
 
   const includeParts = includes.map((m) => fragmentFor(m, corpus));
+  const orParts = ors.map((m) => fragmentFor(m, corpus));
   const excludeParts = excludes.map((m) => fragmentFor(m, corpus));
 
   const groups: string[] = [];
@@ -75,10 +82,12 @@ export function buildRegex(
     }
   }
 
+  if (orParts.length > 0) {
+    groups.push(quoteGroup(orGroup(orParts)));
+  }
+
   if (excludeParts.length > 0) {
-    const inner =
-      excludeParts.length === 1 ? excludeParts[0] : `(${joinOr(excludeParts)})`;
-    groups.push(quoteGroup(`!${inner}`));
+    groups.push(quoteGroup(`!${orGroup(excludeParts)}`));
   }
 
   const pattern = groups.join(" ");
