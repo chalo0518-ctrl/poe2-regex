@@ -44,7 +44,53 @@ function family(overrides: Partial<AffixFamily> = {}): AffixFamily {
   };
 }
 
+const CHEST_ZH = "地圖內含有額外的(2—3)個稀有箱子";
+const SUMMON_ZH = "地圖內含有額外的1個召喚法陣";
+
+function summonFamily(): AffixFamily {
+  return family({
+    id: "t2",
+    family: "MapAdditionalSummoningCircle",
+    generation: "suffix",
+    tags: ["minion"],
+    tagsZh: ["召喚物"],
+    labelZh: "召喚師的",
+    labelEn: "Summoner's",
+    textZh: SUMMON_ZH,
+    textEn: "Map contains 1 additional Summoning Circle",
+    match: "Map contains additional Summoning Circle",
+    matchZh: "地圖內含有額外的個召喚法陣",
+  });
+}
+
 const compactChrome = endgameModBuilderChrome;
+
+function affixRow(text: string): HTMLElement {
+  const row = screen.getByText(text).closest("li");
+  if (!row) throw new Error(`affix row not found: ${text}`);
+  return row as HTMLElement;
+}
+
+function polarityButtons(text: string) {
+  const row = affixRow(text);
+  return {
+    row,
+    yes: within(row).getByRole("button", { name: "是" }),
+    no: within(row).getByRole("button", { name: "否" }),
+    off: within(row).getByRole("button", { name: "空" }),
+  };
+}
+
+function expectPolarity(text: string, selected: "yes" | "no" | "off") {
+  const { yes, no, off } = polarityButtons(text);
+  expect(yes).toHaveAttribute("aria-pressed", String(selected === "yes"));
+  expect(no).toHaveAttribute("aria-pressed", String(selected === "no"));
+  expect(off).toHaveAttribute("aria-pressed", String(selected === "off"));
+}
+
+function regexOutput(): string {
+  return document.querySelector(".font-mono.text-gold")?.textContent ?? "";
+}
 
 function renderBuilder(
   overrides: Partial<ComponentProps<typeof ChroniclesModBuilder>> = {},
@@ -139,18 +185,18 @@ describe("ChroniclesModBuilder affix rows", () => {
     expect(screen.getByText("Map contains (2—3) additional Rare Chests")).toBeInTheDocument();
   });
 
-  it("builds regex from match text, not family names, after include click", async () => {
+  it("builds regex from match text, not family names, after 是", async () => {
     const user = userEvent.setup();
     renderBuilder();
 
-    await user.click(screen.getByText("地圖內含有額外的(2—3)個稀有箱子"));
+    await user.click(polarityButtons(CHEST_ZH).yes);
 
-    const output = document.querySelector(".font-mono.text-gold");
-    expect(output?.textContent).toBeTruthy();
-    expect(output?.textContent).not.toContain("司庫");
-    expect(output?.textContent).not.toContain("Treasurer");
-    expect(output?.textContent).not.toContain("點選詞綴列");
-    expect(screen.getByText("正則包含")).toBeInTheDocument();
+    const output = regexOutput();
+    expect(output).toBeTruthy();
+    expect(output).not.toContain("司庫");
+    expect(output).not.toContain("Treasurer");
+    expect(output).not.toContain("每列選");
+    expectPolarity(CHEST_ZH, "yes");
   });
 
   it("hides family names in expanded tier rows too", async () => {
@@ -178,18 +224,18 @@ describe("ChroniclesModBuilder affix rows", () => {
     await user.paste("司庫的\nTreasurer's");
     await user.click(screen.getByRole("button", { name: "匯入" }));
 
-    expect(screen.queryByText("正則包含")).not.toBeInTheDocument();
+    expectPolarity(CHEST_ZH, "off");
 
     await user.click(screen.getByRole("button", { name: "匯入物品" }));
     const again = screen.getByPlaceholderText(/\+73 最大生命/);
     await user.click(again);
-    await user.paste("地圖內含有額外的(2—3)個稀有箱子");
+    await user.paste(CHEST_ZH);
     await user.click(screen.getByRole("button", { name: "匯入" }));
 
-    expect(screen.getByText("正則包含")).toBeInTheDocument();
-    const output = document.querySelector(".font-mono.text-gold");
-    expect(output?.textContent).not.toContain("司庫");
-    expect(output?.textContent).not.toContain("Treasurer");
+    expectPolarity(CHEST_ZH, "yes");
+    const output = regexOutput();
+    expect(output).not.toContain("司庫");
+    expect(output).not.toContain("Treasurer");
   });
 });
 
@@ -202,16 +248,111 @@ describe("ChroniclesModBuilder default picks", () => {
       },
     });
 
-    expect(screen.getByText("正則包含")).toBeInTheDocument();
-    const output = document.querySelector(".font-mono.text-gold");
-    expect(output?.textContent).toBeTruthy();
-    expect(output?.textContent).not.toContain("點選詞綴列");
+    expectPolarity(CHEST_ZH, "yes");
+    const output = regexOutput();
+    expect(output).toBeTruthy();
+    expect(output).not.toContain("每列選");
 
-    await user.click(screen.getByText("地圖內含有額外的(2—3)個稀有箱子"));
-    expect(screen.getByText("正則排除")).toBeInTheDocument();
+    await user.click(polarityButtons(CHEST_ZH).no);
+    expectPolarity(CHEST_ZH, "no");
+    expect(regexOutput()).toContain("!");
 
     await user.click(screen.getByRole("button", { name: "重置" }));
-    expect(screen.getByText("正則包含")).toBeInTheDocument();
-    expect(screen.queryByText("正則排除")).not.toBeInTheDocument();
+    expectPolarity(CHEST_ZH, "yes");
+    expect(regexOutput()).not.toContain("!");
+  });
+});
+
+describe("ChroniclesModBuilder polarity controls", () => {
+  it("defaults every row to 空 and keeps the three options mutually exclusive", async () => {
+    const user = userEvent.setup();
+    renderBuilder({ families: [family(), summonFamily()] });
+
+    expectPolarity(CHEST_ZH, "off");
+    expectPolarity(SUMMON_ZH, "off");
+    expect(regexOutput()).toMatch(/每列選「是」或「否」/);
+
+    const chest = polarityButtons(CHEST_ZH);
+    await user.click(chest.yes);
+    expectPolarity(CHEST_ZH, "yes");
+    await user.click(chest.no);
+    expectPolarity(CHEST_ZH, "no");
+    expect(chest.yes).toHaveAttribute("aria-pressed", "false");
+    expect(chest.off).toHaveAttribute("aria-pressed", "false");
+    expectPolarity(SUMMON_ZH, "off");
+  });
+
+  it("include-only ANDs 是 rows and ignores 空", async () => {
+    const user = userEvent.setup();
+    renderBuilder({ families: [family(), summonFamily()] });
+
+    await user.click(polarityButtons(CHEST_ZH).yes);
+    const includeOnly = regexOutput();
+    expect(includeOnly).toMatch(/箱子/);
+    expect(includeOnly).not.toContain("!");
+    expect(includeOnly).not.toMatch(/法陣/);
+
+    await user.click(polarityButtons(SUMMON_ZH).yes);
+    const both = regexOutput();
+    expect(both.split(" ").length).toBeGreaterThanOrEqual(2);
+    expect((both.match(/"/g) ?? []).length).toBeGreaterThanOrEqual(4);
+    expect(both).toMatch(/箱子/);
+    expect(both).toMatch(/法陣/);
+    expect(both).not.toContain("!");
+  });
+
+  it("exclude-only uses the existing ! group and 空 removes the row", async () => {
+    const user = userEvent.setup();
+    renderBuilder({ families: [family(), summonFamily()] });
+
+    await user.click(polarityButtons(CHEST_ZH).no);
+    const excludeOnly = regexOutput();
+    expect(excludeOnly).toContain("!");
+    expect(excludeOnly).toMatch(/箱子/);
+    expect(excludeOnly).not.toMatch(/法陣/);
+
+    await user.click(polarityButtons(SUMMON_ZH).no);
+    const both = regexOutput();
+    expect(both).toContain("!");
+    expect(both).toMatch(/箱子/);
+    expect(both).toMatch(/法陣/);
+
+    await user.click(polarityButtons(CHEST_ZH).off);
+    await user.click(polarityButtons(SUMMON_ZH).off);
+    expectPolarity(CHEST_ZH, "off");
+    expectPolarity(SUMMON_ZH, "off");
+    expect(regexOutput()).toMatch(/每列選「是」或「否」/);
+  });
+
+  it("mixes 是 and 否 into one compound pattern", async () => {
+    const user = userEvent.setup();
+    renderBuilder({ families: [family(), summonFamily()] });
+
+    await user.click(polarityButtons(CHEST_ZH).yes);
+    await user.click(polarityButtons(SUMMON_ZH).no);
+
+    const mixed = regexOutput();
+    expect(mixed).toMatch(/箱子/);
+    expect(mixed).toMatch(/法陣/);
+    expect(mixed).toContain("!");
+    expectPolarity(CHEST_ZH, "yes");
+    expectPolarity(SUMMON_ZH, "no");
+  });
+
+  it("clears back to 空 when the already-selected 是 or 否 is clicked", async () => {
+    const user = userEvent.setup();
+    renderBuilder();
+
+    const chest = polarityButtons(CHEST_ZH);
+    await user.click(chest.yes);
+    expectPolarity(CHEST_ZH, "yes");
+    await user.click(chest.yes);
+    expectPolarity(CHEST_ZH, "off");
+    expect(regexOutput()).toMatch(/每列選「是」或「否」/);
+
+    await user.click(chest.no);
+    expectPolarity(CHEST_ZH, "no");
+    await user.click(chest.no);
+    expectPolarity(CHEST_ZH, "off");
   });
 });

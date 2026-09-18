@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactElement } from "react";
 import { MemoryRouter } from "react-router-dom";
@@ -18,6 +18,20 @@ function renderEarly(ui: ReactElement, path = "/early/chapters") {
   );
 }
 
+function pressedYesCount() {
+  return screen.getAllByRole("button", { name: "是", pressed: true }).length;
+}
+
+function polarityOn(text: string) {
+  const row = screen.getByText(text).closest("li");
+  if (!row) throw new Error(`row not found: ${text}`);
+  return {
+    yes: within(row).getByRole("button", { name: "是" }),
+    no: within(row).getByRole("button", { name: "否" }),
+    off: within(row).getByRole("button", { name: "空" }),
+  };
+}
+
 describe("early chapters page", () => {
   it("surfaces chapter shop defaults instead of an empty placeholder", () => {
     renderEarly(<ChaptersPage />);
@@ -30,17 +44,16 @@ describe("early chapters page", () => {
     expect(screen.getByText(shopModById("movement_speed").textZh)).toBeInTheDocument();
     expect(screen.queryByText(shopModById("life").labelZh)).not.toBeInTheDocument();
     expect(screen.queryByText("生命")).not.toBeInTheDocument();
-    expect(screen.getAllByText("正則包含")).toHaveLength(
-      campaignChapters[0].defaultPicks.length,
-    );
+    expect(pressedYesCount()).toBe(campaignChapters[0].defaultPicks.length);
 
     const output = document.querySelector(".font-mono.text-gold");
     expect(output?.textContent).toBeTruthy();
-    expect(output?.textContent).not.toContain("點選詞綴列");
+    expect(output?.textContent).not.toContain("每列選");
 
     const pattern = output?.textContent ?? "";
-    expect(matchesItem(pattern, "+15最大生命")).toBe(true);
-    expect(matchesItem(pattern, "增加10%移動速度")).toBe(true);
+    expect(matchesItem(pattern, "+15最大生命\n增加10%移動速度")).toBe(true);
+    expect(matchesItem(pattern, "+15最大生命")).toBe(false);
+    expect(matchesItem(pattern, "增加10%移動速度")).toBe(false);
     expect(matchesItem(pattern, "+10%火焰抗性")).toBe(false);
   });
 
@@ -48,15 +61,11 @@ describe("early chapters page", () => {
     const user = userEvent.setup();
     renderEarly(<ChaptersPage />);
 
-    expect(screen.getAllByText("正則包含")).toHaveLength(
-      campaignChapters[0].defaultPicks.length,
-    );
+    expect(pressedYesCount()).toBe(campaignChapters[0].defaultPicks.length);
 
     await user.click(screen.getByRole("tab", { name: /第二章/ }));
     expect(screen.getByText(shopModById("fire_res").textZh)).toBeInTheDocument();
-    expect(screen.getAllByText("正則包含")).toHaveLength(
-      campaignChapters[1].defaultPicks.length,
-    );
+    expect(pressedYesCount()).toBe(campaignChapters[1].defaultPicks.length);
   });
 });
 
@@ -67,10 +76,17 @@ describe("early vendor page", () => {
 
     expect(screen.queryByText("內容稍後填入")).not.toBeInTheDocument();
     expect(screen.getByRole("tablist", { name: "章節" })).toBeInTheDocument();
-    expect(screen.getAllByText("正則包含").length).toBeGreaterThan(0);
+    expect(pressedYesCount()).toBeGreaterThan(0);
 
-    await user.click(screen.getByText(shopModById("life").textZh));
-    expect(screen.getByText("正則排除")).toBeInTheDocument();
+    await user.click(polarityOn(shopModById("life").textZh).no);
+    expect(polarityOn(shopModById("life").textZh).no).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(polarityOn(shopModById("life").textZh).yes).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
   });
 
   it("honours ?chapter= query when opening the shop page", () => {
@@ -80,7 +96,7 @@ describe("early vendor page", () => {
       "true",
     );
     expect(screen.getByText(shopModById("chaos_res").textZh)).toBeInTheDocument();
-    expect(screen.getAllByText("正則包含")).toHaveLength(
+    expect(pressedYesCount()).toBe(
       campaignChapters.find((c) => c.id === "act-4")?.defaultPicks.length ?? -1,
     );
   });

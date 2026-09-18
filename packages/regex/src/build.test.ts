@@ -50,6 +50,22 @@ describe("buildRegex", () => {
     expect(MAX_LENGTH).toBe(250);
   });
 
+  it("ANDs mixed includes with an exclude ! group", () => {
+    const r = buildRegex(
+      [FIRE, LIFE, { ...COLD, polarity: "exclude" }],
+      { corpus: CORPUS, combine: "and" },
+    );
+    expect(r.pattern.split(" ").length).toBeGreaterThanOrEqual(3);
+    expect(r.pattern).toContain("!");
+
+    const both = "+35% to Fire Resistance\n+80 to maximum Life";
+    const bothAndCold = `${both}\n+40% to Cold Resistance`;
+    const fireOnly = "+35% to Fire Resistance";
+    expect(matchesItem(r.pattern, both)).toBe(true);
+    expect(matchesItem(r.pattern, bothAndCold)).toBe(false);
+    expect(matchesItem(r.pattern, fireOnly)).toBe(false);
+  });
+
   it("ORs included mods inside one quoted group", () => {
     const r = buildRegex(
       [FIRE, COLD],
@@ -75,6 +91,20 @@ describe("buildRegex", () => {
     const fireOnly = "+35% to Fire Resistance";
     expect(matchesItem(r.pattern, both)).toBe(true);
     expect(matchesItem(r.pattern, fireOnly)).toBe(false);
+  });
+
+  it("excludes-only mods with the existing PoE2 ! group", () => {
+    const r = buildRegex(
+      [
+        { ...FIRE, polarity: "exclude" },
+        { ...COLD, polarity: "exclude" },
+      ],
+      { corpus: CORPUS, combine: "and" },
+    );
+    expect(r.pattern).toContain("!");
+    expect(matchesItem(r.pattern, "+80 to maximum Life")).toBe(true);
+    expect(matchesItem(r.pattern, "+35% to Fire Resistance")).toBe(false);
+    expect(matchesItem(r.pattern, "+40% to Cold Resistance")).toBe(false);
   });
 
   it("excludes mods with a PoE2 ! group", () => {
