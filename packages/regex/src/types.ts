@@ -16,8 +16,9 @@ export type NumericConstraint = {
   max?: number;
   format?: NumericFormat;
   /**
-   * EN/繁中 resists are `+N% rest`; 简中 often uses `rest +N%`.
-   * Default `before` keeps existing stash patterns.
+   * EN/繁中 resists are `+N% rest`. Some effect strings put the number
+   * after the unique fragment (`rest +N%`). Default `before` keeps existing
+   * stash patterns.
    */
   placement?: NumericPlacement;
 };

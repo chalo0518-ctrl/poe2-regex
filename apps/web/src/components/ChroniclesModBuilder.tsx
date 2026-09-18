@@ -419,13 +419,6 @@ export function ChroniclesModBuilder({
             <div className="flex overflow-hidden rounded-sm border border-line text-xs">
               <button
                 type="button"
-                onClick={() => setLang("zh-Hans")}
-                className={`px-2 py-1 ${lang === "zh-Hans" ? "bg-gold text-ink" : "text-muted"}`}
-              >
-                {t.matchZhHans}
-              </button>
-              <button
-                type="button"
                 onClick={() => setLang("zh-Hant")}
                 className={`px-2 py-1 ${lang === "zh-Hant" ? "bg-gold text-ink" : "text-muted"}`}
               >
@@ -490,9 +483,7 @@ export function ChroniclesModBuilder({
               placeholder={
                 locale === "en"
                   ? "+73 to maximum Life\n+40% to Fire Resistance"
-                  : locale === "zh-Hans"
-                    ? "+73 生命上限\n火焰抗性 +40%"
-                    : "+73 最大生命\n+40% 火焰抗性"
+                  : "+73 最大生命\n+40% 火焰抗性"
               }
             />
             <div className="flex justify-end gap-2">

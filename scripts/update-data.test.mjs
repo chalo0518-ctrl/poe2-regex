@@ -45,7 +45,7 @@ describe("update-data CLI", () => {
     const life = payloads.shields.list.find((f) => f.family === "IncreasedLife");
     assert.equal(life.matchZh, "最大生命");
     assert.equal(life.match, "to maximum Life");
-    assert.equal(life.matchZhHans, "生命上限");
+    assert.ok(!life.matchZhHans);
     assert.ok(life.bases.includes("str"));
     const strength = payloads.shields.list.find((f) => f.family === "Strength");
     assert.ok(strength.bases.includes("str") && strength.bases.includes("str_dex"));
@@ -53,7 +53,7 @@ describe("update-data CLI", () => {
     const low = payloads.endgame.waystones.byTier.low;
     assert.ok(low.every((f) => f.tier === "low"));
     assert.ok(low.every((f) => f.textZh));
-    assert.ok(low.some((f) => f.textZhHans));
+    assert.ok(low.every((f) => !f.textZhHans));
     assert.equal(payloads.endgame.waystones.counts.low.skippedEmpty, 1);
 
     const breach = payloads.endgame.tablets.byKind.breach;

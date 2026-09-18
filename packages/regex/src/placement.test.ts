@@ -11,14 +11,15 @@ describe("inferNumericPlacement", () => {
     expect(inferNumericPlacement("增加10%移動速度", "移動速度")).toBe("before");
   });
 
-  it("detects real poe2db 简中 suffix numbers as after", () => {
-    expect(inferNumericPlacement("火焰抗性 +(6—10)%", "火焰抗性")).toBe("after");
-    expect(inferNumericPlacement("移动速度提高 10%", "移动速度提高")).toBe("after");
-    expect(inferNumericPlacement("所有元素抗性 +(3—5)%", "所有元素抗性")).toBe("after");
+  it("detects suffix numbers as after", () => {
+    expect(inferNumericPlacement("Fire Resistance +(6—10)%", "Fire Resistance")).toBe("after");
+    expect(inferNumericPlacement("Movement Speed increased 10%", "Movement Speed increased")).toBe(
+      "after",
+    );
   });
 
-  it("keeps plus-flat 简中 life/attributes as before", () => {
-    expect(inferNumericPlacement("+(10—19) 生命上限", "生命上限")).toBe("before");
-    expect(inferNumericPlacement("+(5—8) 力量", "力量")).toBe("before");
+  it("keeps plus-flat life/attributes as before", () => {
+    expect(inferNumericPlacement("+(10—19) to maximum Life", "to maximum Life")).toBe("before");
+    expect(inferNumericPlacement("+(5—8) to Strength", "to Strength")).toBe("before");
   });
 });
