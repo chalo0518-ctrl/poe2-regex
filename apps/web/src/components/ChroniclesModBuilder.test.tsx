@@ -147,3 +147,26 @@ describe("ChroniclesModBuilder affix rows", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("ChroniclesModBuilder default picks", () => {
+  it("preselects defaultPicks as includes and restores them on reset", async () => {
+    const user = userEvent.setup();
+    renderBuilder({
+      defaultPicks: {
+        t1: { polarity: "include", min: "", max: "" },
+      },
+    });
+
+    expect(screen.getByText("正則包含")).toBeInTheDocument();
+    const output = document.querySelector(".font-mono.text-gold");
+    expect(output?.textContent).toBeTruthy();
+    expect(output?.textContent).not.toContain("點選詞綴列");
+
+    await user.click(screen.getByText("地圖內含有額外的(2—3)個稀有箱子"));
+    expect(screen.getByText("正則排除")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "重置" }));
+    expect(screen.getByText("正則包含")).toBeInTheDocument();
+    expect(screen.queryByText("正則排除")).not.toBeInTheDocument();
+  });
+});
