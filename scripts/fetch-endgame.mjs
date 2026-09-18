@@ -4,39 +4,34 @@
  * Each tablet kind is scraped as its own pool (no union-then-filter).
  * Waystone tiers are independent pools.
  */
-import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isMainModule } from "./lib/args.mjs";
+import { TABLET_KINDS, WAYSTONE_TIERS } from "./lib/catalogs.mjs";
+import {
+  assertNoCatastrophicDrop,
+  assertTabletCatalog,
+  assertWaystoneCatalog,
+  readJsonIfExists,
+  writeGeneratedJson,
+} from "./lib/generated.mjs";
+import { mapLimit } from "./lib/http.mjs";
 import {
   applyRepoeFallback,
   loadRepoeByType,
+  loadRepoeVersion,
   parsePageFamilies,
   scrapeModifiersPage,
 } from "./lib/poe2db.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const OUT_DIR = join(ROOT, "packages/data/generated");
+export const DEFAULT_OUT_DIR = join(ROOT, "packages/data/generated");
 
-export const WAYSTONE_TIERS = [
-  { id: "low", labelZh: "低階", path: "Waystones_low_tier" },
-  { id: "mid", labelZh: "中階", path: "Waystones_mid_tier" },
-  { id: "top", labelZh: "高階", path: "Waystones_top_tier" },
-];
+export { TABLET_KINDS, WAYSTONE_TIERS };
 
-export const TABLET_KINDS = [
-  { id: "breach", labelZh: "裂痕碑牌", path: "Breach_Tablet" },
-  { id: "expedition", labelZh: "探險碑牌", path: "Expedition_Tablet" },
-  { id: "delirium", labelZh: "譫妄碑牌", path: "Delirium_Tablet" },
-  { id: "ritual", labelZh: "祭祀碑牌", path: "Ritual_Tablet" },
-  { id: "irradiated", labelZh: "輻照碑牌", path: "Irradiated_Tablet" },
-  { id: "overseer", labelZh: "總督碑牌", path: "Overseer_Tablet" },
-  { id: "abyss", labelZh: "深淵碑牌", path: "Abyss_Tablet" },
-  { id: "temple", labelZh: "神廟碑牌", path: "Temple_Tablet" },
-];
-
-async function scrapePool(meta, extraField, extraValue, extraIdPrefix, repoe) {
-  const page = await scrapeModifiersPage(meta.path);
-  const { list, skippedEmpty } = parsePageFamilies(page.twView, page.usView, null, {
+async function scrapePool(meta, extraField, extraValue, extraIdPrefix, repoe, io) {
+  const page = await scrapeModifiersPage(meta.path, io);
+  const { list, skippedEmpty } = parsePageFamilies(page.twView, page.usView, {
     skipEmpty: true,
     extraIdPrefix,
   });
@@ -53,33 +48,35 @@ async function scrapePool(meta, extraField, extraValue, extraIdPrefix, repoe) {
   };
 }
 
-async function mapLimit(items, limit, fn) {
-  const out = new Array(items.length);
-  let i = 0;
-  async function worker() {
-    while (i < items.length) {
-      const idx = i++;
-      out[idx] = await fn(items[idx], idx);
-    }
-  }
-  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, () => worker()));
-  return out;
-}
+export async function refreshEndgame(options = {}) {
+  const waystoneTiers = options.waystoneTiers || WAYSTONE_TIERS;
+  const tabletKinds = options.tabletKinds || TABLET_KINDS;
+  const concurrency = Number(options.concurrency) || 3;
+  const generatedAt = options.generatedAt || new Date().toISOString();
+  const origin = options.origin || "https://poe2db.tw";
+  const io = {
+    origin: options.origin,
+    fetchText: options.fetchText,
+    repoeModsUrl: options.repoeModsUrl,
+    repoeIndexUrl: options.repoeIndexUrl,
+    required: options.requireRepoe,
+  };
 
-async function main() {
-  const generatedAt = new Date().toISOString();
-  const repoe = await loadRepoeByType();
+  const [repoe, repoeVersion] = await Promise.all([
+    loadRepoeByType(io),
+    options.repoeVersion !== undefined ? Promise.resolve(options.repoeVersion) : loadRepoeVersion(io),
+  ]);
 
-  const waystonePages = await mapLimit(WAYSTONE_TIERS, 3, (tier) =>
-    scrapePool(tier, "tier", tier.id, `waystone:${tier.id}`, repoe),
+  const waystonePages = await mapLimit(waystoneTiers, concurrency, (tier) =>
+    scrapePool(tier, "tier", tier.id, `waystone:${tier.id}`, repoe, io),
   );
-  const tabletPages = await mapLimit(TABLET_KINDS, 3, (kind) =>
-    scrapePool(kind, "tabletKind", kind.id, `tablet:${kind.id}`, repoe),
+  const tabletPages = await mapLimit(tabletKinds, concurrency, (kind) =>
+    scrapePool(kind, "tabletKind", kind.id, `tablet:${kind.id}`, repoe, io),
   );
 
   const harvestTags = waystonePages[0]?.harvestTags?.length
     ? waystonePages[0].harvestTags
-    : tabletPages[0].harvestTags;
+    : tabletPages[0]?.harvestTags || [];
 
   const waystonesByTier = {};
   const waystoneCounts = {};
@@ -106,48 +103,93 @@ async function main() {
   }
 
   const waystones = {
-    source: "https://poe2db.tw/tw/",
+    source: `${origin}/tw/`,
     generatedAt,
     notes:
       "Independent waystone pools from Waystones_low/mid/top_tier ModifiersCalc. Not unioned. EN from /us; RePoE match fallback only.",
     harvestTags,
-    tiers: WAYSTONE_TIERS,
+    tiers: waystoneTiers,
     counts: waystoneCounts,
     byTier: waystonesByTier,
+    ...(repoeVersion ? { repoeVersion } : {}),
   };
 
   const tablets = {
-    source: "https://poe2db.tw/tw/",
+    source: `${origin}/tw/`,
     generatedAt,
     notes:
       "Each tablet kind is a separate ModsView scrape. UI must gate on kind; do not union-all then fake-filter. EN from /us; RePoE match fallback only.",
     harvestTags,
-    kinds: TABLET_KINDS,
+    kinds: tabletKinds,
     counts: tabletCounts,
     byKind: tabletsByKind,
+    ...(repoeVersion ? { repoeVersion } : {}),
   };
 
-  await mkdir(OUT_DIR, { recursive: true });
-  await writeFile(join(OUT_DIR, "waystones.json"), JSON.stringify(waystones, null, 2) + "\n");
-  await writeFile(join(OUT_DIR, "tablets.json"), JSON.stringify(tablets, null, 2) + "\n");
+  return { waystones, tablets, repoeVersion };
+}
 
+export async function writeEndgameOutputs(result, options = {}) {
+  const outDir = options.outDir || DEFAULT_OUT_DIR;
+  const prevWaystones = await readJsonIfExists(join(outDir, "waystones.json"));
+  const prevTablets = await readJsonIfExists(join(outDir, "tablets.json"));
+
+  assertWaystoneCatalog(result.waystones);
+  assertTabletCatalog(result.tablets);
+
+  for (const tier of result.waystones.tiers) {
+    assertNoCatastrophicDrop(
+      prevWaystones?.counts?.[tier.id]?.families,
+      result.waystones.counts[tier.id].families,
+      `waystones.${tier.id}`,
+      { force: options.force },
+    );
+  }
+  for (const kind of result.tablets.kinds) {
+    assertNoCatastrophicDrop(
+      prevTablets?.counts?.[kind.id]?.families,
+      result.tablets.counts[kind.id].families,
+      `tablets.${kind.id}`,
+      { force: options.force },
+    );
+  }
+
+  const writes = [
+    await writeGeneratedJson(join(outDir, "waystones.json"), result.waystones, {
+      dryRun: options.dryRun,
+    }),
+    await writeGeneratedJson(join(outDir, "tablets.json"), result.tablets, {
+      dryRun: options.dryRun,
+    }),
+  ];
+  return writes;
+}
+
+export async function run(options = {}) {
+  const result = await refreshEndgame(options);
+  const writes = await writeEndgameOutputs(result, options);
+  const changed = writes.some((w) => w.written);
   console.log("Waystones");
-  for (const t of WAYSTONE_TIERS) {
-    const c = waystoneCounts[t.id];
+  for (const t of result.waystones.tiers) {
+    const c = result.waystones.counts[t.id];
     console.log(
       `  ${t.labelZh} (${t.path}): ${c.families} families / ${c.tiers} tiers (raw ${c.rawNormal}, skipped empty ${c.skippedEmpty})`,
     );
   }
   console.log("Tablets");
-  for (const k of TABLET_KINDS) {
-    const c = tabletCounts[k.id];
+  for (const k of result.tablets.kinds) {
+    const c = result.tablets.counts[k.id];
     console.log(
       `  ${k.labelZh} (${k.path}): ${c.families} families / ${c.tiers} tiers (raw ${c.rawNormal}, skipped empty ${c.skippedEmpty})`,
     );
   }
+  if (!changed) console.log("Endgame JSON unchanged (generatedAt ignored).");
+  return { result, writes, changed };
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if (isMainModule(import.meta.url)) {
+  run({}).catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

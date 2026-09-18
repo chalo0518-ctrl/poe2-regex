@@ -22,9 +22,13 @@ pnpm build
 
 ```bash
 pnpm fetch-data
+pnpm fetch-data:check
 ```
 
-寫入 `packages/data/generated/{shields,tags,meta,waystones,tablets}.json`。
+寫入 `packages/data/generated/{shields,tags,meta,waystones,tablets}.json`。完整來源、失敗碼、GitHub Actions 排程與 egress 說明見 [docs/data-update.md](docs/data-update.md)。CI 用 `pnpm fetch-data:fixtures`（精簡真實 HTML，不會覆寫正式 generated）。
+
+排程：`.github/workflows/update-data.yml` 每週一嘗試 live scrape；若 GitHub runner 連不到 poe2db.tw（exit 2）會略過並請在可出站的機器上跑 `pnpm fetch-data`。不需要 repository secrets。
+
 
 ## 資訊架構與路由
 
