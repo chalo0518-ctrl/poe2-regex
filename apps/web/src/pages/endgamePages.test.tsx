@@ -57,14 +57,22 @@ describe("endgame waystones page", () => {
   });
 });
 
-describe("early shields demo stays full chrome", () => {
-  it("still shows tags, filter, import, hide toggle, and family names", () => {
+describe("early shields demo keeps harvest chrome without family names", () => {
+  it("still shows tags, filter, import, and hide toggle", () => {
     render(<ShieldsDemo />);
 
     expect(screen.getAllByRole("button", { name: "火焰" }).length).toBeGreaterThan(0);
     expect(screen.getByText("Filter:")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "匯入物品" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "切換隱藏" })).toBeInTheDocument();
-    expect(screen.getByText("多刺的")).toBeInTheDocument();
+  });
+
+  it("lists effect text only, not family names or row tags", () => {
+    render(<ShieldsDemo />);
+
+    expect(screen.queryAllByText("多刺的")).toHaveLength(0);
+    expect(screen.queryAllByText("Thorny", { exact: false })).toHaveLength(0);
+    expect(screen.getByText("(1—2)至(3—4)點物理荊棘傷害")).toBeInTheDocument();
+    expect(screen.getByText("(1—2) to (3—4) Physical Thorns damage")).toBeInTheDocument();
   });
 });

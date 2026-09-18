@@ -85,8 +85,8 @@ export function ChroniclesModBuilder({
   showFilter = true,
   showImport = true,
   showHideToggle = true,
-  showFamilyNames = true,
-  showAffixTags = true,
+  showFamilyNames = false,
+  showAffixTags = false,
   defaultPicks,
 }: {
   kicker: string;
@@ -201,13 +201,7 @@ export function ChroniclesModBuilder({
     setPicks((prev) => {
       const next = { ...prev };
       for (const family of families) {
-        const needles = [
-          family.matchZh,
-          family.textZh,
-          family.match,
-          family.textEn,
-          family.labelZh,
-        ]
+        const needles = [family.matchZh, family.textZh, family.match, family.textEn]
           .filter(Boolean)
           .map((s) => s.toLowerCase());
         if (needles.some((n) => n.length >= 2 && blob.includes(n))) {

@@ -23,6 +23,8 @@ describe("early chapters page", () => {
 
     expect(screen.getByText(shopModById("life").textZh)).toBeInTheDocument();
     expect(screen.getByText(shopModById("movement_speed").textZh)).toBeInTheDocument();
+    expect(screen.queryByText(shopModById("life").labelZh)).not.toBeInTheDocument();
+    expect(screen.queryByText("生命")).not.toBeInTheDocument();
     expect(screen.getAllByText("正則包含")).toHaveLength(
       campaignChapters[0].defaultPicks.length,
     );
