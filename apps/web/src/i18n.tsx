@@ -60,11 +60,9 @@ type Messages = {
   waystonesDesc: string;
   waystonesStatAria: string;
   waystonesThresholdHint: string;
-  waystonesMinPlaceholder: string;
-  waystonesEffectNote: (effects: string) => string;
-  waystonesQuantityNote: string;
   waystonesRegexPlaceholder: string;
   waystonesActive: (n: number) => string;
+  waystonesAny: string;
   tabletsKindHeading: string;
   tabletsKindHint: string;
   tabletsKindAria: string;
@@ -121,7 +119,8 @@ const zhHant: Messages = {
   homeLead: "依遊玩階段選擇模組。開荒依章節提供商店裝備預設正則；終局已填入換界石與碑牌詞綴正則。",
   homeEarlyBody:
     "章節地圖、商店裝備篩選（各章預設生命／移速／抗性）、流派推薦裝備。盾牌詞綴實驗頁暫放於此。",
-  homeEndgameBody: "換界石依物品數量／物品稀有度／怪物效用篩選，與八種碑牌詞綴正則。碑牌必須先選種類。",
+  homeEndgameBody:
+    "換界石依市集終局篩選（階級、效用、稀有度、掉落率、經驗、群大小、復活、金幣、混沌試煉）產生正則，與八種碑牌詞綴正則。碑牌必須先選種類。",
   subNavAria: "子頁面",
   earlyChapters: "章節地圖",
   earlyVendor: "商店裝備篩選",
@@ -145,15 +144,13 @@ const zhHant: Messages = {
   shieldsPoolAria: "盾種",
   waystonesTitle: "換界石篩選正則",
   waystonesDesc:
-    "依物品數量、物品稀有度、怪物效用設定最小百分比，產生倉庫／商店正則。不必選低階／中階／高階，也不用翻整份詞綴名單。",
-  waystonesStatAria: "換界石數值篩選",
+    "對齊市集終局篩選：階級、怪物效用、怪物稀有度、掉落率、經驗、怪物群大小、物品稀有度、復活、金幣、混沌試煉。空白則忽略該軸，不必選低階／中階／高階詞綴池。",
+  waystonesStatAria: "換界石終局篩選",
   waystonesThresholdHint:
-    "每項填入最小 %（例如 40）。空白則忽略該軸。正則會對上換界石上的總數值，以及詞綴效果裡的「更多稀有度」「更多效用／怪物群大小」。",
-  waystonesMinPlaceholder: "最小",
-  waystonesEffectNote: (effects) => `詞綴效果：${effects}`,
-  waystonesQuantityNote: "詞綴資料沒有獨立的物品數量效果行，改對物品上的「物品數量」數值。",
-  waystonesRegexPlaceholder: "填入最小百分比後，正則會顯示在這裡",
-  waystonesActive: (n) => (n === 0 ? "尚未設定數值" : `已設定 ${n} 項下限`),
+    "每項可填最小／最大（空白＝忽略）。已填的軸以 AND 組合，對換界石上的總數值（與市集相同）。混沌試煉為下拉，預設不限。",
+  waystonesRegexPlaceholder: "填入數值或選擇試煉後，正則會顯示在這裡",
+  waystonesActive: (n) => (n === 0 ? "尚未設定篩選" : `已設定 ${n} 軸`),
+  waystonesAny: "不限",
   tabletsKindHeading: "碑牌種類",
   tabletsKindHint: "請先選擇碑牌種類。詞綴清單只顯示該種類頁面上可骰出的詞綴，不會把八種碑牌混在一起再假裝篩選。",
   tabletsKindAria: "碑牌種類",
@@ -212,7 +209,7 @@ const en: Messages = {
   homeEarlyBody:
     "Chapter maps, vendor gear filters (life / move speed / resists per act), and build presets. The shield lab lives here for now.",
   homeEndgameBody:
-    "Waystones by item quantity / item rarity / monster effectiveness, plus eight tablet pools. Pick a tablet kind first.",
+    "Waystones use the market endgame filters (tier, effectiveness, rarity, drop chance, experience, pack size, revives, gold, Ultimatum trial) plus eight tablet pools. Pick a tablet kind first.",
   subNavAria: "Subpages",
   earlyChapters: "Chapter maps",
   earlyVendor: "Vendor filter",
@@ -238,16 +235,13 @@ const en: Messages = {
   shieldsPoolAria: "Shield base",
   waystonesTitle: "Waystone filter regex",
   waystonesDesc:
-    "Set minimum item quantity, item rarity, and monster effectiveness to build a stash/shop regex. No low/mid/top picker, and no affix-name list as the main flow.",
-  waystonesStatAria: "Waystone stat filters",
+    "Market endgame filters: tier, monster effectiveness, monster rarity, drop chance, experience, pack size, item rarity, revives, gold, and Ultimatum trial. Empty = ignore. No low/mid/top affix-pool picker.",
+  waystonesStatAria: "Waystone endgame filters",
   waystonesThresholdHint:
-    "Type a minimum % (e.g. 40). Leave a box empty to ignore that axis. The regex matches the waystone totals plus reward lines for more rarity / more effectiveness and pack size.",
-  waystonesMinPlaceholder: "Min",
-  waystonesEffectNote: (effects) => `Affix text: ${effects}`,
-  waystonesQuantityNote:
-    "No item-quantity reward line in the affix scrape — the regex matches the Item Quantity value on the waystone.",
-  waystonesRegexPlaceholder: "Enter a minimum % and the regex shows up here",
-  waystonesActive: (n) => (n === 0 ? "No stats set" : `${n} minimum${n === 1 ? "" : "s"} set`),
+    "Each row is min/max (leave empty to ignore). Filled axes AND together and match totals on the waystone, like trade. Ultimatum trial is a dropdown, default Any.",
+  waystonesRegexPlaceholder: "Enter a value or pick a trial and the regex shows up here",
+  waystonesActive: (n) => (n === 0 ? "No filters set" : `${n} filter${n === 1 ? "" : "s"} set`),
+  waystonesAny: "Any",
   tabletsKindHeading: "Tablet kind",
   tabletsKindHint:
     "Pick a tablet kind first. The list only shows mods from that page — it does not union all eight then fake-filter.",

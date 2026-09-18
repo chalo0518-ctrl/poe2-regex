@@ -1,7 +1,7 @@
 import toRegexRange from "to-regex-range";
 
 function wrapAlt(inner: string): string {
-  return inner.includes("|") ? `(?:${inner})` : inner;
+  return inner.includes("|") ? `(${inner})` : inner;
 }
 
 function atLeast(min: number): string {
@@ -36,24 +36,52 @@ export function integerRangePattern(min?: number, max?: number): string {
 
 /**
  * Shorter ≥N matcher for stash stat filters. Avoids nested `(?:(?:…))`
- * from `to-regex-range` so three waystone axes still fit in 250 chars.
+ * from `to-regex-range` so several waystone axes still fit in 250 chars.
  */
 export function compactAtLeast(min: number): string {
   const n = Math.max(0, Math.round(min));
   if (n <= 0) return "\\d+";
   if (n === 1) return "[1-9]\\d*";
-  if (n < 10) return `(?:[${n}-9]|[1-9]\\d+)`;
+  if (n < 10) return `([${n}-9]|\\d{2,})`;
   if (n < 100) {
     const tens = Math.floor(n / 10);
     const ones = n % 10;
-    const parts = [
-      ones === 0 ? `${tens}\\d` : `${tens}[${ones}-9]`,
-      tens < 9 ? `[${tens + 1}-9]\\d` : "",
-      "[1-9]\\d{2,}",
-    ].filter(Boolean);
-    return `(?:${parts.join("|")})`;
+    const twoDigit =
+      ones === 0
+        ? `[${tens}-9]\\d`
+        : tens < 9
+          ? `${tens}[${ones}-9]|[${tens + 1}-9]\\d`
+          : `${tens}[${ones}-9]`;
+    return `(${twoDigit}|\\d{3,})`;
+  }
+  if (n < 1000) {
+    const hundreds = Math.floor(n / 100);
+    const rest = n % 100;
+    if (rest === 0) {
+      return `([${hundreds}-9]\\d{2}|\\d{4,})`;
+    }
+    const tens = Math.floor(rest / 10);
+    const ones = rest % 10;
+    const sameHundred =
+      ones === 0 ? `${hundreds}${tens}\\d` : `${hundreds}${tens}[${ones}-9]`;
+    const higherTens =
+      tens < 9 ? `|${hundreds}[${tens + 1}-9]\\d` : "";
+    const higherHundreds =
+      hundreds < 9 ? `|[${hundreds + 1}-9]\\d{2}` : "";
+    return `(${sameHundred}${higherTens}${higherHundreds}|\\d{4,})`;
   }
   return atLeast(n);
+}
+
+/**
+ * Compact integer matcher for min and/or max. Empty side = unbounded.
+ */
+export function compactIntegerRange(min?: number, max?: number): string {
+  const hasMin = min != null && Number.isFinite(min);
+  const hasMax = max != null && Number.isFinite(max);
+  if (!hasMin && !hasMax) return "\\d+";
+  if (!hasMax) return compactAtLeast(min as number);
+  return integerRangePattern(hasMin ? min : 0, max);
 }
 
 export function numericPrefix(

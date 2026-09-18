@@ -86,13 +86,22 @@ export {
 } from "./campaign.ts";
 
 export {
+  WAYSTONE_RANGE_AXES,
   WAYSTONE_STAT_AXES,
+  WAYSTONE_ULTIMATUM_OPTIONS,
+  isWaystoneRangeAxis,
   waystoneAllFamilies,
   waystoneStatHits,
   waystoneStatRange,
   waystoneStatThresholds,
 } from "./waystones.ts";
 export type {
+  WaystoneAffixAxisId,
+  WaystoneChoiceId,
+  WaystoneChoiceOption,
+  WaystoneFilterInput,
+  WaystoneRangeBounds,
+  WaystoneRangeId,
   WaystoneStatAxis,
   WaystoneStatEffect,
   WaystoneStatHit,
