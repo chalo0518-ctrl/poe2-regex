@@ -37,6 +37,7 @@ describe("endgame tablets page", () => {
     expect(screen.queryAllByText("召喚師的")).toHaveLength(0);
     expect(screen.getByText("地圖內含有額外的(2—3)個稀有箱子")).toBeInTheDocument();
     expect(screen.getByText("地圖內含有額外的1個召喚法陣")).toBeInTheDocument();
+    expect(screen.queryAllByText("召喚物")).toHaveLength(0);
   });
 });
 

@@ -6,6 +6,7 @@ import {
   type WaystoneTierId,
 } from "@poe2-regex/data";
 import { ChroniclesModBuilder } from "../components/ChroniclesModBuilder.tsx";
+import { endgameModBuilderChrome } from "../endgameModBuilderChrome.ts";
 
 export default function WaystonesPage() {
   const [tier, setTier] = useState<WaystoneTierId>("low");
@@ -25,12 +26,7 @@ export default function WaystonesPage() {
       pool={tier}
       onPoolChange={(id) => setTier(id as WaystoneTierId)}
       poolAriaLabel="換界石階級"
-      showTags={false}
-      showFilter={false}
-      showImport={false}
-      showHideToggle={false}
-      showFamilyNames={false}
-      showAffixTags={false}
+      {...endgameModBuilderChrome}
     />
   );
 }

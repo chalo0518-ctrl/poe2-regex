@@ -6,6 +6,7 @@ import {
   type TabletKindId,
 } from "@poe2-regex/data";
 import { ChroniclesModBuilder } from "../components/ChroniclesModBuilder.tsx";
+import { endgameModBuilderChrome } from "../endgameModBuilderChrome.ts";
 
 export default function TabletsPage() {
   const [kind, setKind] = useState<TabletKindId | "">("");
@@ -59,12 +60,7 @@ export default function TabletsPage() {
           statsNote={`${count?.families ?? 0} 組詞綴 · ${count?.tiers ?? 0} 階`}
           sourceNote={`來源 poe2db.tw/tw · ${meta?.path}`}
           families={families}
-          showTags={false}
-          showFilter={false}
-          showImport={false}
-          showHideToggle={false}
-          showFamilyNames={false}
-          showAffixTags={false}
+          {...endgameModBuilderChrome}
         />
       )}
     </div>

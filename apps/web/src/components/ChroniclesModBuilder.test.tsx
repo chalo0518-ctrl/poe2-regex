@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import type { AffixFamily, HarvestTag } from "@poe2-regex/data";
 import { ChroniclesModBuilder } from "./ChroniclesModBuilder.tsx";
+import { endgameModBuilderChrome } from "../endgameModBuilderChrome.ts";
 
 const harvestTags: HarvestTag[] = [
   { id: "ulaman_mod", labelZh: "Ulaman" },
@@ -42,14 +43,7 @@ function family(overrides: Partial<AffixFamily> = {}): AffixFamily {
   };
 }
 
-const compactChrome = {
-  showTags: false,
-  showFilter: false,
-  showImport: false,
-  showHideToggle: false,
-  showFamilyNames: false,
-  showAffixTags: false,
-} as const;
+const compactChrome = endgameModBuilderChrome;
 
 function renderBuilder(
   overrides: Partial<ComponentProps<typeof ChroniclesModBuilder>> = {},
@@ -131,9 +125,10 @@ describe("ChroniclesModBuilder affix rows", () => {
 
     await user.click(screen.getByText("地圖內含有額外的(2—3)個稀有箱子"));
 
-    const output = screen.getByText(/稀有箱子/);
-    expect(output.textContent).toContain("稀有箱子");
-    expect(output.textContent).not.toContain("司庫");
+    const output = document.querySelector(".font-mono.text-gold");
+    expect(output?.textContent).toBeTruthy();
+    expect(output?.textContent).not.toContain("司庫");
+    expect(output?.textContent).not.toContain("點選詞綴列");
     expect(screen.getByText("正則包含")).toBeInTheDocument();
   });
 
