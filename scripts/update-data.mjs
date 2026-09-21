@@ -18,10 +18,11 @@ import { checkGeneratedDir, ValidationError } from "./lib/generated.mjs";
 import { FetchError } from "./lib/http.mjs";
 import { createFixtureFetcher, ParseError } from "./lib/poe2db.mjs";
 import { DEFAULT_OUT_DIR as ENDGAME_OUT, refreshEndgame, writeEndgameOutputs } from "./fetch-endgame.mjs";
+import { DEFAULT_OUT_DIR as EARLY_OUT, refreshEarlyGear, writeEarlyGearOutputs } from "./fetch-early-gear.mjs";
 import { DEFAULT_OUT_DIR as SHIELD_OUT, refreshShields, writeShieldOutputs } from "./fetch-shields.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const DEFAULT_GENERATED = SHIELD_OUT || ENDGAME_OUT;
+const DEFAULT_GENERATED = SHIELD_OUT || ENDGAME_OUT || EARLY_OUT;
 const DEFAULT_FIXTURES = join(ROOT, "scripts/fixtures");
 
 export const EXIT = {
@@ -44,6 +45,7 @@ Sources:
 Options:
   --shields              Refresh shields/tags/meta only
   --endgame              Refresh waystones + tablets only
+  --early                Refresh early-gear.json only
   --check                Validate packages/data/generated (no network)
   --from-fixtures [dir]  Parse trimmed HTML under scripts/fixtures (default)
   --out-dir <dir>        Write JSON here (default packages/data/generated)
@@ -76,8 +78,10 @@ function exitFor(err) {
 
 export async function updateData(options) {
   const generatedDir = options.outDir || DEFAULT_GENERATED;
-  const doShields = options.shields || (!options.shields && !options.endgame);
-  const doEndgame = options.endgame || (!options.shields && !options.endgame);
+  const anySlice = options.shields || options.endgame || options.early;
+  const doShields = options.shields || !anySlice;
+  const doEndgame = options.endgame || !anySlice;
+  const doEarly = options.early || !anySlice;
 
   if (options.check) {
     const summary = await checkGeneratedDir(generatedDir);
@@ -111,6 +115,7 @@ export async function updateData(options) {
     shared.fetchText = options.fetchText || createFixtureFetcher(fixtureDir);
     shared.origin = options.origin || manifest.origin || POE2DB_ORIGIN;
     if (doShields && manifest.shields) shared.bases = manifest.shields;
+    if (doEarly && manifest.earlyGear) shared.earlyCategories = manifest.earlyGear;
     if (doEndgame) {
       if (manifest.waystones) shared.waystoneTiers = manifest.waystones;
       if (manifest.tablets) shared.tabletKinds = manifest.tablets;
@@ -122,6 +127,9 @@ export async function updateData(options) {
   if (doShields) {
     payloads.shields = await refreshShields(shared);
   }
+  if (doEarly) {
+    payloads.early = await refreshEarlyGear(shared);
+  }
   if (doEndgame) {
     payloads.endgame = await refreshEndgame(shared);
   }
@@ -129,6 +137,9 @@ export async function updateData(options) {
   const writes = [];
   if (payloads.shields) {
     writes.push(...(await writeShieldOutputs(payloads.shields, shared)));
+  }
+  if (payloads.early) {
+    writes.push(...(await writeEarlyGearOutputs(payloads.early, shared)));
   }
   if (payloads.endgame) {
     writes.push(...(await writeEndgameOutputs(payloads.endgame, shared)));
@@ -139,6 +150,16 @@ export async function updateData(options) {
     console.log(
       `Shields: ${payloads.shields.list.length} families / ${payloads.shields.meta.tierCount} tiers; tags ${payloads.shields.harvestTags.length}`,
     );
+  }
+  if (payloads.early) {
+    for (const category of payloads.early.catalog.categories) {
+      for (const pool of category.pools) {
+        const c = payloads.early.catalog.counts[category.id][pool.id];
+        console.log(
+          `Early ${category.labelZh}/${pool.labelZh}: ${c.families} families / ${c.tiers} tiers (skipped empty ${c.skippedEmpty})`,
+        );
+      }
+    }
   }
   if (payloads.endgame) {
     for (const t of payloads.endgame.waystones.tiers) {
@@ -175,6 +196,7 @@ async function main(argv = process.argv.slice(2)) {
     await updateData({
       shields: boolFlag(flags.shields),
       endgame: boolFlag(flags.endgame),
+      early: boolFlag(flags.early),
       check: boolFlag(flags.check),
       fromFixtures,
       fixtureDir,

@@ -176,6 +176,46 @@ export function assertTabletCatalog(catalog) {
   }
 }
 
+export function assertEarlyGearCatalog(catalog) {
+  if (!catalog?.byCategory || !catalog.categories?.length) {
+    throw new ValidationError("early-gear.json missing byCategory/categories");
+  }
+  const ids = new Set();
+  for (const category of catalog.categories) {
+    if (!category?.id || !category.pools?.length) {
+      throw new ValidationError(`early-gear category missing id/pools`);
+    }
+    if (ids.has(category.id)) {
+      throw new ValidationError(`early-gear: duplicate category ${category.id}`);
+    }
+    ids.add(category.id);
+    const byPool = catalog.byCategory[category.id];
+    if (!byPool || typeof byPool !== "object") {
+      throw new ValidationError(`early-gear.${category.id}: missing pool map`);
+    }
+    for (const pool of category.pools) {
+      const list = byPool[pool.id];
+      assertFamilyList(list, `early-gear.${category.id}.${pool.id}`);
+      for (const family of list) {
+        if (!Array.isArray(family.pools) || family.pools.length !== 1 || family.pools[0] !== pool.id) {
+          throw new ValidationError(
+            `early-gear.${category.id}.${pool.id} ${family.id}: pool tag must be [${pool.id}]`,
+          );
+        }
+        if (!String(family.id).startsWith(`gear:${category.id}:${pool.id}|`)) {
+          throw new ValidationError(`early-gear.${category.id}.${pool.id}: id prefix mismatch`);
+        }
+      }
+      const counted = catalog.counts?.[category.id]?.[pool.id]?.families;
+      if (counted != null && counted !== list.length) {
+        throw new ValidationError(
+          `early-gear.${category.id}.${pool.id}: counts.families ${counted} != ${list.length}`,
+        );
+      }
+    }
+  }
+}
+
 export async function checkGeneratedDir(dir) {
   const missing = [];
   const data = {};
@@ -190,6 +230,7 @@ export async function checkGeneratedDir(dir) {
   assertShieldPayload(data.shields, data.tags, data.meta);
   assertWaystoneCatalog(data.waystones);
   assertTabletCatalog(data.tablets);
+  assertEarlyGearCatalog(data["early-gear"]);
   return {
     shields: data.shields.length,
     waystones: Object.fromEntries(
@@ -197,6 +238,14 @@ export async function checkGeneratedDir(dir) {
     ),
     tablets: Object.fromEntries(
       data.tablets.kinds.map((k) => [k.id, data.tablets.byKind[k.id].length]),
+    ),
+    earlyGear: Object.fromEntries(
+      data["early-gear"].categories.map((c) => [
+        c.id,
+        Object.fromEntries(
+          c.pools.map((p) => [p.id, data["early-gear"].byCategory[c.id][p.id].length]),
+        ),
+      ]),
     ),
   };
 }

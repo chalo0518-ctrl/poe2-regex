@@ -74,6 +74,8 @@ describe("validation", () => {
     assert.ok(summary.shields >= 20);
     assert.ok(summary.waystones.low >= 20);
     assert.ok(summary.tablets.breach >= 10);
+    assert.ok(summary.earlyGear.body.str >= 10);
+    assert.ok(summary.earlyGear.mace1h.mace1h >= 10);
   });
 });
 

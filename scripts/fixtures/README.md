@@ -9,4 +9,4 @@ Trimmed **public** [poe2db.tw](https://poe2db.tw) `ModsView` HTML plus a tiny Re
 
 Never copy `scripts/fixtures/out/` over `packages/data/generated/`. The fixture catalog is a handful of pages on purpose.
 
-Captured 2026-09-18 from `https://poe2db.tw` + `https://repoe-fork.github.io/poe2/`.
+Captured 2026-09-18 from `https://poe2db.tw` + `https://repoe-fork.github.io/poe2/`. Early-gear pages (`Body_Armours_str` / `_dex`, `Rings`, `One_Hand_Maces`) captured 2026-09-21.

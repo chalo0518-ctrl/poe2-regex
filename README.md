@@ -1,6 +1,6 @@
 # 流亡 2 / 流放之路 2 正則工具
 
-按遊玩階段分成兩個模組。終局換界石依市集終局篩選（階級／效用／稀有度／掉落率／經驗／群大小／復活／金幣）產生倉庫正則；碑牌為編年史風格詞綴正則。開荒章節／商店已有各章預設裝備正則，流派仍為佔位，盾牌實驗頁可用。
+按遊玩階段分成兩個模組。終局換界石依市集終局篩選（階級／效用／稀有度／掉落率／經驗／群大小／復活／金幣）產生倉庫正則；碑牌為編年史風格詞綴正則。開荒章節／商店已有各章預設裝備正則，流派仍為佔位；開荒裝備詞綴可切胸甲／頭盔／手套／鞋子／飾品／單手錘／盾牌。
 
 界面預設 **繁中**，可切 **EN**。詞綴效果與匹配字串來自 poe2db `/tw` + `/us`。此倉庫不含簡中（zh-Hans）界面、匹配模式或 `/cn` 資料路徑；簡中會另開平行專案。
 
@@ -38,7 +38,7 @@ pnpm fetch-data
 pnpm fetch-data:check
 ```
 
-寫入 `packages/data/generated/{shields,tags,meta,waystones,tablets}.json`。完整來源、失敗碼、GitHub Actions 排程與 egress 說明見 [docs/data-update.md](docs/data-update.md)。CI 用 `pnpm fetch-data:fixtures`（精簡真實 HTML，不會覆寫正式 generated）。
+寫入 `packages/data/generated/{shields,tags,meta,waystones,tablets,early-gear}.json`。完整來源、失敗碼、GitHub Actions 排程與 egress 說明見 [docs/data-update.md](docs/data-update.md)。CI 用 `pnpm fetch-data:fixtures`（精簡真實 HTML，不會覆寫正式 generated）。
 
 排程：`.github/workflows/update-data.yml` 每週一嘗試 live scrape；若 GitHub runner 連不到 poe2db.tw（exit 2）會略過並請在可出站的機器上跑 `pnpm fetch-data`。不需要 repository secrets。
 
@@ -52,7 +52,8 @@ pnpm fetch-data:check
 | `/early/chapters` | 章節商店預設正則（第一章…第五章；尚無獨立地圖節點） |
 | `/early/vendor` | 商店裝備篩選，套用該章預設，可改是／或／否 |
 | `/early/builds` | 流派推薦裝備佔位 |
-| `/early/shields` | 實驗：盾牌詞綴（編年史風格） |
+| `/early/gear` | 開荒裝備詞綴：先選部位，再（若有）選 str/dex/int 基底 |
+| `/early/shields` | 別名，導向 `/early/gear?slot=shield` |
 | `/endgame` | 終局模組（導向換界石） |
 | `/endgame/waystones` | **換界石** 依市集終局篩選 Min/Max 產生正則 |
 | `/endgame/tablets` | **碑牌** 先選種類再出詞綴正則 |
@@ -121,9 +122,23 @@ pnpm fetch-data:check
 
 種類內每列用「是／或／否」取捨詞綴；「是」彼此 AND，「或」合成一組 OR 再與「是」AND，「否」走既有 `!` 排除。未選的列不寫入正則。
 
-## 實驗：盾牌詞綴
+## 開荒：裝備詞綴
 
-`/early/shields` 對齊 [編年史 ModifiersCalc](https://poe2db.tw/tw/Shields_str#ModifiersCalc)，僅力量塔盾／力敏／力智／輕盾。
+`/early/gear` 對齊編年史 ModifiersCalc。先選部位，胸甲／頭盔／手套／鞋子再選力量／敏捷／智慧（含雙屬）基底；各頁獨立，不會把護甲／閃避／能量護盾混成一組。每列右側選 **是**（AND）／**或**（OR）／**否**（排除）。未選＝不寫入。底部即時正則、長度／250、複製。預設繁中匹配，可切 EN。
+
+| 部位 | poe2db 頁（`/tw` + `/us` `#ModifiersCalc`） |
+|---|---|
+| 胸甲 | [Body_Armours_str](https://poe2db.tw/tw/Body_Armours_str#ModifiersCalc)、`Body_Armours_dex`、`Body_Armours_int`、`Body_Armours_str_dex`、`Body_Armours_str_int`、`Body_Armours_dex_int` |
+| 頭盔 | `Helmets_str`、`Helmets_dex`、`Helmets_int`、`Helmets_str_dex`、`Helmets_str_int`、`Helmets_dex_int` |
+| 手套 | `Gloves_str`、`Gloves_dex`、`Gloves_int`、`Gloves_str_dex`、`Gloves_str_int`、`Gloves_dex_int` |
+| 鞋子 | `Boots_str`、`Boots_dex`、`Boots_int`、`Boots_str_dex`、`Boots_str_int`、`Boots_dex_int` |
+| 戒指 | [Rings](https://poe2db.tw/tw/Rings#ModifiersCalc) |
+| 項鍊 | [Amulets](https://poe2db.tw/tw/Amulets#ModifiersCalc) |
+| 腰帶 | [Belts](https://poe2db.tw/tw/Belts#ModifiersCalc) |
+| 單手錘 | [One_Hand_Maces](https://poe2db.tw/tw/One_Hand_Maces#ModifiersCalc) |
+| 盾牌 | 既有 [Shields_str](https://poe2db.tw/tw/Shields_str#ModifiersCalc)／`Shields_str_dex`／`Shields_str_int`／[Bucklers](https://poe2db.tw/tw/Bucklers#ModifiersCalc)（`shields.json`） |
+
+法杖（Wands）未列入：poe2db 家族會把不同傷害類型混成一組，match 字串不可靠。章節推薦預設（task 2）尚未填入。
 
 1. 點標籤：第一次包含（紫）、第二次排除、第三次還原；多個包含為聯集。
 2. 每列右側選 **是**（AND 包含）／**或**（OR 包含）／**否**（排除）。未選＝不寫入。是項 AND，「或」項合成 `(或1|或2)` 再與是項 AND，排除項用既有 `!` 群組。

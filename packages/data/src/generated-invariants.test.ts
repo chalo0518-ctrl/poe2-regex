@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { harvestTags, shieldFamilies, tabletCatalog, waystoneCatalog } from "./index.ts";
+import { harvestTags, shieldFamilies, tabletCatalog, waystoneCatalog, earlyGearCatalog } from "./index.ts";
 
 describe("frozen generated JSON invariants", () => {
   it("keeps unique shield ids, bases, and match strings", () => {
@@ -32,6 +32,29 @@ describe("frozen generated JSON invariants", () => {
       expect(list.every((f) => f.id.startsWith(`tablet:${kind.id}|`))).toBe(true);
       expect(list.every((f) => f.matchZh && f.textZh)).toBe(true);
       expect(list.every((f) => !("matchZhHans" in f) && !("textZhHans" in f))).toBe(true);
+    }
+  });
+
+  it("keeps per-pool early gear pages with matching counts", () => {
+    expect(earlyGearCatalog.categories.map((c) => c.id)).toEqual([
+      "body",
+      "helmet",
+      "gloves",
+      "boots",
+      "ring",
+      "amulet",
+      "belt",
+      "mace1h",
+    ]);
+    for (const category of earlyGearCatalog.categories) {
+      for (const pool of category.pools) {
+        const list = earlyGearCatalog.byCategory[category.id][pool.id];
+        expect(list.length).toBe(earlyGearCatalog.counts[category.id][pool.id].families);
+        expect(list.every((f) => f.pools[0] === pool.id)).toBe(true);
+        expect(list.every((f) => f.id.startsWith(`gear:${category.id}:${pool.id}|`))).toBe(true);
+        expect(list.every((f) => f.matchZh && f.textZh)).toBe(true);
+        expect(list.every((f) => !("matchZhHans" in f) && !("textZhHans" in f))).toBe(true);
+      }
     }
   });
 });

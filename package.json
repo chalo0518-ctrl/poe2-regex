@@ -11,6 +11,7 @@
     "fetch-data": "node scripts/update-data.mjs",
     "fetch-data:shields": "node scripts/update-data.mjs --shields",
     "fetch-data:endgame": "node scripts/update-data.mjs --endgame",
+    "fetch-data:early": "node scripts/update-data.mjs --early",
     "fetch-data:check": "node scripts/update-data.mjs --check",
     "fetch-data:fixtures": "node scripts/update-data.mjs --from-fixtures --out-dir scripts/fixtures/out"
   },

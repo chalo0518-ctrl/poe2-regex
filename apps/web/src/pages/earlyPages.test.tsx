@@ -5,9 +5,10 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { campaignChapters, shopModById } from "@poe2-regex/data";
 import { matchesItem } from "@poe2-regex/regex";
-import ChaptersPage from "./ChaptersPage.tsx";
-import VendorPage from "./VendorPage.tsx";
 import BuildsPage from "./BuildsPage.tsx";
+import ChaptersPage from "./ChaptersPage.tsx";
+import EarlyGearPage from "./EarlyGearPage.tsx";
+import VendorPage from "./VendorPage.tsx";
 import { LocaleProvider } from "../i18n.tsx";
 
 function renderEarly(ui: ReactElement, path = "/early/chapters") {
@@ -111,5 +112,87 @@ describe("early builds page stays a placeholder", () => {
     renderEarly(<BuildsPage />, "/early/builds");
     expect(screen.getByText("流派推薦裝備")).toBeInTheDocument();
     expect(screen.getByText("內容稍後填入")).toBeInTheDocument();
+  });
+});
+
+describe("early gear category picker", () => {
+  function renderGear(path = "/early/gear") {
+    return render(
+      <LocaleProvider initialLocale="zh-Hant">
+        <MemoryRouter initialEntries={[path]}>
+          <EarlyGearPage />
+        </MemoryRouter>
+      </LocaleProvider>,
+    );
+  }
+
+  it("defaults to body armour with 是／或／否 polarity and Traditional Chinese match", async () => {
+    const user = userEvent.setup();
+    renderGear();
+
+    expect(screen.getByRole("option", { name: "胸甲" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "力量" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.queryByRole("button", { name: "简中匹配" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "繁中匹配" })).toBeInTheDocument();
+    expect(screen.getByText("+(10—19)最大生命")).toBeInTheDocument();
+    expect(screen.getByText("+(16—27)護甲值")).toBeInTheDocument();
+
+    const life = screen.getByText("+(10—19)最大生命").closest("li") as HTMLElement;
+    await user.click(within(life).getByRole("button", { name: "是" }));
+    const pattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
+    expect(pattern).toContain("最大生命");
+    expect(matchesItem(pattern, "+15最大生命")).toBe(true);
+    expect(matchesItem(pattern, "+10%火焰抗性")).toBe(false);
+  });
+
+  it("keeps str/dex body pools independent so local defences are not unioned", async () => {
+    const user = userEvent.setup();
+    renderGear();
+
+    expect(screen.getByText("+(16—27)護甲值")).toBeInTheDocument();
+    expect(screen.queryByText("+(11—18)閃避值")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("tab", { name: "敏捷" }));
+    expect(screen.getByText("+(11—18)閃避值")).toBeInTheDocument();
+    expect(screen.queryByText("+(16—27)護甲值")).not.toBeInTheDocument();
+  });
+
+  it("switches slots and rebuilds regex for rings and one-handed maces", async () => {
+    const user = userEvent.setup();
+    renderGear();
+
+    await user.click(screen.getByRole("option", { name: "戒指" }));
+    expect(screen.getByText("+(3—5)%全元素抗性")).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "力量" })).not.toBeInTheDocument();
+
+    const allRes = screen.getByText("+(3—5)%全元素抗性").closest("li") as HTMLElement;
+    await user.click(within(allRes).getByRole("button", { name: "是" }));
+    const ringPattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
+    expect(ringPattern.length).toBeGreaterThan(0);
+    expect(matchesItem(ringPattern, "+5%全元素抗性")).toBe(true);
+    expect(matchesItem(ringPattern, "+15最大生命")).toBe(false);
+
+    await user.click(screen.getByRole("option", { name: "單手錘" }));
+    expect(screen.getByText("附加(1—2)至(4—5)物理傷害")).toBeInTheDocument();
+    const phys = screen.getByText("附加(1—2)至(4—5)物理傷害").closest("li") as HTMLElement;
+    await user.click(within(phys).getByRole("button", { name: "或" }));
+    const fire = screen.getByText("附加(1—2)至(3—5)火焰傷害").closest("li") as HTMLElement;
+    await user.click(within(fire).getByRole("button", { name: "否" }));
+    const macePattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
+    expect(macePattern).toContain("!");
+    expect(matchesItem(macePattern, "附加至物理傷害")).toBe(true);
+    expect(matchesItem(macePattern, "附加至火焰傷害")).toBe(false);
+    expect(matchesItem(macePattern, "+15最大生命")).toBe(false);
+  });
+
+  it("keeps the shield lab available with harvest chrome", () => {
+    renderGear("/early/gear?slot=shield");
+
+    expect(screen.getByRole("option", { name: "盾牌" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getAllByRole("button", { name: "火焰" }).length).toBeGreaterThan(0);
+    expect(screen.getByText("Filter:")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "匯入物品" })).toBeInTheDocument();
+    expect(screen.queryAllByText("多刺的")).toHaveLength(0);
+    expect(screen.getByText("(1—2) to (3—4) Physical Thorns damage")).toBeInTheDocument();
   });
 });

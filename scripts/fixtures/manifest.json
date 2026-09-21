@@ -28,5 +28,35 @@
       "labelZh": "裂痕碑牌",
       "path": "Breach_Tablet"
     }
+  ],
+  "earlyGear": [
+    {
+      "id": "body",
+      "labelZh": "胸甲",
+      "labelEn": "Body armour",
+      "path": "Body_Armours_str",
+      "pools": [
+        { "id": "str", "labelZh": "力量", "labelEn": "Str", "path": "Body_Armours_str" },
+        { "id": "dex", "labelZh": "敏捷", "labelEn": "Dex", "path": "Body_Armours_dex" }
+      ]
+    },
+    {
+      "id": "ring",
+      "labelZh": "戒指",
+      "labelEn": "Ring",
+      "path": "Rings",
+      "pools": [
+        { "id": "ring", "labelZh": "戒指", "labelEn": "Ring", "path": "Rings" }
+      ]
+    },
+    {
+      "id": "mace1h",
+      "labelZh": "單手錘",
+      "labelEn": "One-handed mace",
+      "path": "One_Hand_Maces",
+      "pools": [
+        { "id": "mace1h", "labelZh": "單手錘", "labelEn": "One-handed mace", "path": "One_Hand_Maces" }
+      ]
+    }
   ]
 }

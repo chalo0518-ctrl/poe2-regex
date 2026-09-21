@@ -20,6 +20,18 @@ export type TabletKindId =
   | "abyss"
   | "temple";
 
+export type EarlyGearCategoryId =
+  | "body"
+  | "helmet"
+  | "gloves"
+  | "boots"
+  | "ring"
+  | "amulet"
+  | "belt"
+  | "mace1h";
+
+export type EarlyGearSlotId = EarlyGearCategoryId | "shield";
+
 export type UiLocale = "zh-Hant" | "en";
 
 export type MatchLang = "zh-Hant" | "en";
@@ -82,6 +94,10 @@ export type TabletFamily = AffixFamily & {
   tabletKind: TabletKindId;
 };
 
+export type EarlyGearFamily = AffixFamily & {
+  pools: string[];
+};
+
 export type ShieldBaseMeta = {
   id: ShieldBaseId;
   labelZh: string;
@@ -135,6 +151,22 @@ export type TabletCatalog = {
   kinds: PoolMeta<TabletKindId>[];
   counts: Record<TabletKindId, PoolCount>;
   byKind: Record<TabletKindId, TabletFamily[]>;
+  repoeVersion?: string;
+};
+
+export type EarlyGearCategoryMeta = PoolMeta<EarlyGearCategoryId> & {
+  pools: PoolMeta[];
+};
+
+export type EarlyGearCatalog = {
+  source: string;
+  generatedAt: string;
+  notes: string;
+  harvestTags: HarvestTag[];
+  categories: EarlyGearCategoryMeta[];
+  counts: Record<string, Record<string, PoolCount>>;
+  byCategory: Record<string, Record<string, EarlyGearFamily[]>>;
+  skippedPages?: { path: string; reason: string }[];
   repoeVersion?: string;
 };
 

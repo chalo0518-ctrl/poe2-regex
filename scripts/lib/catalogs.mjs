@@ -15,6 +15,72 @@ export const SHIELD_BASES = [
   { id: "buckler", labelZh: "輕盾", labelEn: "Buckler", path: "Bucklers" },
 ];
 
+/** Attribute-split armour pages on poe2db.tw (index pages have no ModsView). */
+export const ARMOUR_ATTR_POOLS = [
+  { id: "str", labelZh: "力量", labelEn: "Str" },
+  { id: "dex", labelZh: "敏捷", labelEn: "Dex" },
+  { id: "int", labelZh: "智慧", labelEn: "Int" },
+  { id: "str_dex", labelZh: "力／敏", labelEn: "Str/Dex" },
+  { id: "str_int", labelZh: "力／智", labelEn: "Str/Int" },
+  { id: "dex_int", labelZh: "敏／智", labelEn: "Dex/Int" },
+];
+
+export function armourPools(pagePrefix) {
+  return ARMOUR_ATTR_POOLS.map((pool) => ({
+    ...pool,
+    path: `${pagePrefix}_${pool.id}`,
+  }));
+}
+
+function singlePool(id, labelZh, labelEn, path) {
+  return {
+    id,
+    labelZh,
+    labelEn,
+    path,
+    pools: [{ id, labelZh, labelEn, path }],
+  };
+}
+
+/**
+ * Campaign early-gear Chronicles pages (excluding shields, which stay in shields.json).
+ * Wands are omitted: poe2db families mix damage types so match strings are unreliable.
+ */
+export const EARLY_GEAR_CATEGORIES = [
+  {
+    id: "body",
+    labelZh: "胸甲",
+    labelEn: "Body armour",
+    path: "Body_Armours_str",
+    pools: armourPools("Body_Armours"),
+  },
+  {
+    id: "helmet",
+    labelZh: "頭盔",
+    labelEn: "Helmet",
+    path: "Helmets_str",
+    pools: armourPools("Helmets"),
+  },
+  {
+    id: "gloves",
+    labelZh: "手套",
+    labelEn: "Gloves",
+    path: "Gloves_str",
+    pools: armourPools("Gloves"),
+  },
+  {
+    id: "boots",
+    labelZh: "鞋子",
+    labelEn: "Boots",
+    path: "Boots_str",
+    pools: armourPools("Boots"),
+  },
+  singlePool("ring", "戒指", "Ring", "Rings"),
+  singlePool("amulet", "項鍊", "Amulet", "Amulets"),
+  singlePool("belt", "腰帶", "Belt", "Belts"),
+  singlePool("mace1h", "單手錘", "One-handed mace", "One_Hand_Maces"),
+];
+
 export const WAYSTONE_TIERS = [
   { id: "low", labelZh: "低階", labelEn: "Low", path: "Waystones_low_tier" },
   { id: "mid", labelZh: "中階", labelEn: "Mid", path: "Waystones_mid_tier" },
@@ -38,4 +104,5 @@ export const GENERATED_FILES = [
   "meta.json",
   "waystones.json",
   "tablets.json",
+  "early-gear.json",
 ];
