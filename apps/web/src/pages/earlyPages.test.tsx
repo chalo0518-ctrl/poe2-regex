@@ -1,13 +1,13 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactElement } from "react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { campaignChapters, shopModById } from "@poe2-regex/data";
 import { matchesItem } from "@poe2-regex/regex";
 import BuildsPage from "./BuildsPage.tsx";
 import ChaptersPage from "./ChaptersPage.tsx";
-import EarlyGearPage from "./EarlyGearPage.tsx";
+import EarlyGearPage, { EarlyGearShieldsRedirect } from "./EarlyGearPage.tsx";
 import VendorPage from "./VendorPage.tsx";
 import { LocaleProvider } from "../i18n.tsx";
 
@@ -131,11 +131,35 @@ describe("early gear category picker", () => {
     renderGear();
 
     expect(screen.getByRole("option", { name: "胸甲" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "力量" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("option", { name: "頭盔" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "手套" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "鞋子" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "戒指" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "項鍊" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "腰帶" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "單手錘" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "盾牌" })).toBeInTheDocument();
+    expect(screen.getAllByRole("option").map((el) => el.textContent)).toEqual([
+      "胸甲",
+      "頭盔",
+      "手套",
+      "鞋子",
+      "戒指",
+      "項鍊",
+      "腰帶",
+      "單手錘",
+      "盾牌",
+    ]);
+    expect(screen.getAllByRole("button", { name: "火焰" }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("tab", { name: "力量" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "敏捷" })).not.toBeInTheDocument();
+    expect(screen.queryByText("力量塔盾")).not.toBeInTheDocument();
+    expect(screen.queryByText("輕盾")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "简中匹配" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "繁中匹配" })).toBeInTheDocument();
     expect(screen.getByText("+(10—19)最大生命")).toBeInTheDocument();
     expect(screen.getByText("+(16—27)護甲值")).toBeInTheDocument();
+    expect(screen.getByText("+(11—18)閃避值")).toBeInTheDocument();
 
     const life = screen.getByText("+(10—19)最大生命").closest("li") as HTMLElement;
     await user.click(within(life).getByRole("button", { name: "是" }));
@@ -145,16 +169,14 @@ describe("early gear category picker", () => {
     expect(matchesItem(pattern, "+10%火焰抗性")).toBe(false);
   });
 
-  it("keeps str/dex body pools independent so local defences are not unioned", async () => {
-    const user = userEvent.setup();
+  it("does not show attribute-family tabs; body lists armour and evasion together", () => {
     renderGear();
 
+    expect(screen.queryByRole("tablist", { name: "基底" })).not.toBeInTheDocument();
+    expect(screen.queryByText("力量塔盾")).not.toBeInTheDocument();
+    expect(screen.queryByText("力／敏盾")).not.toBeInTheDocument();
     expect(screen.getByText("+(16—27)護甲值")).toBeInTheDocument();
-    expect(screen.queryByText("+(11—18)閃避值")).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole("tab", { name: "敏捷" }));
     expect(screen.getByText("+(11—18)閃避值")).toBeInTheDocument();
-    expect(screen.queryByText("+(16—27)護甲值")).not.toBeInTheDocument();
   });
 
   it("switches slots and rebuilds regex for rings and one-handed maces", async () => {
@@ -164,6 +186,7 @@ describe("early gear category picker", () => {
     await user.click(screen.getByRole("option", { name: "戒指" }));
     expect(screen.getByText("+(3—5)%全元素抗性")).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "力量" })).not.toBeInTheDocument();
+    expect(screen.queryByText("力量塔盾")).not.toBeInTheDocument();
 
     const allRes = screen.getByText("+(3—5)%全元素抗性").closest("li") as HTMLElement;
     await user.click(within(allRes).getByRole("button", { name: "是" }));
@@ -189,10 +212,38 @@ describe("early gear category picker", () => {
     renderGear("/early/gear?slot=shield");
 
     expect(screen.getByRole("option", { name: "盾牌" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("option", { name: "胸甲" })).toBeInTheDocument();
+    expect(screen.queryByText("力量塔盾")).not.toBeInTheDocument();
+    expect(screen.queryByText("力／敏盾")).not.toBeInTheDocument();
+    expect(screen.queryByText("力／智盾")).not.toBeInTheDocument();
+    expect(screen.queryByText("輕盾")).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "火焰" }).length).toBeGreaterThan(0);
     expect(screen.getByText("Filter:")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "匯入物品" })).toBeInTheDocument();
     expect(screen.queryAllByText("多刺的")).toHaveLength(0);
     expect(screen.getByText("(1—2) to (3—4) Physical Thorns damage")).toBeInTheDocument();
+  });
+
+  it("redirects /early/shields to the major-slot gear UI without attribute families", () => {
+    render(
+      <LocaleProvider initialLocale="zh-Hant">
+        <MemoryRouter initialEntries={["/early/shields"]}>
+          <Routes>
+            <Route path="/early/shields" element={<EarlyGearShieldsRedirect />} />
+            <Route path="/early/gear" element={<EarlyGearPage />} />
+          </Routes>
+        </MemoryRouter>
+      </LocaleProvider>,
+    );
+
+    expect(screen.getByRole("option", { name: "盾牌" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("option", { name: "胸甲" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "頭盔" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "單手錘" })).toBeInTheDocument();
+    expect(screen.queryByText("力量塔盾")).not.toBeInTheDocument();
+    expect(screen.queryByText("力／敏盾")).not.toBeInTheDocument();
+    expect(screen.queryByText("力／智盾")).not.toBeInTheDocument();
+    expect(screen.queryByText("輕盾")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "火焰" }).length).toBeGreaterThan(0);
   });
 });

@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 import {
-  earlyGearCatalog,
   earlyGearFamiliesFor,
   earlyGearSlotMeta,
   earlyGearSlots,
+  earlyGearSourcePath,
   harvestTags,
   isEarlyGearSlotId,
   poolLabel,
@@ -16,40 +16,18 @@ import { useLocale } from "../i18n.tsx";
 const SLOTS = earlyGearSlots();
 const DEFAULT_SLOT: EarlyGearSlotId = "body";
 
-function firstPoolId(slotId: EarlyGearSlotId): string {
-  return earlyGearSlotMeta(slotId)?.pools[0]?.id ?? "";
-}
-
 export default function EarlyGearPage() {
   const { locale, t } = useLocale();
   const [params, setParams] = useSearchParams();
   const rawSlot = params.get("slot") || DEFAULT_SLOT;
   const slotId: EarlyGearSlotId = isEarlyGearSlotId(rawSlot) ? rawSlot : DEFAULT_SLOT;
   const slot = earlyGearSlotMeta(slotId);
-  const rawPool = params.get("pool") || "";
-  const poolId =
-    slot?.pools.some((pool) => pool.id === rawPool) ? rawPool : firstPoolId(slotId);
-  const pool = slot?.pools.find((item) => item.id === poolId);
 
-  const families = useMemo(
-    () => (slotId && poolId ? earlyGearFamiliesFor(slotId, poolId) : []),
-    [slotId, poolId],
-  );
-
-  const count =
-    slotId === "shield"
-      ? {
-          families: families.length,
-          tiers: families.reduce((sum, family) => sum + family.tiers.length, 0),
-        }
-      : earlyGearCatalog.counts[slotId]?.[poolId];
+  const families = useMemo(() => earlyGearFamiliesFor(slotId), [slotId]);
+  const tierCount = families.reduce((sum, family) => sum + family.tiers.length, 0);
 
   function setSlot(id: EarlyGearSlotId) {
-    setParams({ slot: id, pool: firstPoolId(id) });
-  }
-
-  function setPool(id: string) {
-    setParams({ slot: slotId, pool: id });
+    setParams({ slot: id });
   }
 
   return (
@@ -65,7 +43,7 @@ export default function EarlyGearPage() {
               role="option"
               aria-selected={slotId === item.id}
               onClick={() => setSlot(item.id)}
-              className={`rounded-sm border px-2.5 py-1.5 text-sm ${
+              className={`rounded-sm border px-3 py-2 text-sm font-medium ${
                 slotId === item.id
                   ? "border-gold bg-gold/15 text-gold"
                   : "border-line text-muted hover:text-paper"
@@ -78,18 +56,14 @@ export default function EarlyGearPage() {
       </div>
 
       <ChroniclesModBuilder
-        key={`${slotId}:${poolId}`}
+        key={slotId}
         kicker="CHRONICLES · EARLY GEAR"
         title={t.earlyGearTitle(slot ? poolLabel(slot, locale) : t.earlyGear)}
         description={t.earlyGearDesc}
-        statsNote={t.statsFamilies(count?.families ?? families.length, count?.tiers ?? 0)}
-        sourceNote={t.sourcePoe2db(pool?.path || slot?.path || "")}
+        statsNote={t.statsFamilies(families.length, tierCount)}
+        sourceNote={t.sourcePoe2db(slot ? earlyGearSourcePath(slot) : "")}
         harvestTags={harvestTags}
         families={families}
-        pools={slot && slot.pools.length > 1 ? slot.pools : undefined}
-        pool={poolId}
-        onPoolChange={setPool}
-        poolAriaLabel={t.earlyGearPoolAria}
         importHint={t.earlyGearImportHint}
       />
       {/* Task 2 (out of scope): chapter recommended presets can pass defaultPicks into ChroniclesModBuilder. */}
@@ -97,7 +71,7 @@ export default function EarlyGearPage() {
   );
 }
 
-/** Old /early/shields lab URL. */
+/** Old /early/shields lab URL — major-slot UI only, no attribute-family chrome. */
 export function EarlyGearShieldsRedirect() {
   return <Navigate to="/early/gear?slot=shield" replace />;
 }

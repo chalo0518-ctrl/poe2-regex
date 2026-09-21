@@ -116,8 +116,10 @@ export {
   earlyGearFamiliesFor,
   earlyGearSlotMeta,
   earlyGearSlots,
+  earlyGearSourcePath,
   isEarlyGearCategoryId,
   isEarlyGearSlotId,
+  unionAffixLists,
 } from "./earlyGear.ts";
 export type { EarlyGearSlot } from "./earlyGear.ts";
 

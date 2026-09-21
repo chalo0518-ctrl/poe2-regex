@@ -161,13 +161,13 @@ const zhHant: Messages = {
   shieldsPoolAria: "盾種",
   earlyGearSlotHeading: "裝備部位",
   earlyGearSlotHint:
-    "選擇部位後載入該 poe2db 頁的前綴／後綴。胸甲／頭盔／手套／鞋子再選力量／敏捷／智慧基底；詞綴清單不會把不同基底混在一起。",
+    "選擇部位：胸甲、頭盔、手套、鞋子、戒指、項鍊、腰帶、單手錘、盾牌。每個部位一份合併詞綴清單，不必再選力量／敏捷／智慧。標籤可作次要篩選。",
   earlyGearSlotAria: "裝備部位",
   earlyGearPoolAria: "基底",
   earlyGearTitle: (label) => `${label}詞綴正則`,
   earlyGearDesc:
     "每列右側「是／或／否」決定是否寫入正則。是項 AND，「或」項合成一組 OR 再與是項 AND，排除項用既有 ! 群組。章節推薦預設稍後填入。",
-  earlyGearImportHint: "貼上倉庫複製的物品文字，將自動勾選目前部位與基底上對得上的基礎詞綴。",
+  earlyGearImportHint: "貼上倉庫複製的物品文字，將自動勾選目前部位上對得上的基礎詞綴。",
   waystonesTitle: "換界石篩選正則",
   waystonesDesc:
     "對齊市集終局篩選：階級、怪物效用、怪物稀有度、掉落率、經驗、怪物群大小、物品稀有度、復活、金幣。空白則忽略該軸，不必選低階／中階／高階詞綴池。",
@@ -269,13 +269,13 @@ const en: Messages = {
   shieldsPoolAria: "Shield base",
   earlyGearSlotHeading: "Item slot",
   earlyGearSlotHint:
-    "Pick a slot to load that poe2db page’s prefixes/suffixes. Body / helm / gloves / boots also pick a str/dex/int base — lists are not unioned across bases.",
+    "Pick a slot: body, helmet, gloves, boots, ring, amulet, belt, one-handed mace, or shield. Each slot is one combined affix list — no str/dex/int picker. Harvest tags stay as a secondary filter.",
   earlyGearSlotAria: "Item slot",
   earlyGearPoolAria: "Base type",
   earlyGearTitle: (label) => `${label} affix regex`,
   earlyGearDesc:
     "Use Yes (AND), Or (OR), or No (exclude) on each row. Or fragments become one OR group, then AND’d with Yes. Chapter recommended presets come later.",
-  earlyGearImportHint: "Paste clipboard item text to tick matching base affixes on this slot and base.",
+  earlyGearImportHint: "Paste clipboard item text to tick matching base affixes on this slot.",
   waystonesTitle: "Waystone filter regex",
   waystonesDesc:
     "Market endgame filters: tier, monster effectiveness, monster rarity, drop chance, experience, pack size, item rarity, revives, and gold. Empty = ignore. No low/mid/top affix-pool picker.",

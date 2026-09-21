@@ -12,7 +12,7 @@ Frozen affix JSON lives in `packages/data/generated/`. The site never scrapes at
 poe2db pages used by the live refresh:
 
 - Shields: `Shields_str`, `Shields_str_dex`, `Shields_str_int`, `Bucklers`
-- Early gear: `Body_Armours_{str,dex,int,str_dex,str_int,dex_int}`, `Helmets_*`, `Gloves_*`, `Boots_*`, `Rings`, `Amulets`, `Belts`, `One_Hand_Maces` (each attribute page is its own pool)
+- Early gear: `Body_Armours_{str,dex,int,str_dex,str_int,dex_int}`, `Helmets_*`, `Gloves_*`, `Boots_*`, `Rings`, `Amulets`, `Belts`, `One_Hand_Maces` (scraped per attribute page; the `/early/gear` UI unions each slot into one list)
 - Waystones: `Waystones_low_tier`, `Waystones_mid_tier`, `Waystones_top_tier` (independent pools)
 - Tablets: `Breach_Tablet`, `Expedition_Tablet`, `Delirium_Tablet`, `Ritual_Tablet`, `Irradiated_Tablet`, `Overseer_Tablet`, `Abyss_Tablet`, `Temple_Tablet` (one pool per kind)
 
