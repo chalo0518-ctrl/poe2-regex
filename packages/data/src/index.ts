@@ -24,6 +24,11 @@ export type {
   ChapterId,
   ChapterShopPick,
   DataMeta,
+  EarlyGearCatalog,
+  EarlyGearCategoryId,
+  EarlyGearCategoryMeta,
+  EarlyGearFamily,
+  EarlyGearSlotId,
   HarvestTag,
   MatchLang,
   ModKind,
@@ -105,6 +110,18 @@ export type {
   WaystoneStatId,
   WaystoneStatThresholdInput,
 } from "./waystones.ts";
+
+export {
+  earlyGearCatalog,
+  earlyGearFamiliesFor,
+  earlyGearSlotMeta,
+  earlyGearSlots,
+  earlyGearSourcePath,
+  isEarlyGearCategoryId,
+  isEarlyGearSlotId,
+  unionAffixLists,
+} from "./earlyGear.ts";
+export type { EarlyGearSlot } from "./earlyGear.ts";
 
 export const shieldFamilies = shieldsJson as ShieldFamily[];
 export const harvestTags = tagsJson as HarvestTag[];

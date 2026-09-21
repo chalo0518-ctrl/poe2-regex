@@ -12,6 +12,7 @@ Frozen affix JSON lives in `packages/data/generated/`. The site never scrapes at
 poe2db pages used by the live refresh:
 
 - Shields: `Shields_str`, `Shields_str_dex`, `Shields_str_int`, `Bucklers`
+- Early gear: `Body_Armours_{str,dex,int,str_dex,str_int,dex_int}`, `Helmets_*`, `Gloves_*`, `Boots_*`, `Rings`, `Amulets`, `Belts`, `One_Hand_Maces` (scraped per attribute page; the `/early/gear` UI unions each slot into one list)
 - Waystones: `Waystones_low_tier`, `Waystones_mid_tier`, `Waystones_top_tier` (independent pools)
 - Tablets: `Breach_Tablet`, `Expedition_Tablet`, `Delirium_Tablet`, `Ritual_Tablet`, `Irradiated_Tablet`, `Overseer_Tablet`, `Abyss_Tablet`, `Temple_Tablet` (one pool per kind)
 
@@ -22,6 +23,7 @@ Shop/campaign defaults in `packages/data/src/campaign.ts` are **not** regenerate
 ```bash
 pnpm fetch-data                 # live scrape → packages/data/generated
 pnpm fetch-data:shields         # shields + tags + meta only
+pnpm fetch-data:early           # early-gear.json only
 pnpm fetch-data:endgame         # waystones + tablets only
 pnpm fetch-data:check           # validate frozen JSON, no network
 pnpm fetch-data -- --dry-run    # scrape/parse/validate, write nothing
@@ -37,12 +39,12 @@ pnpm fetch-data:fixtures        # writes scripts/fixtures/out (gitignored)
 
 `--from-fixtures` **refuses** to overwrite `packages/data/generated` (partial fixture catalogs are not a full game dump). Pass `--out-dir` instead.
 
-Equivalent Node entrypoints: `node scripts/update-data.mjs`, plus the older `node scripts/fetch-shields.mjs` / `node scripts/fetch-endgame.mjs`.
+Equivalent Node entrypoints: `node scripts/update-data.mjs`, plus `node scripts/fetch-shields.mjs` / `node scripts/fetch-early-gear.mjs` / `node scripts/fetch-endgame.mjs`.
 
 ## Behaviour
 
 - **Idempotent writes:** `generatedAt` is ignored when comparing. If affix text/ids/counts are unchanged, files are left alone (clean git diff).
-- **All-or-nothing per invocation:** shields + endgame are fetched into memory first, then written. A failed tablet page does not leave half-updated JSON.
+- **All-or-nothing per invocation:** shields + early gear + endgame are fetched into memory first, then written. A failed tablet page does not leave half-updated JSON. Individual early-gear 404/unparsable pages are skipped so a working subset can still ship.
 - **Failure modes:** empty pools, duplicate ids, missing `matchZh` / effect text, or a ≥30% family-count drop vs the previous snapshot abort the write (`exit 3`). The live path only fetches `/tw` + `/us`; a blocked `/cn` host cannot affect a successful 繁中+EN refresh. Network/timeouts after retries abort without writing (`exit 2`).
 - **Retries:** HTTP GET uses timeout + retry on 429/5xx/network. 404 is not retried.
 - **Concurrency:** default 3 pages at a time.
@@ -86,5 +88,7 @@ See `scripts/fixtures/README.md`.
 - poe2db HTML shape (`new ModsView(`) can change without notice; parse tests will fail first.
 - RePoE English `text` uses `[Tag|Tag]` markup; we only use it when poe2db `/us` had no `str`.
 - Campaign shop mods and chapter map nodes are out of this pipeline (`match` / `matchZh` on shop mods are copied from live `/us` and `/tw` pages by hand).
+- Wands are not scraped: poe2db families mix damage types, so match strings are unreliable. One-handed maces are the campaign weapon sample.
+- Chapter recommended gear presets are not generated here.
 - GitHub Actions may not be able to scrape poe2db.tw; local refresh remains the reliable live path.
 - This repo does not scrape `/cn` or store Simplified Chinese affix text. Never invent Simplified strings here.

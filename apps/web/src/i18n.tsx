@@ -39,6 +39,7 @@ type Messages = {
   earlyChapters: string;
   earlyVendor: string;
   earlyBuilds: string;
+  earlyGear: string;
   earlyShields: string;
   endgameWaystones: string;
   endgameTablets: string;
@@ -56,6 +57,13 @@ type Messages = {
   shieldsDesc: string;
   shieldsImportHint: string;
   shieldsPoolAria: string;
+  earlyGearSlotHeading: string;
+  earlyGearSlotHint: string;
+  earlyGearSlotAria: string;
+  earlyGearPoolAria: string;
+  earlyGearTitle: (label: string) => string;
+  earlyGearDesc: string;
+  earlyGearImportHint: string;
   waystonesTitle: string;
   waystonesDesc: string;
   waystonesStatAria: string;
@@ -124,13 +132,14 @@ const zhHant: Messages = {
   homeTitle: "正則工具",
   homeLead: "依遊玩階段選擇模組。開荒依章節提供商店裝備預設正則；終局已填入換界石與碑牌詞綴正則。",
   homeEarlyBody:
-    "章節地圖、商店裝備篩選（各章預設生命／移速／抗性）、流派推薦裝備。盾牌詞綴實驗頁暫放於此。",
+    "章節地圖、商店裝備篩選（各章預設生命／移速／抗性）、流派推薦裝備。開荒裝備詞綴可切換胸甲／頭盔／手套／鞋子／飾品／單手錘／盾牌。",
   homeEndgameBody:
     "換界石依市集終局篩選（階級、效用、稀有度、掉落率、經驗、群大小、復活、金幣）產生正則，與八種碑牌詞綴正則。碑牌必須先選種類。",
   subNavAria: "子頁面",
   earlyChapters: "章節地圖",
   earlyVendor: "商店裝備篩選",
   earlyBuilds: "流派推薦裝備",
+  earlyGear: "裝備詞綴",
   earlyShields: "實驗：盾牌詞綴",
   endgameWaystones: "換界石",
   endgameTablets: "碑牌",
@@ -150,6 +159,15 @@ const zhHant: Messages = {
     "對齊編年史 ModifiersCalc：標籤三態篩選、基礎前後綴兩欄。每列右側「是／或／否」決定是否寫入正則。範圍僅限力量塔盾／力敏／力智／輕盾。",
   shieldsImportHint: "貼上倉庫複製的物品文字，將自動勾選目前盾種上對得上的基礎詞綴。",
   shieldsPoolAria: "盾種",
+  earlyGearSlotHeading: "裝備部位",
+  earlyGearSlotHint:
+    "選擇部位：胸甲、頭盔、手套、鞋子、戒指、項鍊、腰帶、單手錘、盾牌。每個部位一份合併詞綴清單，不必再選力量／敏捷／智慧。標籤可作次要篩選。",
+  earlyGearSlotAria: "裝備部位",
+  earlyGearPoolAria: "基底",
+  earlyGearTitle: (label) => `${label}詞綴正則`,
+  earlyGearDesc:
+    "每列右側「是／或／否」決定是否寫入正則。是項 AND，「或」項合成一組 OR 再與是項 AND，排除項用既有 ! 群組。章節推薦預設稍後填入。",
+  earlyGearImportHint: "貼上倉庫複製的物品文字，將自動勾選目前部位上對得上的基礎詞綴。",
   waystonesTitle: "換界石篩選正則",
   waystonesDesc:
     "對齊市集終局篩選：階級、怪物效用、怪物稀有度、掉落率、經驗、怪物群大小、物品稀有度、復活、金幣。空白則忽略該軸，不必選低階／中階／高階詞綴池。",
@@ -222,13 +240,14 @@ const en: Messages = {
   homeLead:
     "Pick a stage. Campaign chapters ship default shop regexes; endgame has waystone and tablet affix regexes.",
   homeEarlyBody:
-    "Chapter maps, vendor gear filters (life / move speed / resists per act), and build presets. The shield lab lives here for now.",
+    "Chapter maps, vendor gear filters (life / move speed / resists per act), and build presets. Campaign affixes cover body / helm / gloves / boots / jewellery / one-hand maces / shields.",
   homeEndgameBody:
     "Waystones use the market endgame filters (tier, effectiveness, rarity, drop chance, experience, pack size, revives, gold) plus eight tablet pools. Pick a tablet kind first.",
   subNavAria: "Subpages",
   earlyChapters: "Chapter maps",
   earlyVendor: "Vendor filter",
   earlyBuilds: "Build presets",
+  earlyGear: "Gear affixes",
   earlyShields: "Lab: shield affixes",
   endgameWaystones: "Waystones",
   endgameTablets: "Tablets",
@@ -248,6 +267,15 @@ const en: Messages = {
     "Chronicles ModifiersCalc: three-state tags, prefix/suffix columns, and Yes / Or / No on each affix. Str / str-dex / str-int shields and bucklers only.",
   shieldsImportHint: "Paste clipboard item text to tick matching base affixes on this shield type.",
   shieldsPoolAria: "Shield base",
+  earlyGearSlotHeading: "Item slot",
+  earlyGearSlotHint:
+    "Pick a slot: body, helmet, gloves, boots, ring, amulet, belt, one-handed mace, or shield. Each slot is one combined affix list — no str/dex/int picker. Harvest tags stay as a secondary filter.",
+  earlyGearSlotAria: "Item slot",
+  earlyGearPoolAria: "Base type",
+  earlyGearTitle: (label) => `${label} affix regex`,
+  earlyGearDesc:
+    "Use Yes (AND), Or (OR), or No (exclude) on each row. Or fragments become one OR group, then AND’d with Yes. Chapter recommended presets come later.",
+  earlyGearImportHint: "Paste clipboard item text to tick matching base affixes on this slot.",
   waystonesTitle: "Waystone filter regex",
   waystonesDesc:
     "Market endgame filters: tier, monster effectiveness, monster rarity, drop chance, experience, pack size, item rarity, revives, and gold. Empty = ignore. No low/mid/top affix-pool picker.",

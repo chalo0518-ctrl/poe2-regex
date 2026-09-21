@@ -8,7 +8,7 @@ export default function EarlyLayout() {
     { to: "/early/chapters", label: t.earlyChapters },
     { to: "/early/vendor", label: t.earlyVendor },
     { to: "/early/builds", label: t.earlyBuilds },
-    { to: "/early/shields", label: t.earlyShields },
+    { to: "/early/gear", label: t.earlyGear },
   ];
   return (
     <PageShell kicker="EARLY GAME" title={t.early}>

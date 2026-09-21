@@ -20,10 +20,10 @@ export default function VendorPage() {
           <div className="mb-4 flex flex-col gap-3">
             <CampaignGapsNote />
             <Link
-              to="/early/shields"
+              to="/early/gear"
               className="inline-flex w-fit rounded-sm border border-line px-3 py-2 text-sm text-muted hover:border-gold hover:text-gold"
             >
-              {t.earlyShields}
+              {t.earlyGear}
             </Link>
           </div>
         }

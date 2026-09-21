@@ -60,10 +60,28 @@ describe("update-data CLI", () => {
     assert.ok(breach.every((f) => f.tabletKind === "breach"));
     assert.ok(breach.some((f) => /怪物/.test(f.textZh)));
 
+    const bodyStr = payloads.early.catalog.byCategory.body.str;
+    const bodyDex = payloads.early.catalog.byCategory.body.dex;
+    const bodyLife = bodyStr.find((f) => f.family === "IncreasedLife");
+    assert.equal(bodyLife.matchZh, "最大生命");
+    assert.equal(bodyLife.match, "to maximum Life");
+    assert.equal(bodyLife.pools[0], "str");
+    assert.ok(bodyLife.id.startsWith("gear:body:str|"));
+    assert.ok(!bodyLife.matchZhHans);
+    const dexLife = bodyDex.find((f) => f.family === "IncreasedLife");
+    assert.ok(dexLife);
+    assert.notEqual(dexLife.id, bodyLife.id);
+    const rings = payloads.early.catalog.byCategory.ring.ring;
+    assert.ok(rings.some((f) => f.family === "AllResistances" && f.matchZh.includes("全元素抗性")));
+    const maces = payloads.early.catalog.byCategory.mace1h.mace1h;
+    assert.ok(maces.some((f) => f.family === "PhysicalDamage" && /物理傷害/.test(f.matchZh)));
+    assert.ok(maces.every((f) => f.textZh && !f.textZhHans));
+
     const names = await readdir(outDir);
     assert.ok(names.includes("shields.json"));
     assert.ok(names.includes("waystones.json"));
     assert.ok(names.includes("tablets.json"));
+    assert.ok(names.includes("early-gear.json"));
   });
 
   it("--dry-run on fixtures writes nothing", async () => {
