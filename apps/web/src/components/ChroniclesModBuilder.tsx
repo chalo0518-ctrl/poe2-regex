@@ -75,7 +75,8 @@ function toRegexMod(family: AffixFamily, pick: PickState, lang: MatchLang): Rege
     polarity: pick.polarity,
     kind: family.kind,
     numeric:
-      family.kind === "numeric" && pick.polarity === "include"
+      family.kind === "numeric" &&
+      (pick.polarity === "include" || pick.polarity === "or")
         ? {
             format: family.numeric?.format,
             min,
@@ -208,7 +209,7 @@ export function ChroniclesModBuilder({
     }));
   }
 
-  function setPickPolarity(family: AffixFamily, next: Polarity | "off") {
+  function setPickPolarity(family: AffixFamily, next: Polarity) {
     setPicks((prev) => {
       const cur = prev[family.id];
       const clear = () => {
@@ -217,8 +218,7 @@ export function ChroniclesModBuilder({
         delete copy[family.id];
         return copy;
       };
-      if (next === "off") return clear();
-      // Re-clicking 是 / 否 returns to 空.
+      // Re-clicking the active 是 / 或 / 否 clears the row.
       if (cur?.polarity === next) return clear();
       return {
         ...prev,
@@ -259,6 +259,7 @@ export function ChroniclesModBuilder({
   }
 
   const includeN = selected.filter((f) => picks[f.id]?.polarity === "include").length;
+  const orN = selected.filter((f) => picks[f.id]?.polarity === "or").length;
   const excludeN = selected.filter((f) => picks[f.id]?.polarity === "exclude").length;
   const lengthPct = Math.min(100, (result.length / MAX_LENGTH) * 100);
 
@@ -376,7 +377,7 @@ export function ChroniclesModBuilder({
       <p className="mb-3 text-xs text-muted">
         {t.listed(listed.filter((r) => r.matched).length)}
         {showHideToggle && showHidden ? t.listedHidden(listed.filter((r) => !r.matched).length) : ""}
-        {t.regexCounts(includeN, excludeN)}
+        {t.regexCounts(includeN, orN, excludeN)}
         {showTags ? t.tagHelp : ""}
       </p>
 
@@ -534,7 +535,7 @@ function AffixColumn({
   expanded: Record<string, boolean>;
   showFamilyNames: boolean;
   showAffixTags: boolean;
-  onPolarity: (family: AffixFamily, next: Polarity | "off") => void;
+  onPolarity: (family: AffixFamily, next: Polarity) => void;
   onExpand: (id: string) => void;
   onBound: (id: string, key: "min" | "max", value: string) => void;
 }) {
@@ -574,13 +575,13 @@ function PolarityToggle({
   onChange,
 }: {
   value: Polarity | "off";
-  onChange: (next: Polarity | "off") => void;
+  onChange: (next: Polarity) => void;
 }) {
   const { t } = useLocale();
-  const options: { id: Polarity | "off"; label: string; title: string }[] = [
+  const options: { id: Polarity; label: string; title: string }[] = [
     { id: "include", label: t.polarityYes, title: t.polarityYesTitle },
+    { id: "or", label: t.polarityOr, title: t.polarityOrTitle },
     { id: "exclude", label: t.polarityNo, title: t.polarityNoTitle },
-    { id: "off", label: t.polarityOff, title: t.polarityOffTitle },
   ];
   return (
     <div
@@ -622,12 +623,15 @@ function AffixRow({
   open: boolean;
   showFamilyNames: boolean;
   showAffixTags: boolean;
-  onPolarity: (next: Polarity | "off") => void;
+  onPolarity: (next: Polarity) => void;
   onExpand: () => void;
   onBound: (key: "min" | "max", value: string) => void;
 }) {
   const { locale, t } = useLocale();
-  const include = pick?.polarity === "include";
+  const showBounds =
+    Boolean(pick) &&
+    family.kind === "numeric" &&
+    (pick?.polarity === "include" || pick?.polarity === "or");
   const primary = effectText(family, locale);
   const secondary = effectTextSecondary(family, locale);
   const tags = affixTagLabels(family, locale);
@@ -673,7 +677,7 @@ function AffixRow({
           {open ? "▴" : "▾"}
         </button>
       </div>
-      {include && family.kind === "numeric" && pick && (
+      {showBounds && pick && (
         <div className="flex flex-wrap items-center gap-2 px-2 pb-2 text-xs">
           <input
             inputMode="numeric"

@@ -46,6 +46,7 @@ function family(overrides: Partial<AffixFamily> = {}): AffixFamily {
 
 const CHEST_ZH = "地圖內含有額外的(2—3)個稀有箱子";
 const SUMMON_ZH = "地圖內含有額外的1個召喚法陣";
+const RARITY_ZH = "地圖增加(15—20)%怪物稀有度";
 
 function summonFamily(): AffixFamily {
   return family({
@@ -63,6 +64,24 @@ function summonFamily(): AffixFamily {
   });
 }
 
+function rarityFamily(): AffixFamily {
+  return family({
+    id: "t3",
+    family: "MapMonsterRarityIncrease",
+    generation: "prefix",
+    tags: [],
+    tagsZh: [],
+    labelZh: "充盈的",
+    labelEn: "Abounding",
+    textZh: RARITY_ZH,
+    textEn: "Map has (15—20)% increased Monster Rarity",
+    match: "Map has increased Monster Rarity",
+    matchZh: "地圖增加怪物稀有度",
+    kind: "numeric",
+    numeric: { format: "percentPrefix", suggestedMin: 15, suggestedMax: 20 },
+  });
+}
+
 const compactChrome = endgameModBuilderChrome;
 
 function affixRow(text: string): HTMLElement {
@@ -76,16 +95,16 @@ function polarityButtons(text: string) {
   return {
     row,
     yes: within(row).getByRole("button", { name: "是" }),
+    or: within(row).getByRole("button", { name: "或" }),
     no: within(row).getByRole("button", { name: "否" }),
-    off: within(row).getByRole("button", { name: "空" }),
   };
 }
 
-function expectPolarity(text: string, selected: "yes" | "no" | "off") {
-  const { yes, no, off } = polarityButtons(text);
+function expectPolarity(text: string, selected: "yes" | "or" | "no" | "off") {
+  const { yes, or, no } = polarityButtons(text);
   expect(yes).toHaveAttribute("aria-pressed", String(selected === "yes"));
+  expect(or).toHaveAttribute("aria-pressed", String(selected === "or"));
   expect(no).toHaveAttribute("aria-pressed", String(selected === "no"));
-  expect(off).toHaveAttribute("aria-pressed", String(selected === "off"));
 }
 
 function regexOutput(): string {
@@ -264,25 +283,28 @@ describe("ChroniclesModBuilder default picks", () => {
 });
 
 describe("ChroniclesModBuilder polarity controls", () => {
-  it("defaults every row to 空 and keeps the three options mutually exclusive", async () => {
+  it("defaults every row to none selected and keeps 是／或／否 mutually exclusive", async () => {
     const user = userEvent.setup();
     renderBuilder({ families: [family(), summonFamily()] });
 
     expectPolarity(CHEST_ZH, "off");
     expectPolarity(SUMMON_ZH, "off");
-    expect(regexOutput()).toMatch(/每列選「是」或「否」/);
+    expect(regexOutput()).toMatch(/每列選「是」、「或」或「否」/);
+    expect(screen.queryAllByRole("button", { name: "空" })).toHaveLength(0);
 
     const chest = polarityButtons(CHEST_ZH);
     await user.click(chest.yes);
     expectPolarity(CHEST_ZH, "yes");
+    await user.click(chest.or);
+    expectPolarity(CHEST_ZH, "or");
     await user.click(chest.no);
     expectPolarity(CHEST_ZH, "no");
     expect(chest.yes).toHaveAttribute("aria-pressed", "false");
-    expect(chest.off).toHaveAttribute("aria-pressed", "false");
+    expect(chest.or).toHaveAttribute("aria-pressed", "false");
     expectPolarity(SUMMON_ZH, "off");
   });
 
-  it("include-only ANDs 是 rows and ignores 空", async () => {
+  it("include-only ANDs 是 rows and ignores unselected rows", async () => {
     const user = userEvent.setup();
     renderBuilder({ families: [family(), summonFamily()] });
 
@@ -301,7 +323,25 @@ describe("ChroniclesModBuilder polarity controls", () => {
     expect(both).not.toContain("!");
   });
 
-  it("exclude-only uses the existing ! group and 空 removes the row", async () => {
+  it("ORs 或 rows as one group and ANDs that group with 是", async () => {
+    const user = userEvent.setup();
+    renderBuilder({ families: [family(), summonFamily(), rarityFamily()] });
+
+    await user.click(polarityButtons(CHEST_ZH).yes);
+    await user.click(polarityButtons(SUMMON_ZH).or);
+    await user.click(polarityButtons(RARITY_ZH).or);
+
+    const mixed = regexOutput();
+    expect(mixed).toMatch(/箱子/);
+    expect(mixed).toMatch(/\|/);
+    expect(mixed).not.toContain("!");
+    expect((mixed.match(/"/g) ?? []).length).toBe(4);
+    expectPolarity(CHEST_ZH, "yes");
+    expectPolarity(SUMMON_ZH, "or");
+    expectPolarity(RARITY_ZH, "or");
+  });
+
+  it("exclude-only uses the existing ! group and clearing removes the row", async () => {
     const user = userEvent.setup();
     renderBuilder({ families: [family(), summonFamily()] });
 
@@ -317,29 +357,32 @@ describe("ChroniclesModBuilder polarity controls", () => {
     expect(both).toMatch(/箱子/);
     expect(both).toMatch(/法陣/);
 
-    await user.click(polarityButtons(CHEST_ZH).off);
-    await user.click(polarityButtons(SUMMON_ZH).off);
+    await user.click(polarityButtons(CHEST_ZH).no);
+    await user.click(polarityButtons(SUMMON_ZH).no);
     expectPolarity(CHEST_ZH, "off");
     expectPolarity(SUMMON_ZH, "off");
-    expect(regexOutput()).toMatch(/每列選「是」或「否」/);
+    expect(regexOutput()).toMatch(/每列選「是」、「或」或「否」/);
   });
 
-  it("mixes 是 and 否 into one compound pattern", async () => {
+  it("mixes 是, 或, and 否 into one compound pattern", async () => {
     const user = userEvent.setup();
-    renderBuilder({ families: [family(), summonFamily()] });
+    renderBuilder({ families: [family(), summonFamily(), rarityFamily()] });
 
     await user.click(polarityButtons(CHEST_ZH).yes);
-    await user.click(polarityButtons(SUMMON_ZH).no);
+    await user.click(polarityButtons(SUMMON_ZH).or);
+    await user.click(polarityButtons(RARITY_ZH).no);
 
     const mixed = regexOutput();
     expect(mixed).toMatch(/箱子/);
     expect(mixed).toMatch(/法陣/);
     expect(mixed).toContain("!");
+    expect((mixed.match(/"/g) ?? []).length).toBe(6);
     expectPolarity(CHEST_ZH, "yes");
-    expectPolarity(SUMMON_ZH, "no");
+    expectPolarity(SUMMON_ZH, "or");
+    expectPolarity(RARITY_ZH, "no");
   });
 
-  it("clears back to 空 when the already-selected 是 or 否 is clicked", async () => {
+  it("clears the row when the already-selected 是, 或, or 否 is clicked", async () => {
     const user = userEvent.setup();
     renderBuilder();
 
@@ -348,7 +391,12 @@ describe("ChroniclesModBuilder polarity controls", () => {
     expectPolarity(CHEST_ZH, "yes");
     await user.click(chest.yes);
     expectPolarity(CHEST_ZH, "off");
-    expect(regexOutput()).toMatch(/每列選「是」或「否」/);
+    expect(regexOutput()).toMatch(/每列選「是」、「或」或「否」/);
+
+    await user.click(chest.or);
+    expectPolarity(CHEST_ZH, "or");
+    await user.click(chest.or);
+    expectPolarity(CHEST_ZH, "off");
 
     await user.click(chest.no);
     expectPolarity(CHEST_ZH, "no");

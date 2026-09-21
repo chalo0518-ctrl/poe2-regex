@@ -13,6 +13,7 @@
   --color-paper: #efe4ce;
   --color-muted: #9a8b72;
   --color-include: #3f9a68;
+  --color-or: #3a7ea6;
   --color-exclude: #b54b3f;
   --color-purple: #7b4fb2;
 }
@@ -64,6 +65,10 @@ body {
   background: rgba(63, 154, 104, 0.14);
 }
 
+.affix-row[data-pick="or"] {
+  background: rgba(58, 126, 166, 0.16);
+}
+
 .affix-row[data-pick="exclude"] {
   background: rgba(181, 75, 63, 0.14);
 }
@@ -87,14 +92,14 @@ body {
   color: #fff;
 }
 
+.polarity-btn[aria-pressed="true"][data-polarity="or"] {
+  background: var(--color-or);
+  border-color: #5aa0c8;
+  color: #fff;
+}
+
 .polarity-btn[aria-pressed="true"][data-polarity="exclude"] {
   background: var(--color-exclude);
   border-color: #d46a5c;
   color: #fff;
-}
-
-.polarity-btn[aria-pressed="true"][data-polarity="off"] {
-  background: var(--color-raised);
-  border-color: var(--color-gold-dim);
-  color: var(--color-paper);
 }

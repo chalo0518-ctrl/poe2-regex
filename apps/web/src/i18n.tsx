@@ -62,7 +62,6 @@ type Messages = {
   waystonesThresholdHint: string;
   waystonesRegexPlaceholder: string;
   waystonesActive: (n: number) => string;
-  waystonesAny: string;
   tabletsKindHeading: string;
   tabletsKindHint: string;
   tabletsKindAria: string;
@@ -86,7 +85,7 @@ type Messages = {
   toggleHidden: string;
   listed: (shown: number) => string;
   listedHidden: (n: number) => string;
-  regexCounts: (includeN: number, excludeN: number) => string;
+  regexCounts: (includeN: number, orN: number, excludeN: number) => string;
   tagHelp: string;
   matchZhHant: string;
   matchEn: string;
@@ -98,12 +97,12 @@ type Messages = {
   include: string;
   exclude: string;
   polarityYes: string;
+  polarityOr: string;
   polarityNo: string;
-  polarityOff: string;
   polarityGroup: string;
   polarityYesTitle: string;
+  polarityOrTitle: string;
   polarityNoTitle: string;
-  polarityOffTitle: string;
   min: string;
   max: string;
   commonRange: (min: number, max: number) => string;
@@ -127,7 +126,7 @@ const zhHant: Messages = {
   homeEarlyBody:
     "章節地圖、商店裝備篩選（各章預設生命／移速／抗性）、流派推薦裝備。盾牌詞綴實驗頁暫放於此。",
   homeEndgameBody:
-    "換界石依市集終局篩選（階級、效用、稀有度、掉落率、經驗、群大小、復活、金幣、混沌試煉）產生正則，與八種碑牌詞綴正則。碑牌必須先選種類。",
+    "換界石依市集終局篩選（階級、效用、稀有度、掉落率、經驗、群大小、復活、金幣）產生正則，與八種碑牌詞綴正則。碑牌必須先選種類。",
   subNavAria: "子頁面",
   earlyChapters: "章節地圖",
   earlyVendor: "商店裝備篩選",
@@ -141,32 +140,31 @@ const zhHant: Messages = {
   chapterAria: "章節",
   chapterShopTitle: (label) => `${label}商店正則`,
   chapterShopDesc:
-    "預設已勾選該章通用商店詞綴。每列右側選「是」包含、「否」排除、「空」不限；包含項以 AND 合成正則。也可加選清單中的能力值／能量護盾／施法速度。",
+    "預設已勾選該章通用商店詞綴。每列右側選「是」AND 包含、「或」OR 包含、「否」排除；未選不寫入正則。是項彼此 AND，「或」項合成一組 OR 再與是項 AND。也可加選清單中的能力值／能量護盾／施法速度。",
   chapterNoMaps: "此章尚無獨立地圖／商店節點資料，預設套用整章商店裝備正則。",
   knownGaps: "已知缺口",
   vendorTitle: "商店裝備篩選",
   vendorEditLink: "在商店頁編輯此章正則",
   shieldsTitle: "盾牌詞綴正則",
   shieldsDesc:
-    "對齊編年史 ModifiersCalc：標籤三態篩選、基礎前後綴兩欄。每列右側「是／否／空」決定是否寫入正則。範圍僅限力量塔盾／力敏／力智／輕盾。",
+    "對齊編年史 ModifiersCalc：標籤三態篩選、基礎前後綴兩欄。每列右側「是／或／否」決定是否寫入正則。範圍僅限力量塔盾／力敏／力智／輕盾。",
   shieldsImportHint: "貼上倉庫複製的物品文字，將自動勾選目前盾種上對得上的基礎詞綴。",
   shieldsPoolAria: "盾種",
   waystonesTitle: "換界石篩選正則",
   waystonesDesc:
-    "對齊市集終局篩選：階級、怪物效用、怪物稀有度、掉落率、經驗、怪物群大小、物品稀有度、復活、金幣、混沌試煉。空白則忽略該軸，不必選低階／中階／高階詞綴池。",
+    "對齊市集終局篩選：階級、怪物效用、怪物稀有度、掉落率、經驗、怪物群大小、物品稀有度、復活、金幣。空白則忽略該軸，不必選低階／中階／高階詞綴池。",
   waystonesStatAria: "換界石終局篩選",
   waystonesThresholdHint:
-    "每項可填最小／最大（空白＝忽略）。已填的軸以 AND 組合，對換界石上的總數值（與市集相同）。混沌試煉為下拉，預設不限。",
-  waystonesRegexPlaceholder: "填入數值或選擇試煉後，正則會顯示在這裡",
+    "每項可填最小／最大（空白＝忽略）。已填的軸以 AND 組合，對換界石上的總數值（與市集相同）。",
+  waystonesRegexPlaceholder: "填入數值後，正則會顯示在這裡",
   waystonesActive: (n) => (n === 0 ? "尚未設定篩選" : `已設定 ${n} 軸`),
-  waystonesAny: "不限",
   tabletsKindHeading: "碑牌種類",
   tabletsKindHint: "請先選擇碑牌種類。詞綴清單只顯示該種類頁面上可骰出的詞綴，不會把八種碑牌混在一起再假裝篩選。",
   tabletsKindAria: "碑牌種類",
   tabletsEmptyTitle: "尚未選擇碑牌",
   tabletsEmptyBody: "選一種碑牌後才會載入該頁的前綴／後綴。裂痕碑牌不會看到探險專屬詞綴，以此類推。",
   tabletsTitle: (label) => `${label}詞綴正則`,
-  tabletsDesc: "種類已鎖定目前碑牌。每列右側選「是」包含、「否」排除、「空」不限；底部以 AND 產生倉庫正則。",
+  tabletsDesc: "種類已鎖定目前碑牌。每列右側選「是」AND 包含、「或」OR 包含、「否」排除；未選不寫入。底部以 AND 產生倉庫正則，「或」項先合成一組。",
   statsFamilies: (families, tiers) => `${families} 組詞綴 · ${tiers} 階`,
   shopStats: (mods, defaults) => `${mods} 組商店詞綴 · ${defaults} 項預設包含`,
   sourcePoe2db: (path) => `來源 poe2db.tw /tw /us · ${path}`,
@@ -183,7 +181,8 @@ const zhHant: Messages = {
   toggleHidden: "切換隱藏",
   listed: (shown) => `顯示 ${shown} 列`,
   listedHidden: (n) => `（另顯示 ${n} 列隱藏）`,
-  regexCounts: (includeN, excludeN) => `。正則包含 ${includeN} · 排除 ${excludeN}`,
+  regexCounts: (includeN, orN, excludeN) =>
+    `。是 ${includeN} · 或 ${orN} · 否 ${excludeN}`,
   tagHelp: "。標籤：第一次包含（紫）· 第二次排除 · 第三次還原；多個包含為聯集。",
   matchZhHant: "繁中匹配",
   matchEn: "EN match",
@@ -191,16 +190,16 @@ const zhHant: Messages = {
   copy: "複製",
   copied: "已複製",
   copyFail: "複製失敗，請手動選取",
-  regexPlaceholder: "每列選「是」或「否」，正則會顯示在這裡",
+  regexPlaceholder: "每列選「是」、「或」或「否」，正則會顯示在這裡",
   include: "正則包含",
   exclude: "正則排除",
   polarityYes: "是",
+  polarityOr: "或",
   polarityNo: "否",
-  polarityOff: "空",
   polarityGroup: "詞條取捨",
-  polarityYesTitle: "包含此詞條",
+  polarityYesTitle: "包含此詞條（AND）",
+  polarityOrTitle: "包含此詞條（OR）",
   polarityNoTitle: "排除此詞條",
-  polarityOffTitle: "不限（不寫入正則）",
   min: "最小",
   max: "最大",
   commonRange: (min, max) => `常見 ${min}–${max}`,
@@ -225,7 +224,7 @@ const en: Messages = {
   homeEarlyBody:
     "Chapter maps, vendor gear filters (life / move speed / resists per act), and build presets. The shield lab lives here for now.",
   homeEndgameBody:
-    "Waystones use the market endgame filters (tier, effectiveness, rarity, drop chance, experience, pack size, revives, gold, Ultimatum trial) plus eight tablet pools. Pick a tablet kind first.",
+    "Waystones use the market endgame filters (tier, effectiveness, rarity, drop chance, experience, pack size, revives, gold) plus eight tablet pools. Pick a tablet kind first.",
   subNavAria: "Subpages",
   earlyChapters: "Chapter maps",
   earlyVendor: "Vendor filter",
@@ -239,25 +238,24 @@ const en: Messages = {
   chapterAria: "Chapters",
   chapterShopTitle: (label) => `${label} shop regex`,
   chapterShopDesc:
-    "Default shop affixes for this act are pre-checked. Use Yes / No / Any on each row; Yes fragments are AND’d. Attributes / ES / cast speed stay optional.",
+    "Default shop affixes for this act are pre-checked. Use Yes (AND), Or (OR), or No (exclude) on each row; unselected rows are ignored. Yes fragments AND together; Or fragments become one OR group, then AND’d with Yes. Attributes / ES / cast speed stay optional.",
   chapterNoMaps: "This act has no per-map shop nodes yet, so the whole-act shop regex is used.",
   knownGaps: "Known gaps",
   vendorTitle: "Vendor filter",
   vendorEditLink: "Edit this act’s regex on the vendor page",
   shieldsTitle: "Shield affix regex",
   shieldsDesc:
-    "Chronicles ModifiersCalc: three-state tags, prefix/suffix columns, and Yes / No / Any on each affix. Str / str-dex / str-int shields and bucklers only.",
+    "Chronicles ModifiersCalc: three-state tags, prefix/suffix columns, and Yes / Or / No on each affix. Str / str-dex / str-int shields and bucklers only.",
   shieldsImportHint: "Paste clipboard item text to tick matching base affixes on this shield type.",
   shieldsPoolAria: "Shield base",
   waystonesTitle: "Waystone filter regex",
   waystonesDesc:
-    "Market endgame filters: tier, monster effectiveness, monster rarity, drop chance, experience, pack size, item rarity, revives, gold, and Ultimatum trial. Empty = ignore. No low/mid/top affix-pool picker.",
+    "Market endgame filters: tier, monster effectiveness, monster rarity, drop chance, experience, pack size, item rarity, revives, and gold. Empty = ignore. No low/mid/top affix-pool picker.",
   waystonesStatAria: "Waystone endgame filters",
   waystonesThresholdHint:
-    "Each row is min/max (leave empty to ignore). Filled axes AND together and match totals on the waystone, like trade. Ultimatum trial is a dropdown, default Any.",
-  waystonesRegexPlaceholder: "Enter a value or pick a trial and the regex shows up here",
+    "Each row is min/max (leave empty to ignore). Filled axes AND together and match totals on the waystone, like trade.",
+  waystonesRegexPlaceholder: "Enter a min/max value and the regex shows up here",
   waystonesActive: (n) => (n === 0 ? "No filters set" : `${n} filter${n === 1 ? "" : "s"} set`),
-  waystonesAny: "Any",
   tabletsKindHeading: "Tablet kind",
   tabletsKindHint:
     "Pick a tablet kind first. The list only shows mods from that page — it does not union all eight then fake-filter.",
@@ -266,7 +264,7 @@ const en: Messages = {
   tabletsEmptyBody: "Choose a kind to load that page’s prefixes/suffixes. Breach will not show Expedition-only mods.",
   tabletsTitle: (label) => `${label} affix regex`,
   tabletsDesc:
-    "Kind is locked. Use Yes / No / Any on each row; Yes fragments are AND’d into the stash regex.",
+    "Kind is locked. Use Yes (AND), Or (OR), or No (exclude) on each row; unselected rows are ignored. Or fragments become one OR group, then AND’d with Yes.",
   statsFamilies: (families, tiers) => `${families} families · ${tiers} tiers`,
   shopStats: (mods, defaults) => `${mods} shop mods · ${defaults} default includes`,
   sourcePoe2db: (path) => `Source poe2db.tw /tw /us · ${path}`,
@@ -280,22 +278,23 @@ const en: Messages = {
   toggleHidden: "Show hidden",
   listed: (shown) => `Showing ${shown} rows`,
   listedHidden: (n) => ` (plus ${n} hidden)`,
-  regexCounts: (includeN, excludeN) => `. Include ${includeN} · exclude ${excludeN}`,
+  regexCounts: (includeN, orN, excludeN) =>
+    `. Yes ${includeN} · Or ${orN} · No ${excludeN}`,
   tagHelp: ". Tags: first click include (purple) · second exclude · third clear; multiple includes OR.",
   reset: "Reset",
   copy: "Copy",
   copied: "Copied",
   copyFail: "Copy failed — select the text manually",
-  regexPlaceholder: "Choose Yes or No on a row; the regex shows up here",
+  regexPlaceholder: "Choose Yes, Or, or No on a row; the regex shows up here",
   include: "Include",
   exclude: "Exclude",
   polarityYes: "Yes",
+  polarityOr: "Or",
   polarityNo: "No",
-  polarityOff: "Any",
   polarityGroup: "Affix include",
-  polarityYesTitle: "Include this affix",
+  polarityYesTitle: "Include this affix (AND)",
+  polarityOrTitle: "Include this affix (OR)",
   polarityNoTitle: "Exclude this affix",
-  polarityOffTitle: "Ignore this affix",
   min: "Min",
   max: "Max",
   commonRange: (min, max) => `Typical ${min}–${max}`,

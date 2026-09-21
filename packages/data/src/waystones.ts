@@ -24,8 +24,7 @@ export type WaystoneRangeId =
   | "gold"
   | "experience";
 
-export type WaystoneChoiceId = "ultimatum";
-export type WaystoneStatId = WaystoneRangeId | WaystoneChoiceId;
+export type WaystoneStatId = WaystoneRangeId;
 
 export type WaystoneNumberStyle = "percent" | "bare";
 export type WaystoneHeaderSide = "before" | "after";
@@ -33,14 +32,6 @@ export type WaystoneHeaderSide = "before" | "after";
 export type WaystoneStatEffect = {
   text: string;
   numberSide: "before" | "after";
-};
-
-export type WaystoneChoiceOption = {
-  id: string;
-  labelZh: string;
-  labelEn: string;
-  matchZh: string;
-  matchEn: string;
 };
 
 type RangeAxis = {
@@ -62,49 +53,11 @@ type RangeAxis = {
   effectsEn: WaystoneStatEffect[];
 };
 
-type ChoiceAxis = {
-  id: WaystoneChoiceId;
-  kind: "choice";
-  tradeId: string;
-  labelZh: string;
-  labelEn: string;
-  options: WaystoneChoiceOption[];
-};
-
-export type WaystoneStatAxis = RangeAxis | ChoiceAxis;
+export type WaystoneStatAxis = RangeAxis;
 
 export function isWaystoneRangeAxis(axis: WaystoneStatAxis): axis is RangeAxis {
   return axis.kind === "range";
 }
-
-/**
- * Ultimatum Trial Hint options from GET /api/trade2/data/filters
- * (`ultimatum_hint`). Not present in waystones.json prefix/suffix pools.
- * 繁中 names are the Fate items on poe2db.tw/tw/The_Trial_of_Chaos.
- */
-export const WAYSTONE_ULTIMATUM_OPTIONS: WaystoneChoiceOption[] = [
-  {
-    id: "Victorious",
-    labelZh: "勝利之運",
-    labelEn: "Victorious",
-    matchZh: "勝利之運",
-    matchEn: "Victorious",
-  },
-  {
-    id: "Cowardly",
-    labelZh: "怯懦之運",
-    labelEn: "Cowardly",
-    matchZh: "怯懦之運",
-    matchEn: "Cowardly",
-  },
-  {
-    id: "Deadly",
-    labelZh: "致命之運",
-    labelEn: "Deadly",
-    matchZh: "致命之運",
-    matchEn: "Deadly",
-  },
-];
 
 /**
  * Player-facing waystone filters matching the trade site ENDGAME FILTERS
@@ -229,14 +182,6 @@ export const WAYSTONE_STAT_AXES: WaystoneStatAxis[] = [
     effectsZh: [],
     effectsEn: [],
   },
-  {
-    id: "ultimatum",
-    kind: "choice",
-    tradeId: "ultimatum_hint",
-    labelZh: "混沌試煉",
-    labelEn: "Ultimatum Trial",
-    options: WAYSTONE_ULTIMATUM_OPTIONS,
-  },
 ];
 
 export const WAYSTONE_RANGE_AXES = WAYSTONE_STAT_AXES.filter(isWaystoneRangeAxis);
@@ -349,7 +294,6 @@ export type WaystoneRangeBounds = {
 
 export type WaystoneFilterInput = {
   ranges?: Partial<Record<WaystoneRangeId, WaystoneRangeBounds>>;
-  ultimatum?: string;
 };
 
 export type WaystoneStatThresholdInput = {
@@ -369,25 +313,13 @@ function finiteBound(n: number | undefined): number | undefined {
   return Math.round(n);
 }
 
-/** Build regex inputs for filled min/max / dropdown values in one match language. */
+/** Build regex inputs for filled min/max values in one match language. */
 export function waystoneStatThresholds(
   input: WaystoneFilterInput,
   lang: MatchLang,
 ): WaystoneStatThresholdInput[] {
   const out: WaystoneStatThresholdInput[] = [];
   for (const axis of WAYSTONE_STAT_AXES) {
-    if (axis.kind === "choice") {
-      const selected = input.ultimatum;
-      if (!selected) continue;
-      const option = axis.options.find((item) => item.id === selected);
-      if (!option) continue;
-      out.push({
-        id: axis.id,
-        flag: lang === "en" ? option.matchEn : option.matchZh,
-      });
-      continue;
-    }
-
     const bounds = input.ranges?.[axis.id];
     const min = finiteBound(bounds?.min);
     const max = finiteBound(bounds?.max);

@@ -209,4 +209,68 @@ describe("buildRegex", () => {
     expect(matchesItem(r.pattern, "+35% to Fire Resistance")).toBe(true);
     expect(matchesItem(r.pattern, "Fire Resistance +35%")).toBe(false);
   });
+
+  it("ORs polarity-or mods as one group and ANDs that group with includes", () => {
+    const r = buildRegex(
+      [
+        LIFE,
+        { ...FIRE, polarity: "or" },
+        { ...COLD, polarity: "or" },
+      ],
+      { corpus: CORPUS, combine: "and" },
+    );
+    expect(r.pattern).toMatch(/\|/);
+    expect(r.pattern).not.toContain("!");
+    expect((r.pattern.match(/"/g) ?? []).length).toBe(4);
+
+    const lifeFire = "+80 to maximum Life\n+35% to Fire Resistance";
+    const lifeCold = "+80 to maximum Life\n+40% to Cold Resistance";
+    const lifeOnly = "+80 to maximum Life";
+    const fireOnly = "+35% to Fire Resistance";
+    expect(matchesItem(r.pattern, lifeFire)).toBe(true);
+    expect(matchesItem(r.pattern, lifeCold)).toBe(true);
+    expect(matchesItem(r.pattern, lifeOnly)).toBe(false);
+    expect(matchesItem(r.pattern, fireOnly)).toBe(false);
+  });
+
+  it("mixes include, or, and exclude into one compound pattern", () => {
+    const r = buildRegex(
+      [
+        LIFE,
+        { ...FIRE, polarity: "or" },
+        { ...COLD, polarity: "or" },
+        {
+          id: "speed",
+          match: "increased Movement Speed",
+          polarity: "exclude",
+          kind: "flag",
+        },
+      ],
+      { corpus: CORPUS, combine: "and" },
+    );
+    expect(r.pattern).toMatch(/\|/);
+    expect(r.pattern).toContain("!");
+
+    const lifeFire = "+80 to maximum Life\n+35% to Fire Resistance";
+    const lifeColdSpeed =
+      "+80 to maximum Life\n+40% to Cold Resistance\n20% increased Movement Speed";
+    expect(matchesItem(r.pattern, lifeFire)).toBe(true);
+    expect(matchesItem(r.pattern, lifeColdSpeed)).toBe(false);
+  });
+
+  it("or-only mods OR together without a leftover include group", () => {
+    const r = buildRegex(
+      [
+        { ...FIRE, polarity: "or" },
+        { ...COLD, polarity: "or" },
+      ],
+      { corpus: CORPUS, combine: "and" },
+    );
+    expect(r.pattern.includes("|")).toBe(true);
+    expect((r.pattern.match(/"/g) ?? []).length).toBe(2);
+    expect(r.pattern.startsWith('"')).toBe(true);
+    expect(matchesItem(r.pattern, "+35% to Fire Resistance")).toBe(true);
+    expect(matchesItem(r.pattern, "+40% to Cold Resistance")).toBe(true);
+    expect(matchesItem(r.pattern, "+80 to maximum Life")).toBe(false);
+  });
 });

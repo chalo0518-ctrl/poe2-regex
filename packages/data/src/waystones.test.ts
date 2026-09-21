@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   WAYSTONE_STAT_AXES,
-  WAYSTONE_ULTIMATUM_OPTIONS,
   isWaystoneRangeAxis,
   waystoneAllFamilies,
   waystoneFamilies,
@@ -22,7 +21,6 @@ describe("waystone stat axes", () => {
       "dropChance",
       "gold",
       "experience",
-      "ultimatum",
     ]);
     expect(WAYSTONE_STAT_AXES.map((axis) => axis.labelZh)).toEqual([
       "換界石階級",
@@ -34,16 +32,13 @@ describe("waystone stat axes", () => {
       "換界石掉落率",
       "換界石金幣",
       "換界石經驗",
-      "混沌試煉",
     ]);
     expect(WAYSTONE_STAT_AXES.some((axis) => axis.id === "quantity")).toBe(false);
-    expect(WAYSTONE_ULTIMATUM_OPTIONS.map((o) => o.id)).toEqual([
-      "Victorious",
-      "Cowardly",
-      "Deadly",
-    ]);
+    expect(WAYSTONE_STAT_AXES.some((axis) => axis.id === "ultimatum")).toBe(false);
+    expect(WAYSTONE_STAT_AXES.every(isWaystoneRangeAxis)).toBe(true);
     const blob = JSON.stringify(WAYSTONE_STAT_AXES);
     expect(blob.includes("物品数量") || blob.includes("简")).toBe(false);
+    expect(blob).not.toMatch(/混沌試煉|Ultimatum|Victorious|Cowardly|Deadly|勝利之運|怯懦之運|致命之運/);
   });
 
   it("merges low/mid/top into one pool without asking for an affix-pool tier", () => {
@@ -129,7 +124,7 @@ describe("waystone stat axes", () => {
     expect(blob).not.toMatch(/階級|Tier /);
   });
 
-  it("emits threshold inputs for filled axes only, including max-only and ultimatum", () => {
+  it("emits threshold inputs for filled axes only, including max-only", () => {
     const none = waystoneStatThresholds({}, "zh-Hant");
     expect(none).toEqual([]);
 
@@ -146,8 +141,5 @@ describe("waystone stat axes", () => {
     expect(en).toHaveLength(1);
     expect(en[0]?.header).toBe("Tier");
     expect(en[0]?.numberStyle).toBe("bare");
-
-    const trial = waystoneStatThresholds({ ultimatum: "Deadly" }, "zh-Hant");
-    expect(trial).toEqual([{ id: "ultimatum", flag: "致命之運" }]);
   });
 });
