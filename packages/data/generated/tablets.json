@@ -1,6 +1,6 @@
 {
   "source": "https://poe2db.tw/tw/ + /us/",
-  "generatedAt": "2026-09-18T02:33:14.515Z",
+  "generatedAt": "2026-10-05T12:46:29.265Z",
   "notes": "Each tablet kind is a separate ModsView scrape. UI must gate on kind; do not union-all then fake-filter. 繁中 `/tw`, EN `/us`; RePoE match fallback only.",
   "harvestTags": [
     {
@@ -1786,12 +1786,8 @@
         "id": "tablet:expedition|ExpeditionFrozenBosses|2",
         "family": "ExpeditionFrozenBosses",
         "generation": "suffix",
-        "tags": [
-          "cold"
-        ],
-        "tagsZh": [
-          "冰冷"
-        ],
+        "tags": [],
+        "tagsZh": [],
         "labelZh": "護存之",
         "labelEn": "of Preservation",
         "textZh": "地圖中的探險含有(1—2)個額外封存於冰霜中的頭目",
@@ -8099,9 +8095,7 @@
             "level": 1,
             "textZh": "地圖內的瓦爾烽塔周遭擁有額外1群怪物",
             "textEn": "(30—60)% chance for an extra packs of Monsters around Vaal Beacons in Map",
-            "dropChance": 1,
-            "statMin": 30,
-            "statMax": 60
+            "dropChance": 1
           },
           {
             "nameZh": "TowerIncursionExtraPacksChance",

@@ -1,6 +1,6 @@
 {
   "source": "https://poe2db.tw/tw/ + /us/",
-  "generatedAt": "2026-09-18T02:33:14.515Z",
+  "generatedAt": "2026-10-05T12:46:29.265Z",
   "notes": "Independent waystone pools from Waystones_low/mid/top_tier ModifiersCalc. Not unioned. 繁中 `/tw`, EN `/us`; RePoE match fallback only.",
   "harvestTags": [
     {
@@ -560,14 +560,12 @@
           "map_item_rarity",
           "resistance",
           "elemental",
-          "damage",
-          "minion"
+          "damage"
         ],
         "tagsZh": [
           "抗性",
           "元素",
-          "傷害",
-          "召喚物"
+          "傷害"
         ],
         "labelZh": "穿透的",
         "labelEn": "Penetrating",
@@ -1228,13 +1226,11 @@
         "tags": [
           "map_item_rarity",
           "energy_shield",
-          "life",
-          "speed"
+          "life"
         ],
         "tagsZh": [
           "能量護盾",
-          "生命",
-          "速度"
+          "生命"
         ],
         "labelZh": "窒息之",
         "labelEn": "of Smothering",
@@ -1272,10 +1268,10 @@
         "generation": "suffix",
         "tags": [
           "map_monster_potency",
-          "map_pack_size",
           "fire",
           "lightning",
-          "map_item_rarity"
+          "map_item_rarity",
+          "map_pack_size"
         ],
         "tagsZh": [
           "火焰",
@@ -1846,14 +1842,12 @@
           "map_item_rarity",
           "resistance",
           "elemental",
-          "damage",
-          "minion"
+          "damage"
         ],
         "tagsZh": [
           "抗性",
           "元素",
-          "傷害",
-          "召喚物"
+          "傷害"
         ],
         "labelZh": "穿透的",
         "labelEn": "Penetrating",
@@ -2292,13 +2286,11 @@
         "tags": [
           "map_item_rarity",
           "energy_shield",
-          "life",
-          "speed"
+          "life"
         ],
         "tagsZh": [
           "能量護盾",
-          "生命",
-          "速度"
+          "生命"
         ],
         "labelZh": "窒息之",
         "labelEn": "of Smothering",
@@ -2336,10 +2328,10 @@
         "generation": "suffix",
         "tags": [
           "map_monster_potency",
-          "map_pack_size",
           "fire",
           "lightning",
-          "map_item_rarity"
+          "map_item_rarity",
+          "map_pack_size"
         ],
         "tagsZh": [
           "火焰",
@@ -2844,14 +2836,12 @@
           "map_item_rarity",
           "resistance",
           "elemental",
-          "damage",
-          "minion"
+          "damage"
         ],
         "tagsZh": [
           "抗性",
           "元素",
-          "傷害",
-          "召喚物"
+          "傷害"
         ],
         "labelZh": "穿透的",
         "labelEn": "Penetrating",
@@ -2889,12 +2879,10 @@
         "generation": "prefix",
         "tags": [
           "map_pack_size",
-          "caster",
           "attack",
           "speed"
         ],
         "tagsZh": [
-          "法術",
           "攻擊",
           "速度"
         ],
@@ -3335,13 +3323,11 @@
         "tags": [
           "map_item_rarity",
           "energy_shield",
-          "life",
-          "speed"
+          "life"
         ],
         "tagsZh": [
           "能量護盾",
-          "生命",
-          "速度"
+          "生命"
         ],
         "labelZh": "窒息之",
         "labelEn": "of Smothering",
@@ -3379,10 +3365,10 @@
         "generation": "suffix",
         "tags": [
           "map_monster_potency",
-          "map_pack_size",
           "fire",
           "lightning",
-          "map_item_rarity"
+          "map_item_rarity",
+          "map_pack_size"
         ],
         "tagsZh": [
           "火焰",
