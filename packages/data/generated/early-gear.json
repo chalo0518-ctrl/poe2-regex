@@ -1,6 +1,6 @@
 {
   "source": "https://poe2db.tw/tw/ + /us/",
-  "generatedAt": "2026-09-21T08:13:25.774Z",
+  "generatedAt": "2026-10-19T11:21:11.256Z",
   "notes": "Frozen Chronicles ModifiersCalc scrape for campaign gear slots. Each armour attribute page is its own pool (not unioned — local 護甲/閃避/能量護盾 text differs). Jewellery and one-handed maces are single pages. 繁中 `/tw`, EN `/us`; RePoE match fallback only. Wands omitted (mixed damage-type families).",
   "harvestTags": [
     {
@@ -63809,5 +63809,5 @@
       ]
     }
   },
-  "repoeVersion": "4.5.5.2"
+  "repoeVersion": "0.5.5.4.2"
 }
