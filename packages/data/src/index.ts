@@ -142,8 +142,10 @@ export {
   CRAFTING_RULESET,
   CRAFTING_TREE,
   CRAFT_CLEANUP_TEXT,
+  CRAFT_DIAGRAM,
   CRAFT_REASON_TEXT,
   CRAFT_WARNING_TEXT,
+  craftDiagramPath,
   craftLocaleText,
   craftVerdictHeadline,
   craftTierChoices,
@@ -155,6 +157,9 @@ export {
 export type {
   CraftCleanup,
   CraftDecision,
+  CraftDiagramNode,
+  CraftDiagramNodeId,
+  CraftOtherMod,
   CraftReasonId,
   CraftTarget,
   CraftTierChoice,
@@ -167,6 +172,28 @@ export type {
   ModSide,
   OwnedTarget,
 } from "./crafting.ts";
+
+export {
+  REMOVAL_OMENS,
+  classifyNonTarget,
+  evaluateGreater,
+  evaluateLight,
+  evaluateSide,
+  evaluateWhittling,
+  recommendRemoval,
+} from "./omens.ts";
+export type {
+  GreaterOutcome,
+  LightOutcome,
+  NonTargetClass,
+  RemovalAssessment,
+  RemovalMod,
+  RemovalOmen,
+  RemovalOmenId,
+  RemovalRecommendation,
+  SideOutcome,
+  WhittlingOutcome,
+} from "./omens.ts";
 
 export const shieldFamilies = shieldsJson as ShieldFamily[];
 export const harvestTags = tagsJson as HarvestTag[];

@@ -1,3 +1,8 @@
+import {
+  recommendRemoval,
+  type RemovalAssessment,
+  type RemovalMod,
+} from "./omens.ts";
 import type { UiLocale } from "./types.ts";
 
 /**
@@ -17,7 +22,13 @@ export type ModSide = "prefix" | "suffix";
 export type CraftVerdict = "continue" | "rebase" | "downgrade";
 
 /** How to clear a bad desecrated / filler mod, when that choice matters. */
-export type CraftCleanup = "essence-alloy-overwrite" | "omen-of-light" | "none";
+export type CraftCleanup =
+  | "essence-alloy-overwrite"
+  | "omen-of-light"
+  | "whittle"
+  | "sinistral-annulment"
+  | "dextral-annulment"
+  | "none";
 
 export type CraftReasonId =
   | "base-cannot-roll-t1"
@@ -31,7 +42,10 @@ export type CraftReasonId =
   | "good-progress-cleanable"
   | "fresh-base"
   | "early-progress"
-  | "insufficient-progress";
+  | "insufficient-progress"
+  | "whittle-safe"
+  | "side-removal-safe"
+  | "removal-risky";
 
 export type CraftWarningId =
   | "single-crafted-slot"
@@ -45,6 +59,22 @@ export type CraftTreeNodeId =
   | "fill"
   | "desecrate"
   | "fracture-cleanup"
+  | "finish";
+
+/** Nodes in the on-page flowchart. Separate from the long-form `CRAFTING_TREE` ids. */
+export type CraftDiagramNodeId =
+  | "base"
+  | "stop-base"
+  | "fill"
+  | "stop-full"
+  | "desecrate"
+  | "essence"
+  | "stop-fracture"
+  | "omen"
+  | "whittle"
+  | "side-annul"
+  | "light"
+  | "stop-omen"
   | "finish";
 
 export type CraftTarget = {
@@ -71,6 +101,16 @@ export type OwnedTarget = {
   id: string;
   generation: ModSide;
   highTier: boolean;
+};
+
+/** A mod on the item that the player did not select as a target. */
+export type CraftOtherMod = {
+  id: string;
+  generation: ModSide;
+  /** Required level of the tier actually on the item. Null if the tier is unknown. */
+  level: number | null;
+  desecrated?: boolean;
+  fractured?: boolean;
 };
 
 export type DecideCraftInput = {
@@ -103,14 +143,25 @@ export type DecideCraftInput = {
   craftedSlotLockedToKeeper?: boolean;
   /** Soft note only. Must not change verdict, reasons, or cleanup. */
   tightBudget?: boolean;
+  /**
+   * Non-target mods already on the item, with the level of the tier present.
+   * Empty or omitted leaves the verdict, reasons, and cleanup unchanged.
+   */
+  others?: CraftOtherMod[];
 };
 
-export type CraftDecision = {
+type CraftCore = {
   verdict: CraftVerdict;
   reasons: CraftReasonId[];
   cleanup: CraftCleanup;
   warnings: CraftWarningId[];
   targetSide: ModSide;
+};
+
+export type CraftDecision = CraftCore & {
+  /** Highlighted top-down path for the item as described. */
+  path: CraftDiagramNodeId[];
+  removal: RemovalAssessment;
 };
 
 export type Localized = {
@@ -126,6 +177,13 @@ export type CraftTreeNode = {
   skip: Localized;
   irreversible: Localized;
   warning: Localized;
+};
+
+export type CraftDiagramNode = {
+  id: CraftDiagramNodeId;
+  title: Localized;
+  /** The choice or outcome shown on the node itself. */
+  choice: Localized;
 };
 
 const SIDE_CAP = 3;
@@ -200,7 +258,7 @@ function pack(
   cleanup: CraftCleanup,
   warnings: CraftWarningId[],
   targetSide: ModSide,
-): CraftDecision {
+): CraftCore {
   return { verdict, reasons, cleanup, warnings, targetSide };
 }
 
@@ -223,7 +281,7 @@ function pack(
  * 8. Two or more high-tier target mods and the target side is not full → continue.
  * Budget never changes the verdict.
  */
-export function decideCraft(input: DecideCraftInput): CraftDecision {
+function decideCraftCore(input: DecideCraftInput): CraftCore {
   const targetSide = resolveTargetSide(input);
   const sideCount = clampSide(targetSide === "prefix" ? input.prefixCount : input.suffixCount);
   const otherCount = clampSide(targetSide === "prefix" ? input.suffixCount : input.prefixCount);
@@ -359,6 +417,104 @@ export function decideCraft(input: DecideCraftInput): CraftDecision {
   return pack("continue", ["early-progress"], "none", warnings, targetSide);
 }
 
+function targetLevels(input: DecideCraftInput): number[] {
+  return input.includes.flatMap((row) => (row.tierLevel == null ? [] : [row.tierLevel]));
+}
+
+function modsOnItem(input: DecideCraftInput): RemovalMod[] {
+  const includes = input.includes;
+  const owned = [...(input.owned ?? [])];
+  const lock = input.desecrationLock;
+  if (typeof lock === "string" && lock !== "" && lock !== "other" && !owned.some((row) => row.id === lock)) {
+    const locked = includes.find((row) => row.id === lock);
+    if (locked) owned.push({ id: locked.id, generation: locked.generation, highTier: true });
+  }
+  const targetSide = resolveTargetSide(input);
+  const mods: RemovalMod[] = [];
+  let fracturedAssigned = false;
+  for (const row of owned) {
+    const target = includes.find((candidate) => candidate.id === row.id);
+    if (!target) continue;
+    const fractured =
+      !fracturedAssigned &&
+      input.hasGoodFractureOnTargetSide === true &&
+      row.generation === targetSide &&
+      row.highTier !== false;
+    if (fractured) fracturedAssigned = true;
+    mods.push({
+      id: row.id,
+      generation: row.generation,
+      level: row.highTier === false ? null : target.tierLevel,
+      target: true,
+      fractured,
+      desecrated: lock === row.id,
+    });
+  }
+  for (const other of input.others ?? []) {
+    if (includes.some((target) => target.id === other.id)) continue;
+    mods.push({
+      id: other.id,
+      generation: other.generation,
+      level: other.level,
+      target: false,
+      fractured: other.fractured === true,
+      desecrated: other.desecrated === true,
+    });
+  }
+  return mods;
+}
+
+function applyRemoval(core: CraftCore, removal: RemovalAssessment, input: DecideCraftInput): CraftCore {
+  if ((input.others ?? []).length === 0) return core;
+  if (core.reasons.includes("base-cannot-roll-t1") || core.reasons.includes("fracture-on-garbage")) return core;
+  const recommendation = removal.recommendation;
+  if (recommendation === "whittle") {
+    return pack("continue", ["whittle-safe"], "whittle", core.warnings, core.targetSide);
+  }
+  if (recommendation === "sinistral-annulment" || recommendation === "dextral-annulment") {
+    return pack("continue", ["side-removal-safe"], recommendation, core.warnings, core.targetSide);
+  }
+  if (recommendation === "light") {
+    if (core.cleanup === "essence-alloy-overwrite") return core;
+    return pack("continue", ["omen-of-light-cleanup"], "omen-of-light", core.warnings, core.targetSide);
+  }
+  if (recommendation === "stop" && core.verdict !== "rebase") {
+    return pack("rebase", ["removal-risky"], "none", core.warnings, core.targetSide);
+  }
+  return core;
+}
+
+export function craftDiagramPath(decision: Pick<CraftDecision, "reasons" | "cleanup" | "verdict">): CraftDiagramNodeId[] {
+  if (decision.reasons.includes("base-cannot-roll-t1")) return ["base", "stop-base"];
+  if (decision.reasons.includes("fracture-on-garbage")) return ["base", "fill", "desecrate", "stop-fracture"];
+  if (decision.reasons.includes("target-side-full-no-fracture")) return ["base", "fill", "stop-full"];
+  if (decision.reasons.includes("removal-risky")) return ["base", "fill", "desecrate", "omen", "stop-omen"];
+  if (decision.cleanup === "whittle") return ["base", "fill", "desecrate", "omen", "whittle"];
+  if (decision.cleanup === "sinistral-annulment" || decision.cleanup === "dextral-annulment") {
+    return ["base", "fill", "desecrate", "omen", "side-annul"];
+  }
+  if (decision.cleanup === "essence-alloy-overwrite" || decision.reasons.includes("desecration-overwrite-loop")) {
+    return ["base", "fill", "desecrate", "essence"];
+  }
+  if (decision.cleanup === "omen-of-light" || decision.reasons.includes("omen-of-light-cleanup")) {
+    return ["base", "fill", "desecrate", "omen", "light"];
+  }
+  if (decision.reasons.includes("fresh-base") || decision.reasons.includes("early-progress")) return ["base", "fill"];
+  if (decision.verdict === "rebase") return ["base", "fill", "stop-full"];
+  return ["base", "fill", "desecrate", "finish"];
+}
+
+/**
+ * Continue / new base / downgrade, plus the removal branch when non-target mods are recorded.
+ * With no `others`, verdict, reasons, and cleanup match the craft-structure rules alone.
+ */
+export function decideCraft(input: DecideCraftInput): CraftDecision {
+  const core = decideCraftCore(input);
+  const removal = recommendRemoval(modsOnItem(input), targetLevels(input));
+  const decision = applyRemoval(core, removal, input);
+  return { ...decision, removal, path: craftDiagramPath(decision) };
+}
+
 export function suggestedCraftNode(decision: CraftDecision): CraftTreeNodeId {
   if (decision.reasons.includes("base-cannot-roll-t1")) return "base";
   if (
@@ -376,6 +532,13 @@ export function suggestedCraftNode(decision: CraftDecision): CraftTreeNodeId {
   ) {
     return "desecrate";
   }
+  if (
+    decision.reasons.includes("whittle-safe") ||
+    decision.reasons.includes("side-removal-safe") ||
+    decision.reasons.includes("removal-risky")
+  ) {
+    return "desecrate";
+  }
   if (decision.reasons.includes("fresh-base")) return "base";
   if (decision.reasons.includes("early-progress")) return "rare";
   return "finish";
@@ -388,6 +551,15 @@ export function craftVerdictHeadline(decision: CraftDecision, locale: UiLocale):
     if (decision.verdict === "continue" && overwrite) {
       return "Continue (overwrite with Essence/Alloy, then desecrate again)";
     }
+    if (decision.verdict === "continue" && decision.cleanup === "whittle") {
+      return "Continue (Omen of Whittling — Chaos Orb removes the lowest-level modifier)";
+    }
+    if (decision.verdict === "continue" && decision.cleanup === "sinistral-annulment") {
+      return "Continue (Omen of Sinistral Annulment — Annul removes only prefixes)";
+    }
+    if (decision.verdict === "continue" && decision.cleanup === "dextral-annulment") {
+      return "Continue (Omen of Dextral Annulment — Annul removes only suffixes)";
+    }
     if (decision.verdict === "continue" && light) return "Continue (one Omen of Light cleanup)";
     if (decision.verdict === "rebase" && light) return "New base (or one Omen of Light cleanup)";
     if (decision.verdict === "downgrade" && light) return "Lower the goal (one Omen of Light cleanup)";
@@ -396,6 +568,15 @@ export function craftVerdictHeadline(decision: CraftDecision, locale: UiLocale):
     return "Lower the goal";
   }
   if (decision.verdict === "continue" && overwrite) return "繼續（精髓／合金頂掉後重褻瀆）";
+  if (decision.verdict === "continue" && decision.cleanup === "whittle") {
+    return "繼續（削切之兆，混沌石移除最低等級詞綴）";
+  }
+  if (decision.verdict === "continue" && decision.cleanup === "sinistral-annulment") {
+    return "繼續（左旋廢止之兆，無效石只移除前綴）";
+  }
+  if (decision.verdict === "continue" && decision.cleanup === "dextral-annulment") {
+    return "繼續（右旋廢止之兆，無效石只移除後綴）";
+  }
   if (decision.verdict === "continue" && light) return "繼續（改用光明之兆一輪清理）";
   if (decision.verdict === "rebase" && light) return "換底（或改用光明之兆一輪清理）";
   if (decision.verdict === "downgrade" && light) return "降目標（改用光明之兆一輪清理）";
@@ -456,6 +637,18 @@ export const CRAFT_REASON_TEXT: Record<CraftReasonId, Localized> = {
     zhHant: "進度不夠，又還沒形成可繼續的結構。降目標，或換一條比較好做的底。",
     en: "There is not enough progress and the item is not in a shape worth continuing. Lower the goal, or switch to an easier base.",
   },
+  "whittle-safe": {
+    zhHant: "最低等級的詞綴不是目標，而且低於全部目標。啟動削切之兆，下一個混沌石會移除它。",
+    en: "The lowest-level modifier is not a target, and it sits below every target. Activate Omen of Whittling so the next Chaos Orb removes it.",
+  },
+  "side-removal-safe": {
+    zhHant: "有一側只剩非目標，另一側有目標。用左旋或右旋廢止之兆，讓下一個無效石只移除安全的那一側。抺除之兆則改用混沌石，範圍相同。",
+    en: "One side has only non-targets and the other still has a target. Use Omen of Sinistral or Dextral Annulment so the next Annul removes only the safe side. Erasure omens do the same with a Chaos Orb.",
+  },
+  "removal-risky": {
+    zhHant: "削切會打到目標，或非目標的等級不低於目標。不要用混沌石或無效石硬清，停手換底。",
+    en: "Whittling would hit a target, or a non-target is not below the targets. Do not force a Chaos Orb or Annul. Stop and switch bases.",
+  },
 };
 
 export const CRAFT_WARNING_TEXT: Record<CraftWarningId, Localized> = {
@@ -485,6 +678,18 @@ export const CRAFT_CLEANUP_TEXT: Record<Exclude<CraftCleanup, "none">, Localized
   "omen-of-light": {
     zhHant: "做法：光明之兆加無效石，只拿掉褻瀆詞綴。不要再對一個已鎖住的工藝槽使用精髓。",
     en: "Method: Omen of Light plus an Annul, removing only the desecrated modifier. Do not Essence a crafted slot you already decided to keep.",
+  },
+  whittle: {
+    zhHant: "做法：削切之兆加混沌石，移除最低等級的詞綴。等級取 poe2db 該階的需求等級，不是畫面上的 T 序。",
+    en: "Method: Omen of Whittling plus a Chaos Orb, removing the lowest-level modifier. Level is that tier's poe2db requirement, not the displayed T rank.",
+  },
+  "sinistral-annulment": {
+    zhHant: "做法：左旋廢止之兆加無效石，只移除前綴。左旋抺除之兆改為混沌石，同樣只動前綴。",
+    en: "Method: Omen of Sinistral Annulment plus an Annul, removing only prefixes. Omen of Sinistral Erasure does the same with a Chaos Orb.",
+  },
+  "dextral-annulment": {
+    zhHant: "做法：右旋廢止之兆加無效石，只移除後綴。右旋抺除之兆改為混沌石，同樣只動後綴。",
+    en: "Method: Omen of Dextral Annulment plus an Annul, removing only suffixes. Omen of Dextral Erasure does the same with a Chaos Orb.",
   },
 };
 
@@ -643,6 +848,113 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
     warning: {
       zhHant: "還是每件 1 條工藝、1 條褻瀆。預算只當提醒，畫面不估通貨價格。",
       en: "Still one crafted mod and one desecrated mod. Budget stays a reminder — there are no currency prices here.",
+    },
+  },
+];
+
+export const CRAFT_DIAGRAM: CraftDiagramNode[] = [
+  {
+    id: "base",
+    title: { zhHant: "選底", en: "Base" },
+    choice: {
+      zhHant: "先對物品等級。骰不到所選階級就是換底。",
+      en: "Check item level first. If the chosen tier cannot roll, switch bases.",
+    },
+  },
+  {
+    id: "stop-base",
+    title: { zhHant: "停手換底", en: "Stop and switch bases" },
+    choice: {
+      zhHant: "所選階級高過這件的物品等級。",
+      en: "A chosen tier is above this item level.",
+    },
+  },
+  {
+    id: "fill",
+    title: { zhHant: "填邊", en: "Fill" },
+    choice: {
+      zhHant: "非目標側補上，目標側維持恰好 2 條。",
+      en: "Fill the other side. Leave the target side at exactly 2.",
+    },
+  },
+  {
+    id: "stop-full",
+    title: { zhHant: "停手換底", en: "Stop and switch bases" },
+    choice: {
+      zhHant: "目標側已滿，而且沒有要留下的破裂。",
+      en: "The target side is full and has no fracture worth keeping.",
+    },
+  },
+  {
+    id: "desecrate",
+    title: { zhHant: "褻瀆／破裂", en: "Desecrate / fracture" },
+    choice: {
+      zhHant: "失敗時先用精髓或合金頂掉，少花光明之兆。",
+      en: "On a miss, overwrite with Essence or Alloy first and save Omen of Light.",
+    },
+  },
+  {
+    id: "essence",
+    title: { zhHant: "精髓／合金", en: "Essence / Alloy" },
+    choice: {
+      zhHant: "頂掉非破裂那格，再褻瀆。打中目標就繼續。",
+      en: "Overwrite the open mod, then desecrate again. A hit on a target continues.",
+    },
+  },
+  {
+    id: "stop-fracture",
+    title: { zhHant: "停手換底", en: "Stop and switch bases" },
+    choice: {
+      zhHant: "破裂鎖在垃圾詞綴，無效石清不掉。",
+      en: "The fracture is locked onto garbage. An Annul cannot remove it.",
+    },
+  },
+  {
+    id: "omen",
+    title: { zhHant: "依等級移除", en: "Remove by level" },
+    choice: {
+      zhHant: "看最低等級會不會打到目標。大幅廢止一次拿兩條，不拿來當下一步。",
+      en: "See whether the lowest level hits a target. Greater Annulment takes two at once, so it is not the next step.",
+    },
+  },
+  {
+    id: "whittle",
+    title: { zhHant: "削切之兆", en: "Omen of Whittling" },
+    choice: {
+      zhHant: "混沌石移除最低等級詞綴。這格低於全部目標，可削切。",
+      en: "Chaos Orb removes the lowest-level modifier. It is below every target, so it is safe to whittle.",
+    },
+  },
+  {
+    id: "side-annul",
+    title: { zhHant: "左旋／右旋廢止", en: "Sinistral / Dextral Annulment" },
+    choice: {
+      zhHant: "無效石只移除沒有目標的那一側。抺除之兆改用混沌石，規則相同。",
+      en: "Annul removes only the side with no target. Erasure omens do the same with a Chaos Orb.",
+    },
+  },
+  {
+    id: "light",
+    title: { zhHant: "光明之兆", en: "Omen of Light" },
+    choice: {
+      zhHant: "無效石只移除褻瀆詞綴。",
+      en: "Annul removes only the desecrated modifier.",
+    },
+  },
+  {
+    id: "stop-omen",
+    title: { zhHant: "停手換底", en: "Stop and switch bases" },
+    choice: {
+      zhHant: "移除會打到目標，或垃圾等級不低於目標。",
+      en: "Removal would hit a target, or the junk is not below the targets.",
+    },
+  },
+  {
+    id: "finish",
+    title: { zhHant: "收尾", en: "Finish" },
+    choice: {
+      zhHant: "打中目標。補品質、催化劑、插槽，瓦爾放最後。",
+      en: "Hit the target. Quality, catalysts, sockets, and Vaal last.",
     },
   },
 ];

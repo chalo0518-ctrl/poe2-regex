@@ -4,6 +4,8 @@ import {
   CRAFTING_CONSTRAINTS,
   CRAFTING_RULESET,
   CRAFTING_TREE,
+  CRAFT_CLEANUP_TEXT,
+  CRAFT_DIAGRAM,
   CRAFT_REASON_TEXT,
   type CraftTarget,
   type DecideCraftInput,
@@ -138,7 +140,30 @@ describe("crafting ruleset", () => {
     expect(joined).toContain("重組器");
     expect(joined).toContain("標準聯盟");
     expect(joined).not.toContain("Recombinator is the next");
-    for (const copy of [...CRAFTING_CONSTRAINTS, ...Object.values(CRAFT_REASON_TEXT), ...CRAFTING_TREE.flatMap((node) => [node.title, node.summary, node.action, node.skip, node.irreversible, node.warning])]) {
+    expect(CRAFT_DIAGRAM.map((node) => node.id)).toEqual([
+      "base",
+      "stop-base",
+      "fill",
+      "stop-full",
+      "desecrate",
+      "essence",
+      "stop-fracture",
+      "omen",
+      "whittle",
+      "side-annul",
+      "light",
+      "stop-omen",
+      "finish",
+    ]);
+    expect(CRAFT_DIAGRAM.find((node) => node.id === "base")?.choice.zhHant).toContain("骰不到所選階級就是換底");
+    expect(CRAFT_DIAGRAM.find((node) => node.id === "desecrate")?.choice.zhHant).toContain("少花光明之兆");
+    for (const copy of [
+      ...CRAFTING_CONSTRAINTS,
+      ...Object.values(CRAFT_REASON_TEXT),
+      ...Object.values(CRAFT_CLEANUP_TEXT),
+      ...CRAFTING_TREE.flatMap((node) => [node.title, node.summary, node.action, node.skip, node.irreversible, node.warning]),
+      ...CRAFT_DIAGRAM.flatMap((node) => [node.title, node.choice]),
+    ]) {
       for (const needle of SIMPLIFIED) {
         expect(copy.zhHant, needle).not.toContain(needle);
       }
@@ -410,5 +435,117 @@ describe("decideCraft", () => {
     }));
     expect(decision.warnings).toContain("ilvl-unknown");
     expect(decision.verdict).toBe("continue");
+  });
+
+  it("keeps the structure verdict when no non-target mods are recorded", () => {
+    const decision = decideCraft(input());
+    expect(decision.reasons).toEqual(["fresh-base"]);
+    expect(decision.cleanup).toBe("none");
+    expect(decision.path).toEqual(["base", "fill"]);
+    expect(decision.removal.recommendation).toBe("none");
+  });
+
+  it("whittles a non-target whose level is below every target", () => {
+    const decision = decideCraft(input({
+      includes: [suffix("life", 60)],
+      owned: [owned("life", "suffix")],
+      suffixCount: 1,
+      others: [{ id: "str", generation: "prefix", level: 8 }],
+    }));
+    expect(decision.verdict).toBe("continue");
+    expect(decision.reasons).toEqual(["whittle-safe"]);
+    expect(decision.cleanup).toBe("whittle");
+    expect(decision.path).toEqual(["base", "fill", "desecrate", "omen", "whittle"]);
+    expect(decision.removal.whittleRemoves).toBe("str");
+    expect(decision.removal.classes).toEqual([{ id: "str", classification: "acceptable" }]);
+    expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("繼續（削切之兆，混沌石移除最低等級詞綴）");
+    expect(craftVerdictHeadline(decision, "en")).toBe(
+      "Continue (Omen of Whittling — Chaos Orb removes the lowest-level modifier)",
+    );
+  });
+
+  it("annuls the safe side when whittling would hit a target", () => {
+    const decision = decideCraft(input({
+      includes: [suffix("life", 40)],
+      owned: [owned("life", "suffix")],
+      suffixCount: 1,
+      prefixCount: 1,
+      others: [{ id: "junk", generation: "prefix", level: 80 }],
+    }));
+    expect(decision.cleanup).toBe("sinistral-annulment");
+    expect(decision.reasons).toEqual(["side-removal-safe"]);
+    expect(decision.path).toEqual(["base", "fill", "desecrate", "omen", "side-annul"]);
+    expect(decision.removal.classes).toEqual([{ id: "junk", classification: "bad" }]);
+    expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("繼續（左旋廢止之兆，無效石只移除前綴）");
+  });
+
+  it("stops when removal would hit a target and neither side is safe", () => {
+    const decision = decideCraft(input({
+      includes: [suffix("life", 44), prefix("armour", 30)],
+      owned: [owned("life", "suffix"), owned("armour", "prefix")],
+      suffixCount: 2,
+      prefixCount: 2,
+      others: [{ id: "fire", generation: "suffix", level: 64 }],
+    }));
+    expect(decision.verdict).toBe("rebase");
+    expect(decision.reasons).toEqual(["removal-risky"]);
+    expect(decision.cleanup).toBe("none");
+    expect(decision.path).toEqual(["base", "fill", "desecrate", "omen", "stop-omen"]);
+    expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("換底");
+  });
+
+  it("does not let a safe whittle override an impossible base or a garbage fracture", () => {
+    const blocked = decideCraft(input({
+      includes: [suffix("life", 82)],
+      itemLevel: 40,
+      others: [{ id: "str", generation: "prefix", level: 1 }],
+    }));
+    expect(blocked.reasons).toEqual(["base-cannot-roll-t1"]);
+    expect(blocked.path).toEqual(["base", "stop-base"]);
+
+    const fractured = decideCraft(input({
+      garbageFracture: true,
+      others: [{ id: "str", generation: "prefix", level: 1 }],
+    }));
+    expect(fractured.reasons).toEqual(["fracture-on-garbage"]);
+    expect(fractured.path).toEqual(["base", "fill", "desecrate", "stop-fracture"]);
+  });
+
+  it("uses Light for a desecrated miss only when side removal and whittling are unsafe", () => {
+    const spared = decideCraft(input({
+      includes: [suffix("keep", 40), suffix("open", 15)],
+      owned: [owned("keep", "suffix"), owned("open", "suffix")],
+      suffixCount: 2,
+      hasGoodFractureOnTargetSide: true,
+      hasDesecrated: true,
+      desecratedOnRoute: false,
+      others: [{ id: "bad", generation: "suffix", level: 70, desecrated: true }],
+    }));
+    expect(spared.removal.recommendation).toBe("light");
+    expect(spared.cleanup).toBe("essence-alloy-overwrite");
+    expect(spared.path).toEqual(["base", "fill", "desecrate", "essence"]);
+
+    const light = decideCraft(input({
+      includes: [suffix("keep", 40), suffix("open", 15)],
+      owned: [owned("keep", "suffix"), owned("open", "suffix")],
+      suffixCount: 2,
+      others: [{ id: "bad", generation: "suffix", level: 70, desecrated: true }],
+    }));
+    expect(light.cleanup).toBe("omen-of-light");
+    expect(light.reasons).toEqual(["omen-of-light-cleanup"]);
+    expect(light.path).toEqual(["base", "fill", "desecrate", "omen", "light"]);
+    expect(craftVerdictHeadline(light, "en")).toBe("Continue (one Omen of Light cleanup)");
+  });
+
+  it("treats a low-tier target as unknown for whittling and still clears the other side", () => {
+    const decision = decideCraft(input({
+      includes: [suffix("life", 60)],
+      owned: [owned("life", "suffix", false)],
+      suffixCount: 1,
+      prefixCount: 1,
+      others: [{ id: "str", generation: "prefix", level: 8 }],
+    }));
+    expect(decision.removal.whittle).toBe("unknown-level");
+    expect(decision.cleanup).toBe("sinistral-annulment");
   });
 });

@@ -52,6 +52,19 @@ type Messages = {
   craftingRegexCaption: string;
   craftingTreeHeading: string;
   craftingTreeHint: string;
+  craftingOtherHeading: string;
+  craftingOtherHint: string;
+  craftingOtherAffix: string;
+  craftingOtherTier: string;
+  craftingOtherTierUnknown: string;
+  craftingOtherDesecrated: string;
+  craftingOtherAdd: string;
+  craftingOtherRemove: string;
+  craftingOtherEmpty: string;
+  craftingWhittleable: string;
+  craftingLevelRisky: string;
+  craftingLevelUnknown: string;
+  craftingModLevel: (level: number) => string;
   craftingNodeRelated: string;
   craftingSectionAction: string;
   craftingSectionSkip: string;
@@ -205,7 +218,20 @@ const zhHant: Messages = {
     "步驟 B。勾選要做的目標，需要時選階級。同類詞條不能一起勾。破潰石在詞條列標，一次一條。家族名稱不顯示。下方倉庫正則只是附帶，方便找這個基底。",
   craftingRegexCaption: "倉庫正則（刷這個基底／這些目標）",
   craftingTreeHeading: "步驟 C · 決策樹",
-  craftingTreeHint: "點開一步看要做什麼、何時跳過、以及做了就回不了頭的地方。判定會標出相關的那一步。",
+  craftingTreeHint: "由上往下看每個分支該怎麼選。金色是這件目前該走的路。畫面窄時可左右捲動。",
+  craftingOtherHeading: "這件上、但不是目標的詞綴",
+  craftingOtherHint: "選詞綴和它實際的階級。工具用該階的需求等級判斷能不能削切，不用你自己決定留不留。",
+  craftingOtherAffix: "非目標詞綴",
+  craftingOtherTier: "這件上的階級",
+  craftingOtherTierUnknown: "階級不明",
+  craftingOtherDesecrated: "這條是褻瀆詞綴",
+  craftingOtherAdd: "記在這件上",
+  craftingOtherRemove: "移出",
+  craftingOtherEmpty: "還沒記下非目標詞綴。",
+  craftingWhittleable: "可削切",
+  craftingLevelRisky: "等級不低於目標",
+  craftingLevelUnknown: "等級還不能判斷",
+  craftingModLevel: (level) => `需求等級 ${level}`,
   craftingNodeRelated: "與此判定相關",
   craftingSectionAction: "怎麼做",
   craftingSectionSkip: "何時跳過",
@@ -369,7 +395,20 @@ const en: Messages = {
     "Step B. Check the affixes you are crafting toward, and pick a tier when you need one. Affixes in the same mod group cannot be checked together. Mark the desecration lock on the row; only one at a time. Family names stay hidden. The stash regex below is secondary, for finding this base.",
   craftingRegexCaption: "Stash regex (shop this base / these targets)",
   craftingTreeHeading: "Step C · Decision tree",
-  craftingTreeHint: "Open a step for what to do, when to skip, and what you cannot undo. The verdict marks the related step.",
+  craftingTreeHint: "Read top to bottom for the choice at each branch. Gold is the path for this item. Scroll sideways on a narrow screen.",
+  craftingOtherHeading: "On this item, but not a target",
+  craftingOtherHint: "Pick the affix and the tier actually on the item. The tool uses that tier's required level to judge whittling. You do not mark whether it can stay.",
+  craftingOtherAffix: "Non-target affix",
+  craftingOtherTier: "Tier on this item",
+  craftingOtherTierUnknown: "Tier unknown",
+  craftingOtherDesecrated: "This mod is desecrated",
+  craftingOtherAdd: "Record on this item",
+  craftingOtherRemove: "Remove",
+  craftingOtherEmpty: "No non-target mods recorded.",
+  craftingWhittleable: "Safe to whittle",
+  craftingLevelRisky: "Level is not below the targets",
+  craftingLevelUnknown: "Level cannot be judged yet",
+  craftingModLevel: (level) => `Mod level ${level}`,
   craftingNodeRelated: "Related to this verdict",
   craftingSectionAction: "What to do",
   craftingSectionSkip: "When to skip",

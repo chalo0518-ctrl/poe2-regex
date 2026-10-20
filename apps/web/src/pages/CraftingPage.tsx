@@ -23,16 +23,19 @@ import {
   type AffixFamily,
   type CraftDecision,
   type CraftSlotId,
-  type CraftTreeNodeId,
   type ModSide,
+  type NonTargetClass,
 } from "@poe2-regex/data";
 import { ChroniclesModBuilder, type ModPickState } from "../components/ChroniclesModBuilder.tsx";
+import { CraftDiagram } from "../components/CraftDiagram.tsx";
 import { useLocale } from "../i18n.tsx";
 
 const SLOTS = craftingSlots();
 const DEFAULT_SLOT: CraftSlotId = "body";
 
 type OwnedFlag = { owned: boolean; highTier: boolean };
+
+type OtherFlag = { tierIndex: number | null; desecrated: boolean };
 
 function isCraftTarget(pick: ModPickState | undefined): boolean {
   return pick?.polarity === "include" || pick?.polarity === "or";
@@ -76,7 +79,7 @@ export default function CraftingPage() {
   const [garbageFracture, setGarbageFracture] = useState(false);
   const [keeper, setKeeper] = useState(false);
   const [tightBudget, setTightBudget] = useState(false);
-  const [openNode, setOpenNode] = useState<CraftTreeNodeId>("desecrate");
+  const [others, setOthers] = useState<Record<string, OtherFlag>>({});
 
   const onPicksChange = useCallback((next: Record<string, ModPickState>) => {
     setPicks(next);
@@ -91,6 +94,7 @@ export default function CraftingPage() {
     setGoodFracture(false);
     setGarbageFracture(false);
     setKeeper(false);
+    setOthers({});
   }, [slotId]);
 
   const selected = useMemo(
@@ -102,6 +106,17 @@ export default function CraftingPage() {
     const ids = new Set(selected.map((family) => family.id));
     setOwned((prev) => {
       const stale = Object.keys(prev).filter((id) => !ids.has(id));
+      if (stale.length === 0) return prev;
+      const next = { ...prev };
+      for (const id of stale) delete next[id];
+      return next;
+    });
+  }, [selected]);
+
+  useEffect(() => {
+    const ids = new Set(selected.map((family) => family.id));
+    setOthers((prev) => {
+      const stale = Object.keys(prev).filter((id) => ids.has(id));
       if (stale.length === 0) return prev;
       const next = { ...prev };
       for (const id of stale) delete next[id];
@@ -141,8 +156,20 @@ export default function CraftingPage() {
       desecrationLock: lockedId,
       craftedSlotLockedToKeeper: keeper,
       tightBudget,
+      others: Object.entries(others).flatMap(([id, flag]) => {
+        const family = families.find((row) => row.id === id);
+        if (!family) return [];
+        const level = flag.tierIndex == null ? null : family.tiers[flag.tierIndex]?.level ?? null;
+        return [{
+          id,
+          generation: family.generation,
+          level,
+          desecrated: flag.desecrated,
+        }];
+      }),
     });
   }, [
+    families,
     selected,
     itemLevelRaw,
     owned,
@@ -155,9 +182,11 @@ export default function CraftingPage() {
     goodFracture,
     keeper,
     tightBudget,
+    others,
   ]);
 
   const related = suggestedCraftNode(decision);
+  const relatedNode = CRAFTING_TREE.find((row) => row.id === related) ?? null;
   const sideLabel = decision.targetSide === "prefix" ? t.craftingSidePrefix : t.craftingSideSuffix;
 
   function setSlot(id: CraftSlotId) {
@@ -213,6 +242,25 @@ export default function CraftingPage() {
         </div>
       </div>
 
+      <section className="mb-5 rounded-sm border border-line bg-panel px-4 py-3" aria-labelledby="craft-tree-heading">
+        <h2 id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</h2>
+        <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
+        <CraftDiagram path={decision.path} />
+        {relatedNode && (
+          <div className="mt-3 space-y-2 border-t border-line pt-3 text-xs leading-relaxed text-paper">
+            <p className="text-gold">
+              {t.craftingNodeRelated}
+              {" · "}
+              {craftLocaleText(relatedNode.title, locale)}
+            </p>
+            <NodeBlock label={t.craftingSectionAction} body={craftLocaleText(relatedNode.action, locale)} />
+            <NodeBlock label={t.craftingSectionSkip} body={craftLocaleText(relatedNode.skip, locale)} />
+            <NodeBlock label={t.craftingSectionIrreversible} body={craftLocaleText(relatedNode.irreversible, locale)} />
+            <NodeBlock label={t.craftingSectionWarning} body={craftLocaleText(relatedNode.warning, locale)} />
+          </div>
+        )}
+      </section>
+
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
         <ChroniclesModBuilder
           key={slotId}
@@ -231,48 +279,6 @@ export default function CraftingPage() {
         />
 
         <aside className="space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100svh-6rem)] xl:overflow-y-auto">
-          <section aria-labelledby="craft-tree-heading">
-            <h2 id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</h2>
-            <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
-            <ol className="space-y-2">
-              {CRAFTING_TREE.map((node, index) => {
-                const open = openNode === node.id;
-                return (
-                  <li key={node.id} className="rounded-sm border border-line bg-panel">
-                    <button
-                      type="button"
-                      aria-expanded={open}
-                      onClick={() => setOpenNode(node.id)}
-                      className="flex w-full items-start gap-2 px-3 py-2 text-left"
-                    >
-                      <span className="mt-0.5 font-mono text-xs text-gold-dim">{index + 1}</span>
-                      <span className="min-w-0 flex-1">
-                        <span className="flex flex-wrap items-center gap-2">
-                          <span className="text-sm font-medium text-gold">{craftLocaleText(node.title, locale)}</span>
-                          {related === node.id && (
-                            <span className="rounded-sm bg-gold/15 px-1.5 py-0.5 text-[10px] text-gold">
-                              {t.craftingNodeRelated}
-                            </span>
-                          )}
-                        </span>
-                        <span className="mt-0.5 block text-xs text-muted">{craftLocaleText(node.summary, locale)}</span>
-                      </span>
-                      <span className="text-xs text-muted" aria-hidden="true">{open ? "▴" : "▾"}</span>
-                    </button>
-                    {open && (
-                      <div className="space-y-2 border-t border-line px-3 py-3 text-xs leading-relaxed text-paper">
-                        <NodeBlock label={t.craftingSectionAction} body={craftLocaleText(node.action, locale)} />
-                        <NodeBlock label={t.craftingSectionSkip} body={craftLocaleText(node.skip, locale)} />
-                        <NodeBlock label={t.craftingSectionIrreversible} body={craftLocaleText(node.irreversible, locale)} />
-                        <NodeBlock label={t.craftingSectionWarning} body={craftLocaleText(node.warning, locale)} />
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
-          </section>
-
           <ItemPanel
             decision={decision}
             sideLabel={sideLabel}
@@ -314,6 +320,20 @@ export default function CraftingPage() {
                   : prev
               ));
             }}
+            families={families}
+            selectedIds={selected.map((family) => family.id)}
+            others={others}
+            classes={decision.removal.classes}
+            onAddOther={(id, tierIndex, desecrated) => {
+              setOthers((prev) => ({ ...prev, [id]: { tierIndex, desecrated } }));
+            }}
+            onRemoveOther={(id) => {
+              setOthers((prev) => {
+                const next = { ...prev };
+                delete next[id];
+                return next;
+              });
+            }}
           />
         </aside>
       </div>
@@ -352,6 +372,12 @@ function ItemPanel({
   selected,
   onToggleOwned,
   onToggleHigh,
+  families,
+  selectedIds,
+  others,
+  classes,
+  onAddOther,
+  onRemoveOther,
 }: {
   decision: CraftDecision;
   sideLabel: string;
@@ -381,6 +407,12 @@ function ItemPanel({
   }[];
   onToggleOwned: (id: string) => void;
   onToggleHigh: (id: string) => void;
+  families: AffixFamily[];
+  selectedIds: string[];
+  others: Record<string, OtherFlag>;
+  classes: { id: string; classification: NonTargetClass }[];
+  onAddOther: (id: string, tierIndex: number | null, desecrated: boolean) => void;
+  onRemoveOther: (id: string) => void;
 }) {
   const { locale, t } = useLocale();
   const headline = craftVerdictHeadline(decision, locale);
@@ -451,6 +483,15 @@ function ItemPanel({
         <Check label={t.craftingBudget} checked={tightBudget} onChange={onTightBudget} />
       </div>
 
+      <OtherMods
+        families={families}
+        selectedIds={selectedIds}
+        others={others}
+        classes={classes}
+        onAdd={onAddOther}
+        onRemove={onRemoveOther}
+      />
+
       <ul className="mt-3 space-y-2">
         {selected.length === 0 ? (
           <li className="text-xs text-muted">{t.craftingNoOwned}</li>
@@ -487,6 +528,131 @@ function ItemPanel({
         )}
       </ul>
     </section>
+  );
+}
+
+function classTag(classification: NonTargetClass, labels: {
+  acceptable: string;
+  bad: string;
+  unknown: string;
+}): string {
+  if (classification === "acceptable") return labels.acceptable;
+  if (classification === "bad") return labels.bad;
+  return labels.unknown;
+}
+
+function OtherMods({
+  families,
+  selectedIds,
+  others,
+  classes,
+  onAdd,
+  onRemove,
+}: {
+  families: AffixFamily[];
+  selectedIds: string[];
+  others: Record<string, OtherFlag>;
+  classes: { id: string; classification: NonTargetClass }[];
+  onAdd: (id: string, tierIndex: number | null, desecrated: boolean) => void;
+  onRemove: (id: string) => void;
+}) {
+  const { locale, t } = useLocale();
+  const [draftId, setDraftId] = useState("");
+  const [draftTier, setDraftTier] = useState("");
+  const [draftDesecrated, setDraftDesecrated] = useState(false);
+  const taken = new Set([...selectedIds, ...Object.keys(others)]);
+  const available = families.filter((family) => !taken.has(family.id));
+  const draft = families.find((family) => family.id === draftId) ?? null;
+  const recorded = Object.entries(others).flatMap(([id, flag]) => {
+    const family = families.find((row) => row.id === id);
+    return family ? [{ id, family, flag }] : [];
+  });
+
+  return (
+    <div className="mt-3 border-t border-line pt-3">
+      <p className="text-xs font-medium text-gold">{t.craftingOtherHeading}</p>
+      <p className="mt-1 text-[11px] text-muted">{t.craftingOtherHint}</p>
+      <div className="mt-2 grid gap-2">
+        <label className="text-xs text-muted">
+          {t.craftingOtherAffix}
+          <select
+            value={draftId}
+            onChange={(event) => {
+              setDraftId(event.target.value);
+              setDraftTier("");
+            }}
+            className="mt-1 w-full rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper outline-none focus:border-gold"
+          >
+            <option value="">{t.craftingOtherAffix}</option>
+            {available.map((family) => (
+              <option key={family.id} value={family.id}>{effectText(family, locale)}</option>
+            ))}
+          </select>
+        </label>
+        <label className="text-xs text-muted">
+          {t.craftingOtherTier}
+          <select
+            value={draftTier}
+            disabled={!draft}
+            onChange={(event) => setDraftTier(event.target.value)}
+            className="mt-1 w-full rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper outline-none focus:border-gold disabled:opacity-50"
+          >
+            <option value="">{t.craftingOtherTierUnknown}</option>
+            {draft && craftTierChoices(draft).map((choice) => (
+              <option key={choice.index} value={choice.index}>
+                {`T${choice.rank} · iLvL ${choice.level}`}
+              </option>
+            ))}
+          </select>
+        </label>
+        <Check label={t.craftingOtherDesecrated} checked={draftDesecrated} onChange={setDraftDesecrated} />
+        <button
+          type="button"
+          disabled={!draft}
+          onClick={() => {
+            if (!draft) return;
+            onAdd(draft.id, draftTier === "" ? null : Number(draftTier), draftDesecrated);
+            setDraftId("");
+            setDraftTier("");
+            setDraftDesecrated(false);
+          }}
+          className="rounded-sm border border-gold/50 px-2 py-1.5 text-xs text-gold disabled:opacity-40"
+        >
+          {t.craftingOtherAdd}
+        </button>
+      </div>
+      <ul className="mt-2 space-y-2">
+        {recorded.length === 0 ? (
+          <li className="text-[11px] text-muted">{t.craftingOtherEmpty}</li>
+        ) : (
+          recorded.map(({ id, family, flag }) => {
+            const classification = classes.find((row) => row.id === id)?.classification ?? "unknown";
+            const level = flag.tierIndex == null ? null : family.tiers[flag.tierIndex]?.level ?? null;
+            return (
+              <li key={id} className="rounded-sm border border-line px-2 py-2" data-other={id}>
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-xs text-paper">{effectText(family, locale)}</p>
+                  <button type="button" className="text-[11px] text-muted" onClick={() => onRemove(id)}>
+                    {t.craftingOtherRemove}
+                  </button>
+                </div>
+                <p className="mt-1 text-[11px] text-muted">
+                  {level == null ? t.craftingOtherTierUnknown : t.craftingModLevel(level)}
+                  {flag.desecrated ? ` · ${t.craftingOtherDesecrated}` : ""}
+                </p>
+                <p className="mt-1 text-[11px] text-gold" data-class={classification}>
+                  {classTag(classification, {
+                    acceptable: t.craftingWhittleable,
+                    bad: t.craftingLevelRisky,
+                    unknown: t.craftingLevelUnknown,
+                  })}
+                </p>
+              </li>
+            );
+          })
+        )}
+      </ul>
+    </div>
   );
 }
 

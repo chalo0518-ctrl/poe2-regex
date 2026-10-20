@@ -91,12 +91,13 @@ describe("crafting page", () => {
     );
     expect(within(row).getByRole("button", { name: "展開階層" })).toBeInTheDocument();
 
-    const desecrate = screen.getByRole("button", { name: /褻瀆分支/ });
-    expect(desecrate).toHaveAttribute("aria-expanded", "true");
     expect(screen.getAllByText(/少花光明之兆/).length).toBeGreaterThan(0);
-
-    await user.click(screen.getByRole("button", { name: /選底/ }));
     expect(screen.getAllByText(/骰不到所選階級就是換底/).length).toBeGreaterThan(0);
+    expect(document.querySelector("[data-craft-diagram]")).toBeTruthy();
+    expect(document.querySelector('[data-node="base"]')).toHaveAttribute("data-active", "true");
+    expect(document.querySelector('[data-node="fill"]')).toHaveAttribute("data-active", "true");
+    expect(document.querySelector('[data-node="stop-base"]')).toHaveAttribute("data-active", "false");
+    expect(screen.queryByRole("button", { name: "褻瀆分支" })).not.toBeInTheDocument();
 
     await user.click(within(row).getByRole("checkbox", { name: `目標 ${life.textZh}` }));
     await user.type(screen.getByLabelText("物品等級"), "1");
@@ -110,11 +111,39 @@ describe("crafting page", () => {
     expect(pattern()).not.toBe(open);
     expect(pattern()).toMatch(/\\d/);
     expect(screen.getByText("換底")).toBeInTheDocument();
-    expect(screen.getByText(/所選階級高過這件的物品等級/)).toBeInTheDocument();
+    expect(screen.getAllByText(/所選階級高過這件的物品等級/).length).toBeGreaterThan(0);
+    expect(document.querySelector('[data-node="stop-base"]')).toHaveAttribute("data-active", "true");
 
     await user.click(screen.getByRole("checkbox", { name: /預算緊/ }));
     expect(screen.getByText("換底")).toBeInTheDocument();
     expect(screen.getByText("你勾了預算緊。判定沒有因此改變。")).toBeInTheDocument();
+  }, 15_000);
+
+  it("classifies a lower-level non-target as safe to whittle", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+    const life = lifeFamily();
+    const top = craftTierChoices(life)[0];
+    if (!top) throw new Error("missing life tiers");
+    const other = earlyGearFamiliesFor("body").find((family) => (
+      family.id !== life.id && family.tiers.some((tier) => tier.level < top.level)
+    ));
+    if (!other) throw new Error("missing a lower-level affix");
+    const low = other.tiers.reduce(
+      (best, tier, index) => (tier.level < other.tiers[best]!.level ? index : best),
+      0,
+    );
+
+    await user.click(screen.getByRole("checkbox", { name: `目標 ${life.textZh}` }));
+    await user.selectOptions(screen.getByLabelText(`最低階級 ${life.textZh}`), String(top.index));
+    await user.selectOptions(screen.getByLabelText("非目標詞綴"), other.id);
+    await user.selectOptions(screen.getByLabelText("這件上的階級"), String(low));
+    await user.click(screen.getByRole("button", { name: "記在這件上" }));
+
+    expect(screen.getByText("可削切")).toBeInTheDocument();
+    expect(screen.getByText(`需求等級 ${other.tiers[low]!.level}`)).toBeInTheDocument();
+    expect(screen.getByText("繼續（削切之兆，混沌石移除最低等級詞綴）")).toBeInTheDocument();
+    expect(document.querySelector('[data-node="whittle"]')).toHaveAttribute("data-active", "true");
   }, 15_000);
 
   it("opens a weapon class on the same target rows", () => {
