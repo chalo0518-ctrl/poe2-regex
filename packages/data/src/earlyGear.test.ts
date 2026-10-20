@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  affixModGroup,
   earlyGearCatalog,
   earlyGearFamiliesFor,
   earlyGearSlots,
@@ -52,6 +53,9 @@ describe("early gear catalog", () => {
     const match = defences.map((f) => f.matchZh);
     expect(match).toEqual(expect.arrayContaining(["護甲值", "閃避值", "最大能量護盾"]));
     expect(new Set(body.filter((f) => f.family === "IncreasedLife").map((f) => f.matchZh)).size).toBe(1);
+    expect(new Set(defences.map(affixModGroup))).toEqual(new Set(["BaseLocalDefences"]));
+    const life = body.find((f) => f.family === "IncreasedLife");
+    expect(life && affixModGroup(life)).toBe("IncreasedLife");
   });
 
   it("keeps one-handed mace elemental adds as separate families", () => {

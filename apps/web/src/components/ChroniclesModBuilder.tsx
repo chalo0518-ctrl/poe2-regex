@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  affixModGroup,
   affixTagLabels,
+  craftTierChoices,
   cycleTagState,
   effectText,
   effectTextSecondary,
@@ -35,7 +37,47 @@ export type ModPickState = {
   polarity: Polarity;
   min: string;
   max: string;
+  /** Index into `family.tiers`. Null or omitted means any tier (no floor). */
+  minTierIndex?: number | null;
+  /** This affix is the one locked by the desecration stone. At most one row. */
+  desecrationLock?: boolean;
 };
+
+export type ModPickMode = "polarity" | "target";
+
+const TARGET_SIDE_CAP = 3;
+
+function isChosenTarget(pick: ModPickState | undefined): boolean {
+  return pick?.polarity === "include" || pick?.polarity === "or";
+}
+
+function tierFloor(family: AffixFamily, index: number | null | undefined): string {
+  if (index == null) return "";
+  const tier = family.tiers[index];
+  if (!tier || family.kind !== "numeric" || tier.statMin == null) return "";
+  return String(tier.statMin);
+}
+
+function targetBlockTitle(
+  family: AffixFamily,
+  picks: Record<string, ModPickState>,
+  families: AffixFamily[],
+  copy: {
+    craftingConflict: string;
+    craftingSideFullPrefix: string;
+    craftingSideFullSuffix: string;
+  },
+): string | undefined {
+  if (isChosenTarget(picks[family.id])) return undefined;
+  const selected = families.filter((row) => isChosenTarget(picks[row.id]));
+  const group = affixModGroup(family);
+  if (selected.some((row) => affixModGroup(row) === group)) return copy.craftingConflict;
+  const sideCount = selected.filter((row) => row.generation === family.generation).length;
+  if (sideCount >= TARGET_SIDE_CAP) {
+    return family.generation === "prefix" ? copy.craftingSideFullPrefix : copy.craftingSideFullSuffix;
+  }
+  return undefined;
+}
 
 type PickState = ModPickState;
 
@@ -112,6 +154,7 @@ export function ChroniclesModBuilder({
   onPicksChange,
   dockRegex = true,
   regexCaption,
+  pickMode = "polarity",
 }: {
   kicker: string;
   title: string;
@@ -138,6 +181,8 @@ export function ChroniclesModBuilder({
   /** Fixed bottom bar on other pages. Crafting inlines it so the tree stays visible. */
   dockRegex?: boolean;
   regexCaption?: string;
+  /** Polarity keeps 是／或／否. Target is the crafting checklist. */
+  pickMode?: ModPickMode;
 }) {
   const { locale, t } = useLocale();
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
@@ -250,18 +295,88 @@ export function ChroniclesModBuilder({
       for (const family of families) {
         const needles = importNeedles(family)
           .map((s) => s.toLowerCase());
-        if (needles.some((n) => n.length >= 2 && blob.includes(n))) {
-          next[family.id] = next[family.id] ?? {
-            polarity: "include",
-            min: "",
-            max: "",
-          };
-        }
+        if (!needles.some((n) => n.length >= 2 && blob.includes(n))) continue;
+        if (next[family.id]) continue;
+        if (pickMode === "target" && targetBlockTitle(family, next, families, t)) continue;
+        next[family.id] = {
+          polarity: "include",
+          min: "",
+          max: "",
+          ...(pickMode === "target" ? { minTierIndex: null, desecrationLock: false } : {}),
+        };
       }
       return next;
     });
     setImportOpen(false);
   }
+
+  function setTargetChecked(family: AffixFamily, on: boolean) {
+    setPicks((prev) => {
+      if (!on) {
+        if (!prev[family.id]) return prev;
+        const copy = { ...prev };
+        delete copy[family.id];
+        return copy;
+      }
+      const cur = prev[family.id];
+      return {
+        ...prev,
+        [family.id]: {
+          polarity: "include",
+          min: cur?.min ?? "",
+          max: cur?.max ?? "",
+          minTierIndex: cur?.minTierIndex ?? null,
+          desecrationLock: cur?.desecrationLock ?? false,
+        },
+      };
+    });
+  }
+
+  function toggleDesecrationLock(family: AffixFamily) {
+    setPicks((prev) => {
+      const turningOff = Boolean(prev[family.id]?.desecrationLock);
+      const next: Record<string, PickState> = {};
+      for (const [id, pick] of Object.entries(prev)) {
+        next[id] = pick.desecrationLock ? { ...pick, desecrationLock: false } : pick;
+      }
+      if (turningOff) return next;
+      const cur = next[family.id];
+      next[family.id] = {
+        polarity: "include",
+        min: cur?.min ?? "",
+        max: cur?.max ?? "",
+        minTierIndex: cur?.minTierIndex ?? null,
+        desecrationLock: true,
+      };
+      return next;
+    });
+  }
+
+  function setTargetTier(family: AffixFamily, index: number | null) {
+    setPicks((prev) => {
+      const cur = prev[family.id];
+      return {
+        ...prev,
+        [family.id]: {
+          polarity: "include",
+          min: tierFloor(family, index),
+          max: "",
+          minTierIndex: index,
+          desecrationLock: cur?.desecrationLock ?? false,
+        },
+      };
+    });
+  }
+
+  const blockTitles = useMemo(() => {
+    if (pickMode !== "target") return {} as Record<string, string>;
+    const titles: Record<string, string> = {};
+    for (const family of families) {
+      const title = targetBlockTitle(family, picks, families, t);
+      if (title) titles[family.id] = title;
+    }
+    return titles;
+  }, [pickMode, families, picks, t]);
 
   function changePool(id: string) {
     onPoolChange?.(id);
@@ -388,7 +503,11 @@ export function ChroniclesModBuilder({
       <p className="mb-3 text-xs text-muted">
         {t.listed(listed.filter((r) => r.matched).length)}
         {showHideToggle && showHidden ? t.listedHidden(listed.filter((r) => !r.matched).length) : ""}
-        {t.regexCounts(includeN, orN, excludeN)}
+        {pickMode === "target"
+          ? locale === "en"
+            ? `. ${t.craftingSelectedCount(selected.length)}`
+            : `。${t.craftingSelectedCount(selected.length)}`
+          : t.regexCounts(includeN, orN, excludeN)}
         {showTags ? t.tagHelp : ""}
       </p>
 
@@ -400,7 +519,12 @@ export function ChroniclesModBuilder({
           expanded={expanded}
           showFamilyNames={showFamilyNames}
           showAffixTags={showAffixTags}
+          pickMode={pickMode}
+          blockTitles={blockTitles}
           onPolarity={setPickPolarity}
+          onToggleTarget={setTargetChecked}
+          onToggleLock={toggleDesecrationLock}
+          onTier={setTargetTier}
           onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
           onBound={(id, key, value) =>
             setPicks((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], [key]: value } } : prev))
@@ -413,7 +537,12 @@ export function ChroniclesModBuilder({
           expanded={expanded}
           showFamilyNames={showFamilyNames}
           showAffixTags={showAffixTags}
+          pickMode={pickMode}
+          blockTitles={blockTitles}
           onPolarity={setPickPolarity}
+          onToggleTarget={setTargetChecked}
+          onToggleLock={toggleDesecrationLock}
+          onTier={setTargetTier}
           onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
           onBound={(id, key, value) =>
             setPicks((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], [key]: value } } : prev))
@@ -476,7 +605,11 @@ export function ChroniclesModBuilder({
             </button>
           </div>
           <div className="overflow-x-auto rounded-sm border border-line bg-ink px-3 py-2 font-mono text-sm text-gold">
-            {result.pattern || <span className="text-muted">{t.regexPlaceholder}</span>}
+            {result.pattern || (
+              <span className="text-muted">
+                {pickMode === "target" ? t.craftingRegexPlaceholder : t.regexPlaceholder}
+              </span>
+            )}
           </div>
           {(result.warnings.length > 0 || copyError) && (
             <p className="text-xs text-exclude">
@@ -543,7 +676,12 @@ function AffixColumn({
   expanded,
   showFamilyNames,
   showAffixTags,
+  pickMode,
+  blockTitles,
   onPolarity,
+  onToggleTarget,
+  onToggleLock,
+  onTier,
   onExpand,
   onBound,
 }: {
@@ -553,7 +691,12 @@ function AffixColumn({
   expanded: Record<string, boolean>;
   showFamilyNames: boolean;
   showAffixTags: boolean;
+  pickMode: ModPickMode;
+  blockTitles: Record<string, string>;
   onPolarity: (family: AffixFamily, next: Polarity) => void;
+  onToggleTarget: (family: AffixFamily, on: boolean) => void;
+  onToggleLock: (family: AffixFamily) => void;
+  onTier: (family: AffixFamily, index: number | null) => void;
   onExpand: (id: string) => void;
   onBound: (id: string, key: "min" | "max", value: string) => void;
 }) {
@@ -577,7 +720,12 @@ function AffixColumn({
               open={Boolean(expanded[family.id])}
               showFamilyNames={showFamilyNames}
               showAffixTags={showAffixTags}
+              pickMode={pickMode}
+              blockedTitle={blockTitles[family.id]}
               onPolarity={(next) => onPolarity(family, next)}
+              onToggleTarget={(on) => onToggleTarget(family, on)}
+              onToggleLock={() => onToggleLock(family)}
+              onTier={(index) => onTier(family, index)}
               onExpand={() => onExpand(family.id)}
               onBound={(key, value) => onBound(family.id, key, value)}
             />
@@ -631,7 +779,12 @@ function AffixRow({
   open,
   showFamilyNames,
   showAffixTags,
+  pickMode,
+  blockedTitle,
   onPolarity,
+  onToggleTarget,
+  onToggleLock,
+  onTier,
   onExpand,
   onBound,
 }: {
@@ -641,23 +794,35 @@ function AffixRow({
   open: boolean;
   showFamilyNames: boolean;
   showAffixTags: boolean;
+  pickMode: ModPickMode;
+  blockedTitle?: string;
   onPolarity: (next: Polarity) => void;
+  onToggleTarget: (on: boolean) => void;
+  onToggleLock: () => void;
+  onTier: (index: number | null) => void;
   onExpand: () => void;
   onBound: (key: "min" | "max", value: string) => void;
 }) {
   const { locale, t } = useLocale();
+  const targetMode = pickMode === "target";
+  const blocked = Boolean(blockedTitle);
   const showBounds =
+    !targetMode &&
     Boolean(pick) &&
     family.kind === "numeric" &&
     (pick?.polarity === "include" || pick?.polarity === "or");
   const primary = effectText(family, locale);
   const secondary = effectTextSecondary(family, locale);
   const tags = affixTagLabels(family, locale);
+  const tierChoices = targetMode ? craftTierChoices(family) : [];
+  const selectedTier = pick?.minTierIndex ?? null;
 
   return (
     <li
-      className={`affix-row border-b border-line last:border-b-0 ${dimmed ? "opacity-40" : ""}`}
+      className={`affix-row border-b border-line last:border-b-0 ${dimmed || blocked ? "opacity-40" : ""}`}
       data-pick={pick?.polarity ?? "off"}
+      data-blocked={blocked ? "true" : "false"}
+      title={blockedTitle}
     >
       <div className="flex items-start gap-2 px-2 py-2">
         <div className="min-w-0 flex-1">
@@ -684,8 +849,63 @@ function AffixRow({
               ? `${familyLabelSecondary(family, locale)}${secondary ? ` · ${secondary}` : ""}`
               : secondary}
           </div>
+          {targetMode && tierChoices.length > 0 && (
+            <label className="mt-1 flex items-center gap-2 text-xs text-muted">
+              {t.craftingMinTier}
+              <select
+                aria-label={`${t.craftingMinTier} ${primary}`}
+                disabled={blocked}
+                value={selectedTier == null ? "" : String(selectedTier)}
+                onChange={(event) => {
+                  const raw = event.target.value;
+                  onTier(raw === "" ? null : Number(raw));
+                }}
+                className="min-w-0 flex-1 rounded-sm border border-line bg-ink px-1.5 py-1 text-paper outline-none focus:border-gold disabled:cursor-not-allowed"
+              >
+                <option value="">{t.craftingMinTierAny}</option>
+                {tierChoices.map((choice) => (
+                  <option key={choice.index} value={String(choice.index)}>
+                    {t.craftingTierOption(
+                      choice.rank,
+                      choice.level,
+                      tierEffect(family.tiers[choice.index], locale),
+                    )}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
-        <PolarityToggle value={pick?.polarity ?? "off"} onChange={onPolarity} />
+        {targetMode ? (
+          <div className="flex shrink-0 items-center gap-1">
+            <input
+              type="checkbox"
+              className="mt-0.5 disabled:cursor-not-allowed"
+              checked={isChosenTarget(pick)}
+              disabled={blocked}
+              title={blockedTitle}
+              aria-label={`${t.craftingTargetToggle} ${primary}`}
+              onChange={(event) => onToggleTarget(event.target.checked)}
+            />
+            <button
+              type="button"
+              disabled={blocked}
+              aria-pressed={Boolean(pick?.desecrationLock)}
+              aria-label={`${t.craftingDesecrationLock} ${primary}`}
+              title={blockedTitle || t.craftingDesecrationLock}
+              onClick={onToggleLock}
+              className={`rounded-sm border px-1.5 py-0.5 text-xs disabled:cursor-not-allowed ${
+                pick?.desecrationLock
+                  ? "border-gold bg-gold text-ink"
+                  : "border-line bg-ink text-muted"
+              }`}
+            >
+              {t.craftingLockMark}
+            </button>
+          </div>
+        ) : (
+          <PolarityToggle value={pick?.polarity ?? "off"} onChange={onPolarity} />
+        )}
         <button
           type="button"
           onClick={onExpand}
@@ -721,16 +941,41 @@ function AffixRow({
       )}
       {open && (
         <ul className="border-t border-line bg-ink/40 px-3 py-2 text-xs text-muted">
-          {family.tiers.map((tier) => (
-            <li key={`${tier.level}-${tier.nameZh}`} className="flex flex-wrap gap-x-2 py-0.5">
-              <span className="text-gold-dim">iLvL {tier.level}</span>
-              {showFamilyNames && <span className="text-paper">{tierName(tier, locale)}</span>}
-              <span>{tierEffect(tier, locale)}</span>
-              {showFamilyNames && locale !== "en" && (
-                <span className="text-muted">{tier.nameEn}</span>
-              )}
-            </li>
-          ))}
+          {family.tiers.map((tier, index) => {
+            const choice = tierChoices.find((row) => row.index === index);
+            const label = choice
+              ? t.craftingTierOption(choice.rank, tier.level, tierEffect(tier, locale))
+              : tierEffect(tier, locale);
+            return (
+              <li key={`${tier.level}-${tier.nameZh}`} className="flex flex-wrap items-center gap-x-2 py-0.5">
+                {targetMode ? (
+                  <button
+                    type="button"
+                    disabled={blocked}
+                    aria-pressed={selectedTier === index}
+                    onClick={() => onTier(selectedTier === index ? null : index)}
+                    className={`rounded-sm border px-1.5 py-0.5 text-left disabled:cursor-not-allowed ${
+                      selectedTier === index
+                        ? "border-gold bg-gold/15 text-gold"
+                        : "border-line text-muted"
+                    }`}
+                  >
+                    <span className="text-gold-dim">iLvL {tier.level}</span>
+                    <span className="ml-2">{label}</span>
+                  </button>
+                ) : (
+                  <>
+                    <span className="text-gold-dim">iLvL {tier.level}</span>
+                    {showFamilyNames && <span className="text-paper">{tierName(tier, locale)}</span>}
+                    <span>{tierEffect(tier, locale)}</span>
+                    {showFamilyNames && locale !== "en" && (
+                      <span className="text-muted">{tier.nameEn}</span>
+                    )}
+                  </>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </li>

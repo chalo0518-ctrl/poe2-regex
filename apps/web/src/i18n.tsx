@@ -70,15 +70,28 @@ type Messages = {
   craftingSuffixCount: string;
   craftingGoodFracture: string;
   craftingGarbageFracture: string;
-  craftingDesecrated: string;
-  craftingDesecratedOnRoute: string;
-  craftingDesecratedMiss: string;
+  craftingDesecrationLock: string;
+  craftingDesecrationLockNone: string;
+  craftingDesecrationLockOther: string;
+  craftingDesecrationLockHint: string;
+  craftingLockMark: string;
+  craftingConflict: string;
+  craftingSideFullPrefix: string;
+  craftingSideFullSuffix: string;
   craftingKeeper: string;
   craftingKeeperHint: string;
   craftingBudget: string;
   craftingBudgetOn: string;
   craftingOwned: string;
   craftingHighTier: string;
+  craftingTierMet: string;
+  craftingTargetToggle: string;
+  craftingMinTier: string;
+  craftingMinTierAny: string;
+  craftingTierOption: (rank: number, level: number, effect: string) => string;
+  craftingSearch: string;
+  craftingSelectedCount: (count: number) => string;
+  craftingRegexPlaceholder: string;
   craftingNoOwned: string;
   craftingReasons: string;
   craftingWarnings: string;
@@ -184,11 +197,12 @@ const zhHant: Messages = {
   endgameTablets: "碑牌",
   crafting: "做裝",
   craftingSlotHeading: "步驟 A · 裝備部位",
-  craftingSlotHint: "胸甲、頭盔、手套、鞋子、戒指、項鍊、腰帶、單手錘、盾牌。只選部位，不拆力量／敏捷／智慧。",
+  craftingSlotHint:
+    "胸甲、頭盔、手套、鞋子、戒指、項鍊、腰帶、盾牌，以及武器種類（爪、匕首、單手劍、單手斧、單手錘、權杖、法杖、弓、十字弓、長杖、雙手劍、雙手斧、雙手錘、長矛、細杖、鏈錘、陷阱）。只選種類，不拆力量／敏捷／智慧。",
   craftingConstraintsLabel: "目前上限",
   craftingTargetsTitle: "目標詞綴",
   craftingTargetsDesc:
-    "步驟 B。右側「是」為必做目標，「或」為可接受目標，「否」只寫進倉庫正則、不算做裝目標。家族名稱已隱藏。下方正則可複製，用來在倉庫找這個基底上的目標詞綴。",
+    "步驟 B。勾選要做的目標，需要時選階級。同類詞條不能一起勾。破潰石在詞條列標，一次一條。家族名稱不顯示。下方倉庫正則只是附帶，方便找這個基底。",
   craftingRegexCaption: "倉庫正則（刷這個基底／這些目標）",
   craftingTreeHeading: "步驟 C · 決策樹",
   craftingTreeHint: "點開一步看要做什麼、何時跳過、以及做了就回不了頭的地方。判定會標出相關的那一步。",
@@ -198,11 +212,12 @@ const zhHant: Messages = {
   craftingSectionIrreversible: "回不了頭",
   craftingSectionWarning: "互斥與停手",
   craftingNowHeading: "步驟 D · 我現在的裝備",
-  craftingNowHint: "勾這件已經有的目標，以及破裂、工藝槽、褻瀆。判定只看這些，不模擬整條工藝。",
+  craftingNowHint:
+    "勾這件已經有的目標。破潰石鎖在詞條列上標，這裡會跟著顯示，再加上破裂與工藝槽。判定只看這些，不模擬整條工藝。",
   craftingItemLevel: "物品等級",
-  craftingItemLevelHint: "空白＝先不核對最高階",
+  craftingItemLevelHint: "空白＝先不核對所選階級",
   craftingSide: "目標側",
-  craftingSideAuto: "自動（依「是」較多的一側）",
+  craftingSideAuto: "自動（目標較多的一側）",
   craftingSidePrefix: "前綴",
   craftingSideSuffix: "後綴",
   craftingResolvedSide: (label) => `目前目標側：${label}`,
@@ -210,16 +225,30 @@ const zhHant: Messages = {
   craftingSuffixCount: "後綴數量",
   craftingGoodFracture: "目標側有 1 條要留下的破裂",
   craftingGarbageFracture: "破裂鎖在垃圾詞綴上",
-  craftingDesecrated: "已有褻瀆詞綴",
-  craftingDesecratedOnRoute: "這條褻瀆是目標",
-  craftingDesecratedMiss: "這條褻瀆是失敗或填充",
+  craftingDesecrationLock: "破潰石鎖定的詞條",
+  craftingDesecrationLockNone: "沒有破潰石鎖定",
+  craftingDesecrationLockOther: "目標以外的詞條",
+  craftingDesecrationLockHint:
+    "在詞條列按「破潰石」標出鎖住的那一條。它會算成已選目標，並留在這件上。",
+  craftingLockMark: "破潰石",
+  craftingConflict: "與已選詞條同類，不能同時存在",
+  craftingSideFullPrefix: "前綴已滿 3 條",
+  craftingSideFullSuffix: "後綴已滿 3 條",
   craftingKeeper: "工藝槽已是要永久留下的詞綴",
   craftingKeeperHint: "精髓、合金與部分符鍛共用這 1 格。勾了就不能再拿精髓或合金去頂掉褻瀆。",
   craftingBudget: "預算緊（只作提醒，不改判定）",
   craftingBudgetOn: "你勾了預算緊。判定沒有因此改變。",
   craftingOwned: "已有",
   craftingHighTier: "高階",
-  craftingNoOwned: "尚未用「是」或「或」選目標。結構仍會判定；物品等級要等有「是」目標才比最高階。",
+  craftingTierMet: "已達所選階級",
+  craftingTargetToggle: "目標",
+  craftingMinTier: "最低階級",
+  craftingMinTierAny: "不限階級",
+  craftingTierOption: (rank, level, effect) => `T${rank} · iLvL ${level} · ${effect}`,
+  craftingSearch: "搜尋詞綴",
+  craftingSelectedCount: (count) => `已選 ${count} 個目標`,
+  craftingRegexPlaceholder: "勾選目標後，倉庫正則會顯示在這裡",
+  craftingNoOwned: "尚未勾選目標。結構仍會判定；指定階級後，物品等級才會拿來比對。",
   craftingReasons: "理由",
   craftingWarnings: "附帶限制",
   emptyLater: "內容稍後填入",
@@ -333,11 +362,11 @@ const en: Messages = {
   crafting: "Crafting",
   craftingSlotHeading: "Step A · Slot",
   craftingSlotHint:
-    "Body, helmet, gloves, boots, ring, amulet, belt, one-handed mace, shield. Major slot only — no str/dex/int split.",
+    "Body, helmet, gloves, boots, ring, amulet, belt, shield, and weapon classes (claws, daggers, one-handed swords, one-handed axes, one-handed maces, sceptres, wands, bows, crossbows, staves, two-handed swords, two-handed axes, two-handed maces, spears, quarterstaves, flails, traps). One class each — no str/dex/int split.",
   craftingConstraintsLabel: "Current caps",
   craftingTargetsTitle: "Target affixes",
   craftingTargetsDesc:
-    "Step B. Yes is required, Or is acceptable, No only enters the stash regex and is not a craft target. Family names stay hidden. Copy the regex below to shop this base for those targets.",
+    "Step B. Check the affixes you are crafting toward, and pick a tier when you need one. Affixes in the same mod group cannot be checked together. Mark the desecration lock on the row; only one at a time. Family names stay hidden. The stash regex below is secondary, for finding this base.",
   craftingRegexCaption: "Stash regex (shop this base / these targets)",
   craftingTreeHeading: "Step C · Decision tree",
   craftingTreeHint: "Open a step for what to do, when to skip, and what you cannot undo. The verdict marks the related step.",
@@ -347,11 +376,12 @@ const en: Messages = {
   craftingSectionIrreversible: "Irreversible",
   craftingSectionWarning: "Exclusion / stop",
   craftingNowHeading: "Step D · Item in hand",
-  craftingNowHint: "Check the target mods already on this item, plus fracture, crafted slot, and desecration. This is a checklist, not a full craft simulator.",
+  craftingNowHint:
+    "Check the target mods already on this item. The desecration lock is marked on the affix row and echoed here, along with fracture and the crafted slot. This is a checklist, not a full craft simulator.",
   craftingItemLevel: "Item level",
-  craftingItemLevelHint: "Empty = do not check top tiers yet",
+  craftingItemLevelHint: "Empty = do not check the chosen tier yet",
   craftingSide: "Target side",
-  craftingSideAuto: "Auto (side with more Yes targets)",
+  craftingSideAuto: "Auto (side with more targets)",
   craftingSidePrefix: "Prefixes",
   craftingSideSuffix: "Suffixes",
   craftingResolvedSide: (label) => `Target side now: ${label}`,
@@ -359,9 +389,15 @@ const en: Messages = {
   craftingSuffixCount: "Suffix count",
   craftingGoodFracture: "Target side has 1 fracture worth keeping",
   craftingGarbageFracture: "Fracture is locked on a garbage mod",
-  craftingDesecrated: "Has a desecrated modifier",
-  craftingDesecratedOnRoute: "This desecration is a target",
-  craftingDesecratedMiss: "This desecration is a miss or filler",
+  craftingDesecrationLock: "Affix locked by the desecration stone",
+  craftingDesecrationLockNone: "No desecration lock",
+  craftingDesecrationLockOther: "A mod that is not a target",
+  craftingDesecrationLockHint:
+    "Press Desecration on the affix row that the stone locked. That row becomes a selected target and stays on the item.",
+  craftingLockMark: "Desecration",
+  craftingConflict: "Same mod group as a selected affix; they cannot both exist",
+  craftingSideFullPrefix: "Already 3 prefixes",
+  craftingSideFullSuffix: "Already 3 suffixes",
   craftingKeeper: "Crafted slot is already a keeper",
   craftingKeeperHint:
     "Essences, Alloys, and some runeforge crafts share this one slot. Checked means you cannot overwrite a desecration with Essence or Alloy.",
@@ -369,8 +405,16 @@ const en: Messages = {
   craftingBudgetOn: "Tight budget is checked. The verdict did not change because of it.",
   craftingOwned: "Have it",
   craftingHighTier: "High tier",
+  craftingTierMet: "Meets the chosen tier",
+  craftingTargetToggle: "Target",
+  craftingMinTier: "Minimum tier",
+  craftingMinTierAny: "Any tier",
+  craftingTierOption: (rank, level, effect) => `T${rank} · iLvL ${level} · ${effect}`,
+  craftingSearch: "Search affixes",
+  craftingSelectedCount: (count) => `${count} targets`,
+  craftingRegexPlaceholder: "Check targets and the stash regex shows up here",
   craftingNoOwned:
-    "No Yes or Or targets yet. Structure can still be judged; item level is compared only after a Yes target exists.",
+    "No targets checked yet. Structure can still be judged. Item level is compared only after a tier is set.",
   craftingReasons: "Reasons",
   craftingWarnings: "Also note",
   emptyLater: "Coming later",

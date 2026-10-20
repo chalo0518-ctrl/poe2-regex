@@ -26,8 +26,10 @@ export type {
   DataMeta,
   EarlyGearCatalog,
   EarlyGearCategoryId,
+  WeaponCategoryId,
   EarlyGearCategoryMeta,
   EarlyGearFamily,
+  CraftSlotId,
   EarlyGearSlotId,
   HarvestTag,
   MatchLang,
@@ -112,6 +114,7 @@ export type {
 } from "./waystones.ts";
 
 export {
+  affixModGroup,
   earlyGearCatalog,
   earlyGearFamiliesFor,
   earlyGearSlotMeta,
@@ -124,6 +127,17 @@ export {
 export type { EarlyGearSlot } from "./earlyGear.ts";
 
 export {
+  craftingFamiliesFor,
+  craftingSlotMeta,
+  craftingSlots,
+  craftingSourcePath,
+  isCraftSlotId,
+  isWeaponCategoryId,
+  weaponCatalog,
+} from "./weapons.ts";
+export type { CraftSlot } from "./weapons.ts";
+
+export {
   CRAFTING_CONSTRAINTS,
   CRAFTING_RULESET,
   CRAFTING_TREE,
@@ -132,6 +146,7 @@ export {
   CRAFT_WARNING_TEXT,
   craftLocaleText,
   craftVerdictHeadline,
+  craftTierChoices,
   decideCraft,
   resolveTargetSide,
   suggestedCraftNode,
@@ -142,6 +157,7 @@ export type {
   CraftDecision,
   CraftReasonId,
   CraftTarget,
+  CraftTierChoice,
   CraftTreeNode,
   CraftTreeNodeId,
   CraftVerdict,

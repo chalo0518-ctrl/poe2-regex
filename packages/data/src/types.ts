@@ -32,6 +32,27 @@ export type EarlyGearCategoryId =
 
 export type EarlyGearSlotId = EarlyGearCategoryId | "shield";
 
+/** Major weapon classes. One-handed maces stay on EarlyGearCategoryId. */
+export type WeaponCategoryId =
+  | "claw"
+  | "dagger"
+  | "sword1h"
+  | "axe1h"
+  | "sceptre"
+  | "wand"
+  | "bow"
+  | "crossbow"
+  | "staff"
+  | "sword2h"
+  | "axe2h"
+  | "mace2h"
+  | "spear"
+  | "quarterstaff"
+  | "flail"
+  | "trap";
+
+export type CraftSlotId = EarlyGearSlotId | WeaponCategoryId;
+
 export type UiLocale = "zh-Hant" | "en";
 
 export type MatchLang = "zh-Hant" | "en";

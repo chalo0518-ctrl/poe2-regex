@@ -50,8 +50,21 @@ export type CraftTreeNodeId =
 export type CraftTarget = {
   id: string;
   generation: ModSide;
-  /** Minimum item level of this family's highest tier. */
-  t1Level: number;
+  /**
+   * Item level required to roll the chosen tier.
+   * Null means any tier: skip the item-level check for this target.
+   */
+  tierLevel: number | null;
+};
+
+export type CraftTierChoice = {
+  /** Index into `family.tiers` (stored level-ascending). */
+  index: number;
+  /** 1 = best tier (highest item level). */
+  rank: number;
+  level: number;
+  statMin?: number;
+  statMax?: number;
 };
 
 export type OwnedTarget = {
@@ -61,22 +74,28 @@ export type OwnedTarget = {
 };
 
 export type DecideCraftInput = {
-  /** Required targets (是). Missing one can force a new base or a downgrade. */
+  /** Selected craft targets. Every one is treated the same. */
   includes: CraftTarget[];
-  /** Optional targets (或). They count when present; missing them does not brick the base. */
-  ors?: CraftTarget[];
   /** null when the player has not entered an item level. */
   itemLevel: number | null;
   owned?: OwnedTarget[];
   prefixCount: number;
   suffixCount: number;
-  /** "auto" follows whichever side has more 是 targets (後綴 when tied). */
+  /** "auto" follows whichever side has more targets (後綴 when tied). */
   targetSide?: ModSide | "auto";
   garbageFracture?: boolean;
   hasGoodFractureOnTargetSide?: boolean;
   hasDesecrated?: boolean;
-  /** The desecrated mod is one you intend to keep. */
+  /** The desecrated mod is one you intend to keep. Ignored when `desecrationLock` is set. */
   desecratedOnRoute?: boolean;
+  /**
+   * Affix locked by the desecration stone.
+   * - `undefined`: use `hasDesecrated` / `desecratedOnRoute`
+   * - `null` or `""`: no desecration lock
+   * - `"other"`: locked mod is not a selected target
+   * - a target id: that affix is the locked one (it counts as on the item)
+   */
+  desecrationLock?: string | null;
   /**
    * Crafted slot is already a keeper (Essence, Alloy, or runeforge craft
    * you will not overwrite). Essence and Alloy share this single slot.
@@ -120,23 +139,59 @@ export function topTierLevel(family: { maxLevel?: number; tiers?: { level: numbe
   return Math.max(family.maxLevel ?? 0, fromTiers);
 }
 
+/** Best tier first. Rank 1 is the highest item level in the family. */
+export function craftTierChoices(
+  family: { tiers: { level: number; statMin?: number; statMax?: number }[] },
+): CraftTierChoice[] {
+  return family.tiers
+    .map((tier, index) => ({
+      index,
+      level: tier.level,
+      statMin: tier.statMin,
+      statMax: tier.statMax,
+    }))
+    .sort((a, b) => b.level - a.level || b.index - a.index)
+    .map((row, order) => ({ ...row, rank: order + 1 }));
+}
+
 function clampSide(count: number): number {
   if (!Number.isFinite(count) || count <= 0) return 0;
   return Math.min(SIDE_CAP, Math.floor(count));
 }
 
-export function resolveTargetSide(input: Pick<DecideCraftInput, "includes" | "ors" | "targetSide">): ModSide {
+export function resolveTargetSide(input: Pick<DecideCraftInput, "includes" | "targetSide">): ModSide {
   if (input.targetSide === "prefix" || input.targetSide === "suffix") return input.targetSide;
-  const count = (generation: ModSide, rows: CraftTarget[]) =>
-    rows.filter((row) => row.generation === generation).length;
-  const includes = input.includes;
-  const prefixIncludes = count("prefix", includes);
-  const suffixIncludes = count("suffix", includes);
-  if (prefixIncludes > suffixIncludes) return "prefix";
-  if (suffixIncludes > prefixIncludes) return "suffix";
-  const ors = input.ors ?? [];
-  if (count("prefix", ors) > count("suffix", ors)) return "prefix";
+  const count = (generation: ModSide) =>
+    input.includes.filter((row) => row.generation === generation).length;
+  if (count("prefix") > count("suffix")) return "prefix";
   return "suffix";
+}
+
+function resolveDesecration(
+  input: DecideCraftInput,
+  includes: CraftTarget[],
+): { hasDesecrated: boolean; desecratedOnRoute: boolean; lockedTargetId: string | null } {
+  if (input.desecrationLock === undefined) {
+    return {
+      hasDesecrated: input.hasDesecrated === true,
+      desecratedOnRoute: input.desecratedOnRoute === true,
+      lockedTargetId: null,
+    };
+  }
+  const lock = input.desecrationLock;
+  if (lock == null || lock === "" || lock === "other") {
+    return {
+      hasDesecrated: lock === "other",
+      desecratedOnRoute: false,
+      lockedTargetId: null,
+    };
+  }
+  const onTarget = includes.some((row) => row.id === lock);
+  return {
+    hasDesecrated: true,
+    desecratedOnRoute: onTarget,
+    lockedTargetId: onTarget ? lock : null,
+  };
 }
 
 function pack(
@@ -153,7 +208,7 @@ function pack(
  * Continue / new base / downgrade.
  *
  * Priority:
- * 1. Required top tier cannot roll on this item level → rebase.
+ * 1. A chosen tier cannot roll on this item level → rebase.
  * 2. Fracture locked on a non-target → rebase.
  * 3. Bad desecration + target side exactly 2 + good fracture + crafted slot free
  *    → continue by overwriting with Essence/Alloy, then desecrate again (not Omen of Light).
@@ -173,9 +228,18 @@ export function decideCraft(input: DecideCraftInput): CraftDecision {
   const sideCount = clampSide(targetSide === "prefix" ? input.prefixCount : input.suffixCount);
   const otherCount = clampSide(targetSide === "prefix" ? input.suffixCount : input.prefixCount);
   const includes = input.includes;
-  const ors = input.ors ?? [];
-  const owned = input.owned ?? [];
-  const targetIds = new Set([...includes, ...ors].map((row) => row.id));
+  const desecration = resolveDesecration(input, includes);
+  const owned = [...(input.owned ?? [])];
+  if (
+    desecration.lockedTargetId &&
+    !owned.some((row) => row.id === desecration.lockedTargetId)
+  ) {
+    const locked = includes.find((row) => row.id === desecration.lockedTargetId);
+    if (locked) {
+      owned.push({ id: locked.id, generation: locked.generation, highTier: true });
+    }
+  }
+  const targetIds = new Set(includes.map((row) => row.id));
   const ownedTargets = owned.filter((row) => targetIds.has(row.id));
   const highTargets = ownedTargets.filter((row) => row.highTier);
   const highOnSide = highTargets.filter((row) => row.generation === targetSide).length;
@@ -183,15 +247,19 @@ export function decideCraft(input: DecideCraftInput): CraftDecision {
 
   const garbageFracture = input.garbageFracture === true;
   const hasGoodFracture = input.hasGoodFractureOnTargetSide === true && !garbageFracture;
-  const hasDesecrated = input.hasDesecrated === true;
-  const badDesecration = hasDesecrated && input.desecratedOnRoute !== true;
+  const hasDesecrated = desecration.hasDesecrated;
+  const badDesecration = hasDesecrated && !desecration.desecratedOnRoute;
   const keeper = input.craftedSlotLockedToKeeper === true;
   const loopShape = sideCount === 2 && hasGoodFracture;
 
   const warnings: CraftWarningId[] = ["single-crafted-slot", "single-desecrated", "budget-soft"];
-  if (input.itemLevel == null && includes.length > 0) warnings.push("ilvl-unknown");
+  const tierChecks = includes.filter((row) => row.tierLevel != null);
+  if (input.itemLevel == null && tierChecks.length > 0) warnings.push("ilvl-unknown");
 
-  if (input.itemLevel != null && includes.some((row) => input.itemLevel! < row.t1Level)) {
+  if (
+    input.itemLevel != null &&
+    tierChecks.some((row) => input.itemLevel! < (row.tierLevel as number))
+  ) {
     return pack("rebase", ["base-cannot-roll-t1"], "none", warnings, targetSide);
   }
 
@@ -229,7 +297,7 @@ export function decideCraft(input: DecideCraftInput): CraftDecision {
   }
 
   if (loopShape && !keeper) {
-    if (hasDesecrated && input.desecratedOnRoute === true) {
+    if (hasDesecrated && desecration.desecratedOnRoute) {
       return pack("continue", ["good-progress-cleanable"], "none", warnings, targetSide);
     }
     return pack("continue", ["desecration-overwrite-loop"], "essence-alloy-overwrite", warnings, targetSide);
@@ -338,8 +406,8 @@ export function craftVerdictHeadline(decision: CraftDecision, locale: UiLocale):
 
 export const CRAFT_REASON_TEXT: Record<CraftReasonId, Localized> = {
   "base-cannot-roll-t1": {
-    zhHant: "有「是」目標的最高階高過這件的物品等級，基底骰不到。換底。",
-    en: "A required target’s top tier is above this item level, so the base cannot roll it. Switch bases.",
+    zhHant: "有目標的所選階級高過這件的物品等級，基底骰不到。換底。",
+    en: "A chosen target tier is above this item level, so the base cannot roll it. Switch bases.",
   },
   "target-side-full-no-fracture": {
     zhHant: "目標側已經 3 條，而且沒有要留下的破裂。傾向換底。",
@@ -404,8 +472,8 @@ export const CRAFT_WARNING_TEXT: Record<CraftWarningId, Localized> = {
     en: "Budget is only a reminder. This page does not estimate currency prices.",
   },
   "ilvl-unknown": {
-    zhHant: "還沒填物品等級，無法判斷最高階能不能骰出。",
-    en: "Item level is empty, so top-tier availability is not checked.",
+    zhHant: "還沒填物品等級，無法判斷所選階級能不能骰出。",
+    en: "Item level is empty, so the chosen tier cannot be checked.",
   },
 };
 
@@ -434,20 +502,20 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
     id: "base",
     title: { zhHant: "選底", en: "Base" },
     summary: {
-      zhHant: "先確認基底與物品等級骰得到目標最高階。",
-      en: "Confirm the base and item level can roll each required top tier.",
+      zhHant: "先確認基底與物品等級骰得到所選階級。",
+      en: "Confirm the base and item level can roll each chosen tier.",
     },
     action: {
-      zhHant: "選定部位後，只把詞綴池裡真的會出的詞綴標成「是」。拿物品等級去對每一條「是」目標的最高階；低於門檻就骰不到那一階。",
-      en: "After you pick a slot, mark only mods that pool can actually roll as required. Compare item level with each required target’s top tier; below that level the tier cannot roll.",
+      zhHant: "選定部位後，勾出這個詞綴池真的會出的目標。有指定階級時，拿物品等級去對那一階；低於門檻就骰不到。",
+      en: "After you pick a slot, check the mods this pool can actually roll. When a tier is set, compare item level with that tier; below it, the tier cannot roll.",
     },
     skip: {
-      zhHant: "若只有「或」、沒有必做的「是」，先不要因為物品等級換底。",
-      en: "If you only marked optional targets, do not switch bases on item level alone.",
+      zhHant: "沒有指定階級時，不要只因物品等級就換底。",
+      en: "When no tier is set, do not switch bases on item level alone.",
     },
     irreversible: {
-      zhHant: "基底與物品等級事後改不了。骰不到最高階就是換底，不是後面用通貨補。",
-      en: "Base and item level cannot be fixed later. If the top tier cannot roll, switch bases — currency will not add it.",
+      zhHant: "基底與物品等級事後改不了。骰不到所選階級就是換底，不是後面用通貨補。",
+      en: "Base and item level cannot be fixed later. If the chosen tier cannot roll, switch bases — currency will not add it.",
     },
     warning: {
       zhHant: "工藝詞綴與褻瀆詞綴各限 1 條，選底時就要決定這兩格留給誰。重組器不在主路線（僅標準聯盟）。",
@@ -561,8 +629,8 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
       en: "Quality, catalysts, then sockets. Vaal last.",
     },
     action: {
-      zhHant: "剩下的空位補到能接受的階，再上品質與催化劑，然後處理插槽。確認工藝槽與褻瀆槽都是你要的之後，才用瓦爾。",
-      en: "Fill any open slots you still accept, then quality and catalysts, then sockets. Vaal only after the crafted slot and the desecrated slot are the mods you want.",
+      zhHant: "剩下的空位補到你指定的階級，再上品質與催化劑，然後處理插槽。確認工藝槽與褻瀆槽都是你要的之後，才用瓦爾。",
+      en: "Fill any open slots to the tier you chose, then quality and catalysts, then sockets. Vaal only after the crafted slot and the desecrated slot are the mods you want.",
     },
     skip: {
       zhHant: "現有詞綴已經達到目標就可以停，不必為了填滿而把目標側補成 3 條。",

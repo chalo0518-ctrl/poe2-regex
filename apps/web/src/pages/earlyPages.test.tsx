@@ -139,6 +139,8 @@ describe("early gear category picker", () => {
     expect(screen.getByRole("option", { name: "腰帶" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "單手錘" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "盾牌" })).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "弓" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "爪" })).not.toBeInTheDocument();
     expect(screen.getAllByRole("option").map((el) => el.textContent)).toEqual([
       "胸甲",
       "頭盔",
