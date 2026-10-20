@@ -7,10 +7,10 @@ import EndgameLayout from "./EndgameLayout.tsx";
 import CraftingPage from "./CraftingPage.tsx";
 import { LocaleProvider } from "../i18n.tsx";
 
-function renderCrafting() {
+function renderCrafting(path = "/endgame/crafting") {
   return render(
     <LocaleProvider initialLocale="zh-Hant">
-      <MemoryRouter initialEntries={["/endgame/crafting"]}>
+      <MemoryRouter initialEntries={[path]}>
         <Routes>
           <Route path="endgame" element={<EndgameLayout />}>
             <Route path="crafting" element={<CraftingPage />} />
@@ -115,11 +115,14 @@ describe("crafting page", () => {
     await user.click(screen.getByRole("checkbox", { name: /預算緊/ }));
     expect(screen.getByText("換底")).toBeInTheDocument();
     expect(screen.getByText("你勾了預算緊。判定沒有因此改變。")).toBeInTheDocument();
+  }, 15_000);
 
-    await user.click(screen.getByRole("option", { name: "弓" }));
+  it("opens a weapon class on the same target rows", () => {
+    renderCrafting("/endgame/crafting?slot=bow");
+    expect(screen.getByRole("option", { name: "弓" })).toHaveAttribute("aria-selected", "true");
     const bow = craftingFamiliesFor("bow").find((family) => family.matchZh.includes("物理"));
     if (!bow) throw new Error("missing bow physical affix");
-    expect(screen.getByRole("checkbox", { name: `目標 ${bow.textZh}` })).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: `目標 ${bow.textZh}` })).toBeEnabled();
     expect(screen.queryByRole("button", { name: "是" })).not.toBeInTheDocument();
   });
 
