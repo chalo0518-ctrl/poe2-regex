@@ -155,12 +155,17 @@ describe("crafting page", () => {
     expect(screen.queryByText("步驟 A")).not.toBeInTheDocument();
     expect(screen.queryByText("步驟 D")).not.toBeInTheDocument();
     const treeHeading = document.getElementById("craft-tree-heading");
-    const targets = screen.getByRole("heading", { name: "目標詞綴" });
-    const item = screen.getByRole("heading", { name: "這件裝備" });
+    const aside = treeHeading?.closest("aside");
+    const left = aside?.previousElementSibling as HTMLElement | null;
     expect(document.querySelectorAll("[data-craft-diagram]")).toHaveLength(1);
-    expect(targets.compareDocumentPosition(treeHeading!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(item.compareDocumentPosition(treeHeading!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(treeHeading?.closest("section")?.querySelector("[data-craft-detail]")).toBeTruthy();
+    expect(aside?.querySelector("[data-craft-diagram]")).toHaveAttribute("data-orientation", "vertical");
+    expect(left?.querySelector('[aria-label="增幅"]')).toBeTruthy();
+    expect(left && within(left).getByRole("heading", { name: "目標詞綴" })).toBeTruthy();
+    expect(left && within(left).getByRole("heading", { name: "這件裝備" })).toBeTruthy();
+    expect(aside?.parentElement?.nextElementSibling).toBeNull();
+    const base = document.querySelector('[data-node="base"]') as HTMLElement;
+    const fill = document.querySelector('[data-node="fill"]') as HTMLElement;
+    expect(base.compareDocumentPosition(fill) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
     await user.click(screen.getByRole("button", { name: "加一孔" }));
     expect(screen.getByText("繼續（額外增幅槽，留下這件）")).toBeInTheDocument();
