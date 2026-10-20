@@ -8,6 +8,7 @@ import {
   type CraftTarget,
   type DecideCraftInput,
   type OwnedTarget,
+  craftTierChoices,
   decideCraft,
   craftVerdictHeadline,
   suggestedCraftNode,
@@ -63,7 +64,6 @@ const SIMPLIFIED = [
 function input(overrides: Partial<DecideCraftInput> = {}): DecideCraftInput {
   return {
     includes: [],
-    ors: [],
     itemLevel: 86,
     owned: [],
     prefixCount: 0,
@@ -79,12 +79,12 @@ function input(overrides: Partial<DecideCraftInput> = {}): DecideCraftInput {
   };
 }
 
-function suffix(id: string, t1Level = 80): CraftTarget {
-  return { id, generation: "suffix", t1Level };
+function suffix(id: string, tierLevel: number | null = 80): CraftTarget {
+  return { id, generation: "suffix", tierLevel };
 }
 
-function prefix(id: string, t1Level = 80): CraftTarget {
-  return { id, generation: "prefix", t1Level };
+function prefix(id: string, tierLevel: number | null = 80): CraftTarget {
+  return { id, generation: "prefix", tierLevel };
 }
 
 function owned(id: string, generation: "prefix" | "suffix", highTier = true): OwnedTarget {
@@ -151,6 +151,17 @@ describe("crafting ruleset", () => {
     expect(topTierLevel(life!)).toBe(Math.max(...life!.tiers.map((tier) => tier.level)));
     expect(topTierLevel(life!)).toBeGreaterThan(1);
   });
+
+  it("ranks family tiers best-first and keeps the source index", () => {
+    const life = earlyGearFamiliesFor("body").find((family) => family.family === "IncreasedLife");
+    expect(life).toBeTruthy();
+    const choices = craftTierChoices(life!);
+    expect(choices[0]?.rank).toBe(1);
+    expect(choices[0]?.level).toBe(topTierLevel(life!));
+    expect(choices[0]?.statMin).toBe(life!.tiers[choices[0]!.index]?.statMin);
+    expect(choices.at(-1)?.level).toBe(Math.min(...life!.tiers.map((tier) => tier.level)));
+    expect(choices.map((choice) => choice.index)).toContain(0);
+  });
 });
 
 describe("decideCraft", () => {
@@ -166,15 +177,41 @@ describe("decideCraft", () => {
     expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("換底");
   });
 
-  it("does not rebase an optional target that misses its top tier", () => {
+  it("skips the item-level check when a target has no chosen tier", () => {
     const decision = decideCraft(input({
-      includes: [suffix("life", 8)],
-      ors: [prefix("rare", 100)],
-      itemLevel: 20,
+      includes: [suffix("life", null), prefix("rare", null)],
+      itemLevel: 1,
     }));
     expect(decision.verdict).toBe("continue");
     expect(decision.reasons).toEqual(["fresh-base"]);
     expect(decision.warnings).not.toContain("ilvl-unknown");
+  });
+
+  it("treats a desecration lock on a target differently from a non-target lock", () => {
+    const onTarget = decideCraft(overwriteLoop({
+      desecrationLock: "life",
+      desecratedOnRoute: false,
+      owned: [],
+    }));
+    expect(onTarget.verdict).toBe("continue");
+    expect(onTarget.cleanup).toBe("none");
+    expect(onTarget.reasons).toEqual(["good-progress-cleanable"]);
+
+    const miss = decideCraft(overwriteLoop({
+      desecrationLock: "other",
+      desecratedOnRoute: true,
+    }));
+    expect(miss.verdict).toBe("continue");
+    expect(miss.cleanup).toBe("essence-alloy-overwrite");
+
+    const light = decideCraft(overwriteLoop({
+      desecrationLock: "other",
+      craftedSlotLockedToKeeper: true,
+      owned: [owned("life", "suffix")],
+    }));
+    expect(light.verdict).toBe("continue");
+    expect(light.cleanup).toBe("omen-of-light");
+    expect(light.reasons).toEqual(["omen-of-light-cleanup"]);
   });
 
   it("switches bases when a fracture is locked on garbage", () => {
@@ -286,7 +323,6 @@ describe("decideCraft", () => {
   it("continues when two or more high-tier targets are in and the other side is cleanable", () => {
     const decision = decideCraft(input({
       includes: [suffix("life"), suffix("res")],
-      ors: [prefix("str")],
       owned: [owned("life", "suffix"), owned("res", "suffix")],
       suffixCount: 2,
       prefixCount: 1,
