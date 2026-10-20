@@ -8,6 +8,7 @@ import {
   CRAFT_REASON_TEXT,
   CRAFT_WARNING_TEXT,
   craftLocaleText,
+  craftTierChoices,
   craftVerdictHeadline,
   decideCraft,
   earlyGearFamiliesFor,
@@ -19,7 +20,7 @@ import {
   isEarlyGearSlotId,
   poolLabel,
   suggestedCraftNode,
-  topTierLevel,
+  type AffixFamily,
   type CraftDecision,
   type CraftTreeNodeId,
   type EarlyGearSlotId,
@@ -35,6 +36,19 @@ type OwnedFlag = { owned: boolean; highTier: boolean };
 
 function isCraftTarget(pick: ModPickState | undefined): boolean {
   return pick?.polarity === "include" || pick?.polarity === "or";
+}
+
+function chosenTierLevel(family: AffixFamily, pick: ModPickState | undefined): number | null {
+  const index = pick?.minTierIndex;
+  if (index == null || index < 0 || index >= family.tiers.length) return null;
+  return family.tiers[index]?.level ?? null;
+}
+
+function chosenTierLabel(family: AffixFamily, pick: ModPickState | undefined): string | null {
+  if (pick?.minTierIndex == null) return null;
+  const choice = craftTierChoices(family).find((row) => row.index === pick.minTierIndex);
+  if (!choice) return null;
+  return `T${choice.rank} · iLvL ${choice.level}`;
 }
 
 function parseLevel(raw: string): number | null {
@@ -54,7 +68,6 @@ export default function CraftingPage() {
 
   const [picks, setPicks] = useState<Record<string, ModPickState>>({});
   const [owned, setOwned] = useState<Record<string, OwnedFlag>>({});
-  const [desecrationLock, setDesecrationLock] = useState("");
   const [itemLevelRaw, setItemLevelRaw] = useState("");
   const [targetSide, setTargetSide] = useState<ModSide | "auto">("auto");
   const [prefixCount, setPrefixCount] = useState(0);
@@ -72,7 +85,6 @@ export default function CraftingPage() {
   useEffect(() => {
     setPicks({});
     setOwned({});
-    setDesecrationLock("");
     setItemLevelRaw("");
     setPrefixCount(0);
     setSuffixCount(0);
@@ -95,19 +107,27 @@ export default function CraftingPage() {
       for (const id of stale) delete next[id];
       return next;
     });
-    setDesecrationLock((lock) => (lock !== "" && lock !== "other" && !ids.has(lock) ? "" : lock));
   }, [selected]);
+
+  const lockedId = selected.find((family) => picks[family.id]?.desecrationLock)?.id ?? null;
+
+  useEffect(() => {
+    if (!lockedId) return;
+    setOwned((prev) => (
+      prev[lockedId]?.owned ? prev : { ...prev, [lockedId]: { owned: true, highTier: true } }
+    ));
+  }, [lockedId]);
 
   const decision = useMemo(() => {
     return decideCraft({
       includes: selected.map((family) => ({
         id: family.id,
         generation: family.generation,
-        tierLevel: topTierLevel(family),
+        tierLevel: chosenTierLevel(family, picks[family.id]),
       })),
       itemLevel: parseLevel(itemLevelRaw),
       owned: selected
-        .filter((family) => owned[family.id]?.owned || desecrationLock === family.id)
+        .filter((family) => owned[family.id]?.owned || lockedId === family.id)
         .map((family) => ({
           id: family.id,
           generation: family.generation,
@@ -118,7 +138,7 @@ export default function CraftingPage() {
       targetSide,
       garbageFracture,
       hasGoodFractureOnTargetSide: goodFracture,
-      desecrationLock: desecrationLock === "" ? null : desecrationLock,
+      desecrationLock: lockedId,
       craftedSlotLockedToKeeper: keeper,
       tightBudget,
     });
@@ -126,7 +146,8 @@ export default function CraftingPage() {
     selected,
     itemLevelRaw,
     owned,
-    desecrationLock,
+    lockedId,
+    picks,
     prefixCount,
     suffixCount,
     targetSide,
@@ -143,17 +164,8 @@ export default function CraftingPage() {
     setParams({ slot: id });
   }
 
-  function onLock(value: string) {
-    setDesecrationLock(value);
-    if (value && value !== "other") {
-      setOwned((prev) => (
-        prev[value]?.owned ? prev : { ...prev, [value]: { owned: true, highTier: true } }
-      ));
-    }
-  }
-
   function toggleOwned(id: string) {
-    if (desecrationLock === id) return;
+    if (lockedId === id) return;
     setOwned((prev) => {
       if (prev[id]?.owned) {
         const next = { ...prev };
@@ -215,6 +227,7 @@ export default function CraftingPage() {
           onPicksChange={onPicksChange}
           dockRegex={false}
           regexCaption={t.craftingRegexCaption}
+          pickMode="target"
         />
 
         <aside className="space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100svh-6rem)] xl:overflow-y-auto">
@@ -281,8 +294,6 @@ export default function CraftingPage() {
               setGarbageFracture(next);
               if (next) setGoodFracture(false);
             }}
-            desecrationLock={desecrationLock}
-            onDesecrationLock={onLock}
             keeper={keeper}
             onKeeper={setKeeper}
             tightBudget={tightBudget}
@@ -290,15 +301,15 @@ export default function CraftingPage() {
             selected={selected.map((family) => ({
               id: family.id,
               label: effectText(family, locale),
-              tierLabel: null,
-              owned: Boolean(owned[family.id]?.owned) || desecrationLock === family.id,
+              tierLabel: chosenTierLabel(family, picks[family.id]),
+              owned: Boolean(owned[family.id]?.owned) || lockedId === family.id,
               highTier: owned[family.id]?.highTier !== false,
-              locked: desecrationLock === family.id,
+              locked: lockedId === family.id,
             }))}
             onToggleOwned={toggleOwned}
             onToggleHigh={(id) => {
               setOwned((prev) => (
-                prev[id]?.owned || desecrationLock === id
+                prev[id]?.owned || lockedId === id
                   ? { ...prev, [id]: { owned: true, highTier: prev[id]?.highTier === false } }
                   : prev
               ));
@@ -334,8 +345,6 @@ function ItemPanel({
   garbageFracture,
   onGoodFracture,
   onGarbageFracture,
-  desecrationLock,
-  onDesecrationLock,
   keeper,
   onKeeper,
   tightBudget,
@@ -358,8 +367,6 @@ function ItemPanel({
   garbageFracture: boolean;
   onGoodFracture: (value: boolean) => void;
   onGarbageFracture: (value: boolean) => void;
-  desecrationLock: string;
-  onDesecrationLock: (value: string) => void;
   keeper: boolean;
   onKeeper: (value: boolean) => void;
   tightBudget: boolean;
@@ -438,20 +445,6 @@ function ItemPanel({
         </div>
         <Check label={t.craftingGoodFracture} checked={goodFracture} onChange={onGoodFracture} />
         <Check label={t.craftingGarbageFracture} checked={garbageFracture} onChange={onGarbageFracture} />
-        <label className="text-xs text-muted">
-          {t.craftingDesecrationLock}
-          <select
-            value={desecrationLock}
-            onChange={(event) => onDesecrationLock(event.target.value)}
-            className="mt-1 w-full rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper outline-none focus:border-gold"
-          >
-            <option value="">{t.craftingDesecrationLockNone}</option>
-            {selected.map((row) => (
-              <option key={row.id} value={row.id}>{row.label}</option>
-            ))}
-            <option value="other">{t.craftingDesecrationLockOther}</option>
-          </select>
-        </label>
         <p className="text-[11px] text-muted">{t.craftingDesecrationLockHint}</p>
         <Check label={t.craftingKeeper} checked={keeper} onChange={onKeeper} />
         <p className="ml-5 text-[11px] text-muted">{t.craftingKeeperHint}</p>

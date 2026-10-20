@@ -35,6 +35,16 @@ function unionKey(family: AffixFamily): string {
   return `${family.generation}|${family.family}|${family.matchZh}|${family.match}`;
 }
 
+/**
+ * Mods that share this key cannot coexist.
+ * poe2db `ModFamilyList[0]` is stored on `AffixFamily.family`. Variants with the
+ * same head (armour / evasion / energy shield, and hybrids in that group) are
+ * separate rows after the slot union, but they still roll as one mod group.
+ */
+export function affixModGroup(family: { family: string }): string {
+  return family.family;
+}
+
 function mergeNumeric(
   a: AffixFamily["numeric"],
   b: AffixFamily["numeric"],

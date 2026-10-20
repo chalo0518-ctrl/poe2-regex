@@ -112,6 +112,7 @@ export type {
 } from "./waystones.ts";
 
 export {
+  affixModGroup,
   earlyGearCatalog,
   earlyGearFamiliesFor,
   earlyGearSlotMeta,

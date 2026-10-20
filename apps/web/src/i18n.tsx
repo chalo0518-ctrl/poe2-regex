@@ -74,6 +74,10 @@ type Messages = {
   craftingDesecrationLockNone: string;
   craftingDesecrationLockOther: string;
   craftingDesecrationLockHint: string;
+  craftingLockMark: string;
+  craftingConflict: string;
+  craftingSideFullPrefix: string;
+  craftingSideFullSuffix: string;
   craftingKeeper: string;
   craftingKeeperHint: string;
   craftingBudget: string;
@@ -197,7 +201,7 @@ const zhHant: Messages = {
   craftingConstraintsLabel: "目前上限",
   craftingTargetsTitle: "目標詞綴",
   craftingTargetsDesc:
-    "步驟 B。勾選要做的目標詞綴，需要時再指定最低階級。家族名稱不顯示。下方倉庫正則只是附帶，方便找這個基底。",
+    "步驟 B。勾選要做的目標，需要時選階級。同類詞條不能一起勾。破潰石在詞條列標，一次一條。家族名稱不顯示。下方倉庫正則只是附帶，方便找這個基底。",
   craftingRegexCaption: "倉庫正則（刷這個基底／這些目標）",
   craftingTreeHeading: "步驟 C · 決策樹",
   craftingTreeHint: "點開一步看要做什麼、何時跳過、以及做了就回不了頭的地方。判定會標出相關的那一步。",
@@ -207,7 +211,8 @@ const zhHant: Messages = {
   craftingSectionIrreversible: "回不了頭",
   craftingSectionWarning: "互斥與停手",
   craftingNowHeading: "步驟 D · 我現在的裝備",
-  craftingNowHint: "勾這件已經有的目標，標出破潰石鎖定的詞條，再加上破裂與工藝槽。判定只看這些，不模擬整條工藝。",
+  craftingNowHint:
+    "勾這件已經有的目標。破潰石鎖在詞條列上標，這裡會跟著顯示，再加上破裂與工藝槽。判定只看這些，不模擬整條工藝。",
   craftingItemLevel: "物品等級",
   craftingItemLevelHint: "空白＝先不核對所選階級",
   craftingSide: "目標側",
@@ -223,7 +228,11 @@ const zhHant: Messages = {
   craftingDesecrationLockNone: "沒有破潰石鎖定",
   craftingDesecrationLockOther: "目標以外的詞條",
   craftingDesecrationLockHint:
-    "選出破潰石鎖住的那一條。鎖在目標上會當成要留下；鎖在目標以外則用精髓或合金頂掉，工藝槽已保留時改用光明之兆。",
+    "在詞條列按「破潰石」標出鎖住的那一條。它會算成已選目標，並留在這件上。",
+  craftingLockMark: "破潰石",
+  craftingConflict: "與已選詞條同類，不能同時存在",
+  craftingSideFullPrefix: "前綴已滿 3 條",
+  craftingSideFullSuffix: "後綴已滿 3 條",
   craftingKeeper: "工藝槽已是要永久留下的詞綴",
   craftingKeeperHint: "精髓、合金與部分符鍛共用這 1 格。勾了就不能再拿精髓或合金去頂掉褻瀆。",
   craftingBudget: "預算緊（只作提醒，不改判定）",
@@ -356,7 +365,7 @@ const en: Messages = {
   craftingConstraintsLabel: "Current caps",
   craftingTargetsTitle: "Target affixes",
   craftingTargetsDesc:
-    "Step B. Check the affixes you are crafting toward, and set a minimum tier when you need one. Family names stay hidden. The stash regex below is secondary, for finding this base.",
+    "Step B. Check the affixes you are crafting toward, and pick a tier when you need one. Affixes in the same mod group cannot be checked together. Mark the desecration lock on the row; only one at a time. Family names stay hidden. The stash regex below is secondary, for finding this base.",
   craftingRegexCaption: "Stash regex (shop this base / these targets)",
   craftingTreeHeading: "Step C · Decision tree",
   craftingTreeHint: "Open a step for what to do, when to skip, and what you cannot undo. The verdict marks the related step.",
@@ -367,7 +376,7 @@ const en: Messages = {
   craftingSectionWarning: "Exclusion / stop",
   craftingNowHeading: "Step D · Item in hand",
   craftingNowHint:
-    "Check the target mods already on this item, mark the affix locked by the desecration stone, then fracture and the crafted slot. This is a checklist, not a full craft simulator.",
+    "Check the target mods already on this item. The desecration lock is marked on the affix row and echoed here, along with fracture and the crafted slot. This is a checklist, not a full craft simulator.",
   craftingItemLevel: "Item level",
   craftingItemLevelHint: "Empty = do not check the chosen tier yet",
   craftingSide: "Target side",
@@ -383,7 +392,11 @@ const en: Messages = {
   craftingDesecrationLockNone: "No desecration lock",
   craftingDesecrationLockOther: "A mod that is not a target",
   craftingDesecrationLockHint:
-    "Pick the mod the desecration stone locked. A target stays. Anything else is overwritten with Essence or Alloy, or cleared with Omen of Light once the crafted slot is a keeper.",
+    "Press Desecration on the affix row that the stone locked. That row becomes a selected target and stays on the item.",
+  craftingLockMark: "Desecration",
+  craftingConflict: "Same mod group as a selected affix; they cannot both exist",
+  craftingSideFullPrefix: "Already 3 prefixes",
+  craftingSideFullSuffix: "Already 3 suffixes",
   craftingKeeper: "Crafted slot is already a keeper",
   craftingKeeperHint:
     "Essences, Alloys, and some runeforge crafts share this one slot. Checked means you cannot overwrite a desecration with Essence or Alloy.",
