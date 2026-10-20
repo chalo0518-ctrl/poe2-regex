@@ -2,8 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
+import { resolvePagesBase } from "./pagesBase.ts";
 
-const pagesBase = process.env.GITHUB_PAGES === "true" ? "/poe2-regex/" : "/";
+const pagesBase = resolvePagesBase({
+  PAGES_BASE: process.env.PAGES_BASE,
+  GITHUB_PAGES: process.env.GITHUB_PAGES,
+});
 
 export default defineConfig({
   base: pagesBase,

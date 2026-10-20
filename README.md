@@ -155,11 +155,27 @@ pnpm fetch-data:check
 
 ## 部署
 
-靜態站。GitHub Pages（專案站，`base` = `/poe2-regex/`）：
+靜態站。GitHub Pages（專案站）。正式站 `base` 是 `/poe2-regex/`。
 
 - 倉庫：https://github.com/chalo0518-ctrl/poe2-regex
-- 網站：https://chalo0518-ctrl.github.io/poe2-regex/
+- 正式站 / Production：https://chalo0518-ctrl.github.io/poe2-regex/
 
-`main` 推送後由 `.github/workflows/pages.yml` 建置 `apps/web/dist` 並部署。SPA 深連結靠 `404.html`（`index.html` 複本）。本地 `pnpm dev` 仍用 `base` `/`（`http://127.0.0.1:43127/`）；只有 `GITHUB_PAGES=true pnpm build` 才會切到 `/poe2-regex/`。
+`main` 推送後由 `.github/workflows/pages.yml` 建置 `apps/web/dist` 並部署。SPA 深連結靠 `404.html`（`index.html` 複本）。本地 `pnpm dev` 仍用 `base` `/`（`http://127.0.0.1:43127/`）。`GITHUB_PAGES=true pnpm build` 使用 `/poe2-regex/`。若設定 `PAGES_BASE`（絕對路徑），會覆寫上述 base；正式站工作流程不會設定它。
+
+### PR 預覽 / Pull request previews
+
+同一個倉庫的 pull request（fork 除外）每次推送會建置預覽，並在 PR 留言更新網址：
+
+`https://chalo0518-ctrl.github.io/poe2-regex/pr-preview/pr-<編號>/`
+
+做裝頁（例如 PR 13）：
+
+`https://chalo0518-ctrl.github.io/poe2-regex/pr-preview/pr-13/endgame/crafting`
+
+預覽的 Vite `base` 是 `/poe2-regex/pr-preview/pr-<編號>/`，靜態資源才載得起來。正式站維持 `/poe2-regex/`。PR 關閉後預覽目錄會刪掉，留言改為已移除。
+
+GitHub Pages 只認網站根目錄的 `404.html`。直接打開預覽子路由時，正式站的 `404.html` 會轉到該 PR 的 `index.html?spa=...`，再把網址還原。Production keeps `/poe2-regex/`. A preview never publishes its assets onto that path.
+
+`.github/workflows/preview-build.yml` 在 PR 上建置。`.github/workflows/preview-deploy.yml` 在 `main` 上把預覽放進同一個 Pages 站並留言。`pages-site` 分支只記住目前站台檔案（含 `pr-preview/`），正式部署不會把預覽清掉。Pages 來源仍是 GitHub Actions，不必改成從分支部署。
 
 Vercel：Build `pnpm build`，Output `apps/web/dist`，Install `pnpm install`。`vercel.json` 已設 SPA rewrite。
