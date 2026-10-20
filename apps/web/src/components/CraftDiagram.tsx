@@ -19,12 +19,49 @@ const BRANCH: Record<Exclude<CraftDiagramNodeId, "base">, Localized> = {
   "keep-exceptional": { zhHant: "留下這件", en: "Keep this base" },
 };
 
+type TreeNode = {
+  id: CraftDiagramNodeId;
+  children?: TreeNode[];
+};
+
+/** Root at the top. Every child is stacked under its parent, never beside it. */
+const TREE: TreeNode = {
+  id: "base",
+  children: [
+    { id: "stop-base" },
+    {
+      id: "fill",
+      children: [
+        { id: "stop-full" },
+        { id: "sockets", children: [{ id: "keep-exceptional" }] },
+        {
+          id: "desecrate",
+          children: [
+            { id: "stop-fracture" },
+            { id: "essence" },
+            {
+              id: "omen",
+              children: [
+                { id: "whittle" },
+                { id: "side-annul" },
+                { id: "light" },
+                { id: "stop-omen" },
+              ],
+            },
+            { id: "finish" },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
 function edgeOn(path: readonly CraftDiagramNodeId[], from: CraftDiagramNodeId, to: CraftDiagramNodeId): boolean {
   const index = path.indexOf(from);
   return index >= 0 && path[index + 1] === to;
 }
 
-function Node({
+function NodeButton({
   id,
   path,
   selected,
@@ -46,8 +83,8 @@ function Node({
       data-active={active ? "true" : "false"}
       data-selected={selected ? "true" : "false"}
       onClick={() => onSelect?.(id)}
-      className={`w-[8.25rem] rounded-sm border px-1.5 py-1.5 text-center ${
-        active ? "border-gold bg-gold/15" : "border-line bg-panel"
+      className={`w-full rounded-sm border px-2 py-1.5 text-left ${
+        active ? "border-gold bg-gold/15" : "border-line bg-ink"
       } ${selected ? "ring-1 ring-paper" : ""}`}
     >
       <p className="text-[11px] font-medium leading-tight text-gold">{craftLocaleText(node.title, locale)}</p>
@@ -56,46 +93,57 @@ function Node({
   );
 }
 
-function Arm({
-  from,
-  to,
+function VerticalBranch({
+  node,
+  parent,
   path,
-  place,
-  children,
+  selectedId,
+  onSelect,
+  detail,
 }: {
-  from: CraftDiagramNodeId;
-  to: Exclude<CraftDiagramNodeId, "base">;
+  node: TreeNode;
+  parent: CraftDiagramNodeId | null;
   path: readonly CraftDiagramNodeId[];
-  place: "first" | "mid" | "last";
-  children: ReactNode;
+  selectedId?: CraftDiagramNodeId;
+  onSelect?: (id: CraftDiagramNodeId) => void;
+  detail?: ReactNode;
 }) {
   const { locale } = useLocale();
-  const active = edgeOn(path, from, to);
-  const bar =
-    place === "first"
-      ? "before:left-1/2 before:right-0"
-      : place === "last"
-        ? "before:left-0 before:right-1/2"
-        : "before:inset-x-0";
+  const activeEdge = parent != null && edgeOn(path, parent, node.id);
+  const selected = selectedId === node.id;
   return (
-    <div
-      data-edge={`${from}-${to}`}
-      data-active={active ? "true" : "false"}
-      className={`relative flex flex-col items-center px-1 before:absolute before:top-0 before:h-px ${bar} ${
-        active ? "before:bg-gold" : "before:bg-line"
-      }`}
-    >
-      <div className={`h-3 w-px ${active ? "bg-gold" : "bg-line"}`} />
-      <p className={`mb-1 w-[7.5rem] text-center text-[10px] leading-tight ${active ? "text-gold" : "text-muted"}`}>
-        {craftLocaleText(BRANCH[to], locale)}
-      </p>
-      {children}
+    <div className="min-w-0">
+      {parent != null && (
+        <div
+          data-edge={`${parent}-${node.id}`}
+          data-active={activeEdge ? "true" : "false"}
+          className="flex items-stretch gap-2 py-1 pl-1"
+        >
+          <div className={`w-px shrink-0 ${activeEdge ? "bg-gold" : "bg-line"}`} />
+          <p className={`text-[10px] leading-tight ${activeEdge ? "text-gold" : "text-muted"}`}>
+            {craftLocaleText(BRANCH[node.id as Exclude<CraftDiagramNodeId, "base">], locale)}
+          </p>
+        </div>
+      )}
+      <NodeButton id={node.id} path={path} selected={selected} onSelect={onSelect} />
+      {selected && detail}
+      {node.children && node.children.length > 0 && (
+        <div className={`mt-1 ml-3 border-l pl-2 ${path.includes(node.id) ? "border-gold/70" : "border-line"}`}>
+          {node.children.map((child) => (
+            <VerticalBranch
+              key={child.id}
+              node={child}
+              parent={node.id}
+              path={path}
+              selectedId={selectedId}
+              onSelect={onSelect}
+              detail={detail}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
-}
-
-function Split({ children }: { children: ReactNode }) {
-  return <div className="flex items-start justify-center">{children}</div>;
 }
 
 export function CraftDiagram({
@@ -103,11 +151,13 @@ export function CraftDiagram({
   augments = [],
   selectedId,
   onSelect,
+  detail,
 }: {
   path: readonly CraftDiagramNodeId[];
   augments?: { key: string; text: string }[];
   selectedId?: CraftDiagramNodeId;
   onSelect?: (id: CraftDiagramNodeId) => void;
+  detail?: ReactNode;
 }) {
   const { locale } = useLocale();
   const titles = path.map((id) => {
@@ -116,9 +166,9 @@ export function CraftDiagram({
   });
 
   return (
-    <div className="overflow-x-auto" data-craft-diagram>
+    <div data-craft-diagram data-orientation="vertical">
       <p className="mb-3 text-xs text-gold" data-craft-path>
-        {titles.join(" → ")}
+        {titles.join(" ↓ ")}
       </p>
       {augments.length > 0 && (
         <ul className="mb-3 space-y-1 text-xs text-paper" data-socket-augments>
@@ -127,71 +177,14 @@ export function CraftDiagram({
           ))}
         </ul>
       )}
-      <div className="flex w-max min-w-[84rem] flex-col items-center pb-3">
-        <Node id="base" path={path} selected={selectedId === "base"} onSelect={onSelect} />
-        <Split>
-          <Arm from="base" to="stop-base" path={path} place="first">
-            <Node id="stop-base" path={path} selected={selectedId === "stop-base"} onSelect={onSelect} />
-          </Arm>
-          <Arm from="base" to="fill" path={path} place="last">
-            <Node id="fill" path={path} selected={selectedId === "fill"} onSelect={onSelect} />
-            <Split>
-              <Arm from="fill" to="stop-full" path={path} place="first">
-                <Node id="stop-full" path={path} selected={selectedId === "stop-full"} onSelect={onSelect} />
-              </Arm>
-              <Arm from="fill" to="sockets" path={path} place="mid">
-                <Node id="sockets" path={path} selected={selectedId === "sockets"} onSelect={onSelect} />
-                <div
-                  data-edge="sockets-keep-exceptional"
-                  data-active={edgeOn(path, "sockets", "keep-exceptional") ? "true" : "false"}
-                  className="flex flex-col items-center"
-                >
-                  <div className={`h-3 w-px ${edgeOn(path, "sockets", "keep-exceptional") ? "bg-gold" : "bg-line"}`} />
-                  <p
-                    className={`mb-1 w-[7.5rem] text-center text-[10px] leading-tight ${
-                      edgeOn(path, "sockets", "keep-exceptional") ? "text-gold" : "text-muted"
-                    }`}
-                  >
-                    {craftLocaleText(BRANCH["keep-exceptional"], locale)}
-                  </p>
-                  <Node id="keep-exceptional" path={path} selected={selectedId === "keep-exceptional"} onSelect={onSelect} />
-                </div>
-              </Arm>
-              <Arm from="fill" to="desecrate" path={path} place="last">
-                <Node id="desecrate" path={path} selected={selectedId === "desecrate"} onSelect={onSelect} />
-                <Split>
-                  <Arm from="desecrate" to="stop-fracture" path={path} place="first">
-                    <Node id="stop-fracture" path={path} selected={selectedId === "stop-fracture"} onSelect={onSelect} />
-                  </Arm>
-                  <Arm from="desecrate" to="essence" path={path} place="mid">
-                    <Node id="essence" path={path} selected={selectedId === "essence"} onSelect={onSelect} />
-                  </Arm>
-                  <Arm from="desecrate" to="omen" path={path} place="mid">
-                    <Node id="omen" path={path} selected={selectedId === "omen"} onSelect={onSelect} />
-                    <Split>
-                      <Arm from="omen" to="whittle" path={path} place="first">
-                        <Node id="whittle" path={path} selected={selectedId === "whittle"} onSelect={onSelect} />
-                      </Arm>
-                      <Arm from="omen" to="side-annul" path={path} place="mid">
-                        <Node id="side-annul" path={path} selected={selectedId === "side-annul"} onSelect={onSelect} />
-                      </Arm>
-                      <Arm from="omen" to="light" path={path} place="mid">
-                        <Node id="light" path={path} selected={selectedId === "light"} onSelect={onSelect} />
-                      </Arm>
-                      <Arm from="omen" to="stop-omen" path={path} place="last">
-                        <Node id="stop-omen" path={path} selected={selectedId === "stop-omen"} onSelect={onSelect} />
-                      </Arm>
-                    </Split>
-                  </Arm>
-                  <Arm from="desecrate" to="finish" path={path} place="last">
-                    <Node id="finish" path={path} selected={selectedId === "finish"} onSelect={onSelect} />
-                  </Arm>
-                </Split>
-              </Arm>
-            </Split>
-          </Arm>
-        </Split>
-      </div>
+      <VerticalBranch
+        node={TREE}
+        parent={null}
+        path={path}
+        selectedId={selectedId}
+        onSelect={onSelect}
+        detail={detail}
+      />
     </div>
   );
 }
