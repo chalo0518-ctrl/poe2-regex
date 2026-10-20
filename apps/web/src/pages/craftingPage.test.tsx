@@ -7,9 +7,9 @@ import EndgameLayout from "./EndgameLayout.tsx";
 import CraftingPage from "./CraftingPage.tsx";
 import { LocaleProvider } from "../i18n.tsx";
 
-function renderCrafting(path = "/endgame/crafting") {
+function renderCrafting(path = "/endgame/crafting", locale: "zh-Hant" | "en" = "zh-Hant") {
   return render(
-    <LocaleProvider initialLocale="zh-Hant">
+    <LocaleProvider initialLocale={locale}>
       <MemoryRouter initialEntries={[path]}>
         <Routes>
           <Route path="endgame" element={<EndgameLayout />}>
@@ -39,15 +39,23 @@ function pattern() {
 }
 
 function distinctSide(generation: "prefix" | "suffix", limit: number): AffixFamily[] {
+  return distinctCraftSide("body", generation, limit);
+}
+
+function distinctCraftSide(
+  slot: Parameters<typeof craftingFamiliesFor>[0],
+  generation: "prefix" | "suffix",
+  limit: number,
+): AffixFamily[] {
   const picked: AffixFamily[] = [];
   const seen = new Set<string>();
-  for (const family of earlyGearFamiliesFor("body")) {
+  for (const family of craftingFamiliesFor(slot)) {
     if (family.generation !== generation || seen.has(family.family)) continue;
     seen.add(family.family);
     picked.push(family);
     if (picked.length === limit) return picked;
   }
-  throw new Error(`need ${limit} distinct prefix groups`);
+  throw new Error(`need ${limit} distinct ${generation} groups on ${slot}`);
 }
 
 describe("crafting page", () => {
@@ -196,6 +204,7 @@ describe("crafting page", () => {
     const fifth = affixRow(suffixes[4]!.textZh);
     expect(within(fifth).getByRole("checkbox")).toBeDisabled();
     expect(fifth).toHaveAttribute("title", "後綴已滿 4 條");
+    expect(document.querySelector("[data-augment-pool]")).toBeNull();
 
     await user.click(document.querySelector('[data-node="stop-base"]')!);
     expect(document.querySelector("[data-craft-detail]")?.textContent).toContain("骰不到所選階級就是換底");
@@ -203,8 +212,45 @@ describe("crafting page", () => {
     view.unmount();
     renderCrafting("/endgame/crafting?slot=bow");
     await user.selectOptions(screen.getByLabelText("孔 1"), "Thruds_Might");
-    expect(screen.getByRole("checkbox", { name: /變動物理詞綴的大小/ })).toBeInTheDocument();
+    const poolName = "索魯德的強權 額外詞綴";
+    const pool = () => screen.getByRole("region", { name: poolName });
+    const destructionName = /變動物理詞綴的大小/;
+    expect(within(pool()).getByRole("heading", { name: /^前綴/ })).toBeInTheDocument();
+    expect(within(pool()).getByRole("heading", { name: /^後綴/ })).toBeInTheDocument();
+    const destruction = within(pool()).getByRole("checkbox", { name: destructionName });
+    const baseSuffix = screen.getByRole("heading", { name: /^基礎後綴/ }).closest("section");
+    expect(baseSuffix && within(baseSuffix).queryByRole("checkbox", { name: destructionName })).toBeNull();
+    expect(pool().compareDocumentPosition(baseSuffix!) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
+
+    await user.click(destruction);
+    expect(destruction).toBeChecked();
+    await user.selectOptions(screen.getByLabelText("孔 1"), "");
+    expect(screen.queryByRole("region", { name: poolName })).not.toBeInTheDocument();
+    expect(screen.queryByRole("checkbox", { name: destructionName })).not.toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText("孔 1"), "Thruds_Might");
+    expect(within(pool()).getByRole("checkbox", { name: destructionName })).not.toBeChecked();
+    for (const family of distinctCraftSide("bow", "suffix", 3)) {
+      await user.click(screen.getByRole("checkbox", { name: `目標 ${family.textZh}` }));
+    }
+    const blocked = within(pool()).getByRole("checkbox", { name: destructionName }).closest("li");
+    expect(blocked).toHaveAttribute("title", "後綴已滿 3 條");
+    expect(within(blocked as HTMLElement).getByRole("checkbox")).toBeDisabled();
   }, 15_000);
+
+  it("titles Thrud's extra pool in English under the normal list", async () => {
+    const user = userEvent.setup();
+    renderCrafting("/endgame/crafting?slot=bow", "en");
+    await user.selectOptions(screen.getByLabelText("Socket 1"), "Thruds_Might");
+    const enPool = screen.getByRole("region", { name: "Thrud's Might extra affixes" });
+    expect(within(enPool).getByRole("heading", { name: /^Prefixes/ })).toBeInTheDocument();
+    expect(within(enPool).getByRole("heading", { name: /^Suffixes/ })).toBeInTheDocument();
+    const base = screen.getAllByRole("heading", { name: /^Suffixes/ }).find(
+      (heading) => !heading.closest("[data-augment-pool]"),
+    );
+    if (!base) throw new Error("missing the normal suffix heading");
+    expect(enPool.compareDocumentPosition(base) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy();
+  });
 
   it("opens a weapon class on the same target rows", async () => {
     const user = userEvent.setup();

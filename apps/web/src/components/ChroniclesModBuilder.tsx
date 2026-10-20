@@ -157,6 +157,7 @@ export function ChroniclesModBuilder({
   pickMode = "polarity",
   prefixCap = 3,
   suffixCap = 3,
+  extraGroups = [],
 }: {
   kicker: string;
   title: string;
@@ -189,6 +190,11 @@ export function ChroniclesModBuilder({
   prefixCap?: number;
   /** How many suffixes can be targeted before the rest of that side dims. */
   suffixCap?: number;
+  /**
+   * Affix pools unlocked by a socket augment. Rendered under the normal list.
+   * Caps and mod-group conflicts count these rows together with `families`.
+   */
+  extraGroups?: { id: string; title: string; families: AffixFamily[] }[];
 }) {
   const { locale, t } = useLocale();
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
@@ -216,6 +222,22 @@ export function ChroniclesModBuilder({
 
   const minLv = parseBound(minIlvl);
   const maxLv = parseBound(maxIlvl);
+  const poolFamilies = useMemo(
+    () => [...families, ...extraGroups.flatMap((group) => group.families)],
+    [families, extraGroups],
+  );
+  const poolKey = poolFamilies.map((family) => family.id).join("\0");
+
+  useEffect(() => {
+    const ids = new Set(poolKey.split("\0").filter(Boolean));
+    setPicks((prev) => {
+      const stale = Object.keys(prev).filter((id) => !ids.has(id));
+      if (stale.length === 0) return prev;
+      const next = { ...prev };
+      for (const id of stale) delete next[id];
+      return next;
+    });
+  }, [poolKey]);
 
   const listed = useMemo(() => {
     return families
@@ -236,13 +258,13 @@ export function ChroniclesModBuilder({
   const suffixHeading = suffixTitle ?? t.suffixTitle;
 
   const corpus = useMemo(
-    () => families.map((f) => matchText(f, lang)),
-    [families, lang],
+    () => poolFamilies.map((f) => matchText(f, lang)),
+    [poolFamilies, lang],
   );
 
   const selected = useMemo(
-    () => families.filter((f) => picks[f.id]),
-    [families, picks],
+    () => poolFamilies.filter((f) => picks[f.id]),
+    [poolFamilies, picks],
   );
 
   const result = useMemo(() => {
@@ -305,7 +327,7 @@ export function ChroniclesModBuilder({
         if (next[family.id]) continue;
         if (
           pickMode === "target" &&
-          targetBlockTitle(family, next, families, { prefix: prefixCap, suffix: suffixCap }, t)
+          targetBlockTitle(family, next, poolFamilies, { prefix: prefixCap, suffix: suffixCap }, t)
         ) {
           continue;
         }
@@ -382,12 +404,12 @@ export function ChroniclesModBuilder({
   const blockTitles = useMemo(() => {
     if (pickMode !== "target") return {} as Record<string, string>;
     const titles: Record<string, string> = {};
-    for (const family of families) {
-      const title = targetBlockTitle(family, picks, families, { prefix: prefixCap, suffix: suffixCap }, t);
+    for (const family of poolFamilies) {
+      const title = targetBlockTitle(family, picks, poolFamilies, { prefix: prefixCap, suffix: suffixCap }, t);
       if (title) titles[family.id] = title;
     }
     return titles;
-  }, [pickMode, families, picks, t, prefixCap, suffixCap]);
+  }, [pickMode, poolFamilies, picks, t, prefixCap, suffixCap]);
 
   function changePool(id: string) {
     onPoolChange?.(id);
@@ -560,6 +582,49 @@ export function ChroniclesModBuilder({
           }
         />
       </div>
+
+      {extraGroups.map((group) => {
+        const prefixes = group.families
+          .filter((family) => family.generation === "prefix")
+          .map((family) => ({ family, matched: true }));
+        const suffixes = group.families
+          .filter((family) => family.generation === "suffix")
+          .map((family) => ({ family, matched: true }));
+        const column = (title: string, rows: { family: AffixFamily; matched: boolean }[]) => (
+          <AffixColumn
+            title={title}
+            rows={rows}
+            picks={picks}
+            expanded={expanded}
+            showFamilyNames={showFamilyNames}
+            showAffixTags={showAffixTags}
+            pickMode={pickMode}
+            blockTitles={blockTitles}
+            onPolarity={setPickPolarity}
+            onToggleTarget={setTargetChecked}
+            onToggleLock={toggleDesecrationLock}
+            onTier={setTargetTier}
+            onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
+            onBound={(id, key, value) =>
+              setPicks((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], [key]: value } } : prev))
+            }
+          />
+        );
+        return (
+          <section
+            key={group.id}
+            className="mt-6"
+            data-augment-pool={group.id}
+            aria-label={group.title}
+          >
+            <h2 className="mb-3 text-lg font-medium text-gold">{group.title}</h2>
+            <div className="grid gap-4 lg:grid-cols-2">
+              {column(t.craftingSidePrefix, prefixes)}
+              {column(t.craftingSideSuffix, suffixes)}
+            </div>
+          </section>
+        );
+      })}
 
       <div
         className={

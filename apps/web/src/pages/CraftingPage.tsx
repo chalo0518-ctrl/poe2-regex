@@ -18,9 +18,9 @@ import {
   CRAFT_DIAGRAM,
   decideCraft,
   effectText,
-  familiesForSocketAugments,
   harvestTags,
   isCraftSlotId,
+  poolAugmentById,
   poolAugmentsForSlot,
   poolLabel,
   socketCountMax,
@@ -99,13 +99,29 @@ export default function CraftingPage() {
   const [socketCount, setSocketCount] = useState(2);
   const [socketPicks, setSocketPicks] = useState<string[]>(["", ""]);
   const [pinnedNode, setPinnedNode] = useState<CraftDiagramNodeId | null>(null);
-  const socketFamilies = useMemo(
-    () => familiesForSocketAugments(socketPicks.filter(Boolean)),
-    [socketPicks],
+  const augmentGroups = useMemo(() => {
+    const seen = new Set<string>();
+    const groups: { id: string; title: string; families: AffixFamily[] }[] = [];
+    for (const id of socketPicks) {
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      const augment = poolAugmentById(id);
+      if (!augment || augment.families.length === 0) continue;
+      const name = locale === "en" ? augment.nameEn : augment.nameZh;
+      groups.push({
+        id: augment.id,
+        title: t.craftingAugmentPoolTitle(name),
+        families: augment.families,
+      });
+    }
+    return groups;
+  }, [socketPicks, locale, t]);
+  const checklistFamilies = useMemo(
+    () => [...families, ...augmentGroups.flatMap((group) => group.families)],
+    [families, augmentGroups],
   );
-  const checklistFamilies = useMemo(() => [...families, ...socketFamilies], [families, socketFamilies]);
   const caps = useMemo(() => socketSideCaps(socketPicks), [socketPicks]);
-  const tierCount = checklistFamilies.reduce((sum, family) => sum + family.tiers.length, 0);
+  const tierCount = families.reduce((sum, family) => sum + family.tiers.length, 0);
   const socketMax = Math.max(3, socketCountMax(slotId));
 
   const onPicksChange = useCallback((next: Record<string, ModPickState>) => {
@@ -318,10 +334,11 @@ export default function CraftingPage() {
             kicker="CRAFTING · TARGETS"
             title={t.craftingTargetsTitle}
             description={t.craftingTargetsDesc}
-            statsNote={t.statsFamilies(checklistFamilies.length, tierCount)}
+            statsNote={t.statsFamilies(families.length, tierCount)}
             sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
             harvestTags={harvestTags}
-            families={checklistFamilies}
+            families={families}
+            extraGroups={augmentGroups}
             importHint={t.earlyGearImportHint}
             onPicksChange={onPicksChange}
             dockRegex={false}
