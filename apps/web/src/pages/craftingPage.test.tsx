@@ -2,7 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { craftTierChoices, earlyGearFamiliesFor, type AffixFamily } from "@poe2-regex/data";
+import { craftTierChoices, craftingFamiliesFor, earlyGearFamiliesFor, type AffixFamily } from "@poe2-regex/data";
 import EndgameLayout from "./EndgameLayout.tsx";
 import CraftingPage from "./CraftingPage.tsx";
 import { LocaleProvider } from "../i18n.tsx";
@@ -59,6 +59,10 @@ describe("crafting page", () => {
     expect(screen.getByRole("link", { name: "做裝" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "胸甲" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("option", { name: "戒指" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "弓" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "爪" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "雙手劍" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "陷阱" })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "力量" })).not.toBeInTheDocument();
     expect(screen.getByText("craft-caps-v1")).toBeInTheDocument();
     expect(screen.getAllByText(/每件只能有 1 條工藝詞綴/).length).toBeGreaterThan(0);
@@ -111,6 +115,12 @@ describe("crafting page", () => {
     await user.click(screen.getByRole("checkbox", { name: /預算緊/ }));
     expect(screen.getByText("換底")).toBeInTheDocument();
     expect(screen.getByText("你勾了預算緊。判定沒有因此改變。")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("option", { name: "弓" }));
+    const bow = craftingFamiliesFor("bow").find((family) => family.matchZh.includes("物理"));
+    if (!bow) throw new Error("missing bow physical affix");
+    expect(screen.getByRole("checkbox", { name: `目標 ${bow.textZh}` })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "是" })).not.toBeInTheDocument();
   });
 
   it("locks one desecration target at a time and keeps that mod on the route", async () => {

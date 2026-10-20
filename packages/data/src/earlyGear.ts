@@ -81,7 +81,7 @@ function mergeTiers(a: AffixTier[], b: AffixTier[]): AffixTier[] {
 }
 
 /** Union scrape pages for one slot. Same match text merges; 護甲/閃避/ES stay separate rows. */
-export function unionAffixLists(slotId: EarlyGearSlotId, lists: AffixFamily[][]): AffixFamily[] {
+export function unionAffixLists(slotId: string, lists: AffixFamily[][]): AffixFamily[] {
   const merged = new Map<string, AffixFamily>();
   for (const list of lists) {
     for (const row of list) {
@@ -158,7 +158,7 @@ export function earlyGearSlotMeta(
   return earlyGearSlots(catalog).find((slot) => slot.id === slotId);
 }
 
-export function earlyGearSourcePath(slot: EarlyGearSlot): string {
+export function earlyGearSourcePath(slot: { path: string; pools: { path: string }[] }): string {
   if (slot.pools.length <= 1) return slot.path;
   const prefix = slot.pools[0]?.path.replace(/_(str|dex|int|str_dex|str_int|dex_int|buckler)$/i, "") || slot.path;
   return `${prefix}_*`;

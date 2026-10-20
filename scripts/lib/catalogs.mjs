@@ -81,6 +81,30 @@ export const EARLY_GEAR_CATEGORIES = [
   singlePool("mace1h", "單手錘", "One-handed mace", "One_Hand_Maces"),
 ];
 
+/**
+ * Major weapon classes for the crafting slot picker.
+ * One poe2db page each — no str/dex/int split, and no combined Swords/Axes/Maces index.
+ * One-handed maces stay in EARLY_GEAR_CATEGORIES. Fishing rods are not a craft slot.
+ */
+export const WEAPON_CATEGORIES = [
+  singlePool("claw", "爪", "Claws", "Claws"),
+  singlePool("dagger", "匕首", "Daggers", "Daggers"),
+  singlePool("sword1h", "單手劍", "One-handed swords", "One_Hand_Swords"),
+  singlePool("axe1h", "單手斧", "One-handed axes", "One_Hand_Axes"),
+  singlePool("sceptre", "權杖", "Sceptres", "Sceptres"),
+  singlePool("wand", "法杖", "Wands", "Wands"),
+  singlePool("bow", "弓", "Bows", "Bows"),
+  singlePool("crossbow", "十字弓", "Crossbows", "Crossbows"),
+  singlePool("staff", "長杖", "Staves", "Staves"),
+  singlePool("sword2h", "雙手劍", "Two-handed swords", "Two_Hand_Swords"),
+  singlePool("axe2h", "雙手斧", "Two-handed axes", "Two_Hand_Axes"),
+  singlePool("mace2h", "雙手錘", "Two-handed maces", "Two_Hand_Maces"),
+  singlePool("spear", "長矛", "Spears", "Spears"),
+  singlePool("quarterstaff", "細杖", "Quarterstaves", "Quarterstaves"),
+  singlePool("flail", "鏈錘", "Flails", "Flails"),
+  singlePool("trap", "陷阱", "Traps", "Traps"),
+];
+
 export const WAYSTONE_TIERS = [
   { id: "low", labelZh: "低階", labelEn: "Low", path: "Waystones_low_tier" },
   { id: "mid", labelZh: "中階", labelEn: "Mid", path: "Waystones_mid_tier" },
@@ -105,4 +129,5 @@ export const GENERATED_FILES = [
   "waystones.json",
   "tablets.json",
   "early-gear.json",
+  "weapons.json",
 ];

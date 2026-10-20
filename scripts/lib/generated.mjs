@@ -231,6 +231,7 @@ export async function checkGeneratedDir(dir) {
   assertWaystoneCatalog(data.waystones);
   assertTabletCatalog(data.tablets);
   assertEarlyGearCatalog(data["early-gear"]);
+  assertEarlyGearCatalog(data.weapons);
   return {
     shields: data.shields.length,
     waystones: Object.fromEntries(
@@ -246,6 +247,9 @@ export async function checkGeneratedDir(dir) {
           c.pools.map((p) => [p.id, data["early-gear"].byCategory[c.id][p.id].length]),
         ),
       ]),
+    ),
+    weapons: Object.fromEntries(
+      data.weapons.categories.map((c) => [c.id, data.weapons.byCategory[c.id][c.pools[0].id].length]),
     ),
   };
 }

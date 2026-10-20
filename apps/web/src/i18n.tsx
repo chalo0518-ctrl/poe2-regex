@@ -197,7 +197,8 @@ const zhHant: Messages = {
   endgameTablets: "碑牌",
   crafting: "做裝",
   craftingSlotHeading: "步驟 A · 裝備部位",
-  craftingSlotHint: "胸甲、頭盔、手套、鞋子、戒指、項鍊、腰帶、單手錘、盾牌。只選部位，不拆力量／敏捷／智慧。",
+  craftingSlotHint:
+    "胸甲、頭盔、手套、鞋子、戒指、項鍊、腰帶、盾牌，以及武器種類（爪、匕首、單手劍、單手斧、單手錘、權杖、法杖、弓、十字弓、長杖、雙手劍、雙手斧、雙手錘、長矛、細杖、鏈錘、陷阱）。只選種類，不拆力量／敏捷／智慧。",
   craftingConstraintsLabel: "目前上限",
   craftingTargetsTitle: "目標詞綴",
   craftingTargetsDesc:
@@ -361,7 +362,7 @@ const en: Messages = {
   crafting: "Crafting",
   craftingSlotHeading: "Step A · Slot",
   craftingSlotHint:
-    "Body, helmet, gloves, boots, ring, amulet, belt, one-handed mace, shield. Major slot only — no str/dex/int split.",
+    "Body, helmet, gloves, boots, ring, amulet, belt, shield, and weapon classes (claws, daggers, one-handed swords, one-handed axes, one-handed maces, sceptres, wands, bows, crossbows, staves, two-handed swords, two-handed axes, two-handed maces, spears, quarterstaves, flails, traps). One class each — no str/dex/int split.",
   craftingConstraintsLabel: "Current caps",
   craftingTargetsTitle: "Target affixes",
   craftingTargetsDesc:

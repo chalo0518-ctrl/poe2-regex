@@ -26,8 +26,10 @@ export type {
   DataMeta,
   EarlyGearCatalog,
   EarlyGearCategoryId,
+  WeaponCategoryId,
   EarlyGearCategoryMeta,
   EarlyGearFamily,
+  CraftSlotId,
   EarlyGearSlotId,
   HarvestTag,
   MatchLang,
@@ -123,6 +125,17 @@ export {
   unionAffixLists,
 } from "./earlyGear.ts";
 export type { EarlyGearSlot } from "./earlyGear.ts";
+
+export {
+  craftingFamiliesFor,
+  craftingSlotMeta,
+  craftingSlots,
+  craftingSourcePath,
+  isCraftSlotId,
+  isWeaponCategoryId,
+  weaponCatalog,
+} from "./weapons.ts";
+export type { CraftSlot } from "./weapons.ts";
 
 export {
   CRAFTING_CONSTRAINTS,

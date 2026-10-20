@@ -10,27 +10,27 @@ import {
   craftLocaleText,
   craftTierChoices,
   craftVerdictHeadline,
+  craftingFamiliesFor,
+  craftingSlotMeta,
+  craftingSlots,
+  craftingSourcePath,
   decideCraft,
-  earlyGearFamiliesFor,
-  earlyGearSlotMeta,
-  earlyGearSlots,
-  earlyGearSourcePath,
   effectText,
   harvestTags,
-  isEarlyGearSlotId,
+  isCraftSlotId,
   poolLabel,
   suggestedCraftNode,
   type AffixFamily,
   type CraftDecision,
+  type CraftSlotId,
   type CraftTreeNodeId,
-  type EarlyGearSlotId,
   type ModSide,
 } from "@poe2-regex/data";
 import { ChroniclesModBuilder, type ModPickState } from "../components/ChroniclesModBuilder.tsx";
 import { useLocale } from "../i18n.tsx";
 
-const SLOTS = earlyGearSlots();
-const DEFAULT_SLOT: EarlyGearSlotId = "body";
+const SLOTS = craftingSlots();
+const DEFAULT_SLOT: CraftSlotId = "body";
 
 type OwnedFlag = { owned: boolean; highTier: boolean };
 
@@ -61,9 +61,9 @@ export default function CraftingPage() {
   const { locale, t } = useLocale();
   const [params, setParams] = useSearchParams();
   const rawSlot = params.get("slot") || DEFAULT_SLOT;
-  const slotId: EarlyGearSlotId = isEarlyGearSlotId(rawSlot) ? rawSlot : DEFAULT_SLOT;
-  const slot = earlyGearSlotMeta(slotId);
-  const families = useMemo(() => earlyGearFamiliesFor(slotId), [slotId]);
+  const slotId: CraftSlotId = isCraftSlotId(rawSlot) ? rawSlot : DEFAULT_SLOT;
+  const slot = craftingSlotMeta(slotId);
+  const families = useMemo(() => craftingFamiliesFor(slotId), [slotId]);
   const tierCount = families.reduce((sum, family) => sum + family.tiers.length, 0);
 
   const [picks, setPicks] = useState<Record<string, ModPickState>>({});
@@ -160,7 +160,7 @@ export default function CraftingPage() {
   const related = suggestedCraftNode(decision);
   const sideLabel = decision.targetSide === "prefix" ? t.craftingSidePrefix : t.craftingSideSuffix;
 
-  function setSlot(id: EarlyGearSlotId) {
+  function setSlot(id: CraftSlotId) {
     setParams({ slot: id });
   }
 
@@ -220,7 +220,7 @@ export default function CraftingPage() {
           title={t.craftingTargetsTitle}
           description={t.craftingTargetsDesc}
           statsNote={t.statsFamilies(families.length, tierCount)}
-          sourceNote={t.sourcePoe2db(slot ? earlyGearSourcePath(slot) : "")}
+          sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
           harvestTags={harvestTags}
           families={families}
           importHint={t.earlyGearImportHint}
