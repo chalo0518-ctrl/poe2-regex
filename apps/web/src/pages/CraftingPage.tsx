@@ -8,7 +8,6 @@ import {
   CRAFT_REASON_TEXT,
   CRAFT_WARNING_TEXT,
   craftLocaleText,
-  craftTierChoices,
   craftVerdictHeadline,
   decideCraft,
   earlyGearFamiliesFor,
@@ -16,34 +15,27 @@ import {
   earlyGearSlots,
   earlyGearSourcePath,
   effectText,
-  effectTextSecondary,
+  harvestTags,
   isEarlyGearSlotId,
-  matchLangForLocale,
-  matchText,
-  matchesText,
   poolLabel,
   suggestedCraftNode,
-  tierEffect,
-  type AffixFamily,
+  topTierLevel,
   type CraftDecision,
   type CraftTreeNodeId,
   type EarlyGearSlotId,
-  type MatchLang,
   type ModSide,
 } from "@poe2-regex/data";
-import {
-  buildRegex,
-  inferNumericPlacement,
-  MAX_LENGTH,
-  type RegexMod,
-} from "@poe2-regex/regex";
+import { ChroniclesModBuilder, type ModPickState } from "../components/ChroniclesModBuilder.tsx";
 import { useLocale } from "../i18n.tsx";
 
 const SLOTS = earlyGearSlots();
 const DEFAULT_SLOT: EarlyGearSlotId = "body";
 
 type OwnedFlag = { owned: boolean; highTier: boolean };
-type TargetPick = { minTierIndex: number | null };
+
+function isCraftTarget(pick: ModPickState | undefined): boolean {
+  return pick?.polarity === "include" || pick?.polarity === "or";
+}
 
 function parseLevel(raw: string): number | null {
   if (raw.trim() === "") return null;
@@ -60,8 +52,7 @@ export default function CraftingPage() {
   const families = useMemo(() => earlyGearFamiliesFor(slotId), [slotId]);
   const tierCount = families.reduce((sum, family) => sum + family.tiers.length, 0);
 
-  const [targets, setTargets] = useState<Record<string, TargetPick>>({});
-  const [query, setQuery] = useState("");
+  const [picks, setPicks] = useState<Record<string, ModPickState>>({});
   const [owned, setOwned] = useState<Record<string, OwnedFlag>>({});
   const [desecrationLock, setDesecrationLock] = useState("");
   const [itemLevelRaw, setItemLevelRaw] = useState("");
@@ -73,16 +64,13 @@ export default function CraftingPage() {
   const [keeper, setKeeper] = useState(false);
   const [tightBudget, setTightBudget] = useState(false);
   const [openNode, setOpenNode] = useState<CraftTreeNodeId>("desecrate");
-  const [lang, setLang] = useState<MatchLang>(() => matchLangForLocale(locale));
-  const [copied, setCopied] = useState(false);
+
+  const onPicksChange = useCallback((next: Record<string, ModPickState>) => {
+    setPicks(next);
+  }, []);
 
   useEffect(() => {
-    setLang(matchLangForLocale(locale));
-  }, [locale]);
-
-  useEffect(() => {
-    setTargets({});
-    setQuery("");
+    setPicks({});
     setOwned({});
     setDesecrationLock("");
     setItemLevelRaw("");
@@ -94,21 +82,29 @@ export default function CraftingPage() {
   }, [slotId]);
 
   const selected = useMemo(
-    () => families.filter((family) => targets[family.id]),
-    [families, targets],
+    () => families.filter((family) => isCraftTarget(picks[family.id])),
+    [families, picks],
   );
+
+  useEffect(() => {
+    const ids = new Set(selected.map((family) => family.id));
+    setOwned((prev) => {
+      const stale = Object.keys(prev).filter((id) => !ids.has(id));
+      if (stale.length === 0) return prev;
+      const next = { ...prev };
+      for (const id of stale) delete next[id];
+      return next;
+    });
+    setDesecrationLock((lock) => (lock !== "" && lock !== "other" && !ids.has(lock) ? "" : lock));
+  }, [selected]);
 
   const decision = useMemo(() => {
     return decideCraft({
-      includes: selected.map((family) => {
-        const tierIndex = targets[family.id]?.minTierIndex;
-        const tier = tierIndex == null ? undefined : family.tiers[tierIndex];
-        return {
-          id: family.id,
-          generation: family.generation,
-          tierLevel: tier ? tier.level : null,
-        };
-      }),
+      includes: selected.map((family) => ({
+        id: family.id,
+        generation: family.generation,
+        tierLevel: topTierLevel(family),
+      })),
       itemLevel: parseLevel(itemLevelRaw),
       owned: selected
         .filter((family) => owned[family.id]?.owned || desecrationLock === family.id)
@@ -128,7 +124,6 @@ export default function CraftingPage() {
     });
   }, [
     selected,
-    targets,
     itemLevelRaw,
     owned,
     desecrationLock,
@@ -141,64 +136,11 @@ export default function CraftingPage() {
     tightBudget,
   ]);
 
-  const regex = useMemo(() => {
-    const corpus = families.map((family) => matchText(family, lang));
-    const mods: RegexMod[] = selected.map((family) => {
-      const tierIndex = targets[family.id]?.minTierIndex;
-      const tier = tierIndex == null ? undefined : family.tiers[tierIndex];
-      const match = matchText(family, lang);
-      const source = effectText(family, lang);
-      const min = family.kind === "numeric" ? tier?.statMin : undefined;
-      return {
-        id: family.id,
-        match,
-        polarity: "include",
-        kind: family.kind,
-        numeric:
-          min != null
-            ? {
-                format: family.numeric?.format,
-                min,
-                placement: inferNumericPlacement(source, match),
-              }
-            : undefined,
-      };
-    });
-    return buildRegex(mods, { combine: "and", corpus });
-  }, [families, selected, targets, lang]);
-
   const related = suggestedCraftNode(decision);
   const sideLabel = decision.targetSide === "prefix" ? t.craftingSidePrefix : t.craftingSideSuffix;
 
   function setSlot(id: EarlyGearSlotId) {
     setParams({ slot: id });
-  }
-
-  const toggleTarget = useCallback((id: string) => {
-    setTargets((prev) => {
-      if (prev[id]) {
-        const next = { ...prev };
-        delete next[id];
-        return next;
-      }
-      return { ...prev, [id]: { minTierIndex: null } };
-    });
-    setOwned((prev) => {
-      if (!prev[id]) return prev;
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
-    setDesecrationLock((lock) => (lock === id ? "" : lock));
-  }, []);
-
-  function setMinTier(id: string, raw: string) {
-    const minTierIndex = raw === "" ? null : Number(raw);
-    setTargets((prev) => (
-      prev[id]
-        ? { ...prev, [id]: { minTierIndex: Number.isInteger(minTierIndex) ? minTierIndex : null } }
-        : prev
-    ));
   }
 
   function onLock(value: string) {
@@ -220,17 +162,6 @@ export default function CraftingPage() {
       }
       return { ...prev, [id]: { owned: true, highTier: true } };
     });
-  }
-
-  async function copyPattern() {
-    if (!regex.pattern) return;
-    try {
-      await navigator.clipboard.writeText(regex.pattern);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
-    } catch {
-      setCopied(false);
-    }
   }
 
   return (
@@ -271,84 +202,20 @@ export default function CraftingPage() {
       </div>
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
-        <section aria-label={t.craftingTargetsTitle}>
-          <header className="mb-4 border-b border-line pb-4">
-            <p className="text-xs tracking-[0.28em] text-gold-dim">CRAFTING · TARGETS</p>
-            <h1 className="mt-1 text-2xl font-bold text-gold">{t.craftingTargetsTitle}</h1>
-            <p className="mt-1 max-w-2xl text-sm text-muted">{t.craftingTargetsDesc}</p>
-            <p className="mt-2 text-xs text-muted">
-              {t.statsFamilies(families.length, tierCount)}
-              {" · "}
-              {t.sourcePoe2db(slot ? earlyGearSourcePath(slot) : "")}
-            </p>
-          </header>
-
-          <label className="mb-3 flex items-center gap-2 text-sm text-muted">
-            {t.craftingSearch}
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              className="w-full rounded-sm border border-line bg-raised px-2 py-1.5 text-paper outline-none focus:border-gold"
-            />
-          </label>
-          <p className="mb-3 text-xs text-muted">{t.craftingSelectedCount(selected.length)}</p>
-
-          <TargetColumns
-            families={families}
-            query={query}
-            targets={targets}
-            onToggle={toggleTarget}
-            onTier={setMinTier}
-          />
-
-          <div className="mt-4 rounded-sm border border-line bg-panel px-3 py-3">
-            <p className="text-xs text-gold-dim">{t.craftingRegexCaption}</p>
-            <div className="mt-2 flex flex-wrap items-center gap-2">
-              <span className="text-xs text-muted">
-                <span className={regex.overLimit ? "text-exclude" : "text-gold"}>{regex.length}</span>
-                /{MAX_LENGTH}
-              </span>
-              <div className="flex overflow-hidden rounded-sm border border-line text-xs">
-                <button
-                  type="button"
-                  onClick={() => setLang("zh-Hant")}
-                  className={`px-2 py-1 ${lang === "zh-Hant" ? "bg-gold text-ink" : "text-muted"}`}
-                >
-                  {t.matchZhHant}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setLang("en")}
-                  className={`px-2 py-1 ${lang === "en" ? "bg-gold text-ink" : "text-muted"}`}
-                >
-                  {t.matchEn}
-                </button>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setTargets({});
-                  setOwned({});
-                  setDesecrationLock("");
-                }}
-                className="rounded-sm border border-line px-3 py-1.5 text-sm text-muted hover:text-paper"
-              >
-                {t.reset}
-              </button>
-              <button
-                type="button"
-                disabled={!regex.pattern}
-                onClick={() => void copyPattern()}
-                className="rounded-sm bg-gold px-3 py-1.5 text-sm font-medium text-ink disabled:opacity-40"
-              >
-                {copied ? t.copied : t.copy}
-              </button>
-            </div>
-            <div className="mt-2 overflow-x-auto rounded-sm border border-line bg-ink px-3 py-2 font-mono text-sm text-gold">
-              {regex.pattern || <span className="text-muted">{t.craftingRegexPlaceholder}</span>}
-            </div>
-          </div>
-        </section>
+        <ChroniclesModBuilder
+          key={slotId}
+          kicker="CRAFTING · TARGETS"
+          title={t.craftingTargetsTitle}
+          description={t.craftingTargetsDesc}
+          statsNote={t.statsFamilies(families.length, tierCount)}
+          sourceNote={t.sourcePoe2db(slot ? earlyGearSourcePath(slot) : "")}
+          harvestTags={harvestTags}
+          families={families}
+          importHint={t.earlyGearImportHint}
+          onPicksChange={onPicksChange}
+          dockRegex={false}
+          regexCaption={t.craftingRegexCaption}
+        />
 
         <aside className="space-y-4 xl:sticky xl:top-20 xl:max-h-[calc(100svh-6rem)] xl:overflow-y-auto">
           <section aria-labelledby="craft-tree-heading">
@@ -420,23 +287,14 @@ export default function CraftingPage() {
             onKeeper={setKeeper}
             tightBudget={tightBudget}
             onTightBudget={setTightBudget}
-            selected={selected.map((family) => {
-              const tierIndex = targets[family.id]?.minTierIndex ?? null;
-              const choice = tierIndex == null
-                ? undefined
-                : craftTierChoices(family).find((row) => row.index === tierIndex);
-              const tier = tierIndex == null ? undefined : family.tiers[tierIndex];
-              return {
-                id: family.id,
-                label: effectText(family, locale),
-                tierLabel: choice && tier
-                  ? t.craftingTierOption(choice.rank, choice.level, tierEffect(tier, locale))
-                  : null,
-                owned: Boolean(owned[family.id]?.owned) || desecrationLock === family.id,
-                highTier: owned[family.id]?.highTier !== false,
-                locked: desecrationLock === family.id,
-              };
-            })}
+            selected={selected.map((family) => ({
+              id: family.id,
+              label: effectText(family, locale),
+              tierLabel: null,
+              owned: Boolean(owned[family.id]?.owned) || desecrationLock === family.id,
+              highTier: owned[family.id]?.highTier !== false,
+              locked: desecrationLock === family.id,
+            }))}
             onToggleOwned={toggleOwned}
             onToggleHigh={(id) => {
               setOwned((prev) => (
@@ -449,125 +307,6 @@ export default function CraftingPage() {
         </aside>
       </div>
     </div>
-  );
-}
-
-function TargetColumns({
-  families,
-  query,
-  targets,
-  onToggle,
-  onTier,
-}: {
-  families: AffixFamily[];
-  query: string;
-  targets: Record<string, TargetPick>;
-  onToggle: (id: string) => void;
-  onTier: (id: string, raw: string) => void;
-}) {
-  const { t } = useLocale();
-  const visible = families.filter((family) => matchesText(family, query) || targets[family.id]);
-  const prefixes = visible.filter((family) => family.generation === "prefix");
-  const suffixes = visible.filter((family) => family.generation === "suffix");
-  return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <TargetColumn
-        title={t.prefixTitle}
-        rows={prefixes}
-        query={query}
-        targets={targets}
-        onToggle={onToggle}
-        onTier={onTier}
-      />
-      <TargetColumn
-        title={t.suffixTitle}
-        rows={suffixes}
-        query={query}
-        targets={targets}
-        onToggle={onToggle}
-        onTier={onTier}
-      />
-    </div>
-  );
-}
-
-function TargetColumn({
-  title,
-  rows,
-  query,
-  targets,
-  onToggle,
-  onTier,
-}: {
-  title: string;
-  rows: AffixFamily[];
-  query: string;
-  targets: Record<string, TargetPick>;
-  onToggle: (id: string) => void;
-  onTier: (id: string, raw: string) => void;
-}) {
-  const { locale, t } = useLocale();
-  return (
-    <section className="overflow-hidden rounded-sm border border-line bg-panel">
-      <h2 className="flex items-center justify-between border-b border-line bg-raised px-3 py-2 text-sm font-medium text-gold">
-        <span>{title}</span>
-        <span className="text-xs font-normal text-muted">{rows.length}</span>
-      </h2>
-      {rows.length === 0 ? (
-        <p className="px-3 py-8 text-center text-sm text-muted">{t.noAffixes}</p>
-      ) : (
-        <ul className="max-h-[32rem] overflow-y-auto">
-          {rows.map((family) => {
-            const pick = targets[family.id];
-            const primary = effectText(family, locale);
-            const secondary = effectTextSecondary(family, locale);
-            const dimmed = !matchesText(family, query);
-            return (
-              <li
-                key={family.id}
-                className={`affix-row border-b border-line px-2 py-2 last:border-b-0 ${dimmed ? "opacity-40" : ""}`}
-                data-pick={pick ? "include" : "off"}
-              >
-                <div className="flex items-start gap-2">
-                  <input
-                    type="checkbox"
-                    className="mt-1"
-                    checked={Boolean(pick)}
-                    aria-label={`${t.craftingTargetToggle} ${primary}`}
-                    onChange={() => onToggle(family.id)}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm text-paper">{primary}</p>
-                    {secondary && <p className="mt-0.5 text-xs text-muted">{secondary}</p>}
-                    {pick && (
-                      <label className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-muted">
-                        {t.craftingMinTier}
-                        <select
-                          value={pick.minTierIndex ?? ""}
-                          onChange={(event) => onTier(family.id, event.target.value)}
-                          className="max-w-full rounded-sm border border-line bg-ink px-2 py-1 text-xs text-paper outline-none focus:border-gold"
-                        >
-                          <option value="">{t.craftingMinTierAny}</option>
-                          {craftTierChoices(family).map((choice) => {
-                            const tier = family.tiers[choice.index];
-                            if (!tier) return null;
-                            return (
-                              <option key={choice.index} value={choice.index}>
-                                {t.craftingTierOption(choice.rank, choice.level, tierEffect(tier, locale))}
-                              </option>
-                            );
-                          })}
-                        </select>
-                      </label>
-                    )}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </section>
   );
 }
 

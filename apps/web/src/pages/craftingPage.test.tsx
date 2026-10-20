@@ -2,7 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { craftTierChoices, earlyGearFamiliesFor } from "@poe2-regex/data";
+import { earlyGearFamiliesFor } from "@poe2-regex/data";
 import EndgameLayout from "./EndgameLayout.tsx";
 import CraftingPage from "./CraftingPage.tsx";
 import { LocaleProvider } from "../i18n.tsx";
@@ -27,19 +27,22 @@ function lifeFamily() {
   return life;
 }
 
-function targetRegion() {
-  return screen.getByRole("region", { name: "目標詞綴" });
-}
-
-function lifeRow() {
+function lifeAffixRow() {
   const life = lifeFamily();
-  const row = within(targetRegion()).getByText(life.textZh).closest("li");
-  if (!row) throw new Error("life row missing");
+  const row = screen
+    .getAllByText(life.textZh)
+    .map((node) => node.closest("li"))
+    .find((item) => item && within(item).queryByRole("button", { name: "是" }));
+  if (!row) throw new Error("life affix row missing");
   return row as HTMLElement;
 }
 
+function pattern() {
+  return document.querySelector(".font-mono.text-gold")?.textContent ?? "";
+}
+
 describe("crafting page", () => {
-  it("walks slot, tree, desecration lock, keeper fallback, and a chosen-tier rebase", async () => {
+  it("keeps the affix list and walks desecration lock, keeper fallback, and an item-level rebase", async () => {
     const user = userEvent.setup();
     renderCrafting();
 
@@ -51,16 +54,22 @@ describe("crafting page", () => {
     expect(screen.getAllByText(/每件只能有 1 條工藝詞綴/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/重組器不在這條主路線/).length).toBeGreaterThan(0);
     expect(screen.getByText("倉庫正則（刷這個基底／這些目標）")).toBeInTheDocument();
-    expect(screen.getByLabelText("搜尋詞綴")).toBeInTheDocument();
-    expect(screen.getByLabelText("破潰石鎖定的詞條")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "是" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "或" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "否" })).not.toBeInTheDocument();
-    expect(screen.queryByText(/可接受/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/acceptable/i)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "火焰" })).toBeInTheDocument();
+    expect(screen.getByText("Filter:")).toBeInTheDocument();
+    expect(screen.getByText(/Min iLvL/i)).toBeInTheDocument();
+    expect(screen.getByText(/Max iLvL/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "匯入物品" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "切換隱藏" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "简中匹配" })).not.toBeInTheDocument();
     expect(screen.queryByText("继续")).not.toBeInTheDocument();
     expect(screen.queryByText("换底")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("破潰石鎖定的詞條")).toBeInTheDocument();
+
+    const row = lifeAffixRow();
+    expect(within(row).getByRole("button", { name: "是" })).toBeInTheDocument();
+    expect(within(row).getByRole("button", { name: "或" })).toBeInTheDocument();
+    expect(within(row).getByRole("button", { name: "否" })).toBeInTheDocument();
+    expect(within(row).getByRole("button", { name: "展開階層" })).toBeInTheDocument();
 
     const desecrate = screen.getByRole("button", { name: /褻瀆分支/ });
     expect(desecrate).toHaveAttribute("aria-expanded", "true");
@@ -83,11 +92,7 @@ describe("crafting page", () => {
 
     await user.click(screen.getByRole("checkbox", { name: "工藝槽已是要永久留下的詞綴" }));
     const life = lifeFamily();
-    const row = lifeRow();
-    await user.click(within(row).getByRole("checkbox", { name: `目標 ${life.textZh}` }));
-    const top = craftTierChoices(life)[0];
-    expect(top).toBeTruthy();
-    await user.selectOptions(within(row).getByRole("combobox"), String(top!.index));
+    await user.click(within(lifeAffixRow()).getByRole("button", { name: "是" }));
     await user.type(screen.getByLabelText("物品等級"), "1");
 
     expect(screen.getByText("換底")).toBeInTheDocument();
@@ -96,32 +101,37 @@ describe("crafting page", () => {
     await user.click(screen.getByRole("checkbox", { name: /預算緊/ }));
     expect(screen.getByText("換底")).toBeInTheDocument();
     expect(screen.getByText("你勾了預算緊。判定沒有因此改變。")).toBeInTheDocument();
+    expect(screen.getByRole("checkbox", { name: `${life.textZh} 已有` })).not.toBeChecked();
   });
 
-  it("lets a checked target take a minimum tier and treats a locked target as on the item", async () => {
+  it("treats 是 and 或 as targets, keeps 否 off the verdict, and still edits Min–Max", async () => {
     const user = userEvent.setup();
     renderCrafting();
     const life = lifeFamily();
-    const top = craftTierChoices(life)[0];
-    expect(top?.statMin).toBeGreaterThan(1);
 
-    await user.click(within(lifeRow()).getByRole("checkbox", { name: `目標 ${life.textZh}` }));
-    const pattern = () => document.querySelector(".font-mono.text-gold")?.textContent ?? "";
-    const open = pattern();
-    expect(open).toContain("最大生命");
-    expect(open).not.toMatch(/\\d/);
-
+    await user.click(within(lifeAffixRow()).getByRole("button", { name: "否" }));
     await user.type(screen.getByLabelText("物品等級"), "1");
     expect(screen.queryByText("換底")).not.toBeInTheDocument();
+    expect(pattern()).toContain("!");
 
-    await user.selectOptions(within(lifeRow()).getByRole("combobox"), String(top!.index));
-    const bounded = pattern();
-    expect(bounded).toContain("最大生命");
-    expect(bounded).not.toBe(open);
-    expect(bounded).toMatch(/\\d/);
+    await user.click(within(lifeAffixRow()).getByRole("button", { name: "或" }));
     expect(screen.getByText("換底")).toBeInTheDocument();
 
     await user.clear(screen.getByLabelText("物品等級"));
+    await user.click(within(lifeAffixRow()).getByRole("button", { name: "是" }));
+    const open = pattern();
+    expect(open).toContain("最大生命");
+    expect(open).not.toContain("!");
+
+    const min = within(lifeAffixRow()).getByPlaceholderText("最小");
+    expect(within(lifeAffixRow()).getByPlaceholderText("最大")).toBeInTheDocument();
+    await user.type(min, "120");
+    expect(pattern()).not.toBe(open);
+    expect(pattern()).toMatch(/\\d/);
+
+    await user.click(within(lifeAffixRow()).getByRole("button", { name: "展開階層" }));
+    expect(within(lifeAffixRow()).getAllByText(/iLvL /).length).toBeGreaterThan(1);
+
     await user.selectOptions(screen.getByLabelText("前綴數量"), "2");
     await user.click(screen.getByRole("checkbox", { name: "目標側有 1 條要留下的破裂" }));
     await user.selectOptions(screen.getByLabelText("破潰石鎖定的詞條"), "目標以外的詞條");
