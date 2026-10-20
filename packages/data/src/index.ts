@@ -123,6 +123,35 @@ export {
 } from "./earlyGear.ts";
 export type { EarlyGearSlot } from "./earlyGear.ts";
 
+export {
+  CRAFTING_CONSTRAINTS,
+  CRAFTING_RULESET,
+  CRAFTING_TREE,
+  CRAFT_CLEANUP_TEXT,
+  CRAFT_REASON_TEXT,
+  CRAFT_WARNING_TEXT,
+  craftLocaleText,
+  craftVerdictHeadline,
+  decideCraft,
+  resolveTargetSide,
+  suggestedCraftNode,
+  topTierLevel,
+} from "./crafting.ts";
+export type {
+  CraftCleanup,
+  CraftDecision,
+  CraftReasonId,
+  CraftTarget,
+  CraftTreeNode,
+  CraftTreeNodeId,
+  CraftVerdict,
+  CraftWarningId,
+  DecideCraftInput,
+  Localized,
+  ModSide,
+  OwnedTarget,
+} from "./crafting.ts";
+
 export const shieldFamilies = shieldsJson as ShieldFamily[];
 export const harvestTags = tagsJson as HarvestTag[];
 export const dataMeta = metaJson as DataMeta;

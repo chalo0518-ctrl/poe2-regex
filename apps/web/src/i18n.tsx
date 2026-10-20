@@ -43,6 +43,45 @@ type Messages = {
   earlyShields: string;
   endgameWaystones: string;
   endgameTablets: string;
+  crafting: string;
+  craftingSlotHeading: string;
+  craftingSlotHint: string;
+  craftingConstraintsLabel: string;
+  craftingTargetsTitle: string;
+  craftingTargetsDesc: string;
+  craftingRegexCaption: string;
+  craftingTreeHeading: string;
+  craftingTreeHint: string;
+  craftingNodeRelated: string;
+  craftingSectionAction: string;
+  craftingSectionSkip: string;
+  craftingSectionIrreversible: string;
+  craftingSectionWarning: string;
+  craftingNowHeading: string;
+  craftingNowHint: string;
+  craftingItemLevel: string;
+  craftingItemLevelHint: string;
+  craftingSide: string;
+  craftingSideAuto: string;
+  craftingSidePrefix: string;
+  craftingSideSuffix: string;
+  craftingResolvedSide: (label: string) => string;
+  craftingPrefixCount: string;
+  craftingSuffixCount: string;
+  craftingGoodFracture: string;
+  craftingGarbageFracture: string;
+  craftingDesecrated: string;
+  craftingDesecratedOnRoute: string;
+  craftingDesecratedMiss: string;
+  craftingKeeper: string;
+  craftingKeeperHint: string;
+  craftingBudget: string;
+  craftingBudgetOn: string;
+  craftingOwned: string;
+  craftingHighTier: string;
+  craftingNoOwned: string;
+  craftingReasons: string;
+  craftingWarnings: string;
   emptyLater: string;
   buildsTitle: string;
   buildsBody: string;
@@ -130,11 +169,11 @@ const zhHant: Messages = {
   endgame: "終局",
   homeKicker: "PATH OF EXILE 2",
   homeTitle: "正則工具",
-  homeLead: "依遊玩階段選擇模組。開荒依章節提供商店裝備預設正則；終局已填入換界石與碑牌詞綴正則。",
+  homeLead: "依遊玩階段選擇模組。開荒依章節提供商店裝備預設正則；終局有換界石、碑牌詞綴正則，以及做裝決策。",
   homeEarlyBody:
     "章節地圖、商店裝備篩選（各章預設生命／移速／抗性）、流派推薦裝備。開荒裝備詞綴可切換胸甲／頭盔／手套／鞋子／飾品／單手錘／盾牌。",
   homeEndgameBody:
-    "換界石依市集終局篩選（階級、效用、稀有度、掉落率、經驗、群大小、復活、金幣）產生正則，與八種碑牌詞綴正則。碑牌必須先選種類。",
+    "換界石依市集終局篩選（階級、效用、稀有度、掉落率、經驗、群大小、復活、金幣）產生正則，與八種碑牌詞綴正則。碑牌必須先選種類。做裝依部位與目標詞綴給出繼續、換底或降目標。",
   subNavAria: "子頁面",
   earlyChapters: "章節地圖",
   earlyVendor: "商店裝備篩選",
@@ -143,6 +182,46 @@ const zhHant: Messages = {
   earlyShields: "實驗：盾牌詞綴",
   endgameWaystones: "換界石",
   endgameTablets: "碑牌",
+  crafting: "做裝",
+  craftingSlotHeading: "步驟 A · 裝備部位",
+  craftingSlotHint: "胸甲、頭盔、手套、鞋子、戒指、項鍊、腰帶、單手錘、盾牌。只選部位，不拆力量／敏捷／智慧。",
+  craftingConstraintsLabel: "目前上限",
+  craftingTargetsTitle: "目標詞綴",
+  craftingTargetsDesc:
+    "步驟 B。右側「是」為必做目標，「或」為可接受目標，「否」只寫進倉庫正則、不算做裝目標。家族名稱已隱藏。下方正則可複製，用來在倉庫找這個基底上的目標詞綴。",
+  craftingRegexCaption: "倉庫正則（刷這個基底／這些目標）",
+  craftingTreeHeading: "步驟 C · 決策樹",
+  craftingTreeHint: "點開一步看要做什麼、何時跳過、以及做了就回不了頭的地方。判定會標出相關的那一步。",
+  craftingNodeRelated: "與此判定相關",
+  craftingSectionAction: "怎麼做",
+  craftingSectionSkip: "何時跳過",
+  craftingSectionIrreversible: "回不了頭",
+  craftingSectionWarning: "互斥與停手",
+  craftingNowHeading: "步驟 D · 我現在的裝備",
+  craftingNowHint: "勾這件已經有的目標，以及破裂、工藝槽、褻瀆。判定只看這些，不模擬整條工藝。",
+  craftingItemLevel: "物品等級",
+  craftingItemLevelHint: "空白＝先不核對最高階",
+  craftingSide: "目標側",
+  craftingSideAuto: "自動（依「是」較多的一側）",
+  craftingSidePrefix: "前綴",
+  craftingSideSuffix: "後綴",
+  craftingResolvedSide: (label) => `目前目標側：${label}`,
+  craftingPrefixCount: "前綴數量",
+  craftingSuffixCount: "後綴數量",
+  craftingGoodFracture: "目標側有 1 條要留下的破裂",
+  craftingGarbageFracture: "破裂鎖在垃圾詞綴上",
+  craftingDesecrated: "已有褻瀆詞綴",
+  craftingDesecratedOnRoute: "這條褻瀆是目標",
+  craftingDesecratedMiss: "這條褻瀆是失敗或填充",
+  craftingKeeper: "工藝槽已是要永久留下的詞綴",
+  craftingKeeperHint: "精髓、合金與部分符鍛共用這 1 格。勾了就不能再拿精髓或合金去頂掉褻瀆。",
+  craftingBudget: "預算緊（只作提醒，不改判定）",
+  craftingBudgetOn: "你勾了預算緊。判定沒有因此改變。",
+  craftingOwned: "已有",
+  craftingHighTier: "高階",
+  craftingNoOwned: "尚未用「是」或「或」選目標。結構仍會判定；物品等級要等有「是」目標才比最高階。",
+  craftingReasons: "理由",
+  craftingWarnings: "附帶限制",
   emptyLater: "內容稍後填入",
   buildsTitle: "流派推薦裝備",
   buildsBody: "主流開荒流派的裝備正則稍後填入。此頁暫不提供建議或預設。",
@@ -238,11 +317,11 @@ const en: Messages = {
   endgame: "Endgame",
   homeTitle: "Regex tools",
   homeLead:
-    "Pick a stage. Campaign chapters ship default shop regexes; endgame has waystone and tablet affix regexes.",
+    "Pick a stage. Campaign chapters ship default shop regexes; endgame has waystone and tablet regexes, plus a crafting decision tree.",
   homeEarlyBody:
     "Chapter maps, vendor gear filters (life / move speed / resists per act), and build presets. Campaign affixes cover body / helm / gloves / boots / jewellery / one-hand maces / shields.",
   homeEndgameBody:
-    "Waystones use the market endgame filters (tier, effectiveness, rarity, drop chance, experience, pack size, revives, gold) plus eight tablet pools. Pick a tablet kind first.",
+    "Waystones use the market endgame filters (tier, effectiveness, rarity, drop chance, experience, pack size, revives, gold) plus eight tablet pools. Pick a tablet kind first. Crafting turns a slot and target affixes into continue, new base, or lower the goal.",
   subNavAria: "Subpages",
   earlyChapters: "Chapter maps",
   earlyVendor: "Vendor filter",
@@ -251,6 +330,49 @@ const en: Messages = {
   earlyShields: "Lab: shield affixes",
   endgameWaystones: "Waystones",
   endgameTablets: "Tablets",
+  crafting: "Crafting",
+  craftingSlotHeading: "Step A · Slot",
+  craftingSlotHint:
+    "Body, helmet, gloves, boots, ring, amulet, belt, one-handed mace, shield. Major slot only — no str/dex/int split.",
+  craftingConstraintsLabel: "Current caps",
+  craftingTargetsTitle: "Target affixes",
+  craftingTargetsDesc:
+    "Step B. Yes is required, Or is acceptable, No only enters the stash regex and is not a craft target. Family names stay hidden. Copy the regex below to shop this base for those targets.",
+  craftingRegexCaption: "Stash regex (shop this base / these targets)",
+  craftingTreeHeading: "Step C · Decision tree",
+  craftingTreeHint: "Open a step for what to do, when to skip, and what you cannot undo. The verdict marks the related step.",
+  craftingNodeRelated: "Related to this verdict",
+  craftingSectionAction: "What to do",
+  craftingSectionSkip: "When to skip",
+  craftingSectionIrreversible: "Irreversible",
+  craftingSectionWarning: "Exclusion / stop",
+  craftingNowHeading: "Step D · Item in hand",
+  craftingNowHint: "Check the target mods already on this item, plus fracture, crafted slot, and desecration. This is a checklist, not a full craft simulator.",
+  craftingItemLevel: "Item level",
+  craftingItemLevelHint: "Empty = do not check top tiers yet",
+  craftingSide: "Target side",
+  craftingSideAuto: "Auto (side with more Yes targets)",
+  craftingSidePrefix: "Prefixes",
+  craftingSideSuffix: "Suffixes",
+  craftingResolvedSide: (label) => `Target side now: ${label}`,
+  craftingPrefixCount: "Prefix count",
+  craftingSuffixCount: "Suffix count",
+  craftingGoodFracture: "Target side has 1 fracture worth keeping",
+  craftingGarbageFracture: "Fracture is locked on a garbage mod",
+  craftingDesecrated: "Has a desecrated modifier",
+  craftingDesecratedOnRoute: "This desecration is a target",
+  craftingDesecratedMiss: "This desecration is a miss or filler",
+  craftingKeeper: "Crafted slot is already a keeper",
+  craftingKeeperHint:
+    "Essences, Alloys, and some runeforge crafts share this one slot. Checked means you cannot overwrite a desecration with Essence or Alloy.",
+  craftingBudget: "Tight budget (reminder only, does not change the verdict)",
+  craftingBudgetOn: "Tight budget is checked. The verdict did not change because of it.",
+  craftingOwned: "Have it",
+  craftingHighTier: "High tier",
+  craftingNoOwned:
+    "No Yes or Or targets yet. Structure can still be judged; item level is compared only after a Yes target exists.",
+  craftingReasons: "Reasons",
+  craftingWarnings: "Also note",
   emptyLater: "Coming later",
   buildsTitle: "Build presets",
   buildsBody: "Campaign build regexes are not filled in yet. This page does not invent presets.",

@@ -109,6 +109,9 @@ export function ChroniclesModBuilder({
   showFamilyNames = false,
   showAffixTags = false,
   defaultPicks,
+  onPicksChange,
+  dockRegex = true,
+  regexCaption,
 }: {
   kicker: string;
   title: string;
@@ -131,6 +134,10 @@ export function ChroniclesModBuilder({
   showFamilyNames?: boolean;
   showAffixTags?: boolean;
   defaultPicks?: Record<string, ModPickState>;
+  onPicksChange?: (picks: Record<string, ModPickState>) => void;
+  /** Fixed bottom bar on other pages. Crafting inlines it so the tree stays visible. */
+  dockRegex?: boolean;
+  regexCaption?: string;
 }) {
   const { locale, t } = useLocale();
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
@@ -148,6 +155,10 @@ export function ChroniclesModBuilder({
   useEffect(() => {
     setLang(matchLangForLocale(locale));
   }, [locale]);
+
+  useEffect(() => {
+    onPicksChange?.(picks);
+  }, [picks, onPicksChange]);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -264,7 +275,7 @@ export function ChroniclesModBuilder({
   const lengthPct = Math.min(100, (result.length / MAX_LENGTH) * 100);
 
   return (
-    <div className="pb-40">
+    <div className={dockRegex ? "pb-40" : "pb-2"}>
       <header className="mb-4 flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs tracking-[0.28em] text-gold-dim">{kicker}</p>
@@ -410,8 +421,15 @@ export function ChroniclesModBuilder({
         />
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-panel/95 backdrop-blur">
+      <div
+        className={
+          dockRegex
+            ? "fixed inset-x-0 bottom-0 z-10 border-t border-line bg-panel/95 backdrop-blur"
+            : "mt-4 rounded-sm border border-line bg-panel"
+        }
+      >
         <div className="mx-auto flex max-w-[1280px] flex-col gap-2 px-4 py-3 sm:px-6">
+          {regexCaption && <p className="text-xs text-gold-dim">{regexCaption}</p>}
           <div className="flex flex-wrap items-center gap-2">
             <div className="min-w-16 text-xs text-muted">
               <span className={result.overLimit ? "text-exclude" : "text-gold"}>
