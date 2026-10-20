@@ -38,11 +38,11 @@ function pattern() {
   return document.querySelector(".font-mono.text-gold")?.textContent ?? "";
 }
 
-function distinctPrefixes(limit: number): AffixFamily[] {
+function distinctSide(generation: "prefix" | "suffix", limit: number): AffixFamily[] {
   const picked: AffixFamily[] = [];
   const seen = new Set<string>();
   for (const family of earlyGearFamiliesFor("body")) {
-    if (family.generation !== "prefix" || seen.has(family.family)) continue;
+    if (family.generation !== generation || seen.has(family.family)) continue;
     seen.add(family.family);
     picked.push(family);
     if (picked.length === limit) return picked;
@@ -91,12 +91,13 @@ describe("crafting page", () => {
     );
     expect(within(row).getByRole("button", { name: "展開階層" })).toBeInTheDocument();
 
-    const desecrate = screen.getByRole("button", { name: /褻瀆分支/ });
-    expect(desecrate).toHaveAttribute("aria-expanded", "true");
     expect(screen.getAllByText(/少花光明之兆/).length).toBeGreaterThan(0);
-
-    await user.click(screen.getByRole("button", { name: /選底/ }));
     expect(screen.getAllByText(/骰不到所選階級就是換底/).length).toBeGreaterThan(0);
+    expect(document.querySelector("[data-craft-diagram]")).toBeTruthy();
+    expect(document.querySelector('[data-node="base"]')).toHaveAttribute("data-active", "true");
+    expect(document.querySelector('[data-node="fill"]')).toHaveAttribute("data-active", "true");
+    expect(document.querySelector('[data-node="stop-base"]')).toHaveAttribute("data-active", "false");
+    expect(screen.queryByRole("button", { name: "褻瀆分支" })).not.toBeInTheDocument();
 
     await user.click(within(row).getByRole("checkbox", { name: `目標 ${life.textZh}` }));
     await user.type(screen.getByLabelText("物品等級"), "1");
@@ -110,11 +111,74 @@ describe("crafting page", () => {
     expect(pattern()).not.toBe(open);
     expect(pattern()).toMatch(/\\d/);
     expect(screen.getByText("換底")).toBeInTheDocument();
-    expect(screen.getByText(/所選階級高過這件的物品等級/)).toBeInTheDocument();
+    expect(screen.getAllByText(/所選階級高過這件的物品等級/).length).toBeGreaterThan(0);
+    expect(document.querySelector('[data-node="stop-base"]')).toHaveAttribute("data-active", "true");
 
     await user.click(screen.getByRole("checkbox", { name: /預算緊/ }));
     expect(screen.getByText("換底")).toBeInTheDocument();
     expect(screen.getByText("你勾了預算緊。判定沒有因此改變。")).toBeInTheDocument();
+  }, 15_000);
+
+  it("classifies a lower-level non-target as safe to whittle", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+    const life = lifeFamily();
+    const top = craftTierChoices(life)[0];
+    if (!top) throw new Error("missing life tiers");
+    const other = earlyGearFamiliesFor("body").find((family) => (
+      family.id !== life.id && family.tiers.some((tier) => tier.level < top.level)
+    ));
+    if (!other) throw new Error("missing a lower-level affix");
+    const low = other.tiers.reduce(
+      (best, tier, index) => (tier.level < other.tiers[best]!.level ? index : best),
+      0,
+    );
+
+    await user.click(screen.getByRole("checkbox", { name: `目標 ${life.textZh}` }));
+    await user.selectOptions(screen.getByLabelText(`最低階級 ${life.textZh}`), String(top.index));
+    await user.selectOptions(screen.getByLabelText("非目標詞綴"), other.id);
+    await user.selectOptions(screen.getByLabelText("這件上的階級"), String(low));
+    await user.click(screen.getByRole("button", { name: "記在這件上" }));
+
+    expect(screen.getByText("可削切")).toBeInTheDocument();
+    expect(screen.getByText(`需求等級 ${other.tiers[low]!.level}`)).toBeInTheDocument();
+    expect(screen.getByText("繼續（削切之兆，混沌石移除最低等級詞綴）")).toBeInTheDocument();
+    expect(document.querySelector('[data-node="whittle"]')).toHaveAttribute("data-active", "true");
+  }, 15_000);
+
+  it("keeps a body once a third socket is added and opens Thrud's pool on weapons", async () => {
+    const user = userEvent.setup();
+    const view = renderCrafting();
+    expect(screen.getByLabelText("孔 1")).toBeInTheDocument();
+    expect(screen.getByLabelText("孔 2")).toBeInTheDocument();
+    expect(screen.queryByLabelText("孔 3")).not.toBeInTheDocument();
+    expect(screen.queryByText("步驟 A")).not.toBeInTheDocument();
+    expect(screen.queryByText("步驟 D")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "加一孔" }));
+    expect(screen.getByText("繼續（額外增幅槽，留下這件）")).toBeInTheDocument();
+    expect(screen.queryByText("卓越")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Exceptional/)).not.toBeInTheDocument();
+    expect(document.querySelector('[data-node="keep-exceptional"]')).toHaveAttribute("data-active", "true");
+
+    await user.selectOptions(screen.getByLabelText("孔 1"), "Serles_Triumph");
+    expect(screen.getAllByText(/允許後綴\+1/).length).toBeGreaterThan(0);
+    const suffixes = distinctSide("suffix", 5);
+    for (const family of suffixes.slice(0, 4)) {
+      await user.click(screen.getByRole("checkbox", { name: `目標 ${family.textZh}` }));
+    }
+    expect(within(affixRow(suffixes[3]!.textZh)).getByRole("checkbox")).toBeEnabled();
+    const fifth = affixRow(suffixes[4]!.textZh);
+    expect(within(fifth).getByRole("checkbox")).toBeDisabled();
+    expect(fifth).toHaveAttribute("title", "後綴已滿 4 條");
+
+    await user.click(document.querySelector('[data-node="stop-base"]')!);
+    expect(document.querySelector("[data-craft-detail]")?.textContent).toContain("骰不到所選階級就是換底");
+
+    view.unmount();
+    renderCrafting("/endgame/crafting?slot=bow");
+    await user.selectOptions(screen.getByLabelText("孔 1"), "Thruds_Might");
+    expect(screen.getByRole("checkbox", { name: /變動物理詞綴的大小/ })).toBeInTheDocument();
   }, 15_000);
 
   it("opens a weapon class on the same target rows", () => {
@@ -179,7 +243,7 @@ describe("crafting page", () => {
     expect(affixRow(armour.textZh)).not.toHaveAttribute("title", "與已選詞條同類，不能同時存在");
 
     await user.click(screen.getByRole("checkbox", { name: `目標 ${armour.textZh}` }));
-    const prefixes = distinctPrefixes(4);
+    const prefixes = distinctSide("prefix", 4);
     for (const family of prefixes.slice(0, 3)) {
       await user.click(screen.getByRole("checkbox", { name: `目標 ${family.textZh}` }));
     }

@@ -45,8 +45,6 @@ export type ModPickState = {
 
 export type ModPickMode = "polarity" | "target";
 
-const TARGET_SIDE_CAP = 3;
-
 function isChosenTarget(pick: ModPickState | undefined): boolean {
   return pick?.polarity === "include" || pick?.polarity === "or";
 }
@@ -62,10 +60,11 @@ function targetBlockTitle(
   family: AffixFamily,
   picks: Record<string, ModPickState>,
   families: AffixFamily[],
+  caps: { prefix: number; suffix: number },
   copy: {
     craftingConflict: string;
-    craftingSideFullPrefix: string;
-    craftingSideFullSuffix: string;
+    craftingSideFullPrefix: (count: number) => string;
+    craftingSideFullSuffix: (count: number) => string;
   },
 ): string | undefined {
   if (isChosenTarget(picks[family.id])) return undefined;
@@ -73,8 +72,9 @@ function targetBlockTitle(
   const group = affixModGroup(family);
   if (selected.some((row) => affixModGroup(row) === group)) return copy.craftingConflict;
   const sideCount = selected.filter((row) => row.generation === family.generation).length;
-  if (sideCount >= TARGET_SIDE_CAP) {
-    return family.generation === "prefix" ? copy.craftingSideFullPrefix : copy.craftingSideFullSuffix;
+  const cap = family.generation === "prefix" ? caps.prefix : caps.suffix;
+  if (sideCount >= cap) {
+    return family.generation === "prefix" ? copy.craftingSideFullPrefix(cap) : copy.craftingSideFullSuffix(cap);
   }
   return undefined;
 }
@@ -155,6 +155,8 @@ export function ChroniclesModBuilder({
   dockRegex = true,
   regexCaption,
   pickMode = "polarity",
+  prefixCap = 3,
+  suffixCap = 3,
 }: {
   kicker: string;
   title: string;
@@ -183,6 +185,10 @@ export function ChroniclesModBuilder({
   regexCaption?: string;
   /** Polarity keeps 是／或／否. Target is the crafting checklist. */
   pickMode?: ModPickMode;
+  /** How many prefixes can be targeted before the rest of that side dims. */
+  prefixCap?: number;
+  /** How many suffixes can be targeted before the rest of that side dims. */
+  suffixCap?: number;
 }) {
   const { locale, t } = useLocale();
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
@@ -297,7 +303,12 @@ export function ChroniclesModBuilder({
           .map((s) => s.toLowerCase());
         if (!needles.some((n) => n.length >= 2 && blob.includes(n))) continue;
         if (next[family.id]) continue;
-        if (pickMode === "target" && targetBlockTitle(family, next, families, t)) continue;
+        if (
+          pickMode === "target" &&
+          targetBlockTitle(family, next, families, { prefix: prefixCap, suffix: suffixCap }, t)
+        ) {
+          continue;
+        }
         next[family.id] = {
           polarity: "include",
           min: "",
@@ -372,11 +383,11 @@ export function ChroniclesModBuilder({
     if (pickMode !== "target") return {} as Record<string, string>;
     const titles: Record<string, string> = {};
     for (const family of families) {
-      const title = targetBlockTitle(family, picks, families, t);
+      const title = targetBlockTitle(family, picks, families, { prefix: prefixCap, suffix: suffixCap }, t);
       if (title) titles[family.id] = title;
     }
     return titles;
-  }, [pickMode, families, picks, t]);
+  }, [pickMode, families, picks, t, prefixCap, suffixCap]);
 
   function changePool(id: string) {
     onPoolChange?.(id);

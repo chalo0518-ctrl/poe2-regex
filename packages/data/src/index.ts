@@ -142,9 +142,12 @@ export {
   CRAFTING_RULESET,
   CRAFTING_TREE,
   CRAFT_CLEANUP_TEXT,
+  CRAFT_DIAGRAM,
   CRAFT_REASON_TEXT,
   CRAFT_WARNING_TEXT,
+  craftDiagramPath,
   craftLocaleText,
+  craftTreeNodeForDiagram,
   craftVerdictHeadline,
   craftTierChoices,
   decideCraft,
@@ -155,6 +158,9 @@ export {
 export type {
   CraftCleanup,
   CraftDecision,
+  CraftDiagramNode,
+  CraftDiagramNodeId,
+  CraftOtherMod,
   CraftReasonId,
   CraftTarget,
   CraftTierChoice,
@@ -166,7 +172,52 @@ export type {
   Localized,
   ModSide,
   OwnedTarget,
+  SocketAugmentPick,
+  SocketAugmentView,
 } from "./crafting.ts";
+
+export {
+  augmentById,
+  augmentsForSlot,
+  effectForSlot,
+  inferExceptionalBase,
+  normalSocketMax,
+  slotCanBeExceptional,
+  socketCountMax,
+} from "./sockets.ts";
+export type { Augment, AugmentEffect, AugmentKind, SlotAugment } from "./sockets.ts";
+
+export {
+  BASE_CRAFTED_CAP,
+  BASE_SIDE_CAP,
+  familiesForSocketAugments,
+  poolAugmentById,
+  poolAugmentsForSlot,
+  socketSideCaps,
+} from "./socketPools.ts";
+export type { SocketPoolAugment } from "./socketPools.ts";
+
+export {
+  REMOVAL_OMENS,
+  classifyNonTarget,
+  evaluateGreater,
+  evaluateLight,
+  evaluateSide,
+  evaluateWhittling,
+  recommendRemoval,
+} from "./omens.ts";
+export type {
+  GreaterOutcome,
+  LightOutcome,
+  NonTargetClass,
+  RemovalAssessment,
+  RemovalMod,
+  RemovalOmen,
+  RemovalOmenId,
+  RemovalRecommendation,
+  SideOutcome,
+  WhittlingOutcome,
+} from "./omens.ts";
 
 export const shieldFamilies = shieldsJson as ShieldFamily[];
 export const harvestTags = tagsJson as HarvestTag[];

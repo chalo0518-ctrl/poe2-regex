@@ -1,0 +1,3680 @@
+{
+  "source": "https://poe2db.tw/tw/ + /us/ augment item pages",
+  "augments": [
+    {
+      "id": "Serles_Triumph",
+      "nameZh": "瑟雷的凱旋",
+      "nameEn": "Serle's Triumph",
+      "socketBound": true,
+      "limitOne": true,
+      "slots": [
+        "body",
+        "helmet",
+        "gloves",
+        "boots",
+        "shield",
+        "claw",
+        "dagger",
+        "sword1h",
+        "axe1h",
+        "mace1h",
+        "sword2h",
+        "axe2h",
+        "mace2h",
+        "spear",
+        "quarterstaff",
+        "flail",
+        "bow",
+        "crossbow",
+        "wand",
+        "staff",
+        "sceptre"
+      ],
+      "effectZh": "所有裝備: 允許後綴+1",
+      "effectEn": "All Equipment: +1 Suffix Modifier allowed",
+      "prefixBonus": 0,
+      "suffixBonus": 1,
+      "craftedBonus": 0,
+      "families": []
+    },
+    {
+      "id": "Astrids_Creativity",
+      "nameZh": "阿斯垂德的創造",
+      "nameEn": "Astrid's Creativity",
+      "socketBound": false,
+      "limitOne": true,
+      "slots": [
+        "body",
+        "helmet",
+        "gloves",
+        "boots",
+        "shield",
+        "claw",
+        "dagger",
+        "sword1h",
+        "axe1h",
+        "mace1h",
+        "sword2h",
+        "axe2h",
+        "mace2h",
+        "spear",
+        "quarterstaff",
+        "flail",
+        "bow",
+        "crossbow",
+        "wand",
+        "staff",
+        "sceptre"
+      ],
+      "effectZh": "所有裝備: 可以有1個額外工藝詞綴",
+      "effectEn": "All Equipment: Can have 1 additional Crafted Modifiers",
+      "prefixBonus": 0,
+      "suffixBonus": 0,
+      "craftedBonus": 1,
+      "families": []
+    },
+    {
+      "id": "Thruds_Might",
+      "nameZh": "索魯德的強權",
+      "nameEn": "Thrud's Might",
+      "socketBound": true,
+      "limitOne": true,
+      "slots": [
+        "claw",
+        "dagger",
+        "sword1h",
+        "axe1h",
+        "mace1h",
+        "sword2h",
+        "axe2h",
+        "mace2h",
+        "spear",
+        "quarterstaff",
+        "flail",
+        "bow",
+        "crossbow",
+        "wand",
+        "staff",
+        "sceptre"
+      ],
+      "effectZh": "武器: 可骰出毀滅詞綴",
+      "effectEn": "Weapon: Can roll Destruction modifiers",
+      "prefixBonus": 0,
+      "suffixBonus": 0,
+      "craftedBonus": 0,
+      "families": [
+        {
+          "id": "Thruds_Might:0",
+          "family": "Thruds_Might:0",
+          "generation": "suffix",
+          "tags": [
+            "physical"
+          ],
+          "tagsZh": [
+            "物理"
+          ],
+          "labelZh": "毀滅之",
+          "labelEn": "of Destruction",
+          "textZh": "增加(10—15)%變動物理詞綴的大小",
+          "textEn": "(10—15)% increased Explicit Physical Modifier magnitudes",
+          "match": "increased Explicit Physical Modifier magnitudes",
+          "matchZh": "增加變動物理詞綴的大小",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 10,
+            "suggestedMax": 15
+          },
+          "tiers": [
+            {
+              "nameZh": "毀滅之",
+              "nameEn": "of Destruction",
+              "level": 65,
+              "textZh": "增加(10—15)%變動物理詞綴的大小",
+              "textEn": "(10—15)% increased Explicit Physical Modifier magnitudes",
+              "dropChance": 0,
+              "statMin": 10,
+              "statMax": 15
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Thruds_Might:1",
+          "family": "Thruds_Might:1",
+          "generation": "suffix",
+          "tags": [
+            "elemental",
+            "fire"
+          ],
+          "tagsZh": [
+            "元素",
+            "火焰"
+          ],
+          "labelZh": "毀滅之",
+          "labelEn": "of Destruction",
+          "textZh": "增加(15—20)%變動火焰詞綴的大小",
+          "textEn": "(15—20)% increased Explicit Fire Modifier magnitudes",
+          "match": "increased Explicit Fire Modifier magnitudes",
+          "matchZh": "增加變動火焰詞綴的大小",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 15,
+            "suggestedMax": 20
+          },
+          "tiers": [
+            {
+              "nameZh": "毀滅之",
+              "nameEn": "of Destruction",
+              "level": 65,
+              "textZh": "增加(15—20)%變動火焰詞綴的大小",
+              "textEn": "(15—20)% increased Explicit Fire Modifier magnitudes",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 20
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Thruds_Might:2",
+          "family": "Thruds_Might:2",
+          "generation": "suffix",
+          "tags": [
+            "elemental",
+            "lightning"
+          ],
+          "tagsZh": [
+            "元素",
+            "閃電"
+          ],
+          "labelZh": "毀滅之",
+          "labelEn": "of Destruction",
+          "textZh": "增加(15—20)%變動閃電詞綴的大小",
+          "textEn": "(15—20)% increased Explicit Lightning Modifier magnitudes",
+          "match": "increased Explicit Lightning Modifier magnitudes",
+          "matchZh": "增加變動閃電詞綴的大小",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 15,
+            "suggestedMax": 20
+          },
+          "tiers": [
+            {
+              "nameZh": "毀滅之",
+              "nameEn": "of Destruction",
+              "level": 65,
+              "textZh": "增加(15—20)%變動閃電詞綴的大小",
+              "textEn": "(15—20)% increased Explicit Lightning Modifier magnitudes",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 20
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Thruds_Might:3",
+          "family": "Thruds_Might:3",
+          "generation": "suffix",
+          "tags": [
+            "elemental",
+            "cold"
+          ],
+          "tagsZh": [
+            "元素",
+            "冰冷"
+          ],
+          "labelZh": "毀滅之",
+          "labelEn": "of Destruction",
+          "textZh": "增加(15—20)%變動冰冷詞綴的大小",
+          "textEn": "(15—20)% increased Explicit Cold Modifier magnitudes",
+          "match": "increased Explicit Cold Modifier magnitudes",
+          "matchZh": "增加變動冰冷詞綴的大小",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 15,
+            "suggestedMax": 20
+          },
+          "tiers": [
+            {
+              "nameZh": "毀滅之",
+              "nameEn": "of Destruction",
+              "level": 65,
+              "textZh": "增加(15—20)%變動冰冷詞綴的大小",
+              "textEn": "(15—20)% increased Explicit Cold Modifier magnitudes",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 20
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Thruds_Might:4",
+          "family": "Thruds_Might:4",
+          "generation": "suffix",
+          "tags": [
+            "elemental"
+          ],
+          "tagsZh": [
+            "元素"
+          ],
+          "labelZh": "毀滅之",
+          "labelEn": "of Destruction",
+          "textZh": "增加(15—20)%變動元素傷害詞綴的大小",
+          "textEn": "(15—20)% increased Explicit Elemental Damage Modifier magnitudes",
+          "match": "increased Explicit Elemental Damage Modifier magnitudes",
+          "matchZh": "增加變動元素傷害詞綴的大小",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 15,
+            "suggestedMax": 20
+          },
+          "tiers": [
+            {
+              "nameZh": "毀滅之",
+              "nameEn": "of Destruction",
+              "level": 65,
+              "textZh": "增加(15—20)%變動元素傷害詞綴的大小",
+              "textEn": "(15—20)% increased Explicit Elemental Damage Modifier magnitudes",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 20
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Thruds_Might:5",
+          "family": "Thruds_Might:5",
+          "generation": "suffix",
+          "tags": [
+            "chaos"
+          ],
+          "tagsZh": [
+            "混沌"
+          ],
+          "labelZh": "毀滅之",
+          "labelEn": "of Destruction",
+          "textZh": "增加(15—20)%變動混沌詞綴的大小",
+          "textEn": "(15—20)% increased Explicit Chaos Modifier magnitudes",
+          "match": "increased Explicit Chaos Modifier magnitudes",
+          "matchZh": "增加變動混沌詞綴的大小",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 15,
+            "suggestedMax": 20
+          },
+          "tiers": [
+            {
+              "nameZh": "毀滅之",
+              "nameEn": "of Destruction",
+              "level": 65,
+              "textZh": "增加(15—20)%變動混沌詞綴的大小",
+              "textEn": "(15—20)% increased Explicit Chaos Modifier magnitudes",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 20
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Thruds_Might:6",
+          "family": "Thruds_Might:6",
+          "generation": "suffix",
+          "tags": [
+            "mana"
+          ],
+          "tagsZh": [
+            "魔力"
+          ],
+          "labelZh": "毀滅之",
+          "labelEn": "of Destruction",
+          "textZh": "增加(25—30)%變動魔力詞綴的大小",
+          "textEn": "(25—30)% increased Explicit Mana Modifier magnitudes",
+          "match": "increased Explicit Mana Modifier magnitudes",
+          "matchZh": "增加變動魔力詞綴的大小",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 25,
+            "suggestedMax": 30
+          },
+          "tiers": [
+            {
+              "nameZh": "毀滅之",
+              "nameEn": "of Destruction",
+              "level": 65,
+              "textZh": "增加(25—30)%變動魔力詞綴的大小",
+              "textEn": "(25—30)% increased Explicit Mana Modifier magnitudes",
+              "dropChance": 0,
+              "statMin": 25,
+              "statMax": 30
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Thruds_Might:7",
+          "family": "Thruds_Might:7",
+          "generation": "prefix",
+          "tags": [
+            "speed"
+          ],
+          "tagsZh": [
+            "速度"
+          ],
+          "labelZh": "索魯德的",
+          "labelEn": "Thrud's",
+          "textZh": "增加(25—30)%變動速度詞綴的大小",
+          "textEn": "(25—30)% increased Explicit Speed Modifier magnitudes",
+          "match": "increased Explicit Speed Modifier magnitudes",
+          "matchZh": "增加變動速度詞綴的大小",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 25,
+            "suggestedMax": 30
+          },
+          "tiers": [
+            {
+              "nameZh": "索魯德的",
+              "nameEn": "Thrud's",
+              "level": 65,
+              "textZh": "增加(25—30)%變動速度詞綴的大小",
+              "textEn": "(25—30)% increased Explicit Speed Modifier magnitudes",
+              "dropChance": 0,
+              "statMin": 25,
+              "statMax": 30
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Thruds_Might:8",
+          "family": "Thruds_Might:8",
+          "generation": "prefix",
+          "tags": [
+            "critical"
+          ],
+          "tagsZh": [
+            "暴擊"
+          ],
+          "labelZh": "索魯德的",
+          "labelEn": "Thrud's",
+          "textZh": "增加(20—30)%變動暴擊詞綴的大小",
+          "textEn": "(20—30)% increased Explicit Critical Modifier magnitudes",
+          "match": "increased Explicit Critical Modifier magnitudes",
+          "matchZh": "增加變動暴擊詞綴的大小",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 20,
+            "suggestedMax": 30
+          },
+          "tiers": [
+            {
+              "nameZh": "索魯德的",
+              "nameEn": "Thrud's",
+              "level": 65,
+              "textZh": "增加(20—30)%變動暴擊詞綴的大小",
+              "textEn": "(20—30)% increased Explicit Critical Modifier magnitudes",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 30
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "Voranas_Carnage",
+      "nameZh": "沃拉娜的殘殺",
+      "nameEn": "Vorana's Carnage",
+      "socketBound": true,
+      "limitOne": true,
+      "slots": [
+        "helmet"
+      ],
+      "effectZh": "頭部: 可以骰出狂戰詞綴",
+      "effectEn": "Helmets: Can roll Berserking modifiers",
+      "prefixBonus": 0,
+      "suffixBonus": 0,
+      "craftedBonus": 0,
+      "families": [
+        {
+          "id": "Voranas_Carnage:0",
+          "family": "Voranas_Carnage:0",
+          "generation": "prefix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "沃拉娜的",
+          "labelEn": "Vorana's",
+          "textZh": "+(8—12)層最大盛怒",
+          "textEn": "+(8—12) to Maximum Rage",
+          "match": "to Maximum Rage",
+          "matchZh": "層最大盛怒",
+          "kind": "numeric",
+          "numeric": {
+            "format": "plusFlat",
+            "suggestedMin": 8,
+            "suggestedMax": 12
+          },
+          "tiers": [
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 45,
+              "textZh": "+(4—7)層最大盛怒",
+              "textEn": "+(4—7) to Maximum Rage",
+              "dropChance": 0,
+              "statMin": 4,
+              "statMax": 7
+            },
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 75,
+              "textZh": "+(8—12)層最大盛怒",
+              "textEn": "+(8—12) to Maximum Rage",
+              "dropChance": 0,
+              "statMin": 8,
+              "statMax": 12
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:1",
+          "family": "Voranas_Carnage:1",
+          "generation": "prefix",
+          "tags": [
+            "damage"
+          ],
+          "tagsZh": [
+            "傷害"
+          ],
+          "labelZh": "沃拉娜的",
+          "labelEn": "Vorana's",
+          "textZh": "增加(50—75)%戰吼傷害",
+          "textEn": "(50—75)% increased Damage with Warcries",
+          "match": "increased Damage with Warcries",
+          "matchZh": "增加戰吼傷害",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 50,
+            "suggestedMax": 75
+          },
+          "tiers": [
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 45,
+              "textZh": "增加(20—34)%戰吼傷害",
+              "textEn": "(20—34)% increased Damage with Warcries",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 34
+            },
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 65,
+              "textZh": "增加(35—49)%戰吼傷害",
+              "textEn": "(35—49)% increased Damage with Warcries",
+              "dropChance": 0,
+              "statMin": 35,
+              "statMax": 49
+            },
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 75,
+              "textZh": "增加(50—75)%戰吼傷害",
+              "textEn": "(50—75)% increased Damage with Warcries",
+              "dropChance": 0,
+              "statMin": 50,
+              "statMax": 75
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 3,
+          "weight": 3
+        },
+        {
+          "id": "Voranas_Carnage:2",
+          "family": "Voranas_Carnage:2",
+          "generation": "prefix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "沃拉娜的",
+          "labelEn": "Vorana's",
+          "textZh": "增加(35—55)%戰吼計算的總強度",
+          "textEn": "(35—55)% increased total Power counted by Warcries",
+          "match": "increased total Power counted by Warcries",
+          "matchZh": "增加戰吼計算的總強度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 35,
+            "suggestedMax": 55
+          },
+          "tiers": [
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 45,
+              "textZh": "增加(20—34)%戰吼計算的總強度",
+              "textEn": "(20—34)% increased total Power counted by Warcries",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 34
+            },
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 75,
+              "textZh": "增加(35—55)%戰吼計算的總強度",
+              "textEn": "(35—55)% increased total Power counted by Warcries",
+              "dropChance": 0,
+              "statMin": 35,
+              "statMax": 55
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:3",
+          "family": "Voranas_Carnage:3",
+          "generation": "prefix",
+          "tags": [
+            "physical"
+          ],
+          "tagsZh": [
+            "物理"
+          ],
+          "labelZh": "沃拉娜的",
+          "labelEn": "Vorana's",
+          "textZh": "增加(40—60)%完全破甲的效果",
+          "textEn": "(40—60)% increased effect of Fully Broken Armour",
+          "match": "increased effect of Fully Broken Armour",
+          "matchZh": "增加完全破甲的效果",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 40,
+            "suggestedMax": 60
+          },
+          "tiers": [
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 45,
+              "textZh": "增加(15—24)%完全破甲的效果",
+              "textEn": "(15—24)% increased effect of Fully Broken Armour",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 24
+            },
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 65,
+              "textZh": "增加(25—39)%完全破甲的效果",
+              "textEn": "(25—39)% increased effect of Fully Broken Armour",
+              "dropChance": 0,
+              "statMin": 25,
+              "statMax": 39
+            },
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 75,
+              "textZh": "增加(40—60)%完全破甲的效果",
+              "textEn": "(40—60)% increased effect of Fully Broken Armour",
+              "dropChance": 0,
+              "statMin": 40,
+              "statMax": 60
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 3,
+          "weight": 3
+        },
+        {
+          "id": "Voranas_Carnage:4",
+          "family": "Voranas_Carnage:4",
+          "generation": "prefix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "沃拉娜的",
+          "labelEn": "Vorana's",
+          "textZh": "增加(50—85)%生成的榮耀",
+          "textEn": "(50—85)% increased Glory generation",
+          "match": "increased Glory generation",
+          "matchZh": "增加生成的榮耀",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 50,
+            "suggestedMax": 85
+          },
+          "tiers": [
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 45,
+              "textZh": "增加(20—49)%生成的榮耀",
+              "textEn": "(20—49)% increased Glory generation",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 49
+            },
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 75,
+              "textZh": "增加(50—85)%生成的榮耀",
+              "textEn": "(50—85)% increased Glory generation",
+              "dropChance": 0,
+              "statMin": 50,
+              "statMax": 85
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:5",
+          "family": "Voranas_Carnage:5",
+          "generation": "prefix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "沃拉娜的",
+          "labelEn": "Vorana's",
+          "textZh": "增加(35—60)%盛怒消耗效用",
+          "textEn": "(35—60)% increased Rage Cost Efficiency",
+          "match": "increased Rage Cost Efficiency",
+          "matchZh": "增加盛怒消耗效用",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 35,
+            "suggestedMax": 60
+          },
+          "tiers": [
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 45,
+              "textZh": "增加(20—34)%盛怒消耗效用",
+              "textEn": "(20—34)% increased Rage Cost Efficiency",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 34
+            },
+            {
+              "nameZh": "沃拉娜的",
+              "nameEn": "Vorana's",
+              "level": 75,
+              "textZh": "增加(35—60)%盛怒消耗效用",
+              "textEn": "(35—60)% increased Rage Cost Efficiency",
+              "dropChance": 0,
+              "statMin": 35,
+              "statMax": 60
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:6",
+          "family": "Voranas_Carnage:6",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狂戰士之",
+          "labelEn": "of the Berserker",
+          "textZh": "盛怒的固有損失延後(3—5)秒開始",
+          "textEn": "Inherent Rage loss starts (3—5) seconds later",
+          "match": "Inherent Rage loss starts seconds later",
+          "matchZh": "盛怒的固有損失延後秒開始",
+          "kind": "numeric",
+          "numeric": {
+            "format": "bare",
+            "suggestedMin": 3,
+            "suggestedMax": 5
+          },
+          "tiers": [
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 45,
+              "textZh": "盛怒的固有損失延後1秒開始",
+              "textEn": "Inherent Rage loss starts 1 second later",
+              "dropChance": 0
+            },
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 75,
+              "textZh": "盛怒的固有損失延後(3—5)秒開始",
+              "textEn": "Inherent Rage loss starts (3—5) seconds later",
+              "dropChance": 0,
+              "statMin": 3,
+              "statMax": 5
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:7",
+          "family": "Voranas_Carnage:7",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狂戰士之",
+          "labelEn": "of the Berserker",
+          "textZh": "遭敵人擊中時，獲得(6—10)層盛怒",
+          "textEn": "Gain (6—10) Rage when Hit by an Enemy",
+          "match": "Gain Rage when Hit by an Enemy",
+          "matchZh": "遭敵人擊中時，獲得層盛怒",
+          "kind": "numeric",
+          "numeric": {
+            "format": "bare",
+            "suggestedMin": 6,
+            "suggestedMax": 10
+          },
+          "tiers": [
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 45,
+              "textZh": "遭敵人擊中時，獲得(4—5)層盛怒",
+              "textEn": "Gain (4—5) Rage when Hit by an Enemy",
+              "dropChance": 0,
+              "statMin": 4,
+              "statMax": 5
+            },
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 75,
+              "textZh": "遭敵人擊中時，獲得(6—10)層盛怒",
+              "textEn": "Gain (6—10) Rage when Hit by an Enemy",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 10
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:8",
+          "family": "Voranas_Carnage:8",
+          "generation": "suffix",
+          "tags": [
+            "speed"
+          ],
+          "tagsZh": [
+            "速度"
+          ],
+          "labelZh": "狂戰士之",
+          "labelEn": "of the Berserker",
+          "textZh": "增加(37—50)%戰吼速度",
+          "textEn": "(37—50)% increased Warcry Speed",
+          "match": "increased Warcry Speed",
+          "matchZh": "增加戰吼速度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 37,
+            "suggestedMax": 50
+          },
+          "tiers": [
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 45,
+              "textZh": "增加(23—36)%戰吼速度",
+              "textEn": "(23—36)% increased Warcry Speed",
+              "dropChance": 0,
+              "statMin": 23,
+              "statMax": 36
+            },
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 75,
+              "textZh": "增加(37—50)%戰吼速度",
+              "textEn": "(37—50)% increased Warcry Speed",
+              "dropChance": 0,
+              "statMin": 37,
+              "statMax": 50
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:9",
+          "family": "Voranas_Carnage:9",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狂戰士之",
+          "labelEn": "of the Berserker",
+          "textZh": "增加(37—50)%戰吼冷卻時間恢復率",
+          "textEn": "(37—50)% increased Warcry Cooldown Recovery Rate",
+          "match": "increased Warcry Cooldown Recovery Rate",
+          "matchZh": "增加戰吼冷卻時間恢復率",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 37,
+            "suggestedMax": 50
+          },
+          "tiers": [
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 45,
+              "textZh": "增加(23—36)%戰吼冷卻時間恢復率",
+              "textEn": "(23—36)% increased Warcry Cooldown Recovery Rate",
+              "dropChance": 0,
+              "statMin": 23,
+              "statMax": 36
+            },
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 75,
+              "textZh": "增加(37—50)%戰吼冷卻時間恢復率",
+              "textEn": "(37—50)% increased Warcry Cooldown Recovery Rate",
+              "dropChance": 0,
+              "statMin": 37,
+              "statMax": 50
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:10",
+          "family": "Voranas_Carnage:10",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狂戰士之",
+          "labelEn": "of the Berserker",
+          "textZh": "戰吼技能增加(30—50)%範圍效果",
+          "textEn": "Warcry Skills have (30—50)% increased Area of Effect",
+          "match": "Warcry Skills have increased Area of Effect",
+          "matchZh": "戰吼技能增加範圍效果",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 30,
+            "suggestedMax": 50
+          },
+          "tiers": [
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 45,
+              "textZh": "戰吼技能增加(15—29)%範圍效果",
+              "textEn": "Warcry Skills have (15—29)% increased Area of Effect",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 29
+            },
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 75,
+              "textZh": "戰吼技能增加(30—50)%範圍效果",
+              "textEn": "Warcry Skills have (30—50)% increased Area of Effect",
+              "dropChance": 0,
+              "statMin": 30,
+              "statMax": 50
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:11",
+          "family": "Voranas_Carnage:11",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狂戰士之",
+          "labelEn": "of the Berserker",
+          "textZh": "當你使用戰吼時恢復(4—5)%生命",
+          "textEn": "Recover (4—5)% of maximum Life when you use a Warcry",
+          "match": "Recover of maximum Life when you use a Warcry",
+          "matchZh": "當你使用戰吼時恢復生命",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 4,
+            "suggestedMax": 5
+          },
+          "tiers": [
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 45,
+              "textZh": "當你使用戰吼時恢復(2—3)%生命",
+              "textEn": "Recover (2—3)% of maximum Life when you use a Warcry",
+              "dropChance": 0,
+              "statMin": 2,
+              "statMax": 3
+            },
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 75,
+              "textZh": "當你使用戰吼時恢復(4—5)%生命",
+              "textEn": "Recover (4—5)% of maximum Life when you use a Warcry",
+              "dropChance": 0,
+              "statMin": 4,
+              "statMax": 5
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:12",
+          "family": "Voranas_Carnage:12",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狂戰士之",
+          "labelEn": "of the Berserker",
+          "textZh": "增加(100—150)%護甲破壞持續時間",
+          "textEn": "(100—150)% increased Armour Break Duration",
+          "match": "increased Armour Break Duration",
+          "matchZh": "增加護甲破壞持續時間",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 100,
+            "suggestedMax": 150
+          },
+          "tiers": [
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 45,
+              "textZh": "增加(50—99)%護甲破壞持續時間",
+              "textEn": "(50—99)% increased Armour Break Duration",
+              "dropChance": 0,
+              "statMin": 50,
+              "statMax": 99
+            },
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 75,
+              "textZh": "增加(100—150)%護甲破壞持續時間",
+              "textEn": "(100—150)% increased Armour Break Duration",
+              "dropChance": 0,
+              "statMin": 100,
+              "statMax": 150
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Voranas_Carnage:13",
+          "family": "Voranas_Carnage:13",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狂戰士之",
+          "labelEn": "of the Berserker",
+          "textZh": "擊中時有(40—60)%機率額外累積一個連擊",
+          "textEn": "(40—60)% chance to build an additional Combo on Hit",
+          "match": "chance to build an additional Combo on Hit",
+          "matchZh": "擊中時有機率額外累積一個連擊",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 40,
+            "suggestedMax": 60
+          },
+          "tiers": [
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 45,
+              "textZh": "擊中時有(20—39)%機率額外累積一個連擊",
+              "textEn": "(20—39)% chance to build an additional Combo on Hit",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 39
+            },
+            {
+              "nameZh": "狂戰士之",
+              "nameEn": "of the Berserker",
+              "level": 75,
+              "textZh": "擊中時有(40—60)%機率額外累積一個連擊",
+              "textEn": "(40—60)% chance to build an additional Combo on Hit",
+              "dropChance": 0,
+              "statMin": 40,
+              "statMax": 60
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "Uhtreds_Sidereus",
+      "nameZh": "烏特雷的星空",
+      "nameEn": "Uhtred's Sidereus",
+      "socketBound": true,
+      "limitOne": true,
+      "slots": [
+        "boots"
+      ],
+      "effectZh": "鞋子: 可以骰出時空術師詞綴",
+      "effectEn": "Boots: Can roll Chronomancy modifiers",
+      "prefixBonus": 0,
+      "suffixBonus": 0,
+      "craftedBonus": 0,
+      "families": [
+        {
+          "id": "Uhtreds_Sidereus:0",
+          "family": "Uhtreds_Sidereus:0",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "時空魔法之",
+          "labelEn": "of Chronomancy",
+          "textZh": "增加(30—40)%技能效果持續時間",
+          "textEn": "(30—40)% increased Skill Effect Duration",
+          "match": "increased Skill Effect Duration",
+          "matchZh": "增加技能效果持續時間",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 30,
+            "suggestedMax": 40
+          },
+          "tiers": [
+            {
+              "nameZh": "時空魔法之",
+              "nameEn": "of Chronomancy",
+              "level": 45,
+              "textZh": "增加(15—19)%技能效果持續時間",
+              "textEn": "(15—19)% increased Skill Effect Duration",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 19
+            },
+            {
+              "nameZh": "時空魔法之",
+              "nameEn": "of Chronomancy",
+              "level": 55,
+              "textZh": "增加(20—29)%技能效果持續時間",
+              "textEn": "(20—29)% increased Skill Effect Duration",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 29
+            },
+            {
+              "nameZh": "時空魔法之",
+              "nameEn": "of Chronomancy",
+              "level": 78,
+              "textZh": "增加(30—40)%技能效果持續時間",
+              "textEn": "(30—40)% increased Skill Effect Duration",
+              "dropChance": 0,
+              "statMin": 30,
+              "statMax": 40
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 78,
+          "tierCount": 3,
+          "weight": 3
+        },
+        {
+          "id": "Uhtreds_Sidereus:1",
+          "family": "Uhtreds_Sidereus:1",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "時空魔法之",
+          "labelEn": "of Chronomancy",
+          "textZh": "增加(24—30)%冷卻時間恢復率",
+          "textEn": "(24—30)% increased Cooldown Recovery Rate",
+          "match": "increased Cooldown Recovery Rate",
+          "matchZh": "增加冷卻時間恢復率",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 24,
+            "suggestedMax": 30
+          },
+          "tiers": [
+            {
+              "nameZh": "時空魔法之",
+              "nameEn": "of Chronomancy",
+              "level": 45,
+              "textZh": "增加(12—17)%冷卻時間恢復率",
+              "textEn": "(12—17)% increased Cooldown Recovery Rate",
+              "dropChance": 0,
+              "statMin": 12,
+              "statMax": 17
+            },
+            {
+              "nameZh": "時空魔法之",
+              "nameEn": "of Chronomancy",
+              "level": 55,
+              "textZh": "增加(18—23)%冷卻時間恢復率",
+              "textEn": "(18—23)% increased Cooldown Recovery Rate",
+              "dropChance": 0,
+              "statMin": 18,
+              "statMax": 23
+            },
+            {
+              "nameZh": "時空魔法之",
+              "nameEn": "of Chronomancy",
+              "level": 78,
+              "textZh": "增加(24—30)%冷卻時間恢復率",
+              "textEn": "(24—30)% increased Cooldown Recovery Rate",
+              "dropChance": 0,
+              "statMin": 24,
+              "statMax": 30
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 78,
+          "tierCount": 3,
+          "weight": 3
+        },
+        {
+          "id": "Uhtreds_Sidereus:2",
+          "family": "Uhtreds_Sidereus:2",
+          "generation": "prefix",
+          "tags": [
+            "speed"
+          ],
+          "tagsZh": [
+            "速度"
+          ],
+          "labelZh": "烏特雷的",
+          "labelEn": "Uhtred's",
+          "textZh": "增加(30—32)%移動速度 / 減少(21—25)%你身上的減益效果緩速程度",
+          "textEn": "(30—32)% increased Movement Speed / (21—25)% reduced Slowing Potency of Debuffs on You",
+          "match": "increased Movement Speed",
+          "matchZh": "增加移動速度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 30,
+            "suggestedMax": 32
+          },
+          "tiers": [
+            {
+              "nameZh": "烏特雷的",
+              "nameEn": "Uhtred's",
+              "level": 65,
+              "textZh": "增加(24—26)%移動速度 / 減少(10—15)%你身上的減益效果緩速程度",
+              "textEn": "(24—26)% increased Movement Speed / (10—15)% reduced Slowing Potency of Debuffs on You",
+              "dropChance": 0,
+              "statMin": 24,
+              "statMax": 26
+            },
+            {
+              "nameZh": "烏特雷的",
+              "nameEn": "Uhtred's",
+              "level": 70,
+              "textZh": "增加(27—29)%移動速度 / 減少(16—20)%你身上的減益效果緩速程度",
+              "textEn": "(27—29)% increased Movement Speed / (16—20)% reduced Slowing Potency of Debuffs on You",
+              "dropChance": 0,
+              "statMin": 27,
+              "statMax": 29
+            },
+            {
+              "nameZh": "烏特雷的",
+              "nameEn": "Uhtred's",
+              "level": 78,
+              "textZh": "增加(30—32)%移動速度 / 減少(21—25)%你身上的減益效果緩速程度",
+              "textEn": "(30—32)% increased Movement Speed / (21—25)% reduced Slowing Potency of Debuffs on You",
+              "dropChance": 0,
+              "statMin": 30,
+              "statMax": 32
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 78,
+          "tierCount": 3,
+          "weight": 3
+        },
+        {
+          "id": "Uhtreds_Sidereus:3",
+          "family": "Uhtreds_Sidereus:3",
+          "generation": "prefix",
+          "tags": [
+            "speed"
+          ],
+          "tagsZh": [
+            "速度"
+          ],
+          "labelZh": "烏特雷的",
+          "labelEn": "Uhtred's",
+          "textZh": "衝刺時增加(17—23)%移動速度",
+          "textEn": "(17—23)% increased Movement Speed while Sprinting",
+          "match": "increased Movement Speed while Sprinting",
+          "matchZh": "衝刺時增加移動速度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 17,
+            "suggestedMax": 23
+          },
+          "tiers": [
+            {
+              "nameZh": "烏特雷的",
+              "nameEn": "Uhtred's",
+              "level": 45,
+              "textZh": "衝刺時增加(10—14)%移動速度",
+              "textEn": "(10—14)% increased Movement Speed while Sprinting",
+              "dropChance": 0,
+              "statMin": 10,
+              "statMax": 14
+            },
+            {
+              "nameZh": "烏特雷的",
+              "nameEn": "Uhtred's",
+              "level": 78,
+              "textZh": "衝刺時增加(17—23)%移動速度",
+              "textEn": "(17—23)% increased Movement Speed while Sprinting",
+              "dropChance": 0,
+              "statMin": 17,
+              "statMax": 23
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 78,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Uhtreds_Sidereus:4",
+          "family": "Uhtreds_Sidereus:4",
+          "generation": "prefix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "烏特雷的",
+          "labelEn": "Uhtred's",
+          "textZh": "閃避翻滾距離+(0.4—0.5)公尺",
+          "textEn": "+(0.4—0.5) metres to Dodge Roll distance",
+          "match": "metres to Dodge Roll distance",
+          "matchZh": "閃避翻滾距離+公尺",
+          "kind": "numeric",
+          "numeric": {
+            "format": "bare",
+            "suggestedMin": 4,
+            "suggestedMax": 0
+          },
+          "tiers": [
+            {
+              "nameZh": "烏特雷的",
+              "nameEn": "Uhtred's",
+              "level": 45,
+              "textZh": "閃避翻滾距離+(0.3—0.4)公尺",
+              "textEn": "+(0.3—0.4) metres to Dodge Roll distance",
+              "dropChance": 0,
+              "statMin": 3,
+              "statMax": 0
+            },
+            {
+              "nameZh": "烏特雷的",
+              "nameEn": "Uhtred's",
+              "level": 78,
+              "textZh": "閃避翻滾距離+(0.4—0.5)公尺",
+              "textEn": "+(0.4—0.5) metres to Dodge Roll distance",
+              "dropChance": 0,
+              "statMin": 4,
+              "statMax": 0
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 78,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Uhtreds_Sidereus:5",
+          "family": "Uhtreds_Sidereus:5",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "時空魔法之",
+          "labelEn": "of Chronomancy",
+          "textZh": "技能有(11—15)%的機率不會移除能量球，但依然會視為將其消耗",
+          "textEn": "Skills have (11—15)% chance to not remove Charges but still count as consuming them",
+          "match": "Skills have chance to not remove Charges but still count as consuming them",
+          "matchZh": "技能有的機率不會移除能量球，但依然會視為將其消耗",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 11,
+            "suggestedMax": 15
+          },
+          "tiers": [
+            {
+              "nameZh": "時空魔法之",
+              "nameEn": "of Chronomancy",
+              "level": 45,
+              "textZh": "技能有(7—10)%的機率不會移除能量球，但依然會視為將其消耗",
+              "textEn": "Skills have (7—10)% chance to not remove Charges but still count as consuming them",
+              "dropChance": 0,
+              "statMin": 7,
+              "statMax": 10
+            },
+            {
+              "nameZh": "時空魔法之",
+              "nameEn": "of Chronomancy",
+              "level": 78,
+              "textZh": "技能有(11—15)%的機率不會移除能量球，但依然會視為將其消耗",
+              "textEn": "Skills have (11—15)% chance to not remove Charges but still count as consuming them",
+              "dropChance": 0,
+              "statMin": 11,
+              "statMax": 15
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 78,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Uhtreds_Sidereus:6",
+          "family": "Uhtreds_Sidereus:6",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "時空魔法之",
+          "labelEn": "of Chronomancy",
+          "textZh": "你身上的減益效果加快(70—89)%失效",
+          "textEn": "Debuffs on you expire (70—89)% faster",
+          "match": "Debuffs on you expire faster",
+          "matchZh": "你身上的減益效果加快失效",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 70,
+            "suggestedMax": 89
+          },
+          "tiers": [
+            {
+              "nameZh": "時空魔法之",
+              "nameEn": "of Chronomancy",
+              "level": 45,
+              "textZh": "你身上的減益效果加快(50—69)%失效",
+              "textEn": "Debuffs on you expire (50—69)% faster",
+              "dropChance": 0,
+              "statMin": 50,
+              "statMax": 69
+            },
+            {
+              "nameZh": "時空魔法之",
+              "nameEn": "of Chronomancy",
+              "level": 78,
+              "textZh": "你身上的減益效果加快(70—89)%失效",
+              "textEn": "Debuffs on you expire (70—89)% faster",
+              "dropChance": 0,
+              "statMin": 70,
+              "statMax": 89
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 78,
+          "tierCount": 2,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "Medveds_Tending",
+      "nameZh": "梅德偉的照料",
+      "nameEn": "Medved's Tending",
+      "socketBound": true,
+      "limitOne": true,
+      "slots": [
+        "body"
+      ],
+      "effectZh": "胸甲: 可以骰出靈魂詞綴",
+      "effectEn": "Body Armours: Can roll Soul modifiers",
+      "prefixBonus": 0,
+      "suffixBonus": 0,
+      "craftedBonus": 0,
+      "families": [
+        {
+          "id": "Medveds_Tending:0",
+          "family": "Medveds_Tending:0",
+          "generation": "prefix",
+          "tags": [
+            "life"
+          ],
+          "tagsZh": [
+            "生命"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(1—20)%最大生命",
+          "textEn": "(1—20)% increased maximum Life",
+          "match": "increased maximum Life",
+          "matchZh": "增加最大生命",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 1,
+            "suggestedMax": 20
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(1—20)%最大生命",
+              "textEn": "(1—20)% increased maximum Life",
+              "dropChance": 0,
+              "statMin": 1,
+              "statMax": 20
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:1",
+          "family": "Medveds_Tending:1",
+          "generation": "prefix",
+          "tags": [
+            "mana"
+          ],
+          "tagsZh": [
+            "魔力"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(1—20)%最大魔力",
+          "textEn": "(1—20)% increased maximum Mana",
+          "match": "increased maximum Mana",
+          "matchZh": "增加最大魔力",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 1,
+            "suggestedMax": 20
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(1—20)%最大魔力",
+              "textEn": "(1—20)% increased maximum Mana",
+              "dropChance": 0,
+              "statMin": 1,
+              "statMax": 20
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:2",
+          "family": "Medveds_Tending:2",
+          "generation": "prefix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(1—20)%精魂",
+          "textEn": "(1—20)% increased Spirit",
+          "match": "increased Spirit",
+          "matchZh": "增加精魂",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 1,
+            "suggestedMax": 20
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(1—20)%精魂",
+              "textEn": "(1—20)% increased Spirit",
+              "dropChance": 0,
+              "statMin": 1,
+              "statMax": 20
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:3",
+          "family": "Medveds_Tending:3",
+          "generation": "suffix",
+          "tags": [
+            "physical",
+            "elemental",
+            "fire",
+            "cold",
+            "lightning",
+            "chaos",
+            "ailment"
+          ],
+          "tagsZh": [
+            "物理",
+            "元素",
+            "火焰",
+            "冰冷",
+            "閃電",
+            "混沌",
+            "異常狀態"
+          ],
+          "labelZh": "靈魂之",
+          "labelEn": "of the Soul",
+          "textZh": "減少(5—50)%你身上的異常狀態持續時間",
+          "textEn": "(5—50)% reduced Duration of Ailments on You",
+          "match": "reduced Duration of Ailments on You",
+          "matchZh": "減少你身上的異常狀態持續時間",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 5,
+            "suggestedMax": 50
+          },
+          "tiers": [
+            {
+              "nameZh": "靈魂之",
+              "nameEn": "of the Soul",
+              "level": 65,
+              "textZh": "減少(5—50)%你身上的異常狀態持續時間",
+              "textEn": "(5—50)% reduced Duration of Ailments on You",
+              "dropChance": 0,
+              "statMin": 5,
+              "statMax": 50
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:4",
+          "family": "Medveds_Tending:4",
+          "generation": "suffix",
+          "tags": [
+            "damage",
+            "critical"
+          ],
+          "tagsZh": [
+            "傷害",
+            "暴擊"
+          ],
+          "labelZh": "靈魂之",
+          "labelEn": "of the Soul",
+          "textZh": "對你的擊中減少(10—99)%暴擊傷害加成",
+          "textEn": "Hits against you have (10—99)% reduced Critical Damage Bonus",
+          "match": "Hits against you have reduced Critical Damage Bonus",
+          "matchZh": "對你的擊中減少暴擊傷害加成",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 10,
+            "suggestedMax": 99
+          },
+          "tiers": [
+            {
+              "nameZh": "靈魂之",
+              "nameEn": "of the Soul",
+              "level": 65,
+              "textZh": "對你的擊中減少(10—99)%暴擊傷害加成",
+              "textEn": "Hits against you have (10—99)% reduced Critical Damage Bonus",
+              "dropChance": 0,
+              "statMin": 10,
+              "statMax": 99
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:5",
+          "family": "Medveds_Tending:5",
+          "generation": "suffix",
+          "tags": [
+            "elemental",
+            "fire",
+            "chaos",
+            "resistance"
+          ],
+          "tagsZh": [
+            "元素",
+            "火焰",
+            "混沌",
+            "抗性"
+          ],
+          "labelZh": "靈魂之",
+          "labelEn": "of the Soul",
+          "textZh": "+(3—31)%火焰和混沌抗性",
+          "textEn": "+(3—31)% to Fire and Chaos Resistances",
+          "match": "to Fire and Chaos Resistances",
+          "matchZh": "火焰和混沌抗性",
+          "kind": "numeric",
+          "numeric": {
+            "format": "plusPercent",
+            "suggestedMin": 3,
+            "suggestedMax": 31
+          },
+          "tiers": [
+            {
+              "nameZh": "靈魂之",
+              "nameEn": "of the Soul",
+              "level": 65,
+              "textZh": "+(3—31)%火焰和混沌抗性",
+              "textEn": "+(3—31)% to Fire and Chaos Resistances",
+              "dropChance": 0,
+              "statMin": 3,
+              "statMax": 31
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:6",
+          "family": "Medveds_Tending:6",
+          "generation": "suffix",
+          "tags": [
+            "elemental",
+            "cold",
+            "chaos",
+            "resistance"
+          ],
+          "tagsZh": [
+            "元素",
+            "冰冷",
+            "混沌",
+            "抗性"
+          ],
+          "labelZh": "靈魂之",
+          "labelEn": "of the Soul",
+          "textZh": "+(3—31)%冰冷和混沌抗性",
+          "textEn": "+(3—31)% to Cold and Chaos Resistances",
+          "match": "to Cold and Chaos Resistances",
+          "matchZh": "冰冷和混沌抗性",
+          "kind": "numeric",
+          "numeric": {
+            "format": "plusPercent",
+            "suggestedMin": 3,
+            "suggestedMax": 31
+          },
+          "tiers": [
+            {
+              "nameZh": "靈魂之",
+              "nameEn": "of the Soul",
+              "level": 65,
+              "textZh": "+(3—31)%冰冷和混沌抗性",
+              "textEn": "+(3—31)% to Cold and Chaos Resistances",
+              "dropChance": 0,
+              "statMin": 3,
+              "statMax": 31
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:7",
+          "family": "Medveds_Tending:7",
+          "generation": "suffix",
+          "tags": [
+            "elemental",
+            "lightning",
+            "chaos",
+            "resistance"
+          ],
+          "tagsZh": [
+            "元素",
+            "閃電",
+            "混沌",
+            "抗性"
+          ],
+          "labelZh": "靈魂之",
+          "labelEn": "of the Soul",
+          "textZh": "+(3—31)%閃電和混沌抗性",
+          "textEn": "+(3—31)% to Lightning and Chaos Resistances",
+          "match": "to Lightning and Chaos Resistances",
+          "matchZh": "閃電和混沌抗性",
+          "kind": "numeric",
+          "numeric": {
+            "format": "plusPercent",
+            "suggestedMin": 3,
+            "suggestedMax": 31
+          },
+          "tiers": [
+            {
+              "nameZh": "靈魂之",
+              "nameEn": "of the Soul",
+              "level": 65,
+              "textZh": "+(3—31)%閃電和混沌抗性",
+              "textEn": "+(3—31)% to Lightning and Chaos Resistances",
+              "dropChance": 0,
+              "statMin": 3,
+              "statMax": 31
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:8",
+          "family": "Medveds_Tending:8",
+          "generation": "prefix",
+          "tags": [
+            "life",
+            "mana"
+          ],
+          "tagsZh": [
+            "生命",
+            "魔力"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "+(19—189)最大生命 / +(19—189)最大魔力",
+          "textEn": "+(19—189) to maximum Life / +(19—189) to maximum Mana",
+          "match": "to maximum Life",
+          "matchZh": "最大生命",
+          "kind": "numeric",
+          "numeric": {
+            "format": "plusFlat",
+            "suggestedMin": 19,
+            "suggestedMax": 189
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "+(19—189)最大生命 / +(19—189)最大魔力",
+              "textEn": "+(19—189) to maximum Life / +(19—189) to maximum Mana",
+              "dropChance": 0,
+              "statMin": 19,
+              "statMax": 189
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:9",
+          "family": "Medveds_Tending:9",
+          "generation": "prefix",
+          "tags": [
+            "armour",
+            "evasion"
+          ],
+          "tagsZh": [
+            "護甲",
+            "閃避"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%護甲值和閃避 / +(1—24)精魂",
+          "textEn": "(6—52)% increased Armour and Evasion / +(1—24) to Spirit",
+          "match": "increased Armour and Evasion",
+          "matchZh": "增加護甲值和閃避",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%護甲值和閃避 / +(1—24)精魂",
+              "textEn": "(6—52)% increased Armour and Evasion / +(1—24) to Spirit",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:10",
+          "family": "Medveds_Tending:10",
+          "generation": "prefix",
+          "tags": [
+            "armour",
+            "energy_shield"
+          ],
+          "tagsZh": [
+            "護甲",
+            "能量護盾"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%護甲值和能量護盾 / +(1—24)精魂",
+          "textEn": "(6—52)% increased Armour and Energy Shield / +(1—24) to Spirit",
+          "match": "increased Armour and Energy Shield",
+          "matchZh": "增加護甲值和能量護盾",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%護甲值和能量護盾 / +(1—24)精魂",
+              "textEn": "(6—52)% increased Armour and Energy Shield / +(1—24) to Spirit",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:11",
+          "family": "Medveds_Tending:11",
+          "generation": "prefix",
+          "tags": [
+            "evasion",
+            "energy_shield"
+          ],
+          "tagsZh": [
+            "閃避",
+            "能量護盾"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%閃避和能量護盾 / +(1—24)精魂",
+          "textEn": "(6—52)% increased Evasion and Energy Shield / +(1—24) to Spirit",
+          "match": "increased Evasion and Energy Shield",
+          "matchZh": "增加閃避和能量護盾",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%閃避和能量護盾 / +(1—24)精魂",
+              "textEn": "(6—52)% increased Evasion and Energy Shield / +(1—24) to Spirit",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:12",
+          "family": "Medveds_Tending:12",
+          "generation": "prefix",
+          "tags": [
+            "armour"
+          ],
+          "tagsZh": [
+            "護甲"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%護甲值 / +(1—24)精魂",
+          "textEn": "(6—52)% increased Armour / +(1—24) to Spirit",
+          "match": "increased Armour",
+          "matchZh": "增加護甲值",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%護甲值 / +(1—24)精魂",
+              "textEn": "(6—52)% increased Armour / +(1—24) to Spirit",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:13",
+          "family": "Medveds_Tending:13",
+          "generation": "prefix",
+          "tags": [
+            "evasion"
+          ],
+          "tagsZh": [
+            "閃避"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%閃避值 / +(1—24)精魂",
+          "textEn": "(6—52)% increased Evasion Rating / +(1—24) to Spirit",
+          "match": "increased Evasion Rating",
+          "matchZh": "增加閃避值",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%閃避值 / +(1—24)精魂",
+              "textEn": "(6—52)% increased Evasion Rating / +(1—24) to Spirit",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:14",
+          "family": "Medveds_Tending:14",
+          "generation": "prefix",
+          "tags": [
+            "energy_shield"
+          ],
+          "tagsZh": [
+            "能量護盾"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%能量護盾 / +(1—24)精魂",
+          "textEn": "(6—52)% increased Energy Shield / +(1—24) to Spirit",
+          "match": "increased Energy Shield",
+          "matchZh": "增加能量護盾",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%能量護盾 / +(1—24)精魂",
+              "textEn": "(6—52)% increased Energy Shield / +(1—24) to Spirit",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:15",
+          "family": "Medveds_Tending:15",
+          "generation": "prefix",
+          "tags": [
+            "mana",
+            "armour",
+            "evasion"
+          ],
+          "tagsZh": [
+            "魔力",
+            "護甲",
+            "閃避"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%護甲值和閃避 / +(7—57)最大魔力",
+          "textEn": "(6—52)% increased Armour and Evasion / +(7—57) to maximum Mana",
+          "match": "increased Armour and Evasion",
+          "matchZh": "增加護甲值和閃避",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%護甲值和閃避 / +(7—57)最大魔力",
+              "textEn": "(6—52)% increased Armour and Evasion / +(7—57) to maximum Mana",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:16",
+          "family": "Medveds_Tending:16",
+          "generation": "prefix",
+          "tags": [
+            "mana",
+            "armour",
+            "energy_shield"
+          ],
+          "tagsZh": [
+            "魔力",
+            "護甲",
+            "能量護盾"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%護甲值和能量護盾 / +(7—57)最大魔力",
+          "textEn": "(6—52)% increased Armour and Energy Shield / +(7—57) to maximum Mana",
+          "match": "increased Armour and Energy Shield",
+          "matchZh": "增加護甲值和能量護盾",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%護甲值和能量護盾 / +(7—57)最大魔力",
+              "textEn": "(6—52)% increased Armour and Energy Shield / +(7—57) to maximum Mana",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:17",
+          "family": "Medveds_Tending:17",
+          "generation": "prefix",
+          "tags": [
+            "mana",
+            "evasion",
+            "energy_shield"
+          ],
+          "tagsZh": [
+            "魔力",
+            "閃避",
+            "能量護盾"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%閃避和能量護盾 / +(7—57)最大魔力",
+          "textEn": "(6—52)% increased Evasion and Energy Shield / +(7—57) to maximum Mana",
+          "match": "increased Evasion and Energy Shield",
+          "matchZh": "增加閃避和能量護盾",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%閃避和能量護盾 / +(7—57)最大魔力",
+              "textEn": "(6—52)% increased Evasion and Energy Shield / +(7—57) to maximum Mana",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:18",
+          "family": "Medveds_Tending:18",
+          "generation": "prefix",
+          "tags": [
+            "mana",
+            "armour"
+          ],
+          "tagsZh": [
+            "魔力",
+            "護甲"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%護甲值 / +(7—57)最大魔力",
+          "textEn": "(6—52)% increased Armour / +(7—57) to maximum Mana",
+          "match": "increased Armour",
+          "matchZh": "增加護甲值",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%護甲值 / +(7—57)最大魔力",
+              "textEn": "(6—52)% increased Armour / +(7—57) to maximum Mana",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:19",
+          "family": "Medveds_Tending:19",
+          "generation": "prefix",
+          "tags": [
+            "mana",
+            "evasion"
+          ],
+          "tagsZh": [
+            "魔力",
+            "閃避"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%閃避值 / +(7—57)最大魔力",
+          "textEn": "(6—52)% increased Evasion Rating / +(7—57) to maximum Mana",
+          "match": "increased Evasion Rating",
+          "matchZh": "增加閃避值",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%閃避值 / +(7—57)最大魔力",
+              "textEn": "(6—52)% increased Evasion Rating / +(7—57) to maximum Mana",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Medveds_Tending:20",
+          "family": "Medveds_Tending:20",
+          "generation": "prefix",
+          "tags": [
+            "mana",
+            "energy_shield"
+          ],
+          "tagsZh": [
+            "魔力",
+            "能量護盾"
+          ],
+          "labelZh": "梅德偉的",
+          "labelEn": "Medved's",
+          "textZh": "增加(6—52)%能量護盾 / +(7—57)最大魔力",
+          "textEn": "(6—52)% increased Energy Shield / +(7—57) to maximum Mana",
+          "match": "increased Energy Shield",
+          "matchZh": "增加能量護盾",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 6,
+            "suggestedMax": 52
+          },
+          "tiers": [
+            {
+              "nameZh": "梅德偉的",
+              "nameEn": "Medved's",
+              "level": 65,
+              "textZh": "增加(6—52)%能量護盾 / +(7—57)最大魔力",
+              "textEn": "(6—52)% increased Energy Shield / +(7—57) to maximum Mana",
+              "dropChance": 0,
+              "statMin": 6,
+              "statMax": 52
+            }
+          ],
+          "minLevel": 65,
+          "maxLevel": 65,
+          "tierCount": 1,
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "Kolrs_Hunt",
+      "nameZh": "克洛爾的狩獵",
+      "nameEn": "Kolr's Hunt",
+      "socketBound": true,
+      "limitOne": true,
+      "slots": [
+        "gloves"
+      ],
+      "effectZh": "手套: 可以骰出射手詞綴",
+      "effectEn": "Gloves: Can roll Marksman modifiers",
+      "prefixBonus": 0,
+      "suffixBonus": 0,
+      "craftedBonus": 0,
+      "families": [
+        {
+          "id": "Kolrs_Hunt:0",
+          "family": "Kolrs_Hunt:0",
+          "generation": "prefix",
+          "tags": [
+            "damage"
+          ],
+          "tagsZh": [
+            "傷害"
+          ],
+          "labelZh": "克洛爾的",
+          "labelEn": "Kolr's",
+          "textZh": "增加(31—40)%投射物傷害",
+          "textEn": "(31—40)% increased Projectile Damage",
+          "match": "increased Projectile Damage",
+          "matchZh": "增加投射物傷害",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 31,
+            "suggestedMax": 40
+          },
+          "tiers": [
+            {
+              "nameZh": "克洛爾的",
+              "nameEn": "Kolr's",
+              "level": 45,
+              "textZh": "增加(11—20)%投射物傷害",
+              "textEn": "(11—20)% increased Projectile Damage",
+              "dropChance": 0,
+              "statMin": 11,
+              "statMax": 20
+            },
+            {
+              "nameZh": "克洛爾的",
+              "nameEn": "Kolr's",
+              "level": 65,
+              "textZh": "增加(21—30)%投射物傷害",
+              "textEn": "(21—30)% increased Projectile Damage",
+              "dropChance": 0,
+              "statMin": 21,
+              "statMax": 30
+            },
+            {
+              "nameZh": "克洛爾的",
+              "nameEn": "Kolr's",
+              "level": 75,
+              "textZh": "增加(31—40)%投射物傷害",
+              "textEn": "(31—40)% increased Projectile Damage",
+              "dropChance": 0,
+              "statMin": 31,
+              "statMax": 40
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 3,
+          "weight": 3
+        },
+        {
+          "id": "Kolrs_Hunt:1",
+          "family": "Kolrs_Hunt:1",
+          "generation": "prefix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "克洛爾的",
+          "labelEn": "Kolr's",
+          "textZh": "增加(25—39)%你的印記技能效果",
+          "textEn": "(25—39)% increased Effect of your Mark Skills",
+          "match": "increased Effect of your Mark Skills",
+          "matchZh": "增加你的印記技能效果",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 25,
+            "suggestedMax": 39
+          },
+          "tiers": [
+            {
+              "nameZh": "克洛爾的",
+              "nameEn": "Kolr's",
+              "level": 45,
+              "textZh": "增加(15—24)%你的印記技能效果",
+              "textEn": "(15—24)% increased Effect of your Mark Skills",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 24
+            },
+            {
+              "nameZh": "克洛爾的",
+              "nameEn": "Kolr's",
+              "level": 65,
+              "textZh": "增加(25—39)%你的印記技能效果",
+              "textEn": "(25—39)% increased Effect of your Mark Skills",
+              "dropChance": 0,
+              "statMin": 25,
+              "statMax": 39
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 65,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Kolrs_Hunt:2",
+          "family": "Kolrs_Hunt:2",
+          "generation": "prefix",
+          "tags": [
+            "speed"
+          ],
+          "tagsZh": [
+            "速度"
+          ],
+          "labelZh": "克洛爾的",
+          "labelEn": "Kolr's",
+          "textZh": "增加(31—40)%投射物速度",
+          "textEn": "(31—40)% increased Projectile Speed",
+          "match": "increased Projectile Speed",
+          "matchZh": "增加投射物速度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 31,
+            "suggestedMax": 40
+          },
+          "tiers": [
+            {
+              "nameZh": "克洛爾的",
+              "nameEn": "Kolr's",
+              "level": 45,
+              "textZh": "增加(11—20)%投射物速度",
+              "textEn": "(11—20)% increased Projectile Speed",
+              "dropChance": 0,
+              "statMin": 11,
+              "statMax": 20
+            },
+            {
+              "nameZh": "克洛爾的",
+              "nameEn": "Kolr's",
+              "level": 65,
+              "textZh": "增加(21—30)%投射物速度",
+              "textEn": "(21—30)% increased Projectile Speed",
+              "dropChance": 0,
+              "statMin": 21,
+              "statMax": 30
+            },
+            {
+              "nameZh": "克洛爾的",
+              "nameEn": "Kolr's",
+              "level": 75,
+              "textZh": "增加(31—40)%投射物速度",
+              "textEn": "(31—40)% increased Projectile Speed",
+              "dropChance": 0,
+              "statMin": 31,
+              "statMax": 40
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 3,
+          "weight": 3
+        },
+        {
+          "id": "Kolrs_Hunt:3",
+          "family": "Kolrs_Hunt:3",
+          "generation": "suffix",
+          "tags": [
+            "critical"
+          ],
+          "tagsZh": [
+            "暴擊"
+          ],
+          "labelZh": "狩獵之",
+          "labelEn": "of the Hunt",
+          "textZh": "增加(28—34)%暴擊率",
+          "textEn": "(28—34)% increased Critical Hit Chance",
+          "match": "increased Critical Hit Chance",
+          "matchZh": "增加暴擊率",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 28,
+            "suggestedMax": 34
+          },
+          "tiers": [
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 45,
+              "textZh": "增加(16—21)%暴擊率",
+              "textEn": "(16—21)% increased Critical Hit Chance",
+              "dropChance": 0,
+              "statMin": 16,
+              "statMax": 21
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 65,
+              "textZh": "增加(22—27)%暴擊率",
+              "textEn": "(22—27)% increased Critical Hit Chance",
+              "dropChance": 0,
+              "statMin": 22,
+              "statMax": 27
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 75,
+              "textZh": "增加(28—34)%暴擊率",
+              "textEn": "(28—34)% increased Critical Hit Chance",
+              "dropChance": 0,
+              "statMin": 28,
+              "statMax": 34
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 3,
+          "weight": 3
+        },
+        {
+          "id": "Kolrs_Hunt:4",
+          "family": "Kolrs_Hunt:4",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狩獵之",
+          "labelEn": "of the Hunt",
+          "textZh": "有(51—100)%機率穿透一個敵人",
+          "textEn": "(51—100)% chance to Pierce an Enemy",
+          "match": "chance to Pierce an Enemy",
+          "matchZh": "有機率穿透一個敵人",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 51,
+            "suggestedMax": 100
+          },
+          "tiers": [
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 45,
+              "textZh": "有(25—50)%機率穿透一個敵人",
+              "textEn": "(25—50)% chance to Pierce an Enemy",
+              "dropChance": 0,
+              "statMin": 25,
+              "statMax": 50
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 75,
+              "textZh": "有(51—100)%機率穿透一個敵人",
+              "textEn": "(51—100)% chance to Pierce an Enemy",
+              "dropChance": 0,
+              "statMin": 51,
+              "statMax": 100
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Kolrs_Hunt:5",
+          "family": "Kolrs_Hunt:5",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狩獵之",
+          "labelEn": "of the Hunt",
+          "textZh": "+(51—66)%滿溢機率發射一發額外投射物",
+          "textEn": "+(51—66)% Surpassing chance to fire an additional Projectile",
+          "match": "Surpassing chance to fire an additional Projectile",
+          "matchZh": "滿溢機率發射一發額外投射物",
+          "kind": "numeric",
+          "numeric": {
+            "format": "plusPercent",
+            "suggestedMin": 51,
+            "suggestedMax": 66
+          },
+          "tiers": [
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 45,
+              "textZh": "+(23—36)%滿溢機率發射一發額外投射物",
+              "textEn": "+(23—36)% Surpassing chance to fire an additional Projectile",
+              "dropChance": 0,
+              "statMin": 23,
+              "statMax": 36
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 65,
+              "textZh": "+(37—50)%滿溢機率發射一發額外投射物",
+              "textEn": "+(37—50)% Surpassing chance to fire an additional Projectile",
+              "dropChance": 0,
+              "statMin": 37,
+              "statMax": 50
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 75,
+              "textZh": "+(51—66)%滿溢機率發射一發額外投射物",
+              "textEn": "+(51—66)% Surpassing chance to fire an additional Projectile",
+              "dropChance": 0,
+              "statMin": 51,
+              "statMax": 66
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 3,
+          "weight": 3
+        },
+        {
+          "id": "Kolrs_Hunt:6",
+          "family": "Kolrs_Hunt:6",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狩獵之",
+          "labelEn": "of the Hunt",
+          "textZh": "投射物有(20—32)%機率從地形額外連鎖一次",
+          "textEn": "Projectiles have (20—32)% chance to Chain an additional time from terrain",
+          "match": "Projectiles have chance to Chain an additional time from terrain",
+          "matchZh": "投射物有機率從地形額外連鎖一次",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 20,
+            "suggestedMax": 32
+          },
+          "tiers": [
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 45,
+              "textZh": "投射物有(10—19)%機率從地形額外連鎖一次",
+              "textEn": "Projectiles have (10—19)% chance to Chain an additional time from terrain",
+              "dropChance": 0,
+              "statMin": 10,
+              "statMax": 19
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 75,
+              "textZh": "投射物有(20—32)%機率從地形額外連鎖一次",
+              "textEn": "Projectiles have (20—32)% chance to Chain an additional time from terrain",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 32
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Kolrs_Hunt:7",
+          "family": "Kolrs_Hunt:7",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狩獵之",
+          "labelEn": "of the Hunt",
+          "textZh": "投射物分裂時有(51—100)%機率發射1個額外投射物",
+          "textEn": "Projectiles have (51—100)% chance for an additional Projectile when Forking",
+          "match": "Projectiles have chance for an additional Projectile when Forking",
+          "matchZh": "投射物分裂時有機率發射1個額外投射物",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 51,
+            "suggestedMax": 100
+          },
+          "tiers": [
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 45,
+              "textZh": "投射物分裂時有(25—50)%機率發射1個額外投射物",
+              "textEn": "Projectiles have (25—50)% chance for an additional Projectile when Forking",
+              "dropChance": 0,
+              "statMin": 25,
+              "statMax": 50
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 75,
+              "textZh": "投射物分裂時有(51—100)%機率發射1個額外投射物",
+              "textEn": "Projectiles have (51—100)% chance for an additional Projectile when Forking",
+              "dropChance": 0,
+              "statMin": 51,
+              "statMax": 100
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Kolrs_Hunt:8",
+          "family": "Kolrs_Hunt:8",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狩獵之",
+          "labelEn": "of the Hunt",
+          "textZh": "印記技能增加(75—100)%技能效果持續時間",
+          "textEn": "Mark Skills have (75—100)% increased Skill Effect Duration",
+          "match": "Mark Skills have increased Skill Effect Duration",
+          "matchZh": "印記技能增加技能效果持續時間",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 75,
+            "suggestedMax": 100
+          },
+          "tiers": [
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 45,
+              "textZh": "印記技能增加(50—74)%技能效果持續時間",
+              "textEn": "Mark Skills have (50—74)% increased Skill Effect Duration",
+              "dropChance": 0,
+              "statMin": 50,
+              "statMax": 74
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 75,
+              "textZh": "印記技能增加(75—100)%技能效果持續時間",
+              "textEn": "Mark Skills have (75—100)% increased Skill Effect Duration",
+              "dropChance": 0,
+              "statMin": 75,
+              "statMax": 100
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Kolrs_Hunt:9",
+          "family": "Kolrs_Hunt:9",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狩獵之",
+          "labelEn": "of the Hunt",
+          "textZh": "增加(24—39)%印記技能的施法速度",
+          "textEn": "Mark Skills have (24—39)% increased Use Speed",
+          "match": "Mark Skills have increased Use Speed",
+          "matchZh": "增加印記技能的施法速度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 24,
+            "suggestedMax": 39
+          },
+          "tiers": [
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 45,
+              "textZh": "增加(13—23)%印記技能的施法速度",
+              "textEn": "Mark Skills have (13—23)% increased Use Speed",
+              "dropChance": 0,
+              "statMin": 13,
+              "statMax": 23
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 75,
+              "textZh": "增加(24—39)%印記技能的施法速度",
+              "textEn": "Mark Skills have (24—39)% increased Use Speed",
+              "dropChance": 0,
+              "statMin": 24,
+              "statMax": 39
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Kolrs_Hunt:10",
+          "family": "Kolrs_Hunt:10",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狩獵之",
+          "labelEn": "of the Hunt",
+          "textZh": "+(3—4)所有印記技能等級",
+          "textEn": "+(3—4) to Level of all Mark Skills",
+          "match": "to Level of all Mark Skills",
+          "matchZh": "所有印記技能等級",
+          "kind": "numeric",
+          "numeric": {
+            "format": "plusFlat",
+            "suggestedMin": 3,
+            "suggestedMax": 4
+          },
+          "tiers": [
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 45,
+              "textZh": "+(1—2)所有印記技能等級",
+              "textEn": "+(1—2) to Level of all Mark Skills",
+              "dropChance": 0,
+              "statMin": 1,
+              "statMax": 2
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 65,
+              "textZh": "+(3—4)所有印記技能等級",
+              "textEn": "+(3—4) to Level of all Mark Skills",
+              "dropChance": 0,
+              "statMin": 3,
+              "statMax": 4
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 65,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Kolrs_Hunt:11",
+          "family": "Kolrs_Hunt:11",
+          "generation": "suffix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "狩獵之",
+          "labelEn": "of the Hunt",
+          "textZh": "全部投射物技能等級+2",
+          "textEn": "+2 to Level of all Projectile Skills",
+          "match": "to Level of all Projectile Skills",
+          "matchZh": "全部投射物技能等級+2",
+          "kind": "flag",
+          "tiers": [
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 45,
+              "textZh": "全部投射物技能等級+1",
+              "textEn": "+1 to Level of all Projectile Skills",
+              "dropChance": 0
+            },
+            {
+              "nameZh": "狩獵之",
+              "nameEn": "of the Hunt",
+              "level": 65,
+              "textZh": "全部投射物技能等級+2",
+              "textEn": "+2 to Level of all Projectile Skills",
+              "dropChance": 0
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 65,
+          "tierCount": 2,
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "Katlas_Gloom",
+      "nameZh": "卡特拉的愁悵",
+      "nameEn": "Katla's Gloom",
+      "socketBound": true,
+      "limitOne": true,
+      "slots": [
+        "gloves"
+      ],
+      "effectZh": "手套: 可以骰出衰敗詞綴",
+      "effectEn": "Gloves: Can roll Decay modifiers",
+      "prefixBonus": 0,
+      "suffixBonus": 0,
+      "craftedBonus": 0,
+      "families": [
+        {
+          "id": "Katlas_Gloom:0",
+          "family": "Katlas_Gloom:0",
+          "generation": "prefix",
+          "tags": [
+            "damage",
+            "elemental",
+            "fire",
+            "ailment"
+          ],
+          "tagsZh": [
+            "傷害",
+            "元素",
+            "火焰",
+            "異常狀態"
+          ],
+          "labelZh": "卡特拉的",
+          "labelEn": "Katla's",
+          "textZh": "增加(35—50)%點燃幅度",
+          "textEn": "(35—50)% increased Ignite Magnitude",
+          "match": "increased Ignite Magnitude",
+          "matchZh": "增加點燃幅度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 35,
+            "suggestedMax": 50
+          },
+          "tiers": [
+            {
+              "nameZh": "卡特拉的",
+              "nameEn": "Katla's",
+              "level": 45,
+              "textZh": "增加(20—34)%點燃幅度",
+              "textEn": "(20—34)% increased Ignite Magnitude",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 34
+            },
+            {
+              "nameZh": "卡特拉的",
+              "nameEn": "Katla's",
+              "level": 75,
+              "textZh": "增加(35—50)%點燃幅度",
+              "textEn": "(35—50)% increased Ignite Magnitude",
+              "dropChance": 0,
+              "statMin": 35,
+              "statMax": 50
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Katlas_Gloom:1",
+          "family": "Katlas_Gloom:1",
+          "generation": "prefix",
+          "tags": [
+            "damage",
+            "physical",
+            "attack",
+            "ailment"
+          ],
+          "tagsZh": [
+            "傷害",
+            "物理",
+            "攻擊",
+            "異常狀態"
+          ],
+          "labelZh": "卡特拉的",
+          "labelEn": "Katla's",
+          "textZh": "增加(30—42)%你所施加之流血的幅度",
+          "textEn": "(30—42)% increased Magnitude of Bleeding you inflict",
+          "match": "increased Magnitude of Bleeding you inflict",
+          "matchZh": "增加你所施加之流血的幅度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 30,
+            "suggestedMax": 42
+          },
+          "tiers": [
+            {
+              "nameZh": "卡特拉的",
+              "nameEn": "Katla's",
+              "level": 45,
+              "textZh": "增加(20—29)%你所施加之流血的幅度",
+              "textEn": "(20—29)% increased Magnitude of Bleeding you inflict",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 29
+            },
+            {
+              "nameZh": "卡特拉的",
+              "nameEn": "Katla's",
+              "level": 75,
+              "textZh": "增加(30—42)%你所施加之流血的幅度",
+              "textEn": "(30—42)% increased Magnitude of Bleeding you inflict",
+              "dropChance": 0,
+              "statMin": 30,
+              "statMax": 42
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Katlas_Gloom:2",
+          "family": "Katlas_Gloom:2",
+          "generation": "prefix",
+          "tags": [
+            "damage",
+            "ailment"
+          ],
+          "tagsZh": [
+            "傷害",
+            "異常狀態"
+          ],
+          "labelZh": "卡特拉的",
+          "labelEn": "Katla's",
+          "textZh": "增加(30—42)%你所施加之中毒的幅度",
+          "textEn": "(30—42)% increased Magnitude of Poison you inflict",
+          "match": "increased Magnitude of Poison you inflict",
+          "matchZh": "增加你所施加之中毒的幅度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 30,
+            "suggestedMax": 42
+          },
+          "tiers": [
+            {
+              "nameZh": "卡特拉的",
+              "nameEn": "Katla's",
+              "level": 45,
+              "textZh": "增加(20—29)%你所施加之中毒的幅度",
+              "textEn": "(20—29)% increased Magnitude of Poison you inflict",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 29
+            },
+            {
+              "nameZh": "卡特拉的",
+              "nameEn": "Katla's",
+              "level": 75,
+              "textZh": "增加(30—42)%你所施加之中毒的幅度",
+              "textEn": "(30—42)% increased Magnitude of Poison you inflict",
+              "dropChance": 0,
+              "statMin": 30,
+              "statMax": 42
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Katlas_Gloom:3",
+          "family": "Katlas_Gloom:3",
+          "generation": "prefix",
+          "tags": [
+            "damage",
+            "ailment"
+          ],
+          "tagsZh": [
+            "傷害",
+            "異常狀態"
+          ],
+          "labelZh": "卡特拉的",
+          "labelEn": "Katla's",
+          "textZh": "增加(26—32)%你所施加之異常狀態的幅度",
+          "textEn": "(26—32)% increased Magnitude of Ailments you inflict",
+          "match": "increased Magnitude of Ailments you inflict",
+          "matchZh": "增加你所施加之異常狀態的幅度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 26,
+            "suggestedMax": 32
+          },
+          "tiers": [
+            {
+              "nameZh": "卡特拉的",
+              "nameEn": "Katla's",
+              "level": 45,
+              "textZh": "增加(20—25)%你所施加之異常狀態的幅度",
+              "textEn": "(20—25)% increased Magnitude of Ailments you inflict",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 25
+            },
+            {
+              "nameZh": "卡特拉的",
+              "nameEn": "Katla's",
+              "level": 75,
+              "textZh": "增加(26—32)%你所施加之異常狀態的幅度",
+              "textEn": "(26—32)% increased Magnitude of Ailments you inflict",
+              "dropChance": 0,
+              "statMin": 26,
+              "statMax": 32
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Katlas_Gloom:4",
+          "family": "Katlas_Gloom:4",
+          "generation": "prefix",
+          "tags": [],
+          "tagsZh": [],
+          "labelZh": "卡特拉的",
+          "labelEn": "Katla's",
+          "textZh": "傷害型異常狀態造成傷害加速(14—20)%",
+          "textEn": "Damaging Ailments deal damage (14—20)% faster",
+          "match": "Damaging Ailments deal damage faster",
+          "matchZh": "傷害型異常狀態造成傷害加速",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 14,
+            "suggestedMax": 20
+          },
+          "tiers": [
+            {
+              "nameZh": "卡特拉的",
+              "nameEn": "Katla's",
+              "level": 45,
+              "textZh": "傷害型異常狀態造成傷害加速(8—13)%",
+              "textEn": "Damaging Ailments deal damage (8—13)% faster",
+              "dropChance": 0,
+              "statMin": 8,
+              "statMax": 13
+            },
+            {
+              "nameZh": "卡特拉的",
+              "nameEn": "Katla's",
+              "level": 75,
+              "textZh": "傷害型異常狀態造成傷害加速(14—20)%",
+              "textEn": "Damaging Ailments deal damage (14—20)% faster",
+              "dropChance": 0,
+              "statMin": 14,
+              "statMax": 20
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Katlas_Gloom:5",
+          "family": "Katlas_Gloom:5",
+          "generation": "suffix",
+          "tags": [
+            "ailment"
+          ],
+          "tagsZh": [
+            "異常狀態"
+          ],
+          "labelZh": "腐朽之",
+          "labelEn": "of Decay",
+          "textZh": "增加(20—30)%敵人身上的傷害型異常狀態持續時間",
+          "textEn": "(20—30)% increased Duration of Damaging Ailments on Enemies",
+          "match": "increased Duration of Damaging Ailments on Enemies",
+          "matchZh": "增加敵人身上的傷害型異常狀態持續時間",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 20,
+            "suggestedMax": 30
+          },
+          "tiers": [
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 45,
+              "textZh": "增加(10—19)%敵人身上的傷害型異常狀態持續時間",
+              "textEn": "(10—19)% increased Duration of Damaging Ailments on Enemies",
+              "dropChance": 0,
+              "statMin": 10,
+              "statMax": 19
+            },
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 75,
+              "textZh": "增加(20—30)%敵人身上的傷害型異常狀態持續時間",
+              "textEn": "(20—30)% increased Duration of Damaging Ailments on Enemies",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 30
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Katlas_Gloom:6",
+          "family": "Katlas_Gloom:6",
+          "generation": "suffix",
+          "tags": [
+            "life"
+          ],
+          "tagsZh": [
+            "生命"
+          ],
+          "labelZh": "腐朽之",
+          "labelEn": "of Decay",
+          "textZh": "以(8—12)%物理攻擊傷害偷取生命 / 加快(15—25)%生命偷取速度",
+          "textEn": "Leech (8—12)% of Physical Attack Damage as Life / Leech Life (15—25)% faster",
+          "match": "Leech of Physical Attack Damage as Life",
+          "matchZh": "以物理攻擊傷害偷取生命",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 8,
+            "suggestedMax": 12
+          },
+          "tiers": [
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 45,
+              "textZh": "以(8—12)%物理攻擊傷害偷取生命 / 加快(15—25)%生命偷取速度",
+              "textEn": "Leech (8—12)% of Physical Attack Damage as Life / Leech Life (15—25)% faster",
+              "dropChance": 0,
+              "statMin": 8,
+              "statMax": 12
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 45,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Katlas_Gloom:7",
+          "family": "Katlas_Gloom:7",
+          "generation": "suffix",
+          "tags": [
+            "life"
+          ],
+          "tagsZh": [
+            "生命"
+          ],
+          "labelZh": "腐朽之",
+          "labelEn": "of Decay",
+          "textZh": "以(8—12)%物理攻擊傷害偷取生命 / 減緩(15—25)%生命偷取速度",
+          "textEn": "Leech (8—12)% of Physical Attack Damage as Life / Leech Life (15—25)% slower",
+          "match": "Leech of Physical Attack Damage as Life",
+          "matchZh": "以物理攻擊傷害偷取生命",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 8,
+            "suggestedMax": 12
+          },
+          "tiers": [
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 45,
+              "textZh": "以(8—12)%物理攻擊傷害偷取生命 / 減緩(15—25)%生命偷取速度",
+              "textEn": "Leech (8—12)% of Physical Attack Damage as Life / Leech Life (15—25)% slower",
+              "dropChance": 0,
+              "statMin": 8,
+              "statMax": 12
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 45,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Katlas_Gloom:8",
+          "family": "Katlas_Gloom:8",
+          "generation": "suffix",
+          "tags": [
+            "life"
+          ],
+          "tagsZh": [
+            "生命"
+          ],
+          "labelZh": "腐朽之",
+          "labelEn": "of Decay",
+          "textZh": "增加(30—40)%生命偷取量",
+          "textEn": "(30—40)% increased amount of Life Leeched",
+          "match": "increased amount of Life Leeched",
+          "matchZh": "增加生命偷取量",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 30,
+            "suggestedMax": 40
+          },
+          "tiers": [
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 45,
+              "textZh": "增加(30—40)%生命偷取量",
+              "textEn": "(30—40)% increased amount of Life Leeched",
+              "dropChance": 0,
+              "statMin": 30,
+              "statMax": 40
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 45,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Katlas_Gloom:9",
+          "family": "Katlas_Gloom:9",
+          "generation": "suffix",
+          "tags": [
+            "chaos"
+          ],
+          "tagsZh": [
+            "混沌"
+          ],
+          "labelZh": "腐朽之",
+          "labelEn": "of Decay",
+          "textZh": "增加(25—35)%凋零幅度",
+          "textEn": "(25—35)% increased Withered Magnitude",
+          "match": "increased Withered Magnitude",
+          "matchZh": "增加凋零幅度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 25,
+            "suggestedMax": 35
+          },
+          "tiers": [
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 45,
+              "textZh": "增加(15—24)%凋零幅度",
+              "textEn": "(15—24)% increased Withered Magnitude",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 24
+            },
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 75,
+              "textZh": "增加(25—35)%凋零幅度",
+              "textEn": "(25—35)% increased Withered Magnitude",
+              "dropChance": 0,
+              "statMin": 25,
+              "statMax": 35
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Katlas_Gloom:10",
+          "family": "Katlas_Gloom:10",
+          "generation": "suffix",
+          "tags": [
+            "caster",
+            "curse"
+          ],
+          "tagsZh": [
+            "法術",
+            "詛咒"
+          ],
+          "labelZh": "腐朽之",
+          "labelEn": "of Decay",
+          "textZh": "增加(22—29)%詛咒幅度",
+          "textEn": "(22—29)% increased Curse Magnitudes",
+          "match": "increased Curse Magnitudes",
+          "matchZh": "增加詛咒幅度",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 22,
+            "suggestedMax": 29
+          },
+          "tiers": [
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 45,
+              "textZh": "增加(15—21)%詛咒幅度",
+              "textEn": "(15—21)% increased Curse Magnitudes",
+              "dropChance": 0,
+              "statMin": 15,
+              "statMax": 21
+            },
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 75,
+              "textZh": "增加(22—29)%詛咒幅度",
+              "textEn": "(22—29)% increased Curse Magnitudes",
+              "dropChance": 0,
+              "statMin": 22,
+              "statMax": 29
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Katlas_Gloom:11",
+          "family": "Katlas_Gloom:11",
+          "generation": "suffix",
+          "tags": [
+            "elemental",
+            "fire",
+            "cold",
+            "lightning"
+          ],
+          "tagsZh": [
+            "元素",
+            "火焰",
+            "冰冷",
+            "閃電"
+          ],
+          "labelZh": "腐朽之",
+          "labelEn": "of Decay",
+          "textZh": "增加(35—50)%曝曬效果",
+          "textEn": "(35—50)% increased Exposure Effect",
+          "match": "increased Exposure Effect",
+          "matchZh": "增加曝曬效果",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 35,
+            "suggestedMax": 50
+          },
+          "tiers": [
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 45,
+              "textZh": "增加(20—34)%曝曬效果",
+              "textEn": "(20—34)% increased Exposure Effect",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 34
+            },
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 75,
+              "textZh": "增加(35—50)%曝曬效果",
+              "textEn": "(35—50)% increased Exposure Effect",
+              "dropChance": 0,
+              "statMin": 35,
+              "statMax": 50
+            }
+          ],
+          "minLevel": 45,
+          "maxLevel": 75,
+          "tierCount": 2,
+          "weight": 2
+        },
+        {
+          "id": "Katlas_Gloom:12",
+          "family": "Katlas_Gloom:12",
+          "generation": "suffix",
+          "tags": [
+            "caster",
+            "curse"
+          ],
+          "tagsZh": [
+            "法術",
+            "詛咒"
+          ],
+          "labelZh": "腐朽之",
+          "labelEn": "of Decay",
+          "textZh": "增加(50—99)%詛咒持續時間",
+          "textEn": "(50—99)% increased Curse Duration",
+          "match": "increased Curse Duration",
+          "matchZh": "增加詛咒持續時間",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 50,
+            "suggestedMax": 99
+          },
+          "tiers": [
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 75,
+              "textZh": "增加(50—99)%詛咒持續時間",
+              "textEn": "(50—99)% increased Curse Duration",
+              "dropChance": 0,
+              "statMin": 50,
+              "statMax": 99
+            }
+          ],
+          "minLevel": 75,
+          "maxLevel": 75,
+          "tierCount": 1,
+          "weight": 1
+        },
+        {
+          "id": "Katlas_Gloom:13",
+          "family": "Katlas_Gloom:13",
+          "generation": "suffix",
+          "tags": [
+            "caster",
+            "curse"
+          ],
+          "tagsZh": [
+            "法術",
+            "詛咒"
+          ],
+          "labelZh": "腐朽之",
+          "labelEn": "of Decay",
+          "textZh": "詛咒啟動速度加快(20—30)%",
+          "textEn": "(20—30)% faster Curse Activation",
+          "match": "faster Curse Activation",
+          "matchZh": "詛咒啟動速度加快",
+          "kind": "numeric",
+          "numeric": {
+            "format": "percentPrefix",
+            "suggestedMin": 20,
+            "suggestedMax": 30
+          },
+          "tiers": [
+            {
+              "nameZh": "腐朽之",
+              "nameEn": "of Decay",
+              "level": 75,
+              "textZh": "詛咒啟動速度加快(20—30)%",
+              "textEn": "(20—30)% faster Curse Activation",
+              "dropChance": 0,
+              "statMin": 20,
+              "statMax": 30
+            }
+          ],
+          "minLevel": 75,
+          "maxLevel": 75,
+          "tierCount": 1,
+          "weight": 1
+        }
+      ]
+    }
+  ]
+}
