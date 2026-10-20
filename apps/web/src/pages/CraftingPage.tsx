@@ -14,11 +14,13 @@ import {
   craftingSlotMeta,
   craftingSlots,
   craftingSourcePath,
+  augmentsForSlot,
   decideCraft,
   effectText,
   harvestTags,
   isCraftSlotId,
   poolLabel,
+  socketCountMax,
   suggestedCraftNode,
   type AffixFamily,
   type CraftDecision,
@@ -80,6 +82,8 @@ export default function CraftingPage() {
   const [keeper, setKeeper] = useState(false);
   const [tightBudget, setTightBudget] = useState(false);
   const [others, setOthers] = useState<Record<string, OtherFlag>>({});
+  const [socketCount, setSocketCount] = useState(0);
+  const [socketPicks, setSocketPicks] = useState<string[]>([]);
 
   const onPicksChange = useCallback((next: Record<string, ModPickState>) => {
     setPicks(next);
@@ -95,6 +99,8 @@ export default function CraftingPage() {
     setGarbageFracture(false);
     setKeeper(false);
     setOthers({});
+    setSocketCount(0);
+    setSocketPicks([]);
   }, [slotId]);
 
   const selected = useMemo(
@@ -167,6 +173,9 @@ export default function CraftingPage() {
           desecrated: flag.desecrated,
         }];
       }),
+      slot: slotId,
+      socketCount,
+      augments: socketPicks.flatMap((id, index) => (id ? [{ id, socket: index + 1 }] : [])),
     });
   }, [
     families,
@@ -183,6 +192,9 @@ export default function CraftingPage() {
     keeper,
     tightBudget,
     others,
+    slotId,
+    socketCount,
+    socketPicks,
   ]);
 
   const related = suggestedCraftNode(decision);
@@ -245,7 +257,15 @@ export default function CraftingPage() {
       <section className="mb-5 rounded-sm border border-line bg-panel px-4 py-3" aria-labelledby="craft-tree-heading">
         <h2 id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</h2>
         <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
-        <CraftDiagram path={decision.path} />
+        <CraftDiagram
+          path={decision.path}
+          augments={decision.socketAugments.map((row) => ({
+            key: `${row.socket}-${row.id}`,
+            text: `${t.craftingSocketN(row.socket)} · ${locale === "en" ? row.nameEn : row.nameZh} · ${
+              locale === "en" ? row.effectEn : row.effectZh
+            }`,
+          }))}
+        />
         {relatedNode && (
           <div className="mt-3 space-y-2 border-t border-line pt-3 text-xs leading-relaxed text-paper">
             <p className="text-gold">
@@ -334,6 +354,20 @@ export default function CraftingPage() {
                 return next;
               });
             }}
+            slotId={slotId}
+            socketCount={socketCount}
+            socketPicks={socketPicks}
+            onSocketCount={(next) => {
+              setSocketCount(next);
+              setSocketPicks((prev) => prev.slice(0, next));
+            }}
+            onSocketPick={(index, id) => {
+              setSocketPicks((prev) => {
+                const copy = prev.slice();
+                copy[index] = id;
+                return copy;
+              });
+            }}
           />
         </aside>
       </div>
@@ -378,6 +412,11 @@ function ItemPanel({
   classes,
   onAddOther,
   onRemoveOther,
+  slotId,
+  socketCount,
+  socketPicks,
+  onSocketCount,
+  onSocketPick,
 }: {
   decision: CraftDecision;
   sideLabel: string;
@@ -413,6 +452,11 @@ function ItemPanel({
   classes: { id: string; classification: NonTargetClass }[];
   onAddOther: (id: string, tierIndex: number | null, desecrated: boolean) => void;
   onRemoveOther: (id: string) => void;
+  slotId: CraftSlotId;
+  socketCount: number;
+  socketPicks: string[];
+  onSocketCount: (value: number) => void;
+  onSocketPick: (index: number, id: string) => void;
 }) {
   const { locale, t } = useLocale();
   const headline = craftVerdictHeadline(decision, locale);
@@ -445,6 +489,19 @@ function ItemPanel({
             <li key={warning}>{craftLocaleText(CRAFT_WARNING_TEXT[warning], locale)}</li>
           ))}
         </ul>
+        {decision.socketAugments.length > 0 && (
+          <ul className="mt-3 space-y-1 text-xs text-paper">
+            {decision.socketAugments.map((row) => (
+              <li key={`${row.socket}-${row.id}`}>
+                {t.craftingSocketN(row.socket)}
+                {" · "}
+                {locale === "en" ? row.nameEn : row.nameZh}
+                {" · "}
+                {locale === "en" ? row.effectEn : row.effectZh}
+              </li>
+            ))}
+          </ul>
+        )}
         {tightBudget && <p className="mt-2 text-xs text-gold">{t.craftingBudgetOn}</p>}
       </div>
 
@@ -481,6 +538,13 @@ function ItemPanel({
         <Check label={t.craftingKeeper} checked={keeper} onChange={onKeeper} />
         <p className="ml-5 text-[11px] text-muted">{t.craftingKeeperHint}</p>
         <Check label={t.craftingBudget} checked={tightBudget} onChange={onTightBudget} />
+        <SocketPicker
+          slotId={slotId}
+          socketCount={socketCount}
+          socketPicks={socketPicks}
+          onSocketCount={onSocketCount}
+          onSocketPick={onSocketPick}
+        />
       </div>
 
       <OtherMods
@@ -528,6 +592,100 @@ function ItemPanel({
         )}
       </ul>
     </section>
+  );
+}
+
+function SocketPicker({
+  slotId,
+  socketCount,
+  socketPicks,
+  onSocketCount,
+  onSocketPick,
+}: {
+  slotId: CraftSlotId;
+  socketCount: number;
+  socketPicks: string[];
+  onSocketCount: (value: number) => void;
+  onSocketPick: (index: number, id: string) => void;
+}) {
+  const { locale, t } = useLocale();
+  const max = socketCountMax(slotId);
+  const options = useMemo(() => augmentsForSlot(slotId), [slotId]);
+  if (max === 0) {
+    return (
+      <div className="border-t border-line pt-3">
+        <p className="text-xs font-medium text-gold">{t.craftingAugment}</p>
+        <p className="mt-1 text-[11px] text-muted">{t.craftingNoAugment}</p>
+      </div>
+    );
+  }
+  const counts = Array.from({ length: max + 1 }, (_, index) => index);
+  const groups = [
+    { label: t.craftingAugmentRune, kind: "rune" },
+    { label: t.craftingAugmentSoul, kind: "soul-core" },
+    { label: t.craftingAugmentOther, kind: "other" },
+  ] as const;
+
+  return (
+    <div className="grid gap-2 border-t border-line pt-3">
+      <p className="text-xs font-medium text-gold">{t.craftingAugment}</p>
+      <label className="text-xs text-muted">
+        {t.craftingSocketCount}
+        <select
+          aria-label={t.craftingSocketCount}
+          value={socketCount}
+          onChange={(event) => onSocketCount(Number(event.target.value))}
+          className="mt-1 w-full rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper outline-none focus:border-gold"
+        >
+          {counts.map((count) => (
+            <option key={count} value={count}>{count}</option>
+          ))}
+        </select>
+      </label>
+      <p className="text-[11px] text-muted">{t.craftingSocketHint}</p>
+      {counts.slice(0, socketCount).map((index) => {
+        const blocked = new Set(
+          socketPicks.flatMap((id, other) => (
+            other !== index && id && options.find((row) => row.id === id)?.limitOne ? [id] : []
+          )),
+        );
+        const available = options.filter((row) => !blocked.has(row.id));
+        const current = options.find((row) => row.id === socketPicks[index]);
+        return (
+          <label key={index} className="text-xs text-muted">
+            {t.craftingSocketN(index + 1)}
+            <select
+              aria-label={t.craftingSocketN(index + 1)}
+              value={socketPicks[index] ?? ""}
+              onChange={(event) => onSocketPick(index, event.target.value)}
+              className="mt-1 w-full rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper outline-none focus:border-gold"
+            >
+              <option value="">{t.craftingSocketEmpty}</option>
+              {groups.map((group) => {
+                const rows = available.filter((row) => (
+                  group.kind === "other" ? row.kind !== "rune" && row.kind !== "soul-core" : row.kind === group.kind
+                ));
+                if (rows.length === 0) return null;
+                return (
+                  <optgroup key={group.kind} label={group.label}>
+                    {rows.map((row) => (
+                      <option key={row.id} value={row.id}>
+                        {locale === "en" ? row.nameEn : row.nameZh}
+                      </option>
+                    ))}
+                  </optgroup>
+                );
+              })}
+            </select>
+            {current && (
+              <span className="mt-1 block text-[11px] text-paper">
+                {locale === "en" ? current.effectEn : current.effectZh}
+              </span>
+            )}
+          </label>
+        );
+      })}
+    </div>
   );
 }
 

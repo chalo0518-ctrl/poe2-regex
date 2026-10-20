@@ -145,6 +145,8 @@ describe("crafting ruleset", () => {
       "stop-base",
       "fill",
       "stop-full",
+      "sockets",
+      "keep-exceptional",
       "desecrate",
       "essence",
       "stop-fracture",
@@ -547,5 +549,84 @@ describe("decideCraft", () => {
     }));
     expect(decision.removal.whittle).toBe("unknown-level");
     expect(decision.cleanup).toBe("sinistral-annulment");
+  });
+
+  it("keeps a base whose socket count is above the slot maximum", () => {
+    const full = input({
+      includes: [suffix("life")],
+      suffixCount: 3,
+      owned: [owned("life", "suffix", false)],
+      slot: "body",
+    });
+    const extra = decideCraft({ ...full, socketCount: 3 });
+    expect(extra.verdict).toBe("continue");
+    expect(extra.reasons[0]).toBe("exceptional-keep");
+    expect(extra.reasons).toContain("target-side-full-no-fracture");
+    expect(extra.path).toEqual(["base", "fill", "sockets", "keep-exceptional"]);
+    expect(craftVerdictHeadline(extra, "zh-Hant")).toBe("繼續（額外增幅槽，留下這件）");
+    expect(craftVerdictHeadline(extra, "en")).toBe("Continue (extra augment socket — keep this base)");
+    expect(suggestedCraftNode(extra)).toBe("finish");
+
+    const normal = decideCraft({ ...full, socketCount: 2 });
+    expect(normal.verdict).toBe("rebase");
+    expect(normal.reasons).toEqual(["target-side-full-no-fracture"]);
+    expect(normal.socketAugments).toEqual([]);
+  });
+
+  it("does not keep an impossible tier or a garbage fracture just because of an extra socket", () => {
+    const blocked = decideCraft(input({
+      includes: [suffix("life", 82)],
+      itemLevel: 40,
+      slot: "body",
+      socketCount: 3,
+      augments: [{ id: "Medveds_Tending", socket: 1 }],
+    }));
+    expect(blocked.verdict).toBe("rebase");
+    expect(blocked.reasons).toEqual(["base-cannot-roll-t1"]);
+    expect(blocked.path).toEqual(["base", "stop-base"]);
+    expect(blocked.socketAugments.map((row) => row.nameZh)).toEqual(["梅德偉的照料"]);
+
+    const fractured = decideCraft(input({
+      garbageFracture: true,
+      slot: "body",
+      socketCount: 3,
+    }));
+    expect(fractured.reasons).toEqual(["fracture-on-garbage"]);
+    expect(fractured.verdict).toBe("rebase");
+  });
+
+  it("keeps a socket-bound augment even when the socket count is still normal", () => {
+    const decision = decideCraft(input({
+      includes: [suffix("life")],
+      suffixCount: 3,
+      owned: [owned("life", "suffix", false)],
+      slot: "body",
+      socketCount: 2,
+      augments: [{ id: "Medveds_Tending", socket: 1 }],
+    }));
+    expect(decision.verdict).toBe("continue");
+    expect(decision.reasons).toContain("socket-bound-augment");
+    expect(decision.reasons).not.toContain("exceptional-keep");
+    expect(decision.socketAugments[0]?.effectZh).toContain("靈魂");
+    expect(decision.socketAugments[0]?.socketBound).toBe(true);
+    expect(decision.path).toEqual(["base", "fill", "sockets", "keep-exceptional"]);
+    expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("繼續");
+  });
+
+  it("keeps the whittle headline when an extra socket is also worth saving", () => {
+    const decision = decideCraft(input({
+      includes: [suffix("life", 60)],
+      owned: [owned("life", "suffix")],
+      suffixCount: 1,
+      others: [{ id: "str", generation: "prefix", level: 8 }],
+      slot: "body",
+      socketCount: 3,
+      augments: [{ id: "Desert_Rune", socket: 1 }],
+    }));
+    expect(decision.reasons[0]).toBe("exceptional-keep");
+    expect(decision.cleanup).toBe("whittle");
+    expect(decision.socketAugments[0]?.effectZh).toBe("護甲: +14%火焰抗性");
+    expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("繼續（削切之兆，混沌石移除最低等級詞綴）");
+    expect(decision.path).toEqual(["base", "fill", "desecrate", "omen", "whittle", "sockets", "keep-exceptional"]);
   });
 });

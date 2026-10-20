@@ -15,6 +15,8 @@ const BRANCH: Record<Exclude<CraftDiagramNodeId, "base">, Localized> = {
   "side-annul": { zhHant: "只有一側能清", en: "Only one side is safe" },
   light: { zhHant: "褻瀆不是目標", en: "Desecrated mod is not a target" },
   "stop-omen": { zhHant: "會打到目標", en: "Would hit a target" },
+  sockets: { zhHant: "孔數高過上限", en: "Above the normal maximum" },
+  "keep-exceptional": { zhHant: "留下這件", en: "Keep this base" },
 };
 
 function edgeOn(path: readonly CraftDiagramNodeId[], from: CraftDiagramNodeId, to: CraftDiagramNodeId): boolean {
@@ -83,7 +85,13 @@ function Split({ children }: { children: ReactNode }) {
   return <div className="flex items-start justify-center">{children}</div>;
 }
 
-export function CraftDiagram({ path }: { path: readonly CraftDiagramNodeId[] }) {
+export function CraftDiagram({
+  path,
+  augments = [],
+}: {
+  path: readonly CraftDiagramNodeId[];
+  augments?: { key: string; text: string }[];
+}) {
   const { locale } = useLocale();
   const titles = path.map((id) => {
     const node = CRAFT_DIAGRAM.find((row) => row.id === id);
@@ -95,7 +103,14 @@ export function CraftDiagram({ path }: { path: readonly CraftDiagramNodeId[] }) 
       <p className="mb-3 text-xs text-gold" data-craft-path>
         {titles.join(" → ")}
       </p>
-      <div className="flex w-max min-w-[72rem] flex-col items-center pb-3">
+      {augments.length > 0 && (
+        <ul className="mb-3 space-y-1 text-xs text-paper" data-socket-augments>
+          {augments.map((row) => (
+            <li key={row.key}>{row.text}</li>
+          ))}
+        </ul>
+      )}
+      <div className="flex w-max min-w-[84rem] flex-col items-center pb-3">
         <Node id="base" path={path} />
         <Split>
           <Arm from="base" to="stop-base" path={path} place="first">
@@ -106,6 +121,24 @@ export function CraftDiagram({ path }: { path: readonly CraftDiagramNodeId[] }) 
             <Split>
               <Arm from="fill" to="stop-full" path={path} place="first">
                 <Node id="stop-full" path={path} />
+              </Arm>
+              <Arm from="fill" to="sockets" path={path} place="mid">
+                <Node id="sockets" path={path} />
+                <div
+                  data-edge="sockets-keep-exceptional"
+                  data-active={edgeOn(path, "sockets", "keep-exceptional") ? "true" : "false"}
+                  className="flex flex-col items-center"
+                >
+                  <div className={`h-3 w-px ${edgeOn(path, "sockets", "keep-exceptional") ? "bg-gold" : "bg-line"}`} />
+                  <p
+                    className={`mb-1 w-[7.5rem] text-center text-[10px] leading-tight ${
+                      edgeOn(path, "sockets", "keep-exceptional") ? "text-gold" : "text-muted"
+                    }`}
+                  >
+                    {craftLocaleText(BRANCH["keep-exceptional"], locale)}
+                  </p>
+                  <Node id="keep-exceptional" path={path} />
+                </div>
               </Arm>
               <Arm from="fill" to="desecrate" path={path} place="last">
                 <Node id="desecrate" path={path} />

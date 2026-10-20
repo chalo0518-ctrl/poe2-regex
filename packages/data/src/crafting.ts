@@ -3,7 +3,8 @@ import {
   type RemovalAssessment,
   type RemovalMod,
 } from "./omens.ts";
-import type { UiLocale } from "./types.ts";
+import { augmentById, effectForSlot, inferExceptionalBase } from "./sockets.ts";
+import type { CraftSlotId, UiLocale } from "./types.ts";
 
 /**
  * Craft-cap rules for the current item model: one crafted modifier and one
@@ -45,7 +46,9 @@ export type CraftReasonId =
   | "insufficient-progress"
   | "whittle-safe"
   | "side-removal-safe"
-  | "removal-risky";
+  | "removal-risky"
+  | "exceptional-keep"
+  | "socket-bound-augment";
 
 export type CraftWarningId =
   | "single-crafted-slot"
@@ -75,7 +78,9 @@ export type CraftDiagramNodeId =
   | "side-annul"
   | "light"
   | "stop-omen"
-  | "finish";
+  | "finish"
+  | "sockets"
+  | "keep-exceptional";
 
 export type CraftTarget = {
   id: string;
@@ -148,6 +153,31 @@ export type DecideCraftInput = {
    * Empty or omitted leaves the verdict, reasons, and cleanup unchanged.
    */
   others?: CraftOtherMod[];
+  /** Slot the item is in. Needed to read the socket cap and augment lines. */
+  slot?: CraftSlotId;
+  /**
+   * Augment sockets currently on the item.
+   * A count above the slot's normal maximum is an extra socket. Omitted counts as 0.
+   */
+  socketCount?: number;
+  /** Augments socketed in those holes. Empty sockets are omitted. */
+  augments?: SocketAugmentPick[];
+};
+
+export type SocketAugmentPick = {
+  id: string;
+  /** 1-based hole on the item. */
+  socket?: number;
+};
+
+export type SocketAugmentView = {
+  id: string;
+  socket: number;
+  nameZh: string;
+  nameEn: string;
+  effectZh: string;
+  effectEn: string;
+  socketBound: boolean;
 };
 
 type CraftCore = {
@@ -162,6 +192,8 @@ export type CraftDecision = CraftCore & {
   /** Highlighted top-down path for the item as described. */
   path: CraftDiagramNodeId[];
   removal: RemovalAssessment;
+  /** Augments the player put in the sockets, with the line for this slot. */
+  socketAugments: SocketAugmentView[];
 };
 
 export type Localized = {
@@ -484,24 +516,68 @@ function applyRemoval(core: CraftCore, removal: RemovalAssessment, input: Decide
   return core;
 }
 
+function resolveSocketAugments(input: DecideCraftInput): SocketAugmentView[] {
+  const slot = input.slot;
+  const views: SocketAugmentView[] = [];
+  for (const pick of input.augments ?? []) {
+    const augment = augmentById(pick.id);
+    if (!augment) continue;
+    const effect = slot ? effectForSlot(augment, slot) : null;
+    if (slot && !effect) continue;
+    views.push({
+      id: augment.id,
+      socket: pick.socket ?? views.length + 1,
+      nameZh: augment.nameZh,
+      nameEn: augment.nameEn,
+      effectZh: effect?.zh ?? "",
+      effectEn: effect?.en ?? "",
+      socketBound: augment.socketBound,
+    });
+  }
+  return views;
+}
+
+function applySockets(core: CraftCore, input: DecideCraftInput, socketAugments: SocketAugmentView[]): CraftCore {
+  if (core.reasons.includes("base-cannot-roll-t1") || core.reasons.includes("fracture-on-garbage")) return core;
+  let next = core;
+  if (inferExceptionalBase(input.slot, input.socketCount ?? 0)) {
+    next = {
+      ...next,
+      verdict: "continue",
+      reasons: ["exceptional-keep", ...next.reasons.filter((reason) => reason !== "exceptional-keep")],
+    };
+  }
+  if (socketAugments.some((row) => row.socketBound)) {
+    next = {
+      ...next,
+      verdict: "continue",
+      reasons: [...next.reasons.filter((reason) => reason !== "socket-bound-augment"), "socket-bound-augment"],
+    };
+  }
+  return next;
+}
+
 export function craftDiagramPath(decision: Pick<CraftDecision, "reasons" | "cleanup" | "verdict">): CraftDiagramNodeId[] {
   if (decision.reasons.includes("base-cannot-roll-t1")) return ["base", "stop-base"];
   if (decision.reasons.includes("fracture-on-garbage")) return ["base", "fill", "desecrate", "stop-fracture"];
-  if (decision.reasons.includes("target-side-full-no-fracture")) return ["base", "fill", "stop-full"];
-  if (decision.reasons.includes("removal-risky")) return ["base", "fill", "desecrate", "omen", "stop-omen"];
-  if (decision.cleanup === "whittle") return ["base", "fill", "desecrate", "omen", "whittle"];
-  if (decision.cleanup === "sinistral-annulment" || decision.cleanup === "dextral-annulment") {
-    return ["base", "fill", "desecrate", "omen", "side-annul"];
+  let path: CraftDiagramNodeId[];
+  if (decision.reasons.includes("target-side-full-no-fracture")) path = ["base", "fill", "stop-full"];
+  else if (decision.reasons.includes("removal-risky")) path = ["base", "fill", "desecrate", "omen", "stop-omen"];
+  else if (decision.cleanup === "whittle") path = ["base", "fill", "desecrate", "omen", "whittle"];
+  else if (decision.cleanup === "sinistral-annulment" || decision.cleanup === "dextral-annulment") {
+    path = ["base", "fill", "desecrate", "omen", "side-annul"];
+  } else if (decision.cleanup === "essence-alloy-overwrite" || decision.reasons.includes("desecration-overwrite-loop")) {
+    path = ["base", "fill", "desecrate", "essence"];
+  } else if (decision.cleanup === "omen-of-light" || decision.reasons.includes("omen-of-light-cleanup")) {
+    path = ["base", "fill", "desecrate", "omen", "light"];
+  } else if (decision.reasons.includes("fresh-base") || decision.reasons.includes("early-progress")) path = ["base", "fill"];
+  else if (decision.verdict === "rebase") path = ["base", "fill", "stop-full"];
+  else path = ["base", "fill", "desecrate", "finish"];
+  if (decision.reasons.includes("exceptional-keep") || decision.reasons.includes("socket-bound-augment")) {
+    const trimmed = path.filter((id) => id !== "stop-full" && id !== "stop-omen");
+    return [...trimmed, "sockets", "keep-exceptional"];
   }
-  if (decision.cleanup === "essence-alloy-overwrite" || decision.reasons.includes("desecration-overwrite-loop")) {
-    return ["base", "fill", "desecrate", "essence"];
-  }
-  if (decision.cleanup === "omen-of-light" || decision.reasons.includes("omen-of-light-cleanup")) {
-    return ["base", "fill", "desecrate", "omen", "light"];
-  }
-  if (decision.reasons.includes("fresh-base") || decision.reasons.includes("early-progress")) return ["base", "fill"];
-  if (decision.verdict === "rebase") return ["base", "fill", "stop-full"];
-  return ["base", "fill", "desecrate", "finish"];
+  return path;
 }
 
 /**
@@ -511,16 +587,21 @@ export function craftDiagramPath(decision: Pick<CraftDecision, "reasons" | "clea
 export function decideCraft(input: DecideCraftInput): CraftDecision {
   const core = decideCraftCore(input);
   const removal = recommendRemoval(modsOnItem(input), targetLevels(input));
-  const decision = applyRemoval(core, removal, input);
-  return { ...decision, removal, path: craftDiagramPath(decision) };
+  const removed = applyRemoval(core, removal, input);
+  const socketAugments = resolveSocketAugments(input);
+  const decision = applySockets(removed, input, socketAugments);
+  return { ...decision, removal, socketAugments, path: craftDiagramPath(decision) };
 }
 
 export function suggestedCraftNode(decision: CraftDecision): CraftTreeNodeId {
+  const keepSockets =
+    decision.reasons.includes("exceptional-keep") || decision.reasons.includes("socket-bound-augment");
   if (decision.reasons.includes("base-cannot-roll-t1")) return "base";
+  if (decision.reasons.includes("fracture-on-garbage")) return "fracture-cleanup";
   if (
-    decision.reasons.includes("fracture-on-garbage") ||
-    decision.reasons.includes("loop-structure-broken") ||
-    decision.reasons.includes("target-side-full-no-fracture")
+    !keepSockets &&
+    (decision.reasons.includes("loop-structure-broken") ||
+      decision.reasons.includes("target-side-full-no-fracture"))
   ) {
     return "fracture-cleanup";
   }
@@ -538,6 +619,9 @@ export function suggestedCraftNode(decision: CraftDecision): CraftTreeNodeId {
     decision.reasons.includes("removal-risky")
   ) {
     return "desecrate";
+  }
+  if (decision.reasons.includes("exceptional-keep") || decision.reasons.includes("socket-bound-augment")) {
+    return "finish";
   }
   if (decision.reasons.includes("fresh-base")) return "base";
   if (decision.reasons.includes("early-progress")) return "rare";
@@ -561,6 +645,9 @@ export function craftVerdictHeadline(decision: CraftDecision, locale: UiLocale):
       return "Continue (Omen of Dextral Annulment — Annul removes only suffixes)";
     }
     if (decision.verdict === "continue" && light) return "Continue (one Omen of Light cleanup)";
+    if (decision.verdict === "continue" && decision.cleanup === "none" && decision.reasons.includes("exceptional-keep")) {
+      return "Continue (extra augment socket — keep this base)";
+    }
     if (decision.verdict === "rebase" && light) return "New base (or one Omen of Light cleanup)";
     if (decision.verdict === "downgrade" && light) return "Lower the goal (one Omen of Light cleanup)";
     if (decision.verdict === "continue") return "Continue";
@@ -578,6 +665,9 @@ export function craftVerdictHeadline(decision: CraftDecision, locale: UiLocale):
     return "繼續（右旋廢止之兆，無效石只移除後綴）";
   }
   if (decision.verdict === "continue" && light) return "繼續（改用光明之兆一輪清理）";
+  if (decision.verdict === "continue" && decision.cleanup === "none" && decision.reasons.includes("exceptional-keep")) {
+    return "繼續（額外增幅槽，留下這件）";
+  }
   if (decision.verdict === "rebase" && light) return "換底（或改用光明之兆一輪清理）";
   if (decision.verdict === "downgrade" && light) return "降目標（改用光明之兆一輪清理）";
   if (decision.verdict === "continue") return "繼續";
@@ -648,6 +738,14 @@ export const CRAFT_REASON_TEXT: Record<CraftReasonId, Localized> = {
   "removal-risky": {
     zhHant: "削切會打到目標，或非目標的等級不低於目標。不要用混沌石或無效石硬清，停手換底。",
     en: "Whittling would hit a target, or a non-target is not below the targets. Do not force a Chaos Orb or Annul. Stop and switch bases.",
+  },
+  "exceptional-keep": {
+    zhHant: "孔數高過這個部位的一般上限，多一顆增幅槽。這顆槽值得留下，不要為了滿邊或清不掉就換底。",
+    en: "The socket count is above this slot's normal maximum, so there is an extra augment socket. That socket is worth keeping. Do not switch bases only because a side is full or a mod will not come off.",
+  },
+  "socket-bound-augment": {
+    zhHant: "有一孔是插槽綁定的增幅，放進去就拿不出來。換底會把它一起丟掉。",
+    en: "One socket holds a socket-bound augment. It cannot be taken back out. Switching bases throws it away.",
   },
 };
 
@@ -883,6 +981,22 @@ export const CRAFT_DIAGRAM: CraftDiagramNode[] = [
     choice: {
       zhHant: "目標側已滿，而且沒有要留下的破裂。",
       en: "The target side is full and has no fracture worth keeping.",
+    },
+  },
+  {
+    id: "sockets",
+    title: { zhHant: "孔數", en: "Sockets" },
+    choice: {
+      zhHant: "孔數高過這個部位的一般上限，等於多一顆增幅槽。這裡不另做標記。",
+      en: "A count above this slot's normal maximum is an extra augment socket. No separate mark is shown.",
+    },
+  },
+  {
+    id: "keep-exceptional",
+    title: { zhHant: "留下這件", en: "Keep this base" },
+    choice: {
+      zhHant: "多出來的增幅槽值得留下。不要只因為滿邊或詞綴清不掉就換底。插槽綁定的增幅會留在這件上。",
+      en: "The extra augment socket is worth keeping. Do not switch bases only because a side is full or a mod will not come off. A socket-bound augment stays on the item.",
     },
   },
   {

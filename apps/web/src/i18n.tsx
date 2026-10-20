@@ -65,6 +65,15 @@ type Messages = {
   craftingLevelRisky: string;
   craftingLevelUnknown: string;
   craftingModLevel: (level: number) => string;
+  craftingSocketCount: string;
+  craftingSocketEmpty: string;
+  craftingSocketN: (n: number) => string;
+  craftingAugment: string;
+  craftingNoAugment: string;
+  craftingSocketHint: string;
+  craftingAugmentRune: string;
+  craftingAugmentSoul: string;
+  craftingAugmentOther: string;
   craftingNodeRelated: string;
   craftingSectionAction: string;
   craftingSectionSkip: string;
@@ -232,6 +241,15 @@ const zhHant: Messages = {
   craftingLevelRisky: "等級不低於目標",
   craftingLevelUnknown: "等級還不能判斷",
   craftingModLevel: (level) => `需求等級 ${level}`,
+  craftingSocketCount: "孔數",
+  craftingSocketEmpty: "空孔",
+  craftingSocketN: (n) => `孔 ${n}`,
+  craftingAugment: "增幅",
+  craftingNoAugment: "這個部位沒有增幅槽",
+  craftingSocketHint: "選這件目前的孔數，再為每一孔選增幅（符文、靈魂核心或其他）。孔數會進到決策裡。",
+  craftingAugmentRune: "符文",
+  craftingAugmentSoul: "靈魂核心",
+  craftingAugmentOther: "其他",
   craftingNodeRelated: "與此判定相關",
   craftingSectionAction: "怎麼做",
   craftingSectionSkip: "何時跳過",
@@ -409,6 +427,15 @@ const en: Messages = {
   craftingLevelRisky: "Level is not below the targets",
   craftingLevelUnknown: "Level cannot be judged yet",
   craftingModLevel: (level) => `Mod level ${level}`,
+  craftingSocketCount: "Sockets",
+  craftingSocketEmpty: "Empty socket",
+  craftingSocketN: (n) => `Socket ${n}`,
+  craftingAugment: "Augment",
+  craftingNoAugment: "This slot has no augment socket",
+  craftingSocketHint: "Choose how many sockets this item has, then an augment for each one (rune, soul core, or other). The count is part of the decision.",
+  craftingAugmentRune: "Runes",
+  craftingAugmentSoul: "Soul cores",
+  craftingAugmentOther: "Other",
   craftingNodeRelated: "Related to this verdict",
   craftingSectionAction: "What to do",
   craftingSectionSkip: "When to skip",

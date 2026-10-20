@@ -146,6 +146,26 @@ describe("crafting page", () => {
     expect(document.querySelector('[data-node="whittle"]')).toHaveAttribute("data-active", "true");
   }, 15_000);
 
+  it("keeps a body with more sockets than the normal cap and shows the augment effect", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+    await user.selectOptions(screen.getByLabelText("孔數"), "3");
+    expect(screen.getByText("繼續（額外增幅槽，留下這件）")).toBeInTheDocument();
+    expect(screen.queryByText("卓越")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Exceptional/)).not.toBeInTheDocument();
+    expect(document.querySelector('[data-node="keep-exceptional"]')).toHaveAttribute("data-active", "true");
+    expect(document.querySelector('[data-node="stop-full"]')).toHaveAttribute("data-active", "false");
+
+    await user.selectOptions(screen.getByLabelText("孔 1"), "Desert_Rune");
+    expect(screen.getAllByText(/護甲: \+14%火焰抗性/).length).toBeGreaterThan(0);
+    expect(document.querySelector("[data-socket-augments]")?.textContent).toContain("沙漠符文");
+
+    await user.click(screen.getByRole("option", { name: "戒指" }));
+    expect(screen.getByText("這個部位沒有增幅槽")).toBeInTheDocument();
+    expect(screen.queryByLabelText("孔數")).not.toBeInTheDocument();
+    expect(screen.queryByText("繼續（額外增幅槽，留下這件）")).not.toBeInTheDocument();
+  }, 15_000);
+
   it("opens a weapon class on the same target rows", () => {
     renderCrafting("/endgame/crafting?slot=bow");
     expect(screen.getByRole("option", { name: "弓" })).toHaveAttribute("aria-selected", "true");

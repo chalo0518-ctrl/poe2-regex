@@ -171,7 +171,20 @@ export type {
   Localized,
   ModSide,
   OwnedTarget,
+  SocketAugmentPick,
+  SocketAugmentView,
 } from "./crafting.ts";
+
+export {
+  augmentById,
+  augmentsForSlot,
+  effectForSlot,
+  inferExceptionalBase,
+  normalSocketMax,
+  slotCanBeExceptional,
+  socketCountMax,
+} from "./sockets.ts";
+export type { Augment, AugmentEffect, AugmentKind, SlotAugment } from "./sockets.ts";
 
 export {
   REMOVAL_OMENS,
