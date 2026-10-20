@@ -1,0 +1,71 @@
+name: PR preview build
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview-build-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        if: github.event.action != 'closed'
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        if: github.event.action != 'closed'
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        if: github.event.action != 'closed'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        if: github.event.action != 'closed'
+        run: pnpm install --frozen-lockfile
+
+      - name: Build preview
+        if: github.event.action != 'closed'
+        env:
+          PAGES_BASE: /poe2-regex/pr-preview/pr-${{ github.event.pull_request.number }}/
+        run: |
+          set -euo pipefail
+          case "$PAGES_BASE" in
+            /poe2-regex/pr-preview/pr-[0-9]*/) ;;
+            *) echo "refusing preview base $PAGES_BASE" >&2; exit 1 ;;
+          esac
+          pnpm build
+          grep -F "base href=\"${PAGES_BASE}\"" apps/web/dist/index.html
+
+      - name: Upload preview
+        if: github.event.action != 'closed'
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-pr-${{ github.event.pull_request.number }}
+          path: apps/web/dist
+          retention-days: 2
+
+      - name: Mark preview for removal
+        if: github.event.action == 'closed'
+        run: |
+          mkdir -p "$RUNNER_TEMP/preview-remove"
+          printf '%s\n' "${{ github.event.pull_request.number }}" > "$RUNNER_TEMP/preview-remove/pr.txt"
+
+      - name: Upload removal marker
+        if: github.event.action == 'closed'
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-remove-pr-${{ github.event.pull_request.number }}
+          path: ${{ runner.temp }}/preview-remove/pr.txt
+          retention-days: 1

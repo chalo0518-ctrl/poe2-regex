@@ -1,0 +1,271 @@
+name: PR preview deploy
+
+on:
+  workflow_run:
+    workflows: ["PR preview build"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to publish or remove
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+  id-token: write
+  issues: write
+  pages: write
+  pull-requests: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      pr: ${{ steps.preview.outputs.pr }}
+      skip: ${{ steps.preview.outputs.skip }}
+      remove: ${{ steps.preview.outputs.remove }}
+      mode: ${{ steps.preview.outputs.mode }}
+      artifact: ${{ steps.preview.outputs.artifact }}
+      run_id: ${{ steps.preview.outputs.run_id }}
+    steps:
+      - name: Resolve preview
+        id: preview
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER_INPUT: ${{ inputs.pr_number }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            async function loadPr(number) {
+              if (!/^[0-9]+$/.test(String(number))) {
+                core.setFailed(`Invalid pull request number: ${number}`);
+                return null;
+              }
+              const { data: pr } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: Number(number),
+              });
+              const headRepo = pr.head.repo && pr.head.repo.full_name;
+              if (headRepo !== `${owner}/${repo}`) {
+                core.notice("Fork pull requests are not previewed.");
+                core.setOutput("skip", "true");
+                return null;
+              }
+              return pr;
+            }
+
+            if (context.eventName === "workflow_dispatch") {
+              const pr = await loadPr(process.env.PR_NUMBER_INPUT);
+              if (!pr) return;
+              core.setOutput("pr", String(pr.number));
+              core.setOutput("remove", pr.state === "closed" ? "true" : "false");
+              core.setOutput("mode", "build");
+              core.setOutput("skip", "false");
+              return;
+            }
+
+            const runId = context.payload.workflow_run.id;
+            const { data } = await github.rest.actions.listWorkflowRunArtifacts({
+              owner,
+              repo,
+              run_id: runId,
+            });
+            const artifact = data.artifacts.find(
+              (item) => /^preview-(?:remove-)?pr-[0-9]+$/.test(item.name) && !item.expired,
+            );
+            if (!artifact) {
+              core.notice("No preview artifact on this run.");
+              core.setOutput("skip", "true");
+              return;
+            }
+            const remove = artifact.name.startsWith("preview-remove-pr-");
+            const prNumber = artifact.name.split("-").pop();
+            const pr = await loadPr(prNumber);
+            if (!pr) return;
+            if (pr.head.sha !== context.payload.workflow_run.head_sha) {
+              core.notice("Preview artifact is stale. A newer commit will publish.");
+              core.setOutput("skip", "true");
+              return;
+            }
+            core.setOutput("pr", String(pr.number));
+            core.setOutput("remove", remove || pr.state === "closed" ? "true" : "false");
+            core.setOutput("mode", "artifact");
+            core.setOutput("artifact", artifact.name);
+            core.setOutput("run_id", String(runId));
+            core.setOutput("skip", "false");
+
+  deploy:
+    needs: resolve
+    if: needs.resolve.outputs.skip == 'false'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Checkout pull request merge
+        if: needs.resolve.outputs.mode == 'build' && needs.resolve.outputs.remove != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: refs/pull/${{ needs.resolve.outputs.pr }}/merge
+          path: pr-src
+          persist-credentials: false
+
+      - name: Build pull request preview
+        if: needs.resolve.outputs.mode == 'build' && needs.resolve.outputs.remove != 'true'
+        working-directory: pr-src
+        env:
+          PAGES_BASE: /poe2-regex/pr-preview/pr-${{ needs.resolve.outputs.pr }}/
+        run: |
+          set -euo pipefail
+          case "$PAGES_BASE" in
+            /poe2-regex/pr-preview/pr-[0-9]*/) ;;
+            *) echo "refusing preview base $PAGES_BASE" >&2; exit 1 ;;
+          esac
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Download preview build
+        if: needs.resolve.outputs.mode == 'artifact' && needs.resolve.outputs.remove != 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.resolve.outputs.artifact }}
+          path: preview-dist
+          run-id: ${{ needs.resolve.outputs.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Assemble site
+        env:
+          PR_NUMBER: ${{ needs.resolve.outputs.pr }}
+          PREVIEW_MODE: ${{ needs.resolve.outputs.mode }}
+          PREVIEW_REMOVE: ${{ needs.resolve.outputs.remove }}
+        run: |
+          set -euo pipefail
+          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]
+          site="site-publish"
+          rm -rf "$site"
+          set +e
+          bash .github/scripts/pages-site.sh extract "$site"
+          status=$?
+          set -e
+          if [[ "$status" -eq 2 ]]; then
+            echo "Could not fetch pages-site" >&2
+            exit 1
+          fi
+          if [[ "$status" -ne 0 ]]; then
+            echo "pages-site is missing; building production from main"
+            pnpm install --frozen-lockfile
+            GITHUB_PAGES=true pnpm build
+            mkdir -p "$site"
+            cp -a apps/web/dist/. "$site"/
+          fi
+          if [[ "$PREVIEW_REMOVE" == "true" ]]; then
+            rm -rf "$site/pr-preview/pr-$PR_NUMBER"
+          else
+            if [[ "$PREVIEW_MODE" == "build" ]]; then
+              src="pr-src/apps/web/dist"
+            else
+              src="preview-dist"
+            fi
+            base="/poe2-regex/pr-preview/pr-${PR_NUMBER}/"
+            grep -F "base href=\"${base}\"" "$src/index.html"
+            rm -rf "$site/pr-preview/pr-$PR_NUMBER"
+            mkdir -p "$site/pr-preview/pr-$PR_NUMBER"
+            cp -a "$src"/. "$site/pr-preview/pr-$PR_NUMBER"/
+          fi
+          grep -F 'base href="/poe2-regex/"' "$site/index.html"
+          if [[ -f "$site/pr-preview/pr-$PR_NUMBER/index.html" ]]; then
+            grep -F "base href=\"/poe2-regex/pr-preview/pr-${PR_NUMBER}/\"" "$site/pr-preview/pr-$PR_NUMBER/index.html"
+          fi
+
+      - name: Remember site tree
+        env:
+          PAGES_SITE_COMMIT_MESSAGE: Update preview for PR ${{ needs.resolve.outputs.pr }}
+        run: bash .github/scripts/pages-site.sh publish site-publish
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site-publish
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Comment on the pull request
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ needs.resolve.outputs.pr }}
+          PREVIEW_REMOVE: ${{ needs.resolve.outputs.remove }}
+        with:
+          script: |
+            const prNumber = Number(process.env.PR_NUMBER);
+            const remove = process.env.PREVIEW_REMOVE === "true";
+            const marker = "<!-- poe2-regex-preview -->";
+            const root = `https://chalo0518-ctrl.github.io/poe2-regex/pr-preview/pr-${prNumber}/`;
+            const crafting = `${root}endgame/crafting`;
+            const body = remove
+              ? [
+                  marker,
+                  "預覽已移除（此 pull request 已關閉）。",
+                  "",
+                  "Preview removed because this pull request is closed.",
+                ].join("\n")
+              : [
+                  marker,
+                  "### 預覽 / Preview",
+                  "",
+                  `[開啟預覽 / Open preview](${root})`,
+                  "",
+                  `[做裝頁 / Crafting](${crafting})`,
+                  "",
+                  "同一個倉庫的 pull request 每次推送都會更新這個網址。PR 關閉後會刪掉預覽。正式站仍是 https://chalo0518-ctrl.github.io/poe2-regex/ ，base 維持 `/poe2-regex/`。",
+                  "",
+                  "Each push to this pull request refreshes the URL. Closing the pull request removes the preview. Production stays at `/poe2-regex/`.",
+                ].join("\n");
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              per_page: 100,
+            });
+            const existing = comments.find((comment) => comment.body && comment.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }

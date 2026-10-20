@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -33,6 +33,14 @@ jobs:
         run: pnpm build
         env:
           GITHUB_PAGES: "true"
+      - name: Keep production base
+        run: grep -F 'base href="/poe2-regex/"' apps/web/dist/index.html
+      - name: Keep open pull request previews
+        run: bash .github/scripts/pages-site.sh overlay apps/web/dist
+      - name: Remember site tree
+        run: bash .github/scripts/pages-site.sh publish apps/web/dist
+        env:
+          PAGES_SITE_COMMIT_MESSAGE: Publish production GitHub Pages tree
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

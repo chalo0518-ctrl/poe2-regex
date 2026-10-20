@@ -1,0 +1,2 @@
+User-agent: *
+Disallow: /poe2-regex/pr-preview/
