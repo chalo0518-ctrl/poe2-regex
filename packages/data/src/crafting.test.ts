@@ -573,6 +573,21 @@ describe("decideCraft", () => {
     expect(normal.socketAugments).toEqual([]);
   });
 
+  it("treats suffix 3 as still open when 瑟雷的凱旋 adds a suffix slot", () => {
+    const base = input({
+      includes: [suffix("life")],
+      owned: [owned("life", "suffix", false)],
+      slot: "body",
+      augments: [{ id: "Serles_Triumph", socket: 1 }],
+    });
+    const open = decideCraft({ ...base, suffixCount: 3 });
+    expect(open.reasons).not.toContain("target-side-full-no-fracture");
+    const full = decideCraft({ ...base, suffixCount: 4 });
+    expect(full.reasons).toContain("target-side-full-no-fracture");
+    expect(full.reasons).toContain("socket-bound-augment");
+    expect(full.socketAugments[0]?.effectZh).toBe("所有裝備: 允許後綴+1");
+  });
+
   it("does not keep an impossible tier or a garbage fracture just because of an extra socket", () => {
     const blocked = decideCraft(input({
       includes: [suffix("life", 82)],

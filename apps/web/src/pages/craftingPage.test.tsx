@@ -38,11 +38,11 @@ function pattern() {
   return document.querySelector(".font-mono.text-gold")?.textContent ?? "";
 }
 
-function distinctPrefixes(limit: number): AffixFamily[] {
+function distinctSide(generation: "prefix" | "suffix", limit: number): AffixFamily[] {
   const picked: AffixFamily[] = [];
   const seen = new Set<string>();
   for (const family of earlyGearFamiliesFor("body")) {
-    if (family.generation !== "prefix" || seen.has(family.family)) continue;
+    if (family.generation !== generation || seen.has(family.family)) continue;
     seen.add(family.family);
     picked.push(family);
     if (picked.length === limit) return picked;
@@ -146,24 +146,39 @@ describe("crafting page", () => {
     expect(document.querySelector('[data-node="whittle"]')).toHaveAttribute("data-active", "true");
   }, 15_000);
 
-  it("keeps a body with more sockets than the normal cap and shows the augment effect", async () => {
+  it("keeps a body once a third socket is added and opens Thrud's pool on weapons", async () => {
     const user = userEvent.setup();
-    renderCrafting();
-    await user.selectOptions(screen.getByLabelText("孔數"), "3");
+    const view = renderCrafting();
+    expect(screen.getByLabelText("孔 1")).toBeInTheDocument();
+    expect(screen.getByLabelText("孔 2")).toBeInTheDocument();
+    expect(screen.queryByLabelText("孔 3")).not.toBeInTheDocument();
+    expect(screen.queryByText("步驟 A")).not.toBeInTheDocument();
+    expect(screen.queryByText("步驟 D")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "加一孔" }));
     expect(screen.getByText("繼續（額外增幅槽，留下這件）")).toBeInTheDocument();
     expect(screen.queryByText("卓越")).not.toBeInTheDocument();
     expect(screen.queryByText(/Exceptional/)).not.toBeInTheDocument();
     expect(document.querySelector('[data-node="keep-exceptional"]')).toHaveAttribute("data-active", "true");
-    expect(document.querySelector('[data-node="stop-full"]')).toHaveAttribute("data-active", "false");
 
-    await user.selectOptions(screen.getByLabelText("孔 1"), "Desert_Rune");
-    expect(screen.getAllByText(/護甲: \+14%火焰抗性/).length).toBeGreaterThan(0);
-    expect(document.querySelector("[data-socket-augments]")?.textContent).toContain("沙漠符文");
+    await user.selectOptions(screen.getByLabelText("孔 1"), "Serles_Triumph");
+    expect(screen.getAllByText(/允許後綴\+1/).length).toBeGreaterThan(0);
+    const suffixes = distinctSide("suffix", 5);
+    for (const family of suffixes.slice(0, 4)) {
+      await user.click(screen.getByRole("checkbox", { name: `目標 ${family.textZh}` }));
+    }
+    expect(within(affixRow(suffixes[3]!.textZh)).getByRole("checkbox")).toBeEnabled();
+    const fifth = affixRow(suffixes[4]!.textZh);
+    expect(within(fifth).getByRole("checkbox")).toBeDisabled();
+    expect(fifth).toHaveAttribute("title", "後綴已滿 4 條");
 
-    await user.click(screen.getByRole("option", { name: "戒指" }));
-    expect(screen.getByText("這個部位沒有增幅槽")).toBeInTheDocument();
-    expect(screen.queryByLabelText("孔數")).not.toBeInTheDocument();
-    expect(screen.queryByText("繼續（額外增幅槽，留下這件）")).not.toBeInTheDocument();
+    await user.click(document.querySelector('[data-node="stop-base"]')!);
+    expect(document.querySelector("[data-craft-detail]")?.textContent).toContain("骰不到所選階級就是換底");
+
+    view.unmount();
+    renderCrafting("/endgame/crafting?slot=bow");
+    await user.selectOptions(screen.getByLabelText("孔 1"), "Thruds_Might");
+    expect(screen.getByRole("checkbox", { name: /變動物理詞綴的大小/ })).toBeInTheDocument();
   }, 15_000);
 
   it("opens a weapon class on the same target rows", () => {
@@ -228,7 +243,7 @@ describe("crafting page", () => {
     expect(affixRow(armour.textZh)).not.toHaveAttribute("title", "與已選詞條同類，不能同時存在");
 
     await user.click(screen.getByRole("checkbox", { name: `目標 ${armour.textZh}` }));
-    const prefixes = distinctPrefixes(4);
+    const prefixes = distinctSide("prefix", 4);
     for (const family of prefixes.slice(0, 3)) {
       await user.click(screen.getByRole("checkbox", { name: `目標 ${family.textZh}` }));
     }

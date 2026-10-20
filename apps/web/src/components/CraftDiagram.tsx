@@ -24,22 +24,35 @@ function edgeOn(path: readonly CraftDiagramNodeId[], from: CraftDiagramNodeId, t
   return index >= 0 && path[index + 1] === to;
 }
 
-function Node({ id, path }: { id: CraftDiagramNodeId; path: readonly CraftDiagramNodeId[] }) {
+function Node({
+  id,
+  path,
+  selected,
+  onSelect,
+}: {
+  id: CraftDiagramNodeId;
+  path: readonly CraftDiagramNodeId[];
+  selected: boolean;
+  onSelect?: (id: CraftDiagramNodeId) => void;
+}) {
   const { locale } = useLocale();
   const node = CRAFT_DIAGRAM.find((row) => row.id === id);
   if (!node) return null;
   const active = path.includes(id);
   return (
-    <div
+    <button
+      type="button"
       data-node={id}
       data-active={active ? "true" : "false"}
+      data-selected={selected ? "true" : "false"}
+      onClick={() => onSelect?.(id)}
       className={`w-[8.25rem] rounded-sm border px-1.5 py-1.5 text-center ${
         active ? "border-gold bg-gold/15" : "border-line bg-panel"
-      }`}
+      } ${selected ? "ring-1 ring-paper" : ""}`}
     >
       <p className="text-[11px] font-medium leading-tight text-gold">{craftLocaleText(node.title, locale)}</p>
       <p className="mt-1 text-[10px] leading-snug text-paper">{craftLocaleText(node.choice, locale)}</p>
-    </div>
+    </button>
   );
 }
 
@@ -88,9 +101,13 @@ function Split({ children }: { children: ReactNode }) {
 export function CraftDiagram({
   path,
   augments = [],
+  selectedId,
+  onSelect,
 }: {
   path: readonly CraftDiagramNodeId[];
   augments?: { key: string; text: string }[];
+  selectedId?: CraftDiagramNodeId;
+  onSelect?: (id: CraftDiagramNodeId) => void;
 }) {
   const { locale } = useLocale();
   const titles = path.map((id) => {
@@ -111,19 +128,19 @@ export function CraftDiagram({
         </ul>
       )}
       <div className="flex w-max min-w-[84rem] flex-col items-center pb-3">
-        <Node id="base" path={path} />
+        <Node id="base" path={path} selected={selectedId === "base"} onSelect={onSelect} />
         <Split>
           <Arm from="base" to="stop-base" path={path} place="first">
-            <Node id="stop-base" path={path} />
+            <Node id="stop-base" path={path} selected={selectedId === "stop-base"} onSelect={onSelect} />
           </Arm>
           <Arm from="base" to="fill" path={path} place="last">
-            <Node id="fill" path={path} />
+            <Node id="fill" path={path} selected={selectedId === "fill"} onSelect={onSelect} />
             <Split>
               <Arm from="fill" to="stop-full" path={path} place="first">
-                <Node id="stop-full" path={path} />
+                <Node id="stop-full" path={path} selected={selectedId === "stop-full"} onSelect={onSelect} />
               </Arm>
               <Arm from="fill" to="sockets" path={path} place="mid">
-                <Node id="sockets" path={path} />
+                <Node id="sockets" path={path} selected={selectedId === "sockets"} onSelect={onSelect} />
                 <div
                   data-edge="sockets-keep-exceptional"
                   data-active={edgeOn(path, "sockets", "keep-exceptional") ? "true" : "false"}
@@ -137,37 +154,37 @@ export function CraftDiagram({
                   >
                     {craftLocaleText(BRANCH["keep-exceptional"], locale)}
                   </p>
-                  <Node id="keep-exceptional" path={path} />
+                  <Node id="keep-exceptional" path={path} selected={selectedId === "keep-exceptional"} onSelect={onSelect} />
                 </div>
               </Arm>
               <Arm from="fill" to="desecrate" path={path} place="last">
-                <Node id="desecrate" path={path} />
+                <Node id="desecrate" path={path} selected={selectedId === "desecrate"} onSelect={onSelect} />
                 <Split>
                   <Arm from="desecrate" to="stop-fracture" path={path} place="first">
-                    <Node id="stop-fracture" path={path} />
+                    <Node id="stop-fracture" path={path} selected={selectedId === "stop-fracture"} onSelect={onSelect} />
                   </Arm>
                   <Arm from="desecrate" to="essence" path={path} place="mid">
-                    <Node id="essence" path={path} />
+                    <Node id="essence" path={path} selected={selectedId === "essence"} onSelect={onSelect} />
                   </Arm>
                   <Arm from="desecrate" to="omen" path={path} place="mid">
-                    <Node id="omen" path={path} />
+                    <Node id="omen" path={path} selected={selectedId === "omen"} onSelect={onSelect} />
                     <Split>
                       <Arm from="omen" to="whittle" path={path} place="first">
-                        <Node id="whittle" path={path} />
+                        <Node id="whittle" path={path} selected={selectedId === "whittle"} onSelect={onSelect} />
                       </Arm>
                       <Arm from="omen" to="side-annul" path={path} place="mid">
-                        <Node id="side-annul" path={path} />
+                        <Node id="side-annul" path={path} selected={selectedId === "side-annul"} onSelect={onSelect} />
                       </Arm>
                       <Arm from="omen" to="light" path={path} place="mid">
-                        <Node id="light" path={path} />
+                        <Node id="light" path={path} selected={selectedId === "light"} onSelect={onSelect} />
                       </Arm>
                       <Arm from="omen" to="stop-omen" path={path} place="last">
-                        <Node id="stop-omen" path={path} />
+                        <Node id="stop-omen" path={path} selected={selectedId === "stop-omen"} onSelect={onSelect} />
                       </Arm>
                     </Split>
                   </Arm>
                   <Arm from="desecrate" to="finish" path={path} place="last">
-                    <Node id="finish" path={path} />
+                    <Node id="finish" path={path} selected={selectedId === "finish"} onSelect={onSelect} />
                   </Arm>
                 </Split>
               </Arm>

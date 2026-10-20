@@ -147,6 +147,7 @@ export {
   CRAFT_WARNING_TEXT,
   craftDiagramPath,
   craftLocaleText,
+  craftTreeNodeForDiagram,
   craftVerdictHeadline,
   craftTierChoices,
   decideCraft,
@@ -185,6 +186,16 @@ export {
   socketCountMax,
 } from "./sockets.ts";
 export type { Augment, AugmentEffect, AugmentKind, SlotAugment } from "./sockets.ts";
+
+export {
+  BASE_CRAFTED_CAP,
+  BASE_SIDE_CAP,
+  familiesForSocketAugments,
+  poolAugmentById,
+  poolAugmentsForSlot,
+  socketSideCaps,
+} from "./socketPools.ts";
+export type { SocketPoolAugment } from "./socketPools.ts";
 
 export {
   REMOVAL_OMENS,

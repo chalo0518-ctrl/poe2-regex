@@ -3,6 +3,7 @@ import {
   type RemovalAssessment,
   type RemovalMod,
 } from "./omens.ts";
+import { poolAugmentById, socketSideCaps } from "./socketPools.ts";
 import { augmentById, effectForSlot, inferExceptionalBase } from "./sockets.ts";
 import type { CraftSlotId, UiLocale } from "./types.ts";
 
@@ -218,8 +219,6 @@ export type CraftDiagramNode = {
   choice: Localized;
 };
 
-const SIDE_CAP = 3;
-
 export function craftLocaleText(copy: Localized, locale: UiLocale): string {
   return locale === "en" ? copy.en : copy.zhHant;
 }
@@ -244,9 +243,9 @@ export function craftTierChoices(
     .map((row, order) => ({ ...row, rank: order + 1 }));
 }
 
-function clampSide(count: number): number {
+function clampSide(count: number, cap: number): number {
   if (!Number.isFinite(count) || count <= 0) return 0;
-  return Math.min(SIDE_CAP, Math.floor(count));
+  return Math.min(cap, Math.floor(count));
 }
 
 export function resolveTargetSide(input: Pick<DecideCraftInput, "includes" | "targetSide">): ModSide {
@@ -315,8 +314,11 @@ function pack(
  */
 function decideCraftCore(input: DecideCraftInput): CraftCore {
   const targetSide = resolveTargetSide(input);
-  const sideCount = clampSide(targetSide === "prefix" ? input.prefixCount : input.suffixCount);
-  const otherCount = clampSide(targetSide === "prefix" ? input.suffixCount : input.prefixCount);
+  const caps = socketSideCaps((input.augments ?? []).map((row) => row.id));
+  const sideCap = targetSide === "prefix" ? caps.prefix : caps.suffix;
+  const otherCap = targetSide === "prefix" ? caps.suffix : caps.prefix;
+  const sideCount = clampSide(targetSide === "prefix" ? input.prefixCount : input.suffixCount, sideCap);
+  const otherCount = clampSide(targetSide === "prefix" ? input.suffixCount : input.prefixCount, otherCap);
   const includes = input.includes;
   const desecration = resolveDesecration(input, includes);
   const owned = [...(input.owned ?? [])];
@@ -393,9 +395,9 @@ function decideCraftCore(input: DecideCraftInput): CraftCore {
     return pack("continue", ["desecration-overwrite-loop"], "essence-alloy-overwrite", warnings, targetSide);
   }
 
-  if (sideCount >= SIDE_CAP) {
+  if (sideCount >= sideCap) {
     if (!hasGoodFracture) {
-      if (highOnSide >= 2 && otherCount < SIDE_CAP) {
+      if (highOnSide >= 2 && otherCount < otherCap) {
         return pack("continue", ["good-progress-cleanable"], "none", warnings, targetSide);
       }
       return pack(
@@ -415,14 +417,14 @@ function decideCraftCore(input: DecideCraftInput): CraftCore {
         targetSide,
       );
     }
-    if (highOnSide >= 2 && otherCount < SIDE_CAP) {
+    if (highOnSide >= 2 && otherCount < otherCap) {
       return pack("continue", ["good-progress-cleanable"], "none", warnings, targetSide);
     }
     return pack("rebase", ["loop-structure-broken"], "omen-of-light", warnings, targetSide);
   }
 
   if (badDesecration) {
-    if (highTargets.length >= 2 && otherCount < SIDE_CAP) {
+    if (highTargets.length >= 2 && otherCount < otherCap) {
       return pack("downgrade", ["exclusive-slot-wrong"], "omen-of-light", warnings, targetSide);
     }
     if (highTargets.length === 0) {
@@ -432,7 +434,7 @@ function decideCraftCore(input: DecideCraftInput): CraftCore {
   }
 
   if (keeper) {
-    if (highTargets.length >= 1 && sideCount < SIDE_CAP) {
+    if (highTargets.length >= 1 && sideCount < sideCap) {
       return pack("downgrade", ["exclusive-slot-wrong"], "none", warnings, targetSide);
     }
     return pack("rebase", ["exclusive-slot-wrong"], "none", warnings, targetSide);
@@ -520,18 +522,26 @@ function resolveSocketAugments(input: DecideCraftInput): SocketAugmentView[] {
   const slot = input.slot;
   const views: SocketAugmentView[] = [];
   for (const pick of input.augments ?? []) {
+    const pool = poolAugmentById(pick.id);
     const augment = augmentById(pick.id);
-    if (!augment) continue;
-    const effect = slot ? effectForSlot(augment, slot) : null;
-    if (slot && !effect) continue;
+    if (pool && slot && !pool.slots.includes(slot)) continue;
+    if (!pool && !augment) continue;
+    const effect = pool
+      ? { zh: pool.effectZh, en: pool.effectEn }
+      : slot && augment
+        ? effectForSlot(augment, slot)
+        : null;
+    if (slot && !pool && !effect) continue;
+    const nameZh = pool?.nameZh ?? augment?.nameZh ?? pick.id;
+    const nameEn = pool?.nameEn ?? augment?.nameEn ?? pick.id;
     views.push({
-      id: augment.id,
+      id: pick.id,
       socket: pick.socket ?? views.length + 1,
-      nameZh: augment.nameZh,
-      nameEn: augment.nameEn,
+      nameZh,
+      nameEn,
       effectZh: effect?.zh ?? "",
       effectEn: effect?.en ?? "",
-      socketBound: augment.socketBound,
+      socketBound: pool?.socketBound ?? augment?.socketBound ?? false,
     });
   }
   return views;
@@ -626,6 +636,30 @@ export function suggestedCraftNode(decision: CraftDecision): CraftTreeNodeId {
   if (decision.reasons.includes("fresh-base")) return "base";
   if (decision.reasons.includes("early-progress")) return "rare";
   return "finish";
+}
+
+/** Long-form reminder that belongs with a diagram node. */
+export function craftTreeNodeForDiagram(id: CraftDiagramNodeId): CraftTreeNodeId {
+  switch (id) {
+    case "base":
+    case "stop-base":
+      return "base";
+    case "fill":
+      return "fill";
+    case "desecrate":
+    case "essence":
+    case "omen":
+    case "whittle":
+    case "side-annul":
+    case "light":
+      return "desecrate";
+    case "stop-fracture":
+    case "stop-full":
+    case "stop-omen":
+      return "fracture-cleanup";
+    default:
+      return "finish";
+  }
 }
 
 export function craftVerdictHeadline(decision: CraftDecision, locale: UiLocale): string {
