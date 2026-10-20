@@ -57,13 +57,26 @@ describe("crafting page", () => {
     const life = lifeFamily();
 
     expect(screen.getByRole("link", { name: "做裝" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "胸甲" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("option", { name: "戒指" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "弓" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "爪" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "雙手劍" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "陷阱" })).toBeInTheDocument();
+    const slotSelect = screen.getByLabelText("裝備部位");
+    expect(slotSelect).toHaveValue("body");
+    expect(within(slotSelect).getByRole("option", { name: "胸甲" })).toHaveProperty("selected", true);
+    const armour = within(slotSelect).getByRole("group", { name: "防具" });
+    const jewellery = within(slotSelect).getByRole("group", { name: "飾品" });
+    const weapons = within(slotSelect).getByRole("group", { name: "武器" });
+    expect(within(armour).getByRole("option", { name: "頭盔" })).toBeInTheDocument();
+    expect(within(armour).getByRole("option", { name: "手套" })).toBeInTheDocument();
+    expect(within(armour).getByRole("option", { name: "鞋子" })).toBeInTheDocument();
+    expect(within(armour).getByRole("option", { name: "盾牌" })).toBeInTheDocument();
+    expect(within(armour).queryByRole("option", { name: "戒指" })).not.toBeInTheDocument();
+    expect(within(jewellery).getByRole("option", { name: "戒指" })).toBeInTheDocument();
+    expect(within(jewellery).getByRole("option", { name: "項鍊" })).toBeInTheDocument();
+    expect(within(jewellery).getByRole("option", { name: "腰帶" })).toBeInTheDocument();
+    expect(within(weapons).getByRole("option", { name: "弓" })).toBeInTheDocument();
+    expect(within(weapons).getByRole("option", { name: "爪" })).toBeInTheDocument();
+    expect(within(weapons).getByRole("option", { name: "雙手劍" })).toBeInTheDocument();
+    expect(within(weapons).getByRole("option", { name: "陷阱" })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "力量" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     expect(screen.getByText("craft-caps-v1")).toBeInTheDocument();
     expect(screen.getAllByText(/每件只能有 1 條工藝詞綴/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/重組器不在這條主路線/).length).toBeGreaterThan(0);
@@ -193,13 +206,22 @@ describe("crafting page", () => {
     expect(screen.getByRole("checkbox", { name: /變動物理詞綴的大小/ })).toBeInTheDocument();
   }, 15_000);
 
-  it("opens a weapon class on the same target rows", () => {
+  it("opens a weapon class on the same target rows", async () => {
+    const user = userEvent.setup();
     renderCrafting("/endgame/crafting?slot=bow");
-    expect(screen.getByRole("option", { name: "弓" })).toHaveAttribute("aria-selected", "true");
+    const slotSelect = screen.getByLabelText("裝備部位");
+    expect(slotSelect).toHaveValue("bow");
+    expect(within(slotSelect).getByRole("option", { name: "弓" })).toHaveProperty("selected", true);
     const bow = craftingFamiliesFor("bow").find((family) => family.matchZh.includes("物理"));
     if (!bow) throw new Error("missing bow physical affix");
     expect(screen.getByRole("checkbox", { name: `目標 ${bow.textZh}` })).toBeEnabled();
     expect(screen.queryByRole("button", { name: "是" })).not.toBeInTheDocument();
+    await user.selectOptions(slotSelect, "ring");
+    expect(slotSelect).toHaveValue("ring");
+    expect(screen.queryByRole("checkbox", { name: `目標 ${bow.textZh}` })).not.toBeInTheDocument();
+    const ring = craftingFamiliesFor("ring")[0];
+    if (!ring) throw new Error("missing a ring affix");
+    expect(screen.getByRole("checkbox", { name: `目標 ${ring.textZh}` })).toBeEnabled();
   });
 
   it("locks one desecration target at a time and keeps that mod on the route", async () => {

@@ -38,6 +38,17 @@ import { useLocale } from "../i18n.tsx";
 
 const SLOTS = craftingSlots();
 const DEFAULT_SLOT: CraftSlotId = "body";
+const ARMOUR_ORDER = ["body", "helmet", "gloves", "boots", "shield"] as const satisfies readonly CraftSlotId[];
+const JEWELLERY_ORDER = ["ring", "amulet", "belt"] as const satisfies readonly CraftSlotId[];
+const ARMOUR_IDS = new Set<CraftSlotId>(ARMOUR_ORDER);
+const JEWELLERY_IDS = new Set<CraftSlotId>(JEWELLERY_ORDER);
+
+function slotsInOrder(ids: readonly CraftSlotId[]) {
+  return ids.flatMap((id) => {
+    const item = SLOTS.find((row) => row.id === id);
+    return item ? [item] : [];
+  });
+}
 
 type OwnedFlag = { owned: boolean; highTier: boolean };
 
@@ -87,7 +98,6 @@ export default function CraftingPage() {
   const [others, setOthers] = useState<Record<string, OtherFlag>>({});
   const [socketCount, setSocketCount] = useState(2);
   const [socketPicks, setSocketPicks] = useState<string[]>(["", ""]);
-  const [slotQuery, setSlotQuery] = useState("");
   const [pinnedNode, setPinnedNode] = useState<CraftDiagramNodeId | null>(null);
   const socketFamilies = useMemo(
     () => familiesForSocketAugments(socketPicks.filter(Boolean)),
@@ -220,11 +230,9 @@ export default function CraftingPage() {
   const shownDiagram = CRAFT_DIAGRAM.find((row) => row.id === shownNodeId) ?? null;
   const shownTree = CRAFTING_TREE.find((row) => row.id === craftTreeNodeForDiagram(shownNodeId)) ?? null;
   const sideLabel = decision.targetSide === "prefix" ? t.craftingSidePrefix : t.craftingSideSuffix;
-  const query = slotQuery.trim().toLowerCase();
-  const visibleSlots = SLOTS.filter((item) => {
-    if (!query) return true;
-    return poolLabel(item, "zh-Hant").toLowerCase().includes(query) || poolLabel(item, "en").toLowerCase().includes(query);
-  });
+  const armourSlots = slotsInOrder(ARMOUR_ORDER);
+  const jewellerySlots = slotsInOrder(JEWELLERY_ORDER);
+  const weaponSlots = SLOTS.filter((item) => !ARMOUR_IDS.has(item.id) && !JEWELLERY_IDS.has(item.id));
 
   function setSlot(id: CraftSlotId) {
     setParams({ slot: id });
@@ -256,36 +264,31 @@ export default function CraftingPage() {
         </ul>
       </section>
 
-      <div className="mb-5">
-        <div className="mb-2 flex items-center gap-2">
-          <p className="shrink-0 text-sm text-gold">{t.craftingSlotHeading}</p>
-          <input
-            value={slotQuery}
-            onChange={(event) => setSlotQuery(event.target.value)}
-            placeholder={t.craftingSlotSearch}
-            aria-label={t.craftingSlotSearch}
-            className="w-36 shrink-0 rounded-sm border border-line bg-ink px-2 py-1 text-xs text-paper outline-none focus:border-gold"
-          />
-        </div>
-        <div className="flex gap-1 overflow-x-auto pb-1" role="listbox" aria-label={t.earlyGearSlotAria}>
-          {visibleSlots.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              role="option"
-              aria-selected={slotId === item.id}
-              onClick={() => setSlot(item.id)}
-              className={`shrink-0 rounded-sm border px-2 py-1 text-xs font-medium whitespace-nowrap ${
-                slotId === item.id
-                  ? "border-gold bg-gold/15 text-gold"
-                  : "border-line text-muted hover:text-paper"
-              }`}
-            >
-              {poolLabel(item, locale)}
-            </button>
-          ))}
-        </div>
-      </div>
+      <label className="mb-5 flex items-center gap-2 text-sm text-gold">
+        {t.craftingSlotHeading}
+        <select
+          aria-label={t.craftingSlotHeading}
+          value={slotId}
+          onChange={(event) => setSlot(event.target.value as CraftSlotId)}
+          className="min-w-48 rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper outline-none focus:border-gold"
+        >
+          <optgroup label={t.craftingSlotGroupArmour}>
+            {armourSlots.map((item) => (
+              <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+            ))}
+          </optgroup>
+          <optgroup label={t.craftingSlotGroupJewellery}>
+            {jewellerySlots.map((item) => (
+              <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+            ))}
+          </optgroup>
+          <optgroup label={t.craftingSlotGroupWeapon}>
+            {weaponSlots.map((item) => (
+              <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+            ))}
+          </optgroup>
+        </select>
+      </label>
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)]">
         <div className="min-w-0">

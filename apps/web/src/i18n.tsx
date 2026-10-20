@@ -100,7 +100,9 @@ type Messages = {
   craftingConflict: string;
   craftingSideFullPrefix: (count: number) => string;
   craftingSideFullSuffix: (count: number) => string;
-  craftingSlotSearch: string;
+  craftingSlotGroupArmour: string;
+  craftingSlotGroupJewellery: string;
+  craftingSlotGroupWeapon: string;
   craftingAddSocket: string;
   craftingRemoveSocket: string;
   craftingKeeper: string;
@@ -224,7 +226,9 @@ const zhHant: Messages = {
   craftingSlotHeading: "裝備部位",
   craftingSlotHint:
     "胸甲、頭盔、手套、鞋子、戒指、項鍊、腰帶、盾牌，以及武器種類。只選種類，不拆力量／敏捷／智慧。",
-  craftingSlotSearch: "篩選部位",
+  craftingSlotGroupArmour: "防具",
+  craftingSlotGroupJewellery: "飾品",
+  craftingSlotGroupWeapon: "武器",
   craftingConstraintsLabel: "目前上限",
   craftingTargetsTitle: "目標詞綴",
   craftingTargetsDesc:
@@ -413,7 +417,9 @@ const en: Messages = {
   craftingSlotHeading: "Slot",
   craftingSlotHint:
     "Body, helmet, gloves, boots, ring, amulet, belt, shield, and weapon classes. One class each — no str/dex/int split.",
-  craftingSlotSearch: "Filter slots",
+  craftingSlotGroupArmour: "Armour",
+  craftingSlotGroupJewellery: "Jewellery",
+  craftingSlotGroupWeapon: "Weapons",
   craftingConstraintsLabel: "Current caps",
   craftingTargetsTitle: "Target affixes",
   craftingTargetsDesc:
