@@ -287,36 +287,6 @@ export default function CraftingPage() {
         </div>
       </div>
 
-      <section className="mb-6 min-w-0 rounded-sm border border-line bg-panel px-3 py-3" aria-labelledby="craft-tree-heading">
-        <h2 id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</h2>
-        <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
-        <CraftDiagram
-          path={decision.path}
-          selectedId={shownNodeId}
-          onSelect={setPinnedNode}
-          augments={decision.socketAugments.map((row) => ({
-            key: `${row.socket}-${row.id}`,
-            text: `${t.craftingSocketN(row.socket)} · ${locale === "en" ? row.nameEn : row.nameZh} · ${
-              locale === "en" ? row.effectEn : row.effectZh
-            }`,
-          }))}
-        />
-        {shownDiagram && shownTree && (
-          <div className="mt-3 space-y-2 border-t border-line pt-3 text-xs leading-relaxed text-paper" data-craft-detail>
-            <p className="text-gold">
-              {craftLocaleText(shownDiagram.title, locale)}
-              {" · "}
-              {craftLocaleText(shownTree.title, locale)}
-            </p>
-            <p>{craftLocaleText(shownDiagram.choice, locale)}</p>
-            <NodeBlock label={t.craftingSectionAction} body={craftLocaleText(shownTree.action, locale)} />
-            <NodeBlock label={t.craftingSectionSkip} body={craftLocaleText(shownTree.skip, locale)} />
-            <NodeBlock label={t.craftingSectionIrreversible} body={craftLocaleText(shownTree.irreversible, locale)} />
-            <NodeBlock label={t.craftingSectionWarning} body={craftLocaleText(shownTree.warning, locale)} />
-          </div>
-        )}
-      </section>
-
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
         <div className="min-w-0">
           <SocketFilter
@@ -420,6 +390,36 @@ export default function CraftingPage() {
           />
         </aside>
       </div>
+
+      <section className="mt-6 min-w-0 rounded-sm border border-line bg-panel px-3 py-3" aria-labelledby="craft-tree-heading">
+        <h2 id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</h2>
+        <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
+        <CraftDiagram
+          path={decision.path}
+          selectedId={shownNodeId}
+          onSelect={setPinnedNode}
+          augments={decision.socketAugments.map((row) => ({
+            key: `${row.socket}-${row.id}`,
+            text: `${t.craftingSocketN(row.socket)} · ${locale === "en" ? row.nameEn : row.nameZh} · ${
+              locale === "en" ? row.effectEn : row.effectZh
+            }`,
+          }))}
+        />
+        {shownDiagram && shownTree && (
+          <div className="mt-3 space-y-2 border-t border-line pt-3 text-xs leading-relaxed text-paper" data-craft-detail>
+            <p className="text-gold">
+              {craftLocaleText(shownDiagram.title, locale)}
+              {" · "}
+              {craftLocaleText(shownTree.title, locale)}
+            </p>
+            <p>{craftLocaleText(shownDiagram.choice, locale)}</p>
+            <NodeBlock label={t.craftingSectionAction} body={craftLocaleText(shownTree.action, locale)} />
+            <NodeBlock label={t.craftingSectionSkip} body={craftLocaleText(shownTree.skip, locale)} />
+            <NodeBlock label={t.craftingSectionIrreversible} body={craftLocaleText(shownTree.irreversible, locale)} />
+            <NodeBlock label={t.craftingSectionWarning} body={craftLocaleText(shownTree.warning, locale)} />
+          </div>
+        )}
+      </section>
     </div>
   );
 }

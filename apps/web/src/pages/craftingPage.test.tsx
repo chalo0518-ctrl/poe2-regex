@@ -154,6 +154,13 @@ describe("crafting page", () => {
     expect(screen.queryByLabelText("孔 3")).not.toBeInTheDocument();
     expect(screen.queryByText("步驟 A")).not.toBeInTheDocument();
     expect(screen.queryByText("步驟 D")).not.toBeInTheDocument();
+    const treeHeading = document.getElementById("craft-tree-heading");
+    const targets = screen.getByRole("heading", { name: "目標詞綴" });
+    const item = screen.getByRole("heading", { name: "這件裝備" });
+    expect(document.querySelectorAll("[data-craft-diagram]")).toHaveLength(1);
+    expect(targets.compareDocumentPosition(treeHeading!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(item.compareDocumentPosition(treeHeading!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(treeHeading?.closest("section")?.querySelector("[data-craft-detail]")).toBeTruthy();
 
     await user.click(screen.getByRole("button", { name: "加一孔" }));
     expect(screen.getByText("繼續（額外增幅槽，留下這件）")).toBeInTheDocument();
