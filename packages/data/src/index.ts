@@ -197,6 +197,8 @@ export {
 } from "./socketPools.ts";
 export type { SocketPoolAugment } from "./socketPools.ts";
 
+export { DESECRATED_POOL_LABEL, desecratedFamiliesFor } from "./desecrated.ts";
+
 export {
   REMOVAL_OMENS,
   classifyNonTarget,

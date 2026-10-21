@@ -17,6 +17,7 @@ import {
   craftingSourcePath,
   CRAFT_DIAGRAM,
   decideCraft,
+  desecratedFamiliesFor,
   effectText,
   harvestTags,
   isCraftSlotId,
@@ -84,6 +85,7 @@ export default function CraftingPage() {
   const slotId: CraftSlotId = isCraftSlotId(rawSlot) ? rawSlot : DEFAULT_SLOT;
   const slot = craftingSlotMeta(slotId);
   const families = useMemo(() => craftingFamiliesFor(slotId), [slotId]);
+  const desecratedFamilies = useMemo(() => desecratedFamiliesFor(slotId), [slotId]);
 
   const [picks, setPicks] = useState<Record<string, ModPickState>>({});
   const [owned, setOwned] = useState<Record<string, OwnedFlag>>({});
@@ -117,8 +119,8 @@ export default function CraftingPage() {
     return groups;
   }, [socketPicks, locale, t]);
   const checklistFamilies = useMemo(
-    () => [...families, ...augmentGroups.flatMap((group) => group.families)],
-    [families, augmentGroups],
+    () => [...families, ...desecratedFamilies, ...augmentGroups.flatMap((group) => group.families)],
+    [families, desecratedFamilies, augmentGroups],
   );
   const caps = useMemo(() => socketSideCaps(socketPicks), [socketPicks]);
   const tierCount = families.reduce((sum, family) => sum + family.tiers.length, 0);
@@ -339,6 +341,7 @@ export default function CraftingPage() {
             harvestTags={harvestTags}
             families={families}
             extraGroups={augmentGroups}
+            abyssFamilies={desecratedFamilies}
             importHint={t.earlyGearImportHint}
             onPicksChange={onPicksChange}
             dockRegex={false}

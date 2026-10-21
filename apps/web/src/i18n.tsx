@@ -105,6 +105,8 @@ type Messages = {
   craftingSlotGroupJewellery: string;
   craftingSlotGroupWeapon: string;
   craftingAugmentPoolTitle: (name: string) => string;
+  craftingDefaultPool: string;
+  craftingDesecratedPool: string;
   craftingAddSocket: string;
   craftingRemoveSocket: string;
   craftingKeeper: string;
@@ -232,6 +234,8 @@ const zhHant: Messages = {
   craftingSlotGroupJewellery: "飾品",
   craftingSlotGroupWeapon: "武器",
   craftingAugmentPoolTitle: (name) => `${name} 額外詞綴`,
+  craftingDefaultPool: "預設詞綴",
+  craftingDesecratedPool: "褻瀆詞綴",
   craftingConstraintsLabel: "目前上限",
   craftingTargetsTitle: "目標詞綴",
   craftingTargetsDesc:
@@ -425,6 +429,8 @@ const en: Messages = {
   craftingSlotGroupJewellery: "Jewellery",
   craftingSlotGroupWeapon: "Weapons",
   craftingAugmentPoolTitle: (name) => `${name} extra affixes`,
+  craftingDefaultPool: "Default affixes",
+  craftingDesecratedPool: "Desecrated affixes",
   craftingConstraintsLabel: "Current caps",
   craftingTargetsTitle: "Target affixes",
   craftingTargetsDesc:

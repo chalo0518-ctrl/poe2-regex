@@ -316,11 +316,14 @@ describe("crafting page", () => {
     const evasion = body.find((family) => family.family === "BaseLocalDefences" && family.matchZh === "閃避值");
     if (!armour || !evasion) throw new Error("missing defence variants");
 
-    const scroll = document.querySelector("[data-affix-scroll]");
-    expect(scroll).toBeTruthy();
-    expect(scroll?.contains(screen.getByRole("heading", { name: /^基礎前綴/ }))).toBe(true);
-    expect(scroll?.contains(screen.getByRole("heading", { name: "這件裝備" }))).toBe(false);
-    expect(scroll?.contains(screen.getByLabelText("孔 1"))).toBe(false);
+    const defaultPool = screen.getByRole("region", { name: "預設詞綴" });
+    const prefixScroll = within(defaultPool).getByRole("heading", { name: /^基礎前綴/ }).closest("section")?.querySelector("[data-affix-scroll]");
+    const suffixScroll = within(defaultPool).getByRole("heading", { name: /^基礎後綴/ }).closest("section")?.querySelector("[data-affix-scroll]");
+    expect(prefixScroll).toBeTruthy();
+    expect(suffixScroll).toBeTruthy();
+    expect(prefixScroll).not.toBe(suffixScroll);
+    expect(prefixScroll?.contains(screen.getByRole("heading", { name: "這件裝備" }))).toBe(false);
+    expect(prefixScroll?.contains(screen.getByLabelText("孔 1"))).toBe(false);
 
     await user.click(screen.getByRole("checkbox", { name: `目標 ${armour.textZh}` }));
     const evasionRow = affixRow(evasion.textZh);
@@ -349,6 +352,40 @@ describe("crafting page", () => {
     const firstBlocked = flags.indexOf("true");
     expect(firstBlocked).toBeGreaterThan(0);
     expect(flags.lastIndexOf("false")).toBeLessThan(firstBlocked);
-    expect(scroll?.contains(fourth)).toBe(true);
+    expect(prefixScroll?.contains(fourth)).toBe(true);
+  });
+
+  it("shows Medved's soul pool in its own box and keeps desecrated affixes separate", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+    const abyss = screen.getByRole("region", { name: "褻瀆詞綴" });
+    expect(within(abyss).getByRole("heading", { name: /^前綴/ })).toBeInTheDocument();
+    expect(within(abyss).getByRole("heading", { name: /^後綴/ })).toBeInTheDocument();
+    expect(within(abyss).getAllByRole("checkbox").length).toBeGreaterThan(0);
+    expect(abyss.querySelectorAll("[data-affix-scroll]").length).toBeGreaterThan(0);
+    expect(screen.queryByRole("region", { name: "梅德偉的照料 額外詞綴" })).not.toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText("孔 1"), "Medveds_Tending");
+    const medved = screen.getByRole("region", { name: "梅德偉的照料 額外詞綴" });
+    expect(within(medved).getByRole("heading", { name: /^前綴/ })).toBeInTheDocument();
+    expect(within(medved).getByRole("heading", { name: /^後綴/ })).toBeInTheDocument();
+    const soul = within(medved).getByRole("checkbox", { name: /增加\(1—20\)%最大生命/ });
+    expect(soul).toBeEnabled();
+    expect(screen.getByRole("region", { name: "預設詞綴" }).contains(soul)).toBe(false);
+    expect(abyss.contains(soul)).toBe(false);
+    expect(medved.querySelectorAll("[data-affix-scroll]")).toHaveLength(2);
+    expect(
+      screen.getByRole("region", { name: "預設詞綴" }).compareDocumentPosition(medved)
+        & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+
+    await user.click(soul);
+    expect(soul).toBeChecked();
+    await user.selectOptions(screen.getByLabelText("孔 1"), "");
+    expect(screen.queryByRole("region", { name: "梅德偉的照料 額外詞綴" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("checkbox", { name: /增加\(1—20\)%最大生命/ })).not.toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText("孔 1"), "Serles_Triumph");
+    expect(screen.queryByRole("region", { name: /額外詞綴/ })).not.toBeInTheDocument();
   });
 });
