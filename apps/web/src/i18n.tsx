@@ -100,6 +100,7 @@ type Messages = {
   craftingConflict: string;
   craftingSideFullPrefix: (count: number) => string;
   craftingSideFullSuffix: (count: number) => string;
+  craftingUnavailableGroup: string;
   craftingSlotGroupArmour: string;
   craftingSlotGroupJewellery: string;
   craftingSlotGroupWeapon: string;
@@ -290,6 +291,7 @@ const zhHant: Messages = {
   craftingConflict: "與已選詞條同類，不能同時存在",
   craftingSideFullPrefix: (count) => `前綴已滿 ${count} 條`,
   craftingSideFullSuffix: (count) => `後綴已滿 ${count} 條`,
+  craftingUnavailableGroup: "互斥／不可選",
   craftingKeeper: "工藝槽已是要永久留下的詞綴",
   craftingKeeperHint: "精髓、合金與部分符鍛共用這 1 格。勾了就不能再拿精髓或合金去頂掉褻瀆。",
   craftingBudget: "預算緊（只作提醒，不改判定）",
@@ -482,6 +484,7 @@ const en: Messages = {
   craftingConflict: "Same mod group as a selected affix; they cannot both exist",
   craftingSideFullPrefix: (count) => `Already ${count} prefixes`,
   craftingSideFullSuffix: (count) => `Already ${count} suffixes`,
+  craftingUnavailableGroup: "Blocked",
   craftingKeeper: "Crafted slot is already a keeper",
   craftingKeeperHint:
     "Essences, Alloys, and some runeforge crafts share this one slot. Checked means you cannot overwrite a desecration with Essence or Alloy.",

@@ -159,6 +159,7 @@ describe("early gear category picker", () => {
     expect(screen.queryByText("輕盾")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "简中匹配" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "繁中匹配" })).toBeInTheDocument();
+    expect(document.querySelector("[data-affix-scroll]")).toBeNull();
     expect(screen.getByText("+(10—19)最大生命")).toBeInTheDocument();
     expect(screen.getByText("+(16—27)護甲值")).toBeInTheDocument();
     expect(screen.getByText("+(11—18)閃避值")).toBeInTheDocument();

@@ -56,6 +56,20 @@ function tierFloor(family: AffixFamily, index: number | null | undefined): strin
   return String(tier.statMin);
 }
 
+/** Checked and still-selectable rows stay above conflict or cap-dimmed rows. */
+export function partitionSelectableRows<T extends { family: { id: string } }>(
+  rows: readonly T[],
+  blocked: Readonly<Record<string, string | undefined>>,
+): { available: T[]; sunk: T[] } {
+  const available: T[] = [];
+  const sunk: T[] = [];
+  for (const row of rows) {
+    if (blocked[row.family.id]) sunk.push(row);
+    else available.push(row);
+  }
+  return { available, sunk };
+}
+
 function targetBlockTitle(
   family: AffixFamily,
   picks: Record<string, ModPickState>,
@@ -544,6 +558,14 @@ export function ChroniclesModBuilder({
         {showTags ? t.tagHelp : ""}
       </p>
 
+      <div
+        className={
+          pickMode === "target"
+            ? "max-h-[min(60vh,42rem)] overflow-y-auto overscroll-y-contain pr-1"
+            : undefined
+        }
+        data-affix-scroll={pickMode === "target" ? "" : undefined}
+      >
       <div className="grid gap-4 lg:grid-cols-2">
         <AffixColumn
           title={prefixHeading}
@@ -625,6 +647,7 @@ export function ChroniclesModBuilder({
           </section>
         );
       })}
+      </div>
 
       <div
         className={
@@ -777,6 +800,29 @@ function AffixColumn({
   onBound: (id: string, key: "min" | "max", value: string) => void;
 }) {
   const { t } = useLocale();
+  const sinkBlocked = pickMode === "target";
+  const { available, sunk } = sinkBlocked
+    ? partitionSelectableRows(rows, blockTitles)
+    : { available: rows, sunk: [] as typeof rows };
+  const renderRow = ({ family, matched }: { family: AffixFamily; matched: boolean }) => (
+    <AffixRow
+      key={family.id}
+      family={family}
+      dimmed={!matched}
+      pick={picks[family.id]}
+      open={Boolean(expanded[family.id])}
+      showFamilyNames={showFamilyNames}
+      showAffixTags={showAffixTags}
+      pickMode={pickMode}
+      blockedTitle={blockTitles[family.id]}
+      onPolarity={(next) => onPolarity(family, next)}
+      onToggleTarget={(on) => onToggleTarget(family, on)}
+      onToggleLock={() => onToggleLock(family)}
+      onTier={(index) => onTier(family, index)}
+      onExpand={() => onExpand(family.id)}
+      onBound={(key, value) => onBound(family.id, key, value)}
+    />
+  );
   return (
     <section className="overflow-hidden rounded-sm border border-line bg-panel">
       <h2 className="flex items-center justify-between border-b border-line bg-raised px-3 py-2 text-sm font-medium text-gold">
@@ -787,25 +833,13 @@ function AffixColumn({
         <p className="px-3 py-8 text-center text-sm text-muted">{t.noAffixes}</p>
       ) : (
         <ul>
-          {rows.map(({ family, matched }) => (
-            <AffixRow
-              key={family.id}
-              family={family}
-              dimmed={!matched}
-              pick={picks[family.id]}
-              open={Boolean(expanded[family.id])}
-              showFamilyNames={showFamilyNames}
-              showAffixTags={showAffixTags}
-              pickMode={pickMode}
-              blockedTitle={blockTitles[family.id]}
-              onPolarity={(next) => onPolarity(family, next)}
-              onToggleTarget={(on) => onToggleTarget(family, on)}
-              onToggleLock={() => onToggleLock(family)}
-              onTier={(index) => onTier(family, index)}
-              onExpand={() => onExpand(family.id)}
-              onBound={(key, value) => onBound(family.id, key, value)}
-            />
-          ))}
+          {available.map(renderRow)}
+          {sinkBlocked && sunk.length > 0 && available.length > 0 && (
+            <li className="border-b border-line bg-ink/40 px-2 py-1 text-[11px] text-muted">
+              {t.craftingUnavailableGroup}
+            </li>
+          )}
+          {sunk.map(renderRow)}
         </ul>
       )}
     </section>
@@ -900,7 +934,7 @@ function AffixRow({
       data-blocked={blocked ? "true" : "false"}
       title={blockedTitle}
     >
-      <div className="flex items-start gap-2 px-2 py-2">
+      <div className={`flex items-start gap-2 px-2 ${targetMode ? "py-1" : "py-2"}`}>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             {showFamilyNames && (

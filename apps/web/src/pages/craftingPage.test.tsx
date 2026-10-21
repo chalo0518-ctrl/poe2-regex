@@ -316,13 +316,27 @@ describe("crafting page", () => {
     const evasion = body.find((family) => family.family === "BaseLocalDefences" && family.matchZh === "閃避值");
     if (!armour || !evasion) throw new Error("missing defence variants");
 
-    await user.click(screen.getByRole("checkbox", { name: `目標 ${armour.textZh}` }));
-    const evasionRow = affixRow(evasion.textZh);
-    expect(within(evasionRow).getByRole("checkbox", { name: `目標 ${evasion.textZh}` })).toBeDisabled();
-    expect(evasionRow).toHaveAttribute("title", "與已選詞條同類，不能同時存在");
-    expect(affixRow(armour.textZh)).not.toHaveAttribute("title", "與已選詞條同類，不能同時存在");
+    const scroll = document.querySelector("[data-affix-scroll]");
+    expect(scroll).toBeTruthy();
+    expect(scroll?.contains(screen.getByRole("heading", { name: /^基礎前綴/ }))).toBe(true);
+    expect(scroll?.contains(screen.getByRole("heading", { name: "這件裝備" }))).toBe(false);
+    expect(scroll?.contains(screen.getByLabelText("孔 1"))).toBe(false);
 
     await user.click(screen.getByRole("checkbox", { name: `目標 ${armour.textZh}` }));
+    const evasionRow = affixRow(evasion.textZh);
+    const armourRow = affixRow(armour.textZh);
+    const prefixSection = armourRow.closest("section");
+    if (!prefixSection) throw new Error("missing prefix section");
+    const sunkLabel = within(prefixSection).getByText("互斥／不可選");
+    expect(within(evasionRow).getByRole("checkbox", { name: `目標 ${evasion.textZh}` })).toBeDisabled();
+    expect(evasionRow).toHaveAttribute("title", "與已選詞條同類，不能同時存在");
+    expect(armourRow).not.toHaveAttribute("title", "與已選詞條同類，不能同時存在");
+    expect(armourRow.compareDocumentPosition(sunkLabel) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(sunkLabel.compareDocumentPosition(evasionRow) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    await user.click(screen.getByRole("checkbox", { name: `目標 ${armour.textZh}` }));
+    expect(within(prefixSection).queryByText("互斥／不可選")).not.toBeInTheDocument();
+    expect(within(affixRow(evasion.textZh)).getByRole("checkbox")).toBeEnabled();
     const prefixes = distinctSide("prefix", 4);
     for (const family of prefixes.slice(0, 3)) {
       await user.click(screen.getByRole("checkbox", { name: `目標 ${family.textZh}` }));
@@ -331,5 +345,10 @@ describe("crafting page", () => {
     expect(within(fourth).getByRole("checkbox")).toBeDisabled();
     expect(fourth).toHaveAttribute("title", "前綴已滿 3 條");
     expect(within(affixRow(prefixes[0].textZh)).getByRole("checkbox")).toBeEnabled();
+    const flags = [...prefixSection.querySelectorAll("li.affix-row")].map((row) => row.getAttribute("data-blocked"));
+    const firstBlocked = flags.indexOf("true");
+    expect(firstBlocked).toBeGreaterThan(0);
+    expect(flags.lastIndexOf("false")).toBeLessThan(firstBlocked);
+    expect(scroll?.contains(fourth)).toBe(true);
   });
 });
