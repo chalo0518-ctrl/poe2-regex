@@ -100,7 +100,13 @@ type Messages = {
   craftingConflict: string;
   craftingSideFullPrefix: (count: number) => string;
   craftingSideFullSuffix: (count: number) => string;
-  craftingSlotSearch: string;
+  craftingUnavailableGroup: string;
+  craftingSlotGroupArmour: string;
+  craftingSlotGroupJewellery: string;
+  craftingSlotGroupWeapon: string;
+  craftingAugmentPoolTitle: (name: string) => string;
+  craftingDefaultPool: string;
+  craftingDesecratedPool: string;
   craftingAddSocket: string;
   craftingRemoveSocket: string;
   craftingKeeper: string;
@@ -224,7 +230,12 @@ const zhHant: Messages = {
   craftingSlotHeading: "裝備部位",
   craftingSlotHint:
     "胸甲、頭盔、手套、鞋子、戒指、項鍊、腰帶、盾牌，以及武器種類。只選種類，不拆力量／敏捷／智慧。",
-  craftingSlotSearch: "篩選部位",
+  craftingSlotGroupArmour: "防具",
+  craftingSlotGroupJewellery: "飾品",
+  craftingSlotGroupWeapon: "武器",
+  craftingAugmentPoolTitle: (name) => `${name} 額外詞綴`,
+  craftingDefaultPool: "預設詞綴",
+  craftingDesecratedPool: "褻瀆詞綴",
   craftingConstraintsLabel: "目前上限",
   craftingTargetsTitle: "目標詞綴",
   craftingTargetsDesc:
@@ -284,6 +295,7 @@ const zhHant: Messages = {
   craftingConflict: "與已選詞條同類，不能同時存在",
   craftingSideFullPrefix: (count) => `前綴已滿 ${count} 條`,
   craftingSideFullSuffix: (count) => `後綴已滿 ${count} 條`,
+  craftingUnavailableGroup: "互斥／不可選",
   craftingKeeper: "工藝槽已是要永久留下的詞綴",
   craftingKeeperHint: "精髓、合金與部分符鍛共用這 1 格。勾了就不能再拿精髓或合金去頂掉褻瀆。",
   craftingBudget: "預算緊（只作提醒，不改判定）",
@@ -413,7 +425,12 @@ const en: Messages = {
   craftingSlotHeading: "Slot",
   craftingSlotHint:
     "Body, helmet, gloves, boots, ring, amulet, belt, shield, and weapon classes. One class each — no str/dex/int split.",
-  craftingSlotSearch: "Filter slots",
+  craftingSlotGroupArmour: "Armour",
+  craftingSlotGroupJewellery: "Jewellery",
+  craftingSlotGroupWeapon: "Weapons",
+  craftingAugmentPoolTitle: (name) => `${name} extra affixes`,
+  craftingDefaultPool: "Default affixes",
+  craftingDesecratedPool: "Desecrated affixes",
   craftingConstraintsLabel: "Current caps",
   craftingTargetsTitle: "Target affixes",
   craftingTargetsDesc:
@@ -473,6 +490,7 @@ const en: Messages = {
   craftingConflict: "Same mod group as a selected affix; they cannot both exist",
   craftingSideFullPrefix: (count) => `Already ${count} prefixes`,
   craftingSideFullSuffix: (count) => `Already ${count} suffixes`,
+  craftingUnavailableGroup: "Blocked",
   craftingKeeper: "Crafted slot is already a keeper",
   craftingKeeperHint:
     "Essences, Alloys, and some runeforge crafts share this one slot. Checked means you cannot overwrite a desecration with Essence or Alloy.",

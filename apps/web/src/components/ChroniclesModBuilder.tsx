@@ -56,6 +56,20 @@ function tierFloor(family: AffixFamily, index: number | null | undefined): strin
   return String(tier.statMin);
 }
 
+/** Checked and still-selectable rows stay above conflict or cap-dimmed rows. */
+export function partitionSelectableRows<T extends { family: { id: string } }>(
+  rows: readonly T[],
+  blocked: Readonly<Record<string, string | undefined>>,
+): { available: T[]; sunk: T[] } {
+  const available: T[] = [];
+  const sunk: T[] = [];
+  for (const row of rows) {
+    if (blocked[row.family.id]) sunk.push(row);
+    else available.push(row);
+  }
+  return { available, sunk };
+}
+
 function targetBlockTitle(
   family: AffixFamily,
   picks: Record<string, ModPickState>,
@@ -157,6 +171,8 @@ export function ChroniclesModBuilder({
   pickMode = "polarity",
   prefixCap = 3,
   suffixCap = 3,
+  extraGroups = [],
+  abyssFamilies = [],
 }: {
   kicker: string;
   title: string;
@@ -189,6 +205,13 @@ export function ChroniclesModBuilder({
   prefixCap?: number;
   /** How many suffixes can be targeted before the rest of that side dims. */
   suffixCap?: number;
+  /**
+   * Affix pools unlocked by a socket augment. Rendered under the normal list.
+   * Caps and mod-group conflicts count these rows together with `families`.
+   */
+  extraGroups?: { id: string; title: string; families: AffixFamily[] }[];
+  /** Desecrated / 褻瀆詞綴 rows. Shown in their own box on the crafting page. */
+  abyssFamilies?: AffixFamily[];
 }) {
   const { locale, t } = useLocale();
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
@@ -216,6 +239,22 @@ export function ChroniclesModBuilder({
 
   const minLv = parseBound(minIlvl);
   const maxLv = parseBound(maxIlvl);
+  const poolFamilies = useMemo(
+    () => [...families, ...abyssFamilies, ...extraGroups.flatMap((group) => group.families)],
+    [families, abyssFamilies, extraGroups],
+  );
+  const poolKey = poolFamilies.map((family) => family.id).join("\0");
+
+  useEffect(() => {
+    const ids = new Set(poolKey.split("\0").filter(Boolean));
+    setPicks((prev) => {
+      const stale = Object.keys(prev).filter((id) => !ids.has(id));
+      if (stale.length === 0) return prev;
+      const next = { ...prev };
+      for (const id of stale) delete next[id];
+      return next;
+    });
+  }, [poolKey]);
 
   const listed = useMemo(() => {
     return families
@@ -236,13 +275,13 @@ export function ChroniclesModBuilder({
   const suffixHeading = suffixTitle ?? t.suffixTitle;
 
   const corpus = useMemo(
-    () => families.map((f) => matchText(f, lang)),
-    [families, lang],
+    () => poolFamilies.map((f) => matchText(f, lang)),
+    [poolFamilies, lang],
   );
 
   const selected = useMemo(
-    () => families.filter((f) => picks[f.id]),
-    [families, picks],
+    () => poolFamilies.filter((f) => picks[f.id]),
+    [poolFamilies, picks],
   );
 
   const result = useMemo(() => {
@@ -305,7 +344,7 @@ export function ChroniclesModBuilder({
         if (next[family.id]) continue;
         if (
           pickMode === "target" &&
-          targetBlockTitle(family, next, families, { prefix: prefixCap, suffix: suffixCap }, t)
+          targetBlockTitle(family, next, poolFamilies, { prefix: prefixCap, suffix: suffixCap }, t)
         ) {
           continue;
         }
@@ -382,18 +421,23 @@ export function ChroniclesModBuilder({
   const blockTitles = useMemo(() => {
     if (pickMode !== "target") return {} as Record<string, string>;
     const titles: Record<string, string> = {};
-    for (const family of families) {
-      const title = targetBlockTitle(family, picks, families, { prefix: prefixCap, suffix: suffixCap }, t);
+    for (const family of poolFamilies) {
+      const title = targetBlockTitle(family, picks, poolFamilies, { prefix: prefixCap, suffix: suffixCap }, t);
       if (title) titles[family.id] = title;
     }
     return titles;
-  }, [pickMode, families, picks, t, prefixCap, suffixCap]);
+  }, [pickMode, poolFamilies, picks, t, prefixCap, suffixCap]);
 
   function changePool(id: string) {
     onPoolChange?.(id);
     setPicks({});
     setExpanded({});
   }
+
+  const abyssRows = (generation: "prefix" | "suffix") =>
+    abyssFamilies
+      .filter((family) => family.generation === generation)
+      .map((family) => ({ family, matched: true }));
 
   const includeN = selected.filter((f) => picks[f.id]?.polarity === "include").length;
   const orN = selected.filter((f) => picks[f.id]?.polarity === "or").length;
@@ -522,44 +566,88 @@ export function ChroniclesModBuilder({
         {showTags ? t.tagHelp : ""}
       </p>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <AffixColumn
-          title={prefixHeading}
-          rows={prefixes}
-          picks={picks}
-          expanded={expanded}
-          showFamilyNames={showFamilyNames}
-          showAffixTags={showAffixTags}
-          pickMode={pickMode}
-          blockTitles={blockTitles}
-          onPolarity={setPickPolarity}
-          onToggleTarget={setTargetChecked}
-          onToggleLock={toggleDesecrationLock}
-          onTier={setTargetTier}
-          onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
-          onBound={(id, key, value) =>
-            setPicks((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], [key]: value } } : prev))
-          }
-        />
-        <AffixColumn
-          title={suffixHeading}
-          rows={suffixes}
-          picks={picks}
-          expanded={expanded}
-          showFamilyNames={showFamilyNames}
-          showAffixTags={showAffixTags}
-          pickMode={pickMode}
-          blockTitles={blockTitles}
-          onPolarity={setPickPolarity}
-          onToggleTarget={setTargetChecked}
-          onToggleLock={toggleDesecrationLock}
-          onTier={setTargetTier}
-          onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
-          onBound={(id, key, value) =>
-            setPicks((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], [key]: value } } : prev))
-          }
-        />
-      </div>
+      {(() => {
+        const column = (title: string, rows: { family: AffixFamily; matched: boolean }[]) => (
+          <AffixColumn
+            title={title}
+            rows={rows}
+            scroll={pickMode === "target"}
+            picks={picks}
+            expanded={expanded}
+            showFamilyNames={showFamilyNames}
+            showAffixTags={showAffixTags}
+            pickMode={pickMode}
+            blockTitles={blockTitles}
+            onPolarity={setPickPolarity}
+            onToggleTarget={setTargetChecked}
+            onToggleLock={toggleDesecrationLock}
+            onTier={setTargetTier}
+            onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
+            onBound={(id, key, value) =>
+              setPicks((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], [key]: value } } : prev))
+            }
+          />
+        );
+        const poolBox = (
+          poolId: string,
+          title: string,
+          prefixRows: { family: AffixFamily; matched: boolean }[],
+          suffixRows: { family: AffixFamily; matched: boolean }[],
+          prefixLabel: string,
+          suffixLabel: string,
+          augment = false,
+        ) => (
+          <section
+            key={poolId}
+            className="rounded-sm border border-line bg-ink/20 p-3"
+            data-affix-pool={poolId}
+            data-augment-pool={augment ? poolId : undefined}
+            aria-label={title}
+          >
+            <h2 className="mb-3 text-lg font-medium text-gold">{title}</h2>
+            <div className="grid gap-4 lg:grid-cols-2">
+              {column(prefixLabel, prefixRows)}
+              {column(suffixLabel, suffixRows)}
+            </div>
+          </section>
+        );
+        const sideRows = (groupFamilies: AffixFamily[], generation: "prefix" | "suffix") =>
+          groupFamilies
+            .filter((family) => family.generation === generation)
+            .map((family) => ({ family, matched: true }));
+        if (pickMode !== "target") {
+          return (
+            <div className="grid gap-4 lg:grid-cols-2">
+              {column(prefixHeading, prefixes)}
+              {column(suffixHeading, suffixes)}
+            </div>
+          );
+        }
+        return (
+          <div className="flex flex-col gap-4">
+            {poolBox("default", t.craftingDefaultPool, prefixes, suffixes, prefixHeading, suffixHeading)}
+            {extraGroups.map((group) =>
+              poolBox(
+                group.id,
+                group.title,
+                sideRows(group.families, "prefix"),
+                sideRows(group.families, "suffix"),
+                t.craftingSidePrefix,
+                t.craftingSideSuffix,
+                true,
+              ),
+            )}
+            {poolBox(
+              "desecrated",
+              t.craftingDesecratedPool,
+              abyssRows("prefix"),
+              abyssRows("suffix"),
+              t.craftingSidePrefix,
+              t.craftingSideSuffix,
+            )}
+          </div>
+        );
+      })()}
 
       <div
         className={
@@ -683,6 +771,7 @@ export function ChroniclesModBuilder({
 function AffixColumn({
   title,
   rows,
+  scroll = false,
   picks,
   expanded,
   showFamilyNames,
@@ -698,6 +787,8 @@ function AffixColumn({
 }: {
   title: string;
   rows: { family: AffixFamily; matched: boolean }[];
+  /** Crafting lists each scroll about four rows on their own. */
+  scroll?: boolean;
   picks: Record<string, PickState>;
   expanded: Record<string, boolean>;
   showFamilyNames: boolean;
@@ -712,37 +803,56 @@ function AffixColumn({
   onBound: (id: string, key: "min" | "max", value: string) => void;
 }) {
   const { t } = useLocale();
+  const sinkBlocked = pickMode === "target";
+  const { available, sunk } = sinkBlocked
+    ? partitionSelectableRows(rows, blockTitles)
+    : { available: rows, sunk: [] as typeof rows };
+  const renderRow = ({ family, matched }: { family: AffixFamily; matched: boolean }) => (
+    <AffixRow
+      key={family.id}
+      family={family}
+      dimmed={!matched}
+      pick={picks[family.id]}
+      open={Boolean(expanded[family.id])}
+      showFamilyNames={showFamilyNames}
+      showAffixTags={showAffixTags}
+      pickMode={pickMode}
+      blockedTitle={blockTitles[family.id]}
+      onPolarity={(next) => onPolarity(family, next)}
+      onToggleTarget={(on) => onToggleTarget(family, on)}
+      onToggleLock={() => onToggleLock(family)}
+      onTier={(index) => onTier(family, index)}
+      onExpand={() => onExpand(family.id)}
+      onBound={(key, value) => onBound(family.id, key, value)}
+    />
+  );
   return (
     <section className="overflow-hidden rounded-sm border border-line bg-panel">
       <h2 className="flex items-center justify-between border-b border-line bg-raised px-3 py-2 text-sm font-medium text-gold">
         <span>{title}</span>
         <span className="text-xs font-normal text-muted">{rows.filter((r) => r.matched).length}</span>
       </h2>
-      {rows.length === 0 ? (
-        <p className="px-3 py-8 text-center text-sm text-muted">{t.noAffixes}</p>
-      ) : (
-        <ul>
-          {rows.map(({ family, matched }) => (
-            <AffixRow
-              key={family.id}
-              family={family}
-              dimmed={!matched}
-              pick={picks[family.id]}
-              open={Boolean(expanded[family.id])}
-              showFamilyNames={showFamilyNames}
-              showAffixTags={showAffixTags}
-              pickMode={pickMode}
-              blockedTitle={blockTitles[family.id]}
-              onPolarity={(next) => onPolarity(family, next)}
-              onToggleTarget={(on) => onToggleTarget(family, on)}
-              onToggleLock={() => onToggleLock(family)}
-              onTier={(index) => onTier(family, index)}
-              onExpand={() => onExpand(family.id)}
-              onBound={(key, value) => onBound(family.id, key, value)}
-            />
-          ))}
-        </ul>
-      )}
+      {(() => {
+        const body = rows.length === 0 ? (
+          <p className="px-3 py-8 text-center text-sm text-muted">{t.noAffixes}</p>
+        ) : (
+          <ul>
+            {available.map(renderRow)}
+            {sinkBlocked && sunk.length > 0 && available.length > 0 && (
+              <li className="border-b border-line bg-ink/40 px-2 py-1 text-[11px] text-muted">
+                {t.craftingUnavailableGroup}
+              </li>
+            )}
+            {sunk.map(renderRow)}
+          </ul>
+        );
+        if (!scroll) return body;
+        return (
+          <div className="max-h-[18rem] overflow-y-auto overscroll-y-contain" data-affix-scroll="">
+            {body}
+          </div>
+        );
+      })()}
     </section>
   );
 }
@@ -835,7 +945,7 @@ function AffixRow({
       data-blocked={blocked ? "true" : "false"}
       title={blockedTitle}
     >
-      <div className="flex items-start gap-2 px-2 py-2">
+      <div className={`flex items-start gap-2 px-2 ${targetMode ? "py-1" : "py-2"}`}>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             {showFamilyNames && (

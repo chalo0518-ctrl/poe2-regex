@@ -3,7 +3,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import type { AffixFamily, HarvestTag } from "@poe2-regex/data";
-import { ChroniclesModBuilder } from "./ChroniclesModBuilder.tsx";
+import { ChroniclesModBuilder, partitionSelectableRows } from "./ChroniclesModBuilder.tsx";
 import { endgameModBuilderChrome } from "../endgameModBuilderChrome.ts";
 import { LocaleProvider } from "../i18n.tsx";
 
@@ -402,5 +402,20 @@ describe("ChroniclesModBuilder polarity controls", () => {
     expectPolarity(CHEST_ZH, "no");
     await user.click(chest.no);
     expectPolarity(CHEST_ZH, "off");
+  });
+
+  it("keeps selectable rows ahead of blocked ones without dropping either", () => {
+    const rows = [
+      { family: { id: "open" } },
+      { family: { id: "blocked" } },
+      { family: { id: "chosen" } },
+      { family: { id: "also-blocked" } },
+    ];
+    const { available, sunk } = partitionSelectableRows(rows, {
+      blocked: "與已選詞條同類，不能同時存在",
+      "also-blocked": "前綴已滿 3 條",
+    });
+    expect(available.map((row) => row.family.id)).toEqual(["open", "chosen"]);
+    expect(sunk.map((row) => row.family.id)).toEqual(["blocked", "also-blocked"]);
   });
 });
