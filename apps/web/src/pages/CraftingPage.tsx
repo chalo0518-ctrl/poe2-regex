@@ -101,6 +101,7 @@ export default function CraftingPage() {
   const [socketCount, setSocketCount] = useState(2);
   const [socketPicks, setSocketPicks] = useState<string[]>(["", ""]);
   const [pinnedNode, setPinnedNode] = useState<CraftDiagramNodeId | null>(null);
+  const [libraryTab, setLibraryTab] = useState<"targets" | "owned">("targets");
   const augmentGroups = useMemo(() => {
     const seen = new Set<string>();
     const groups: { id: string; title: string; families: AffixFamily[] }[] = [];
@@ -143,6 +144,7 @@ export default function CraftingPage() {
     setSocketCount(2);
     setSocketPicks(["", ""]);
     setPinnedNode(null);
+    setLibraryTab("targets");
   }, [slotId]);
 
   useEffect(() => {
@@ -331,25 +333,87 @@ export default function CraftingPage() {
               });
             }}
           />
-          <ChroniclesModBuilder
-            key={slotId}
-            kicker="CRAFTING · TARGETS"
-            title={t.craftingTargetsTitle}
-            description={t.craftingTargetsDesc}
-            statsNote={t.statsFamilies(families.length, tierCount)}
-            sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
-            harvestTags={harvestTags}
-            families={families}
-            extraGroups={augmentGroups}
-            abyssFamilies={desecratedFamilies}
-            importHint={t.earlyGearImportHint}
-            onPicksChange={onPicksChange}
-            dockRegex={false}
-            regexCaption={t.craftingRegexCaption}
-            pickMode="target"
-            prefixCap={caps.prefix}
-            suffixCap={caps.suffix}
-          />
+          <div>
+            <div role="tablist" aria-label={t.craftingLibraryTabs} className="flex items-end gap-1 border-b border-line">
+              {([
+                ["targets", t.craftingTabTargets],
+                ["owned", t.craftingTabOwned],
+              ] as const).map(([id, label]) => {
+                const active = libraryTab === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    id={`craft-library-tab-${id}`}
+                    aria-selected={active}
+                    aria-controls={`craft-library-panel-${id}`}
+                    onClick={() => setLibraryTab(id)}
+                    className={`rounded-t-sm border border-b-0 px-3 py-1.5 text-sm ${
+                      active
+                        ? "border-line bg-panel text-gold"
+                        : "border-transparent bg-raised text-muted hover:text-paper"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            <div
+              role="tabpanel"
+              id="craft-library-panel-targets"
+              aria-labelledby="craft-library-tab-targets"
+              hidden={libraryTab !== "targets"}
+              className="pt-3"
+            >
+              <ChroniclesModBuilder
+                key={slotId}
+                kicker="CRAFTING · TARGETS"
+                title={t.craftingTargetsTitle}
+                description={t.craftingTargetsDesc}
+                statsNote={t.statsFamilies(families.length, tierCount)}
+                sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
+                harvestTags={harvestTags}
+                families={families}
+                extraGroups={augmentGroups}
+                abyssFamilies={desecratedFamilies}
+                importHint={t.earlyGearImportHint}
+                onPicksChange={onPicksChange}
+                dockRegex={false}
+                regexCaption={t.craftingRegexCaption}
+                pickMode="target"
+                prefixCap={caps.prefix}
+                suffixCap={caps.suffix}
+              />
+            </div>
+            <div
+              role="tabpanel"
+              id="craft-library-panel-owned"
+              aria-labelledby="craft-library-tab-owned"
+              hidden={libraryTab !== "owned"}
+              className="pt-3"
+            >
+              <OwnedAffixList
+                rows={selected.map((family) => ({
+                  id: family.id,
+                  label: effectText(family, locale),
+                  tierLabel: chosenTierLabel(family, picks[family.id]),
+                  owned: Boolean(owned[family.id]?.owned) || lockedId === family.id,
+                  highTier: owned[family.id]?.highTier !== false,
+                  locked: lockedId === family.id,
+                }))}
+                onToggleOwned={toggleOwned}
+                onToggleHigh={(id) => {
+                  setOwned((prev) => (
+                    prev[id]?.owned || lockedId === id
+                      ? { ...prev, [id]: { owned: true, highTier: prev[id]?.highTier === false } }
+                      : prev
+                  ));
+                }}
+              />
+            </div>
+          </div>
           <ItemPanel
             decision={decision}
             sideLabel={sideLabel}
@@ -375,22 +439,6 @@ export default function CraftingPage() {
             onKeeper={setKeeper}
             tightBudget={tightBudget}
             onTightBudget={setTightBudget}
-            selected={selected.map((family) => ({
-              id: family.id,
-              label: effectText(family, locale),
-              tierLabel: chosenTierLabel(family, picks[family.id]),
-              owned: Boolean(owned[family.id]?.owned) || lockedId === family.id,
-              highTier: owned[family.id]?.highTier !== false,
-              locked: lockedId === family.id,
-            }))}
-            onToggleOwned={toggleOwned}
-            onToggleHigh={(id) => {
-              setOwned((prev) => (
-                prev[id]?.owned || lockedId === id
-                  ? { ...prev, [id]: { owned: true, highTier: prev[id]?.highTier === false } }
-                  : prev
-              ));
-            }}
             families={checklistFamilies}
             selectedIds={selected.map((family) => family.id)}
             others={others}
@@ -474,9 +522,6 @@ function ItemPanel({
   onKeeper,
   tightBudget,
   onTightBudget,
-  selected,
-  onToggleOwned,
-  onToggleHigh,
   families,
   selectedIds,
   others,
@@ -504,16 +549,6 @@ function ItemPanel({
   onKeeper: (value: boolean) => void;
   tightBudget: boolean;
   onTightBudget: (value: boolean) => void;
-  selected: {
-    id: string;
-    label: string;
-    tierLabel: string | null;
-    owned: boolean;
-    highTier: boolean;
-    locked: boolean;
-  }[];
-  onToggleOwned: (id: string) => void;
-  onToggleHigh: (id: string) => void;
   families: AffixFamily[];
   selectedIds: string[];
   others: Record<string, OtherFlag>;
@@ -613,12 +648,35 @@ function ItemPanel({
         onAdd={onAddOther}
         onRemove={onRemoveOther}
       />
+    </section>
+  );
+}
 
+function OwnedAffixList({
+  rows,
+  onToggleOwned,
+  onToggleHigh,
+}: {
+  rows: {
+    id: string;
+    label: string;
+    tierLabel: string | null;
+    owned: boolean;
+    highTier: boolean;
+    locked: boolean;
+  }[];
+  onToggleOwned: (id: string) => void;
+  onToggleHigh: (id: string) => void;
+}) {
+  const { t } = useLocale();
+  return (
+    <section className="rounded-sm border border-line bg-panel p-3" aria-labelledby="craft-owned-heading">
+      <h2 id="craft-owned-heading" className="text-sm font-medium text-gold">{t.craftingTabOwned}</h2>
       <ul className="mt-3 space-y-2">
-        {selected.length === 0 ? (
+        {rows.length === 0 ? (
           <li className="text-xs text-muted">{t.craftingNoOwned}</li>
         ) : (
-          selected.map((row) => (
+          rows.map((row) => (
             <li key={row.id} className="rounded-sm border border-line px-2 py-2">
               <div className="flex items-start gap-2">
                 <input

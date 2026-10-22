@@ -107,6 +107,9 @@ type Messages = {
   craftingAugmentPoolTitle: (name: string) => string;
   craftingDefaultPool: string;
   craftingDesecratedPool: string;
+  craftingLibraryTabs: string;
+  craftingTabTargets: string;
+  craftingTabOwned: string;
   craftingAddSocket: string;
   craftingRemoveSocket: string;
   craftingKeeper: string;
@@ -236,6 +239,9 @@ const zhHant: Messages = {
   craftingAugmentPoolTitle: (name) => `${name} 額外詞綴`,
   craftingDefaultPool: "預設詞綴",
   craftingDesecratedPool: "褻瀆詞綴",
+  craftingLibraryTabs: "詞綴分頁",
+  craftingTabTargets: "目標詞綴",
+  craftingTabOwned: "已有詞條",
   craftingConstraintsLabel: "目前上限",
   craftingTargetsTitle: "目標詞綴",
   craftingTargetsDesc:
@@ -431,6 +437,9 @@ const en: Messages = {
   craftingAugmentPoolTitle: (name) => `${name} extra affixes`,
   craftingDefaultPool: "Default affixes",
   craftingDesecratedPool: "Desecrated affixes",
+  craftingLibraryTabs: "Affix sheets",
+  craftingTabTargets: "Target affixes",
+  craftingTabOwned: "Owned affixes",
   craftingConstraintsLabel: "Current caps",
   craftingTargetsTitle: "Target affixes",
   craftingTargetsDesc:

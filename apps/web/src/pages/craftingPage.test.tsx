@@ -298,7 +298,9 @@ describe("crafting page", () => {
     await user.click(lifeLock());
     expect(screen.getByText("繼續")).toBeInTheDocument();
     expect(screen.queryByText("繼續（精髓／合金頂掉後重褻瀆）")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "已有詞條" }));
     expect(screen.getByRole("checkbox", { name: `${life.textZh} 已有` })).toBeChecked();
+    await user.click(screen.getByRole("tab", { name: "目標詞綴" }));
 
     await user.click(otherLock());
     expect(otherLock()).toHaveAttribute("aria-pressed", "true");
@@ -387,5 +389,36 @@ describe("crafting page", () => {
 
     await user.selectOptions(screen.getByLabelText("孔 1"), "Serles_Triumph");
     expect(screen.queryByRole("region", { name: /額外詞綴/ })).not.toBeInTheDocument();
+  });
+
+  it("switches target and owned sheets without dropping picks or owned flags", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+    const life = lifeFamily();
+    const tabs = screen.getByRole("tablist", { name: "詞綴分頁" });
+    const targets = within(tabs).getByRole("tab", { name: "目標詞綴" });
+    const owned = within(tabs).getByRole("tab", { name: "已有詞條" });
+    expect(targets).toHaveAttribute("aria-selected", "true");
+    expect(owned).toHaveAttribute("aria-selected", "false");
+    expect(screen.getByRole("heading", { name: "目標詞綴" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "這件裝備" })).toBeInTheDocument();
+    expect(screen.queryByRole("checkbox", { name: `${life.textZh} 已有` })).not.toBeInTheDocument();
+
+    const target = screen.getByRole("checkbox", { name: `目標 ${life.textZh}` });
+    await user.click(target);
+    expect(target).toBeChecked();
+    await user.click(owned);
+    expect(screen.queryByRole("checkbox", { name: `目標 ${life.textZh}` })).not.toBeInTheDocument();
+    const have = screen.getByRole("checkbox", { name: `${life.textZh} 已有` });
+    expect(have).not.toBeChecked();
+    await user.click(have);
+    expect(have).toBeChecked();
+    expect(screen.getByRole("heading", { name: "這件裝備" })).toBeInTheDocument();
+    expect(screen.getByLabelText("孔 1")).toBeInTheDocument();
+
+    await user.click(targets);
+    expect(screen.getByRole("checkbox", { name: `目標 ${life.textZh}` })).toBeChecked();
+    await user.click(owned);
+    expect(screen.getByRole("checkbox", { name: `${life.textZh} 已有` })).toBeChecked();
   });
 });
