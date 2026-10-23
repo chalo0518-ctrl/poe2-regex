@@ -2,7 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { craftTierChoices, craftingFamiliesFor, earlyGearFamiliesFor, type AffixFamily } from "@poe2-regex/data";
+import { craftTierChoices, craftingFamiliesFor, earlyGearFamiliesFor, orderCraftingLibrary, type AffixFamily } from "@poe2-regex/data";
 import EndgameLayout from "./EndgameLayout.tsx";
 import CraftingPage from "./CraftingPage.tsx";
 import { LocaleProvider } from "../i18n.tsx";
@@ -318,7 +318,7 @@ describe("crafting page", () => {
     expect(lifeBox()).toBeChecked();
     expect(screen.getByRole("checkbox", { name: `目標 ${other.textZh}` })).toBeChecked();
     expect(screen.getAllByRole("button", { name: /破潰石鎖定的詞條/, pressed: true })).toHaveLength(1);
-  });
+  }, 15_000);
 
   it("dims same-group affixes and extra prefixes once three are selected", async () => {
     const user = userEvent.setup();
@@ -496,6 +496,45 @@ describe("crafting page", () => {
     expect(screen.getByLabelText("孔 1")).toHaveValue("Medveds_Tending");
     expect(screen.getByRole("heading", { name: "決策樹" })).toBeInTheDocument();
   }, 15_000);
+
+  it("lists same-type affixes together on both sheets", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+
+    function labels(heading: RegExp) {
+      const pool = screen.getByRole("region", { name: "預設詞綴" });
+      const section = within(pool).getByRole("heading", { name: heading }).closest("section");
+      if (!section) throw new Error("missing affix column");
+      return [...section.querySelectorAll("li.affix-row input[type=checkbox]")].map(
+        (input) => input.getAttribute("aria-label") ?? "",
+      );
+    }
+
+    const expected = (generation: "prefix" | "suffix", prefix: string) =>
+      orderCraftingLibrary(
+        craftingFamiliesFor("body")
+          .filter((family) => family.generation === generation)
+          .map((family) => ({ family })),
+      ).map((row) => `${prefix}${row.family.textZh}${prefix === "" ? " 已有" : ""}`);
+
+    expect(labels(/^基礎前綴/)).toEqual(expected("prefix", "目標 "));
+    expect(labels(/^基礎後綴/)).toEqual(expected("suffix", "目標 "));
+    const armour = labels(/^基礎前綴/).filter((label) => label.includes("護甲") && !label.includes("閃避") && !label.includes("能量護盾"));
+    const flat = armour.findIndex((label) => label.includes("+(16—27)護甲值"));
+    const percent = armour.findIndex((label) => label.includes("增加(15—26)%護甲值"));
+    expect(flat).toBeGreaterThanOrEqual(0);
+    expect(percent).toBeGreaterThan(flat);
+
+    await user.click(screen.getByRole("tab", { name: "已有詞條" }));
+    expect(labels(/^基礎前綴/)).toEqual(expected("prefix", ""));
+    expect(labels(/^基礎後綴/)).toEqual(expected("suffix", ""));
+
+    await user.click(screen.getByRole("tab", { name: "目標詞綴" }));
+    const life = screen.getByRole("checkbox", { name: /目標 \+\(10—19\)最大生命/ });
+    await user.click(life);
+    expect(life).toBeChecked();
+    expect(labels(/^基礎前綴/)).toEqual(expected("prefix", "目標 "));
+  });
 
   it("switches target and owned sheets without dropping picks or owned flags", async () => {
     const user = userEvent.setup();

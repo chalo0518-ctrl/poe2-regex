@@ -6,6 +6,7 @@ import {
   cycleTagState,
   effectText,
   effectTextSecondary,
+  orderCraftingLibrary,
   familyLabel,
   familyLabelSecondary,
   importNeedles,
@@ -323,8 +324,10 @@ export function ChroniclesModBuilder({
       .filter((row) => row.matched || showHidden);
   }, [families, tagStates, query, minLv, maxLv, showHidden]);
 
-  const prefixes = listed.filter((r) => r.family.generation === "prefix");
-  const suffixes = listed.filter((r) => r.family.generation === "suffix");
+  const arrangeLibrary = <T extends { family: AffixFamily }>(rows: T[]) =>
+    pickMode === "target" ? orderCraftingLibrary(rows) : rows;
+  const prefixes = arrangeLibrary(listed.filter((r) => r.family.generation === "prefix"));
+  const suffixes = arrangeLibrary(listed.filter((r) => r.family.generation === "suffix"));
 
   const prefixHeading = prefixTitle ?? t.prefixTitle;
   const suffixHeading = suffixTitle ?? t.suffixTitle;
@@ -491,9 +494,11 @@ export function ChroniclesModBuilder({
   }
 
   const abyssRows = (generation: "prefix" | "suffix") =>
-    abyssFamilies
-      .filter((family) => family.generation === generation)
-      .map((family) => ({ family, matched: true }));
+    arrangeLibrary(
+      abyssFamilies
+        .filter((family) => family.generation === generation)
+        .map((family) => ({ family, matched: true })),
+    );
 
   const includeN = selected.filter((f) => picks[f.id]?.polarity === "include").length;
   const orN = selected.filter((f) => picks[f.id]?.polarity === "or").length;
@@ -695,9 +700,11 @@ export function ChroniclesModBuilder({
           );
         };
         const sideRows = (groupFamilies: AffixFamily[], generation: "prefix" | "suffix") =>
-          groupFamilies
-            .filter((family) => family.generation === generation)
-            .map((family) => ({ family, matched: true }));
+          arrangeLibrary(
+            groupFamilies
+              .filter((family) => family.generation === generation)
+              .map((family) => ({ family, matched: true })),
+          );
         if (pickMode !== "target") {
           return (
             <div className="grid gap-4 lg:grid-cols-2">

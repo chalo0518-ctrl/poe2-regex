@@ -199,6 +199,8 @@ export type { SocketPoolAugment } from "./socketPools.ts";
 
 export { DESECRATED_POOL_LABEL, desecratedFamiliesFor } from "./desecrated.ts";
 
+export { compareCraftingLibrary, orderCraftingLibrary } from "./craftingOrder.ts";
+
 export {
   REMOVAL_OMENS,
   classifyNonTarget,
