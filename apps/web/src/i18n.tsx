@@ -107,6 +107,11 @@ type Messages = {
   craftingAugmentPoolTitle: (name: string) => string;
   craftingDefaultPool: string;
   craftingDesecratedPool: string;
+  craftingLibraryTabs: string;
+  craftingTabTargets: string;
+  craftingTabOwned: string;
+  craftingOwnedDesc: string;
+  craftingOwnedCount: (count: number) => string;
   craftingAddSocket: string;
   craftingRemoveSocket: string;
   craftingKeeper: string;
@@ -236,6 +241,12 @@ const zhHant: Messages = {
   craftingAugmentPoolTitle: (name) => `${name} 額外詞綴`,
   craftingDefaultPool: "預設詞綴",
   craftingDesecratedPool: "褻瀆詞綴",
+  craftingLibraryTabs: "詞綴分頁",
+  craftingTabTargets: "目標詞綴",
+  craftingTabOwned: "已有詞條",
+  craftingOwnedDesc:
+    "勾這件已經有的詞綴。選了階級代表已達到該階級；不限階級代表還沒有。破潰石鎖定與目標詞綴是同一條。",
+  craftingOwnedCount: (count) => `這件已有 ${count} 條`,
   craftingConstraintsLabel: "目前上限",
   craftingTargetsTitle: "目標詞綴",
   craftingTargetsDesc:
@@ -431,6 +442,12 @@ const en: Messages = {
   craftingAugmentPoolTitle: (name) => `${name} extra affixes`,
   craftingDefaultPool: "Default affixes",
   craftingDesecratedPool: "Desecrated affixes",
+  craftingLibraryTabs: "Affix sheets",
+  craftingTabTargets: "Target affixes",
+  craftingTabOwned: "Owned affixes",
+  craftingOwnedDesc:
+    "Check the affixes already on this item. A chosen tier means that tier is met; Any tier means it is not. The desecration lock is the same one as on Target affixes.",
+  craftingOwnedCount: (count) => `${count} on this item`,
   craftingConstraintsLabel: "Current caps",
   craftingTargetsTitle: "Target affixes",
   craftingTargetsDesc:

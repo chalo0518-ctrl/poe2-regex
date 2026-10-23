@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   CRAFTING_CONSTRAINTS,
@@ -51,7 +51,7 @@ function slotsInOrder(ids: readonly CraftSlotId[]) {
   });
 }
 
-type OwnedFlag = { owned: boolean; highTier: boolean };
+type OwnedFlag = { owned: boolean; highTier: boolean; tierIndex: number | null };
 
 type OtherFlag = { tierIndex: number | null; desecrated: boolean };
 
@@ -65,11 +65,56 @@ function chosenTierLevel(family: AffixFamily, pick: ModPickState | undefined): n
   return family.tiers[index]?.level ?? null;
 }
 
-function chosenTierLabel(family: AffixFamily, pick: ModPickState | undefined): string | null {
-  if (pick?.minTierIndex == null) return null;
-  const choice = craftTierChoices(family).find((row) => row.index === pick.minTierIndex);
-  if (!choice) return null;
-  return `T${choice.rank} · iLvL ${choice.level}`;
+function defaultOwnedTier(family: AffixFamily, targetPick: ModPickState | undefined): number | null {
+  if (targetPick?.minTierIndex != null) return targetPick.minTierIndex;
+  return craftTierChoices(family)[0]?.index ?? null;
+}
+
+function applyLock(
+  prev: Record<string, ModPickState>,
+  lockId: string | null,
+): Record<string, ModPickState> {
+  let changed = false;
+  const next: Record<string, ModPickState> = {};
+  for (const [id, pick] of Object.entries(prev)) {
+    if (pick.desecrationLock && id !== lockId) {
+      next[id] = { ...pick, desecrationLock: false };
+      changed = true;
+    } else {
+      next[id] = pick;
+    }
+  }
+  if (!lockId) return changed ? next : prev;
+  const current = next[lockId];
+  if (current?.desecrationLock && isCraftTarget(current)) return changed ? next : prev;
+  next[lockId] = {
+    polarity: "include",
+    min: current?.min ?? "",
+    max: current?.max ?? "",
+    minTierIndex: current?.minTierIndex ?? null,
+    desecrationLock: true,
+  };
+  return next;
+}
+
+function flagsFromOwnedPicks(
+  next: Record<string, ModPickState>,
+  prev: Record<string, OwnedFlag>,
+  targetPicks: Record<string, ModPickState>,
+  families: AffixFamily[],
+): Record<string, OwnedFlag> {
+  const out: Record<string, OwnedFlag> = {};
+  for (const [id, pick] of Object.entries(next)) {
+    if (!isCraftTarget(pick)) continue;
+    const previous = prev[id];
+    let tierIndex = pick.minTierIndex ?? null;
+    if (!previous?.owned && tierIndex == null) {
+      const family = families.find((row) => row.id === id);
+      if (family) tierIndex = defaultOwnedTier(family, targetPicks[id]);
+    }
+    out[id] = { owned: true, highTier: tierIndex != null, tierIndex };
+  }
+  return out;
 }
 
 function parseLevel(raw: string): number | null {
@@ -101,6 +146,7 @@ export default function CraftingPage() {
   const [socketCount, setSocketCount] = useState(2);
   const [socketPicks, setSocketPicks] = useState<string[]>(["", ""]);
   const [pinnedNode, setPinnedNode] = useState<CraftDiagramNodeId | null>(null);
+  const [libraryTab, setLibraryTab] = useState<"targets" | "owned">("targets");
   const augmentGroups = useMemo(() => {
     const seen = new Set<string>();
     const groups: { id: string; title: string; families: AffixFamily[] }[] = [];
@@ -126,8 +172,15 @@ export default function CraftingPage() {
   const tierCount = families.reduce((sum, family) => sum + family.tiers.length, 0);
   const socketMax = Math.max(3, socketCountMax(slotId));
 
-  const onPicksChange = useCallback((next: Record<string, ModPickState>) => {
-    setPicks(next);
+  const picksRef = useRef(picks);
+  picksRef.current = picks;
+  const familiesRef = useRef(checklistFamilies);
+  familiesRef.current = checklistFamilies;
+
+  const onOwnedPicksChange = useCallback((next: Record<string, ModPickState>) => {
+    setOwned((prev) => flagsFromOwnedPicks(next, prev, picksRef.current, familiesRef.current));
+    const nextLock = Object.entries(next).find(([, pick]) => pick.desecrationLock)?.[0] ?? null;
+    setPicks((prev) => applyLock(prev, nextLock));
   }, []);
 
   useEffect(() => {
@@ -143,6 +196,7 @@ export default function CraftingPage() {
     setSocketCount(2);
     setSocketPicks(["", ""]);
     setPinnedNode(null);
+    setLibraryTab("targets");
   }, [slotId]);
 
   useEffect(() => {
@@ -154,17 +208,6 @@ export default function CraftingPage() {
     () => checklistFamilies.filter((family) => isCraftTarget(picks[family.id])),
     [checklistFamilies, picks],
   );
-
-  useEffect(() => {
-    const ids = new Set(selected.map((family) => family.id));
-    setOwned((prev) => {
-      const stale = Object.keys(prev).filter((id) => !ids.has(id));
-      if (stale.length === 0) return prev;
-      const next = { ...prev };
-      for (const id of stale) delete next[id];
-      return next;
-    });
-  }, [selected]);
 
   useEffect(() => {
     const ids = new Set(selected.map((family) => family.id));
@@ -181,10 +224,35 @@ export default function CraftingPage() {
 
   useEffect(() => {
     if (!lockedId) return;
-    setOwned((prev) => (
-      prev[lockedId]?.owned ? prev : { ...prev, [lockedId]: { owned: true, highTier: true } }
-    ));
-  }, [lockedId]);
+    setOwned((prev) => {
+      if (prev[lockedId]?.owned) return prev;
+      const family = checklistFamilies.find((row) => row.id === lockedId);
+      const tierIndex = family ? defaultOwnedTier(family, picks[lockedId]) : null;
+      return {
+        ...prev,
+        [lockedId]: { owned: true, highTier: tierIndex != null, tierIndex },
+      };
+    });
+  }, [lockedId, checklistFamilies, picks]);
+
+  const ownedPicks = useMemo(() => {
+    const out: Record<string, ModPickState> = {};
+    const ids = new Set(Object.keys(owned));
+    if (lockedId) ids.add(lockedId);
+    for (const id of ids) {
+      const flag = owned[id];
+      const locked = lockedId === id;
+      if (!flag?.owned && !locked) continue;
+      out[id] = {
+        polarity: "include",
+        min: "",
+        max: "",
+        minTierIndex: flag?.tierIndex ?? null,
+        desecrationLock: locked,
+      };
+    }
+    return out;
+  }, [owned, lockedId]);
 
   const decision = useMemo(() => {
     return decideCraft({
@@ -256,18 +324,6 @@ export default function CraftingPage() {
     setParams({ slot: id });
   }
 
-  function toggleOwned(id: string) {
-    if (lockedId === id) return;
-    setOwned((prev) => {
-      if (prev[id]?.owned) {
-        const next = { ...prev };
-        delete next[id];
-        return next;
-      }
-      return { ...prev, [id]: { owned: true, highTier: true } };
-    });
-  }
-
   return (
     <div>
       <section className="mb-5 rounded-sm border border-line bg-panel px-4 py-3" aria-label={t.craftingConstraintsLabel}>
@@ -331,25 +387,93 @@ export default function CraftingPage() {
               });
             }}
           />
-          <ChroniclesModBuilder
-            key={slotId}
-            kicker="CRAFTING · TARGETS"
-            title={t.craftingTargetsTitle}
-            description={t.craftingTargetsDesc}
-            statsNote={t.statsFamilies(families.length, tierCount)}
-            sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
-            harvestTags={harvestTags}
-            families={families}
-            extraGroups={augmentGroups}
-            abyssFamilies={desecratedFamilies}
-            importHint={t.earlyGearImportHint}
-            onPicksChange={onPicksChange}
-            dockRegex={false}
-            regexCaption={t.craftingRegexCaption}
-            pickMode="target"
-            prefixCap={caps.prefix}
-            suffixCap={caps.suffix}
-          />
+          <div>
+            <div role="tablist" aria-label={t.craftingLibraryTabs} className="flex items-end gap-1 border-b border-line">
+              {([
+                ["targets", t.craftingTabTargets],
+                ["owned", t.craftingTabOwned],
+              ] as const).map(([id, label]) => {
+                const active = libraryTab === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    id={`craft-library-tab-${id}`}
+                    aria-selected={active}
+                    aria-controls={`craft-library-panel-${id}`}
+                    onClick={() => setLibraryTab(id)}
+                    className={`rounded-t-sm border border-b-0 px-3 py-1.5 text-sm ${
+                      active
+                        ? "border-line bg-panel text-gold"
+                        : "border-transparent bg-raised text-muted hover:text-paper"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            <div
+              role="tabpanel"
+              id="craft-library-panel-targets"
+              aria-labelledby="craft-library-tab-targets"
+              hidden={libraryTab !== "targets"}
+              className="pt-3"
+            >
+              <ChroniclesModBuilder
+                key={slotId}
+                kicker="CRAFTING · TARGETS"
+                title={t.craftingTargetsTitle}
+                description={t.craftingTargetsDesc}
+                statsNote={t.statsFamilies(families.length, tierCount)}
+                sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
+                harvestTags={harvestTags}
+                families={families}
+                extraGroups={augmentGroups}
+                abyssFamilies={desecratedFamilies}
+                importHint={t.earlyGearImportHint}
+                picksValue={picks}
+                onPicksChange={setPicks}
+                dockRegex={false}
+                regexCaption={t.craftingRegexCaption}
+                pickMode="target"
+                prefixCap={caps.prefix}
+                suffixCap={caps.suffix}
+              />
+            </div>
+            <div
+              role="tabpanel"
+              id="craft-library-panel-owned"
+              aria-labelledby="craft-library-tab-owned"
+              hidden={libraryTab !== "owned"}
+              className="pt-3"
+            >
+              <ChroniclesModBuilder
+                key={`${slotId}-owned`}
+                kicker="CRAFTING · OWNED"
+                title={t.craftingTabOwned}
+                description={t.craftingOwnedDesc}
+                statsNote={t.statsFamilies(families.length, tierCount)}
+                sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
+                harvestTags={harvestTags}
+                families={families}
+                extraGroups={augmentGroups}
+                abyssFamilies={desecratedFamilies}
+                importHint={t.earlyGearImportHint}
+                picksValue={ownedPicks}
+                onPicksChange={onOwnedPicksChange}
+                dockRegex={false}
+                showRegex={false}
+                pickMode="target"
+                rowKind="owned"
+                stickyLock
+                selectionCount={t.craftingOwnedCount}
+                prefixCap={caps.prefix}
+                suffixCap={caps.suffix}
+              />
+            </div>
+          </div>
           <ItemPanel
             decision={decision}
             sideLabel={sideLabel}
@@ -375,22 +499,6 @@ export default function CraftingPage() {
             onKeeper={setKeeper}
             tightBudget={tightBudget}
             onTightBudget={setTightBudget}
-            selected={selected.map((family) => ({
-              id: family.id,
-              label: effectText(family, locale),
-              tierLabel: chosenTierLabel(family, picks[family.id]),
-              owned: Boolean(owned[family.id]?.owned) || lockedId === family.id,
-              highTier: owned[family.id]?.highTier !== false,
-              locked: lockedId === family.id,
-            }))}
-            onToggleOwned={toggleOwned}
-            onToggleHigh={(id) => {
-              setOwned((prev) => (
-                prev[id]?.owned || lockedId === id
-                  ? { ...prev, [id]: { owned: true, highTier: prev[id]?.highTier === false } }
-                  : prev
-              ));
-            }}
             families={checklistFamilies}
             selectedIds={selected.map((family) => family.id)}
             others={others}
@@ -474,9 +582,6 @@ function ItemPanel({
   onKeeper,
   tightBudget,
   onTightBudget,
-  selected,
-  onToggleOwned,
-  onToggleHigh,
   families,
   selectedIds,
   others,
@@ -504,16 +609,6 @@ function ItemPanel({
   onKeeper: (value: boolean) => void;
   tightBudget: boolean;
   onTightBudget: (value: boolean) => void;
-  selected: {
-    id: string;
-    label: string;
-    tierLabel: string | null;
-    owned: boolean;
-    highTier: boolean;
-    locked: boolean;
-  }[];
-  onToggleOwned: (id: string) => void;
-  onToggleHigh: (id: string) => void;
   families: AffixFamily[];
   selectedIds: string[];
   others: Record<string, OtherFlag>;
@@ -613,42 +708,6 @@ function ItemPanel({
         onAdd={onAddOther}
         onRemove={onRemoveOther}
       />
-
-      <ul className="mt-3 space-y-2">
-        {selected.length === 0 ? (
-          <li className="text-xs text-muted">{t.craftingNoOwned}</li>
-        ) : (
-          selected.map((row) => (
-            <li key={row.id} className="rounded-sm border border-line px-2 py-2">
-              <div className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  checked={row.owned}
-                  disabled={row.locked}
-                  onChange={() => onToggleOwned(row.id)}
-                  aria-label={`${row.label} ${t.craftingOwned}`}
-                  className="mt-1"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-paper">{row.label}</p>
-                  {row.tierLabel && <p className="text-[11px] text-muted">{row.tierLabel}</p>}
-                  {row.locked && <p className="text-[11px] text-gold-dim">{t.craftingDesecrationLock}</p>}
-                </div>
-              </div>
-              {row.owned && (
-                <label className="mt-1 ml-5 flex items-center gap-2 text-[11px] text-muted">
-                  <input
-                    type="checkbox"
-                    checked={row.highTier}
-                    onChange={() => onToggleHigh(row.id)}
-                  />
-                  {row.tierLabel ? t.craftingTierMet : t.craftingHighTier}
-                </label>
-              )}
-            </li>
-          ))
-        )}
-      </ul>
     </section>
   );
 }

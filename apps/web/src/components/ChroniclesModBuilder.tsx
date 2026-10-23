@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   affixModGroup,
   affixTagLabels,
@@ -173,6 +173,11 @@ export function ChroniclesModBuilder({
   suffixCap = 3,
   extraGroups = [],
   abyssFamilies = [],
+  picksValue,
+  showRegex = true,
+  rowKind = "target",
+  stickyLock = false,
+  selectionCount,
 }: {
   kicker: string;
   title: string;
@@ -212,6 +217,18 @@ export function ChroniclesModBuilder({
   extraGroups?: { id: string; title: string; families: AffixFamily[] }[];
   /** Desecrated / 褻瀆詞綴 rows. Shown in their own box on the crafting page. */
   abyssFamilies?: AffixFamily[];
+  /**
+   * When set, the parent owns the picks. Used so the crafting page can keep
+   * the target sheet and the owned sheet on one shared lock.
+   */
+  picksValue?: Record<string, ModPickState>;
+  /** Crafting's owned sheet hides the stash regex; checks there are not targets. */
+  showRegex?: boolean;
+  /** Target rows say 目標. Owned rows say 已有. The rest of the row chrome matches. */
+  rowKind?: "target" | "owned";
+  /** Owned sheet cannot clear the row that holds the desecration lock. */
+  stickyLock?: boolean;
+  selectionCount?: (count: number) => string;
 }) {
   const { locale, t } = useLocale();
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
@@ -221,18 +238,35 @@ export function ChroniclesModBuilder({
   const [showHidden, setShowHidden] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [importText, setImportText] = useState("");
-  const [picks, setPicks] = useState<Record<string, PickState>>(() => ({
+  const [internalPicks, setInternalPicks] = useState<Record<string, PickState>>(() => ({
     ...(defaultPicks ?? {}),
   }));
+  const controlled = picksValue !== undefined;
+  const picks = picksValue ?? internalPicks;
+  const picksRef = useRef(picks);
+  picksRef.current = picks;
+  const onPicksChangeRef = useRef(onPicksChange);
+  onPicksChangeRef.current = onPicksChange;
+  const controlledRef = useRef(controlled);
+  controlledRef.current = controlled;
   const [lang, setLang] = useState<MatchLang>(() => matchLangForLocale(locale));
+
+  function updatePicks(updater: (prev: Record<string, PickState>) => Record<string, PickState>) {
+    const next = updater(picksRef.current);
+    if (next === picksRef.current) return;
+    picksRef.current = next;
+    if (controlledRef.current) onPicksChangeRef.current?.(next);
+    else setInternalPicks(next);
+  }
 
   useEffect(() => {
     setLang(matchLangForLocale(locale));
   }, [locale]);
 
   useEffect(() => {
-    onPicksChange?.(picks);
-  }, [picks, onPicksChange]);
+    if (controlled) return;
+    onPicksChange?.(internalPicks);
+  }, [controlled, internalPicks, onPicksChange]);
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -247,7 +281,7 @@ export function ChroniclesModBuilder({
 
   useEffect(() => {
     const ids = new Set(poolKey.split("\0").filter(Boolean));
-    setPicks((prev) => {
+    updatePicks((prev) => {
       const stale = Object.keys(prev).filter((id) => !ids.has(id));
       if (stale.length === 0) return prev;
       const next = { ...prev };
@@ -311,7 +345,7 @@ export function ChroniclesModBuilder({
   }
 
   function setPickPolarity(family: AffixFamily, next: Polarity) {
-    setPicks((prev) => {
+    updatePicks((prev) => {
       const cur = prev[family.id];
       const clear = () => {
         if (!cur) return prev;
@@ -335,7 +369,7 @@ export function ChroniclesModBuilder({
   function importItem() {
     const blob = importText.toLowerCase();
     if (!blob.trim()) return;
-    setPicks((prev) => {
+    updatePicks((prev) => {
       const next = { ...prev };
       for (const family of families) {
         const needles = importNeedles(family)
@@ -361,8 +395,9 @@ export function ChroniclesModBuilder({
   }
 
   function setTargetChecked(family: AffixFamily, on: boolean) {
-    setPicks((prev) => {
+    updatePicks((prev) => {
       if (!on) {
+        if (stickyLock && prev[family.id]?.desecrationLock) return prev;
         if (!prev[family.id]) return prev;
         const copy = { ...prev };
         delete copy[family.id];
@@ -383,7 +418,7 @@ export function ChroniclesModBuilder({
   }
 
   function toggleDesecrationLock(family: AffixFamily) {
-    setPicks((prev) => {
+    updatePicks((prev) => {
       const turningOff = Boolean(prev[family.id]?.desecrationLock);
       const next: Record<string, PickState> = {};
       for (const [id, pick] of Object.entries(prev)) {
@@ -403,7 +438,7 @@ export function ChroniclesModBuilder({
   }
 
   function setTargetTier(family: AffixFamily, index: number | null) {
-    setPicks((prev) => {
+    updatePicks((prev) => {
       const cur = prev[family.id];
       return {
         ...prev,
@@ -430,7 +465,7 @@ export function ChroniclesModBuilder({
 
   function changePool(id: string) {
     onPoolChange?.(id);
-    setPicks({});
+    updatePicks(() => ({}));
     setExpanded({});
   }
 
@@ -560,8 +595,8 @@ export function ChroniclesModBuilder({
         {showHideToggle && showHidden ? t.listedHidden(listed.filter((r) => !r.matched).length) : ""}
         {pickMode === "target"
           ? locale === "en"
-            ? `. ${t.craftingSelectedCount(selected.length)}`
-            : `。${t.craftingSelectedCount(selected.length)}`
+            ? `. ${(selectionCount ?? t.craftingSelectedCount)(selected.length)}`
+            : `。${(selectionCount ?? t.craftingSelectedCount)(selected.length)}`
           : t.regexCounts(includeN, orN, excludeN)}
         {showTags ? t.tagHelp : ""}
       </p>
@@ -577,6 +612,8 @@ export function ChroniclesModBuilder({
             showFamilyNames={showFamilyNames}
             showAffixTags={showAffixTags}
             pickMode={pickMode}
+            rowKind={rowKind}
+            stickyLock={stickyLock}
             blockTitles={blockTitles}
             onPolarity={setPickPolarity}
             onToggleTarget={setTargetChecked}
@@ -584,7 +621,7 @@ export function ChroniclesModBuilder({
             onTier={setTargetTier}
             onExpand={(id) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }))}
             onBound={(id, key, value) =>
-              setPicks((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], [key]: value } } : prev))
+              updatePicks((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], [key]: value } } : prev))
             }
           />
         );
@@ -649,7 +686,7 @@ export function ChroniclesModBuilder({
         );
       })()}
 
-      <div
+      {showRegex && <div
         className={
           dockRegex
             ? "fixed inset-x-0 bottom-0 z-10 border-t border-line bg-panel/95 backdrop-blur"
@@ -689,7 +726,7 @@ export function ChroniclesModBuilder({
             </div>
             <button
               type="button"
-              onClick={() => setPicks({ ...(defaultPicks ?? {}) })}
+              onClick={() => updatePicks(() => ({ ...(defaultPicks ?? {}) }))}
               className="rounded-sm border border-line px-3 py-1.5 text-sm text-muted hover:text-paper"
             >
               {t.reset}
@@ -727,7 +764,7 @@ export function ChroniclesModBuilder({
             </p>
           )}
         </div>
-      </div>
+      </div>}
 
       {showImport && importOpen && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/60 p-4">
@@ -777,6 +814,8 @@ function AffixColumn({
   showFamilyNames,
   showAffixTags,
   pickMode,
+  rowKind,
+  stickyLock,
   blockTitles,
   onPolarity,
   onToggleTarget,
@@ -794,6 +833,8 @@ function AffixColumn({
   showFamilyNames: boolean;
   showAffixTags: boolean;
   pickMode: ModPickMode;
+  rowKind: "target" | "owned";
+  stickyLock: boolean;
   blockTitles: Record<string, string>;
   onPolarity: (family: AffixFamily, next: Polarity) => void;
   onToggleTarget: (family: AffixFamily, on: boolean) => void;
@@ -817,6 +858,8 @@ function AffixColumn({
       showFamilyNames={showFamilyNames}
       showAffixTags={showAffixTags}
       pickMode={pickMode}
+      rowKind={rowKind}
+      stickyLock={stickyLock}
       blockedTitle={blockTitles[family.id]}
       onPolarity={(next) => onPolarity(family, next)}
       onToggleTarget={(on) => onToggleTarget(family, on)}
@@ -901,6 +944,8 @@ function AffixRow({
   showFamilyNames,
   showAffixTags,
   pickMode,
+  rowKind,
+  stickyLock,
   blockedTitle,
   onPolarity,
   onToggleTarget,
@@ -916,6 +961,8 @@ function AffixRow({
   showFamilyNames: boolean;
   showAffixTags: boolean;
   pickMode: ModPickMode;
+  rowKind: "target" | "owned";
+  stickyLock: boolean;
   blockedTitle?: string;
   onPolarity: (next: Polarity) => void;
   onToggleTarget: (on: boolean) => void;
@@ -927,6 +974,7 @@ function AffixRow({
   const { locale, t } = useLocale();
   const targetMode = pickMode === "target";
   const blocked = Boolean(blockedTitle);
+  const lockStuck = stickyLock && Boolean(pick?.desecrationLock);
   const showBounds =
     !targetMode &&
     Boolean(pick) &&
@@ -1003,9 +1051,9 @@ function AffixRow({
               type="checkbox"
               className="mt-0.5 disabled:cursor-not-allowed"
               checked={isChosenTarget(pick)}
-              disabled={blocked}
+              disabled={blocked || lockStuck}
               title={blockedTitle}
-              aria-label={`${t.craftingTargetToggle} ${primary}`}
+              aria-label={rowKind === "owned" ? `${primary} ${t.craftingOwned}` : `${t.craftingTargetToggle} ${primary}`}
               onChange={(event) => onToggleTarget(event.target.checked)}
             />
             <button
