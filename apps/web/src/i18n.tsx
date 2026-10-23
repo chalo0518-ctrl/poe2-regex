@@ -107,6 +107,12 @@ type Messages = {
   craftingAugmentPoolTitle: (name: string) => string;
   craftingDefaultPool: string;
   craftingDesecratedPool: string;
+  /** Visible label on an open affix-library box. */
+  collapseAffixPool: string;
+  /** Visible label on a closed affix-library box. */
+  expandAffixPool: string;
+  collapseAffixPoolLabel: (title: string) => string;
+  expandAffixPoolLabel: (title: string) => string;
   craftingLibraryTabs: string;
   craftingTabTargets: string;
   craftingTabOwned: string;
@@ -241,6 +247,10 @@ const zhHant: Messages = {
   craftingAugmentPoolTitle: (name) => `${name} 額外詞綴`,
   craftingDefaultPool: "預設詞綴",
   craftingDesecratedPool: "褻瀆詞綴",
+  collapseAffixPool: "收合",
+  expandAffixPool: "展開",
+  collapseAffixPoolLabel: (title) => `收合${title}`,
+  expandAffixPoolLabel: (title) => `展開${title}`,
   craftingLibraryTabs: "詞綴分頁",
   craftingTabTargets: "目標詞綴",
   craftingTabOwned: "已有詞條",
@@ -442,6 +452,10 @@ const en: Messages = {
   craftingAugmentPoolTitle: (name) => `${name} extra affixes`,
   craftingDefaultPool: "Default affixes",
   craftingDesecratedPool: "Desecrated affixes",
+  collapseAffixPool: "Collapse",
+  expandAffixPool: "Expand",
+  collapseAffixPoolLabel: (title) => `Collapse ${title}`,
+  expandAffixPoolLabel: (title) => `Expand ${title}`,
   craftingLibraryTabs: "Affix sheets",
   craftingTabTargets: "Target affixes",
   craftingTabOwned: "Owned affixes",

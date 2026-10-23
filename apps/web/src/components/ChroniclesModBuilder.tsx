@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   affixModGroup,
   affixTagLabels,
@@ -6,6 +6,7 @@ import {
   cycleTagState,
   effectText,
   effectTextSecondary,
+  orderCraftingLibrary,
   familyLabel,
   familyLabelSecondary,
   importNeedles,
@@ -173,6 +174,8 @@ export function ChroniclesModBuilder({
   suffixCap = 3,
   extraGroups = [],
   abyssFamilies = [],
+  collapsedPools: collapsedPoolsValue,
+  onTogglePool,
   picksValue,
   showRegex = true,
   rowKind = "target",
@@ -217,6 +220,13 @@ export function ChroniclesModBuilder({
   extraGroups?: { id: string; title: string; families: AffixFamily[] }[];
   /** Desecrated / 褻瀆詞綴 rows. Shown in their own box on the crafting page. */
   abyssFamilies?: AffixFamily[];
+  /**
+   * Closed affix-library boxes, keyed by pool id (`default`, an augment id, `desecrated`).
+   * The crafting page owns this so both sheets share one open/closed choice per box.
+   * Omitted keys stay open. Unset means this builder keeps its own map.
+   */
+  collapsedPools?: Readonly<Record<string, boolean>>;
+  onTogglePool?: (poolId: string) => void;
   /**
    * When set, the parent owns the picks. Used so the crafting page can keep
    * the target sheet and the owned sheet on one shared lock.
@@ -267,6 +277,18 @@ export function ChroniclesModBuilder({
     if (controlled) return;
     onPicksChange?.(internalPicks);
   }, [controlled, internalPicks, onPicksChange]);
+  const poolScope = useId();
+  const [collapsedPoolsInternal, setCollapsedPoolsInternal] = useState<Record<string, boolean>>({});
+  const collapsedPools = collapsedPoolsValue ?? collapsedPoolsInternal;
+
+  function togglePoolCollapsed(poolId: string) {
+    if (onTogglePool) {
+      onTogglePool(poolId);
+      return;
+    }
+    setCollapsedPoolsInternal((prev) => ({ ...prev, [poolId]: !prev[poolId] }));
+  }
+
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
@@ -302,8 +324,10 @@ export function ChroniclesModBuilder({
       .filter((row) => row.matched || showHidden);
   }, [families, tagStates, query, minLv, maxLv, showHidden]);
 
-  const prefixes = listed.filter((r) => r.family.generation === "prefix");
-  const suffixes = listed.filter((r) => r.family.generation === "suffix");
+  const arrangeLibrary = <T extends { family: AffixFamily }>(rows: T[]) =>
+    pickMode === "target" ? orderCraftingLibrary(rows) : rows;
+  const prefixes = arrangeLibrary(listed.filter((r) => r.family.generation === "prefix"));
+  const suffixes = arrangeLibrary(listed.filter((r) => r.family.generation === "suffix"));
 
   const prefixHeading = prefixTitle ?? t.prefixTitle;
   const suffixHeading = suffixTitle ?? t.suffixTitle;
@@ -470,9 +494,11 @@ export function ChroniclesModBuilder({
   }
 
   const abyssRows = (generation: "prefix" | "suffix") =>
-    abyssFamilies
-      .filter((family) => family.generation === generation)
-      .map((family) => ({ family, matched: true }));
+    arrangeLibrary(
+      abyssFamilies
+        .filter((family) => family.generation === generation)
+        .map((family) => ({ family, matched: true })),
+    );
 
   const includeN = selected.filter((f) => picks[f.id]?.polarity === "include").length;
   const orN = selected.filter((f) => picks[f.id]?.polarity === "or").length;
@@ -633,25 +659,52 @@ export function ChroniclesModBuilder({
           prefixLabel: string,
           suffixLabel: string,
           augment = false,
-        ) => (
-          <section
-            key={poolId}
-            className="rounded-sm border border-line bg-ink/20 p-3"
-            data-affix-pool={poolId}
-            data-augment-pool={augment ? poolId : undefined}
-            aria-label={title}
-          >
-            <h2 className="mb-3 text-lg font-medium text-gold">{title}</h2>
-            <div className="grid gap-4 lg:grid-cols-2">
-              {column(prefixLabel, prefixRows)}
-              {column(suffixLabel, suffixRows)}
-            </div>
-          </section>
-        );
+        ) => {
+          const collapsed = Boolean(collapsedPools[poolId]);
+          const panelId = `${poolScope}-${poolId}`;
+          return (
+            <section
+              key={poolId}
+              className="rounded-sm border border-line bg-ink/20 p-3"
+              data-affix-pool={poolId}
+              data-augment-pool={augment ? poolId : undefined}
+              data-collapsed={collapsed ? "true" : "false"}
+              aria-label={title}
+            >
+              <div className={`flex items-center justify-between gap-2 ${collapsed ? "" : "mb-3"}`}>
+                <h2 className="min-w-0 text-lg font-medium text-gold">{title}</h2>
+                <button
+                  type="button"
+                  aria-expanded={!collapsed}
+                  aria-controls={panelId}
+                  aria-label={collapsed ? t.expandAffixPoolLabel(title) : t.collapseAffixPoolLabel(title)}
+                  onClick={() => togglePoolCollapsed(poolId)}
+                  className="shrink-0 rounded-sm border border-line px-2 py-0.5 text-xs text-muted hover:text-paper"
+                >
+                  {collapsed ? `▾ ${t.expandAffixPool}` : `▴ ${t.collapseAffixPool}`}
+                </button>
+              </div>
+              <div
+                id={panelId}
+                hidden={collapsed || undefined}
+                className={collapsed ? undefined : "grid gap-4 lg:grid-cols-2"}
+              >
+                {!collapsed && (
+                  <>
+                    {column(prefixLabel, prefixRows)}
+                    {column(suffixLabel, suffixRows)}
+                  </>
+                )}
+              </div>
+            </section>
+          );
+        };
         const sideRows = (groupFamilies: AffixFamily[], generation: "prefix" | "suffix") =>
-          groupFamilies
-            .filter((family) => family.generation === generation)
-            .map((family) => ({ family, matched: true }));
+          arrangeLibrary(
+            groupFamilies
+              .filter((family) => family.generation === generation)
+              .map((family) => ({ family, matched: true })),
+          );
         if (pickMode !== "target") {
           return (
             <div className="grid gap-4 lg:grid-cols-2">
