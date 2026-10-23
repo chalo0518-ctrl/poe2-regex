@@ -58,6 +58,7 @@ export type CraftWarningId =
   | "ilvl-unknown";
 
 export type CraftTreeNodeId =
+  | "fracture"
   | "base"
   | "rare"
   | "fill"
@@ -67,6 +68,7 @@ export type CraftTreeNodeId =
 
 /** Nodes in the on-page flowchart. Separate from the long-form `CRAFTING_TREE` ids. */
 export type CraftDiagramNodeId =
+  | "fracture"
   | "base"
   | "stop-base"
   | "fill"
@@ -89,8 +91,32 @@ export type CraftTarget = {
   /**
    * Item level required to roll the chosen tier.
    * Null means any tier: skip the item-level check for this target.
+   * Also the rarity proxy when no spawn weight is available.
    */
   tierLevel: number | null;
+  /**
+   * Spawn weight of the selected tier (`AffixTier.dropChance`).
+   * Lower is rarer. Omit or pass null when that tier's weight is unknown.
+   */
+  tierWeight?: number | null;
+  /**
+   * Family spawn weight (`AffixFamily.weight`, the sum of tier drop chances).
+   * Lower is rarer. Used only when `tierWeight` is missing.
+   */
+  weight?: number | null;
+};
+
+/** Why this affix is the one to fracture. */
+export type FractureFocusReason = "lock" | "tier-weight" | "family-weight" | "item-level";
+
+/** Selected target the opener should fracture. */
+export type FractureFocus = {
+  id: string;
+  generation: ModSide;
+  tierLevel: number | null;
+  tierWeight: number | null;
+  weight: number | null;
+  reason: FractureFocusReason;
 };
 
 export type CraftTierChoice = {
@@ -190,11 +216,18 @@ type CraftCore = {
 };
 
 export type CraftDecision = CraftCore & {
-  /** Highlighted top-down path for the item as described. */
+  /** Highlighted top-down path for the item as described. Always starts at fracture. */
   path: CraftDiagramNodeId[];
   removal: RemovalAssessment;
   /** Augments the player put in the sockets, with the line for this slot. */
   socketAugments: SocketAugmentView[];
+  /** Selected target to fracture. Null when nothing is selected. */
+  fractureFocus: FractureFocus | null;
+  /**
+   * Opener is still "fracture the rarest". No keeper fracture and no 破潰石 lock yet.
+   * Does not change continue / rebase / downgrade.
+   */
+  fracturePending: boolean;
 };
 
 export type Localized = {
@@ -281,6 +314,90 @@ function resolveDesecration(
     desecratedOnRoute: onTarget,
     lockedTargetId: onTarget ? lock : null,
   };
+}
+
+function positiveWeight(value: number | null | undefined): number | null {
+  if (value == null || !Number.isFinite(value) || value <= 0) return null;
+  return value;
+}
+
+/** 破潰石 lock that names a selected target. `"other"` is a missed lock, not the focus. */
+function lockedFractureId(input: Pick<DecideCraftInput, "includes" | "desecrationLock">): string | null {
+  const lock = input.desecrationLock;
+  if (typeof lock !== "string" || lock === "" || lock === "other") return null;
+  return input.includes.some((row) => row.id === lock) ? lock : null;
+}
+
+function focusFromTarget(target: CraftTarget, reason: FractureFocusReason): FractureFocus {
+  return {
+    id: target.id,
+    generation: target.generation,
+    tierLevel: target.tierLevel,
+    tierWeight: positiveWeight(target.tierWeight),
+    weight: positiveWeight(target.weight),
+    reason,
+  };
+}
+
+/**
+ * Opening fracture.
+ *
+ * Rarity is the poe2db spawn weight already stored on affixes.
+ * `tierWeight` is the selected tier's `dropChance` (lower is rarer).
+ * `weight` is `AffixFamily.weight` (sum of tier drop chances) and applies
+ * only when that target has no positive tier weight.
+ * When no selected target has a positive weight, the proxy is the highest
+ * required item level of the selected tier. Equal weights break the same way.
+ * A 破潰石 lock on a selected target replaces the ranking.
+ */
+export function fractureFocusOf(
+  input: Pick<DecideCraftInput, "includes" | "desecrationLock">,
+): FractureFocus | null {
+  const includes = input.includes;
+  if (includes.length === 0) return null;
+  const lockedId = lockedFractureId(input);
+  if (lockedId) {
+    const locked = includes.find((row) => row.id === lockedId);
+    if (locked) return focusFromTarget(locked, "lock");
+  }
+
+  const scored = includes.map((target) => ({
+    target,
+    tierWeight: positiveWeight(target.tierWeight),
+    familyWeight: positiveWeight(target.weight),
+    level: target.tierLevel == null ? Number.NEGATIVE_INFINITY : target.tierLevel,
+  }));
+  scored.sort((a, b) => {
+    const aw = a.tierWeight ?? a.familyWeight;
+    const bw = b.tierWeight ?? b.familyWeight;
+    if ((aw == null) !== (bw == null)) return aw == null ? 1 : -1;
+    if (aw != null && bw != null && aw !== bw) return aw - bw;
+    if (a.level !== b.level) return b.level - a.level;
+    if (a.target.id < b.target.id) return -1;
+    if (a.target.id > b.target.id) return 1;
+    return 0;
+  });
+
+  const winner = scored[0];
+  if (!winner) return null;
+  const runner = scored[1];
+  const winnerWeight = winner.tierWeight ?? winner.familyWeight;
+  const runnerWeight = runner ? runner.tierWeight ?? runner.familyWeight : null;
+  let reason: FractureFocusReason = "item-level";
+  if (winnerWeight != null && (runnerWeight == null || winnerWeight < runnerWeight)) {
+    reason = winner.tierWeight != null ? "tier-weight" : "family-weight";
+  }
+  return focusFromTarget(winner.target, reason);
+}
+
+function isFracturePending(input: DecideCraftInput, decision: CraftCore): boolean {
+  if (input.garbageFracture === true || input.hasGoodFractureOnTargetSide === true) return false;
+  if (lockedFractureId(input)) return false;
+  if (decision.verdict !== "continue") return false;
+  if (decision.reasons.includes("exceptional-keep") || decision.reasons.includes("socket-bound-augment")) {
+    return false;
+  }
+  return decision.reasons.includes("fresh-base") || decision.reasons.includes("early-progress");
 }
 
 function pack(
@@ -567,11 +684,15 @@ function applySockets(core: CraftCore, input: DecideCraftInput, socketAugments: 
   return next;
 }
 
+function leadWithFracture(path: CraftDiagramNodeId[]): CraftDiagramNodeId[] {
+  return path[0] === "fracture" ? path : ["fracture", ...path];
+}
+
 export function craftDiagramPath(decision: Pick<CraftDecision, "reasons" | "cleanup" | "verdict">): CraftDiagramNodeId[] {
-  if (decision.reasons.includes("base-cannot-roll-t1")) return ["base", "stop-base"];
-  if (decision.reasons.includes("fracture-on-garbage")) return ["base", "fill", "desecrate", "stop-fracture"];
   let path: CraftDiagramNodeId[];
-  if (decision.reasons.includes("target-side-full-no-fracture")) path = ["base", "fill", "stop-full"];
+  if (decision.reasons.includes("base-cannot-roll-t1")) path = ["base", "stop-base"];
+  else if (decision.reasons.includes("fracture-on-garbage")) path = ["base", "fill", "desecrate", "stop-fracture"];
+  else if (decision.reasons.includes("target-side-full-no-fracture")) path = ["base", "fill", "stop-full"];
   else if (decision.reasons.includes("removal-risky")) path = ["base", "fill", "desecrate", "omen", "stop-omen"];
   else if (decision.cleanup === "whittle") path = ["base", "fill", "desecrate", "omen", "whittle"];
   else if (decision.cleanup === "sinistral-annulment" || decision.cleanup === "dextral-annulment") {
@@ -584,10 +705,9 @@ export function craftDiagramPath(decision: Pick<CraftDecision, "reasons" | "clea
   else if (decision.verdict === "rebase") path = ["base", "fill", "stop-full"];
   else path = ["base", "fill", "desecrate", "finish"];
   if (decision.reasons.includes("exceptional-keep") || decision.reasons.includes("socket-bound-augment")) {
-    const trimmed = path.filter((id) => id !== "stop-full" && id !== "stop-omen");
-    return [...trimmed, "sockets", "keep-exceptional"];
+    path = [...path.filter((id) => id !== "stop-full" && id !== "stop-omen"), "sockets", "keep-exceptional"];
   }
-  return path;
+  return leadWithFracture(path);
 }
 
 /**
@@ -600,7 +720,41 @@ export function decideCraft(input: DecideCraftInput): CraftDecision {
   const removed = applyRemoval(core, removal, input);
   const socketAugments = resolveSocketAugments(input);
   const decision = applySockets(removed, input, socketAugments);
-  return { ...decision, removal, socketAugments, path: craftDiagramPath(decision) };
+  const fracturePending = isFracturePending(input, decision);
+  return {
+    ...decision,
+    removal,
+    socketAugments,
+    fractureFocus: fractureFocusOf(input),
+    fracturePending,
+    path: craftDiagramPath(decision),
+  };
+}
+
+export function craftFractureAdvice(focus: FractureFocus, name: string, locale: UiLocale): string {
+  const label = name.trim() || focus.id;
+  if (locale === "en") {
+    if (focus.reason === "lock") {
+      return `The fracture lock is on "${label}". Fracture that affix.`;
+    }
+    if (focus.reason === "item-level") {
+      if (focus.tierWeight == null && focus.weight == null) {
+        return `Fracture "${label}" first. No spawn weight is available, so this is the selected tier with the highest required item level.`;
+      }
+      return `Fracture "${label}" first. The spawn weights do not separate the targets, so this is the selected tier with the higher required item level.`;
+    }
+    return `Fracture "${label}" first. Among the selected targets, its spawn weight is the lowest.`;
+  }
+  if (focus.reason === "lock") {
+    return `破潰石鎖在「${label}」。破潰就以這條為準。`;
+  }
+  if (focus.reason === "item-level") {
+    if (focus.tierWeight == null && focus.weight == null) {
+      return `先破潰「${label}」。所選目標沒有可用的出現權重，改以所選階級需求等級最高的一條為準。`;
+    }
+    return `先破潰「${label}」。出現權重分不出高下，改以所選階級需求等級較高的一條為準。`;
+  }
+  return `先破潰「${label}」。在所選目標裡，這條的出現權重最低。`;
 }
 
 export function suggestedCraftNode(decision: CraftDecision): CraftTreeNodeId {
@@ -633,14 +787,16 @@ export function suggestedCraftNode(decision: CraftDecision): CraftTreeNodeId {
   if (decision.reasons.includes("exceptional-keep") || decision.reasons.includes("socket-bound-augment")) {
     return "finish";
   }
-  if (decision.reasons.includes("fresh-base")) return "base";
-  if (decision.reasons.includes("early-progress")) return "rare";
+  if (decision.fracturePending) return "fracture";
+  if (decision.reasons.includes("fresh-base") || decision.reasons.includes("early-progress")) return "fill";
   return "finish";
 }
 
 /** Long-form reminder that belongs with a diagram node. */
 export function craftTreeNodeForDiagram(id: CraftDiagramNodeId): CraftTreeNodeId {
   switch (id) {
+    case "fracture":
+      return "fracture";
     case "base":
     case "stop-base":
       return "base";
@@ -682,6 +838,9 @@ export function craftVerdictHeadline(decision: CraftDecision, locale: UiLocale):
     if (decision.verdict === "continue" && decision.cleanup === "none" && decision.reasons.includes("exceptional-keep")) {
       return "Continue (extra augment socket — keep this base)";
     }
+    if (decision.verdict === "continue" && decision.fracturePending) {
+      return "Continue (fracture the rarest target first)";
+    }
     if (decision.verdict === "rebase" && light) return "New base (or one Omen of Light cleanup)";
     if (decision.verdict === "downgrade" && light) return "Lower the goal (one Omen of Light cleanup)";
     if (decision.verdict === "continue") return "Continue";
@@ -702,6 +861,7 @@ export function craftVerdictHeadline(decision: CraftDecision, locale: UiLocale):
   if (decision.verdict === "continue" && decision.cleanup === "none" && decision.reasons.includes("exceptional-keep")) {
     return "繼續（額外增幅槽，留下這件）";
   }
+  if (decision.verdict === "continue" && decision.fracturePending) return "繼續（先破潰最稀有的目標）";
   if (decision.verdict === "rebase" && light) return "換底（或改用光明之兆一輪清理）";
   if (decision.verdict === "downgrade" && light) return "降目標（改用光明之兆一輪清理）";
   if (decision.verdict === "continue") return "繼續";
@@ -750,8 +910,9 @@ export const CRAFT_REASON_TEXT: Record<CraftReasonId, Localized> = {
     en: "You already have enough high-tier target mods and the other side is still cleanable, or the desecration is the one you wanted. Continue.",
   },
   "fresh-base": {
-    zhHant: "這件還沒有目標詞綴，目標側也還沒滿，沒有鎖死的破裂或花錯的槽。從選底接著做。",
-    en: "No target mods yet, the target side is not full, and nothing is fracture-locked or spent on the wrong slot. Start from the base.",
+    zhHant:
+      "這件還沒有目標詞綴，目標側也還沒滿，沒有鎖死的破裂或花錯的槽。開手先破潰所選目標裡最稀有的那一條；已經破潰要留的那條，就接著核對物品等級。",
+    en: "No target mods yet, the target side is not full, and nothing is fracture-locked or spent on the wrong slot. Open by fracturing the rarest selected target; if that fracture is already the keeper, check item level next.",
   },
   "early-progress": {
     zhHant: "已有一條目標，目標側還沒滿，也沒有鎖死的問題。繼續。",
@@ -836,11 +997,36 @@ export const CRAFTING_CONSTRAINTS: Localized[] = [
 
 export const CRAFTING_TREE: CraftTreeNode[] = [
   {
+    id: "fracture",
+    title: { zhHant: "破潰", en: "Fracture" },
+    summary: {
+      zhHant: "先破潰所選目標裡最稀有的那一條，再處理物品等級、填邊、褻瀆與收尾。",
+      en: "Fracture the rarest selected target first, then item level, the sides, desecration, and the finish.",
+    },
+    action: {
+      zhHant:
+        "在勾選的目標裡，先破潰出現權重最低的那一條。權重看的是所選階級的 poe2db 出現率，愈低愈稀有；沒選階級時用整條詞綴的出現權重。權重相同，或完全沒有出現權重時，改以所選階級需求等級最高的那一條為準。破潰石若已鎖在某一條，就破那一條，不再另挑。接著才核對基底與物品等級。非目標側補上，目標側維持恰好 2 條，再褻瀆與清理。最後才上品質、催化劑、插槽，瓦爾放最後。",
+      en: "Among the selected targets, fracture the lowest spawn weight first. That weight is the chosen tier's poe2db drop chance — lower is rarer — or the family's weight when no tier is chosen. When the weights tie, or none is available, use the selected tier with the highest required item level. A fracture lock names the affix instead. Then check the base and item level. Fill the non-target side, hold the target side at exactly 2, then desecrate and clean up. Quality, catalysts, and sockets come last, and Vaal is last of all.",
+    },
+    skip: {
+      zhHant: "目標側已經有要留下的破裂，或破潰石已鎖在目標上，就不必再破第二條。升上稀有時，若工藝槽還要拿來頂掉失敗的褻瀆，先不要做永久保留的精髓或合金。",
+      en: "Skip a second fracture when the target side already has the keeper fracture, or the fracture lock is already on a target. When you make the item rare, do not spend a keeper Essence or Alloy if that crafted slot still has to overwrite a failed desecration.",
+    },
+    irreversible: {
+      zhHant: "破潰會鎖住那條詞綴。鎖到垃圾詞綴就換底，無效石清不掉。",
+      en: "A fracture locks that mod. Locked garbage means a new base — an Annul will not remove it.",
+    },
+    warning: {
+      zhHant: "只破要留的高階。精髓與合金仍共用 1 格工藝槽，褻瀆仍限 1 條。重組器不在主路線（僅標準聯盟）。",
+      en: "Fracture a high tier you mean to keep. Essence and Alloy still share the one crafted slot, and desecration is still limited to one. Recombinator is not on this path (Standard only).",
+    },
+  },
+  {
     id: "base",
     title: { zhHant: "選底", en: "Base" },
     summary: {
-      zhHant: "先確認基底與物品等級骰得到所選階級。",
-      en: "Confirm the base and item level can roll each chosen tier.",
+      zhHant: "破潰目標定了之後，確認基底與物品等級骰得到所選階級。",
+      en: "After the fracture target is chosen, confirm the base and item level can roll each chosen tier.",
     },
     action: {
       zhHant: "選定部位後，勾出這個詞綴池真的會出的目標。有指定階級時，拿物品等級去對那一階；低於門檻就骰不到。",
@@ -855,7 +1041,7 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
       en: "Base and item level cannot be fixed later. If the chosen tier cannot roll, switch bases — currency will not add it.",
     },
     warning: {
-      zhHant: "工藝詞綴與褻瀆詞綴各限 1 條，選底時就要決定這兩格留給誰。重組器不在主路線（僅標準聯盟）。",
+      zhHant: "工藝詞綴與褻瀆詞綴各限 1 條，動手前就要決定這兩格留給誰。重組器不在主路線（僅標準聯盟）。",
       en: "You get one crafted mod and one desecrated mod. Decide who owns those slots before you start. Recombinator is not on this path (Standard only).",
     },
   },
@@ -935,19 +1121,19 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
   },
   {
     id: "fracture-cleanup",
-    title: { zhHant: "破裂／清理", en: "Fracture / cleanup" },
+    title: { zhHant: "清理停手", en: "Stop and clean up" },
     summary: {
-      zhHant: "只破裂要留下的那條；垃圾破裂或側邊結構錯了就停手。",
-      en: "Fracture only the mod you are keeping. Stop if the fracture is garbage or the side is the wrong shape.",
+      zhHant: "破潰若鎖在垃圾詞綴，或目標側不是恰好 2 條，就停手。",
+      en: "Stop if the fracture is locked onto garbage, or the target side is not exactly 2.",
     },
     action: {
       zhHant:
-        "高階才用破裂石，鎖目標側那條要留的詞綴，並讓該側維持 2 條裡只破這 1 條。另一側若沒有破裂，可用無效石或混沌石清理。若目標側已是 3 條，或工藝槽已是永久保留，不要再把迴圈當成主做法：換底，或改用光明之兆一輪把褻瀆清掉。",
-      en: "Use a Fracturing Orb only at the high end, on the target-side mod you will keep, and leave the side at 2 with that one fracture. Annul or chaos the other side if it is not fractured. If the target side is already 3, or the crafted slot is a keeper, stop treating the loop as the plan: switch bases, or spend one Omen of Light to clear the desecration.",
+        "開手破潰的是最稀有、或破潰石鎖住的那一條，目標側維持恰好 2 條。另一側若沒有破裂，可用無效石或混沌石清理。若破潰鎖在垃圾上、目標側已是 3 條，或工藝槽已是永久保留，不要再把迴圈當成主做法：換底，或改用光明之兆一輪把褻瀆清掉。孔數高過一般上限時留下這件，不要只為了滿邊就換底。",
+      en: "The opening fracture is the rarest target, or the affix named by the fracture lock, with the target side held at exactly 2. Annul or chaos the other side if it is not fractured. If the fracture is on garbage, the target side is already 3, or the crafted slot is a keeper, stop treating the loop as the plan: switch bases, or spend one Omen of Light to clear the desecration. When the socket count is above the normal maximum, keep this base instead of switching only because a side is full.",
     },
     skip: {
-      zhHant: "不走高階破裂、兩側已經夠用時，直接收尾。",
-      en: "Skip the fracture when you are not crafting at that tier and both sides are already good enough. Finish the item.",
+      zhHant: "破潰已經是要留的那條，而且兩側結構還在，就往褻瀆或收尾走。",
+      en: "If the fracture is already the keeper and the sides still hold, move on to desecration or the finish.",
     },
     irreversible: {
       zhHant: "破裂石會鎖詞綴。鎖到垃圾詞綴就是換底，後面的無效石打不掉它。",
@@ -986,11 +1172,19 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
 
 export const CRAFT_DIAGRAM: CraftDiagramNode[] = [
   {
+    id: "fracture",
+    title: { zhHant: "破潰", en: "Fracture" },
+    choice: {
+      zhHant: "先破潰所選目標裡最稀有的一條。有破潰石鎖定就鎖那一條。",
+      en: "Fracture the rarest selected target first. A fracture lock uses that affix.",
+    },
+  },
+  {
     id: "base",
     title: { zhHant: "選底", en: "Base" },
     choice: {
-      zhHant: "先對物品等級。骰不到所選階級就是換底。",
-      en: "Check item level first. If the chosen tier cannot roll, switch bases.",
+      zhHant: "破潰之後再對物品等級。骰不到所選階級就是換底。",
+      en: "After the fracture, check item level. If the chosen tier cannot roll, switch bases.",
     },
   },
   {

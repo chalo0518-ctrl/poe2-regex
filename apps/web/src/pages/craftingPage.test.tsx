@@ -121,6 +121,9 @@ describe("crafting page", () => {
     expect(screen.getAllByText(/少花光明之兆/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/骰不到所選階級就是換底/).length).toBeGreaterThan(0);
     expect(document.querySelector("[data-craft-diagram]")).toBeTruthy();
+    expect(document.querySelector('[data-node="fracture"]')).toHaveAttribute("data-active", "true");
+    expect(document.querySelector('[data-node="fracture"]')).toHaveAttribute("data-selected", "true");
+    expect(document.querySelector("[data-craft-path]")?.textContent?.startsWith("破潰")).toBe(true);
     expect(document.querySelector('[data-node="base"]')).toHaveAttribute("data-active", "true");
     expect(document.querySelector('[data-node="fill"]')).toHaveAttribute("data-active", "true");
     expect(document.querySelector('[data-node="stop-base"]')).toHaveAttribute("data-active", "false");
@@ -190,8 +193,10 @@ describe("crafting page", () => {
     expect(left && within(left).getByRole("heading", { name: "目標詞綴" })).toBeTruthy();
     expect(left && within(left).getByRole("heading", { name: "這件裝備" })).toBeTruthy();
     expect(aside?.parentElement?.nextElementSibling).toBeNull();
+    const fracture = document.querySelector('[data-node="fracture"]') as HTMLElement;
     const base = document.querySelector('[data-node="base"]') as HTMLElement;
     const fill = document.querySelector('[data-node="fill"]') as HTMLElement;
+    expect(fracture.compareDocumentPosition(base) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(base.compareDocumentPosition(fill) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
     await user.click(screen.getByRole("button", { name: "加一孔" }));
@@ -276,6 +281,51 @@ describe("crafting page", () => {
     expect(screen.getByRole("checkbox", { name: `目標 ${ring.textZh}` })).toBeEnabled();
   });
 
+  it("leads with a fracture of the rarest target, and a lock overrides that", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+    const body = earlyGearFamiliesFor("body");
+    const textCount = new Map<string, number>();
+    for (const family of body) textCount.set(family.textZh, (textCount.get(family.textZh) ?? 0) + 1);
+    const ranked = body.flatMap((family) => {
+      if ((textCount.get(family.textZh) ?? 0) !== 1) return [];
+      const top = craftTierChoices(family)[0];
+      if (!top) return [];
+      const drop = family.tiers[top.index]?.dropChance ?? 0;
+      if (drop <= 0) return [];
+      return [{ family, drop, tierIndex: top.index }];
+    }).sort((a, b) => a.drop - b.drop || b.family.maxLevel - a.family.maxLevel);
+    const rare = ranked[0];
+    const common = [...ranked].reverse().find((row) => (
+      row.family.family !== rare?.family.family && row.family.textZh !== rare?.family.textZh
+    ));
+    if (!rare || !common || rare.drop >= common.drop) throw new Error("missing a rarer and a common affix");
+
+    const rareRow = affixRow(rare.family.textZh);
+    const commonRow = affixRow(common.family.textZh);
+    await user.click(within(rareRow).getByRole("checkbox", { name: `目標 ${rare.family.textZh}` }));
+    await user.click(within(commonRow).getByRole("checkbox", { name: `目標 ${common.family.textZh}` }));
+    await user.selectOptions(within(rareRow).getByLabelText(`最低階級 ${rare.family.textZh}`), String(rare.tierIndex));
+    await user.selectOptions(within(commonRow).getByLabelText(`最低階級 ${common.family.textZh}`), String(common.tierIndex));
+
+    expect(screen.getByText("繼續（先破潰最稀有的目標）")).toBeInTheDocument();
+    expect(document.querySelector('[data-node="fracture"]')).toHaveAttribute("data-active", "true");
+    expect(document.querySelector('[data-node="fracture"]')).toHaveAttribute("data-selected", "true");
+    expect(document.querySelector("[data-craft-path]")?.textContent?.startsWith("破潰")).toBe(true);
+    const note = document.querySelector("[data-fracture-focus]")?.textContent ?? "";
+    expect(note).toContain(rare.family.textZh);
+    expect(note).toContain("出現權重最低");
+    expect(document.querySelector("[data-craft-detail]")?.textContent).toContain("恰好 2 條");
+    expect(document.querySelector("[data-craft-detail]")?.textContent).toContain("瓦爾放最後");
+
+    await user.click(within(commonRow).getByRole("button", { name: `破潰石鎖定的詞條 ${common.family.textZh}` }));
+    const lockedNote = document.querySelector("[data-fracture-focus]")?.textContent ?? "";
+    expect(lockedNote).toContain(common.family.textZh);
+    expect(lockedNote).toContain("破潰石鎖在");
+    expect(document.querySelector('[data-node="fracture"]')).toHaveAttribute("data-active", "true");
+    expect(screen.queryByText("繼續（先破潰最稀有的目標）")).not.toBeInTheDocument();
+  }, 15_000);
+
   it("locks one desecration target at a time and keeps that mod on the route", async () => {
     const user = userEvent.setup();
     renderCrafting();
@@ -314,7 +364,7 @@ describe("crafting page", () => {
     expect(lifeBox()).toBeChecked();
     expect(screen.getByRole("checkbox", { name: `目標 ${other.textZh}` })).toBeChecked();
     expect(screen.getAllByRole("button", { name: /破潰石鎖定的詞條/, pressed: true })).toHaveLength(1);
-  });
+  }, 15_000);
 
   it("dims same-group affixes and extra prefixes once three are selected", async () => {
     const user = userEvent.setup();
