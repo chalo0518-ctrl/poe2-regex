@@ -7,6 +7,7 @@ import {
   CRAFT_CLEANUP_TEXT,
   CRAFT_REASON_TEXT,
   CRAFT_WARNING_TEXT,
+  craftFractureAdvice,
   craftLocaleText,
   craftTierChoices,
   craftTreeNodeForDiagram,
@@ -59,10 +60,10 @@ function isCraftTarget(pick: ModPickState | undefined): boolean {
   return pick?.polarity === "include" || pick?.polarity === "or";
 }
 
-function chosenTierLevel(family: AffixFamily, pick: ModPickState | undefined): number | null {
+function chosenTier(family: AffixFamily, pick: ModPickState | undefined) {
   const index = pick?.minTierIndex;
   if (index == null || index < 0 || index >= family.tiers.length) return null;
-  return family.tiers[index]?.level ?? null;
+  return family.tiers[index] ?? null;
 }
 
 function defaultOwnedTier(family: AffixFamily, targetPick: ModPickState | undefined): number | null {
@@ -256,11 +257,16 @@ export default function CraftingPage() {
 
   const decision = useMemo(() => {
     return decideCraft({
-      includes: selected.map((family) => ({
-        id: family.id,
-        generation: family.generation,
-        tierLevel: chosenTierLevel(family, picks[family.id]),
-      })),
+      includes: selected.map((family) => {
+        const tier = chosenTier(family, picks[family.id]);
+        return {
+          id: family.id,
+          generation: family.generation,
+          tierLevel: tier?.level ?? null,
+          tierWeight: tier && tier.dropChance > 0 ? tier.dropChance : null,
+          weight: family.weight > 0 ? family.weight : null,
+        };
+      }),
       itemLevel: parseLevel(itemLevelRaw),
       owned: selected
         .filter((family) => owned[family.id]?.owned || lockedId === family.id)
@@ -312,7 +318,17 @@ export default function CraftingPage() {
     socketPicks,
   ]);
 
-  const shownNodeId = pinnedNode ?? decision.path.at(-1) ?? "base";
+  const shownNodeId = pinnedNode ?? (decision.fracturePending ? "fracture" : (decision.path.at(-1) ?? "fracture"));
+  const fractureName = (() => {
+    const focus = decision.fractureFocus;
+    if (!focus) return "";
+    const family = checklistFamilies.find((row) => row.id === focus.id);
+    if (!family) return focus.id;
+    return locale === "en" ? (family.textEn || family.textZh) : family.textZh;
+  })();
+  const fractureNote = decision.fractureFocus
+    ? craftFractureAdvice(decision.fractureFocus, fractureName, locale)
+    : "";
   const shownDiagram = CRAFT_DIAGRAM.find((row) => row.id === shownNodeId) ?? null;
   const shownTree = CRAFTING_TREE.find((row) => row.id === craftTreeNodeForDiagram(shownNodeId)) ?? null;
   const sideLabel = decision.targetSide === "prefix" ? t.craftingSidePrefix : t.craftingSideSuffix;
@@ -476,6 +492,7 @@ export default function CraftingPage() {
           </div>
           <ItemPanel
             decision={decision}
+            fractureNote={fractureNote}
             sideLabel={sideLabel}
             itemLevelRaw={itemLevelRaw}
             onItemLevel={setItemLevelRaw}
@@ -524,6 +541,7 @@ export default function CraftingPage() {
             <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
             <CraftDiagram
               path={decision.path}
+              fractureNote={fractureNote}
               selectedId={shownNodeId}
               onSelect={setPinnedNode}
               detail={shownDiagram && shownTree ? (
@@ -565,6 +583,7 @@ function NodeBlock({ label, body }: { label: string; body: string }) {
 
 function ItemPanel({
   decision,
+  fractureNote,
   sideLabel,
   itemLevelRaw,
   onItemLevel,
@@ -592,6 +611,7 @@ function ItemPanel({
   suffixCap,
 }: {
   decision: CraftDecision;
+  fractureNote: string;
   sideLabel: string;
   itemLevelRaw: string;
   onItemLevel: (value: string) => void;
@@ -635,6 +655,7 @@ function ItemPanel({
 
       <div className={`mt-3 rounded-sm border px-3 py-3 ${tone}`} data-verdict={decision.verdict} aria-live="polite">
         <p className="text-base font-bold">{headline}</p>
+        {fractureNote ? <p className="mt-2 text-xs text-paper">{fractureNote}</p> : null}
         <p className="mt-1 text-xs text-muted">{t.craftingResolvedSide(sideLabel)}</p>
         {cleanup && <p className="mt-2 text-xs text-paper">{craftLocaleText(cleanup, locale)}</p>}
         <p className="mt-3 text-xs text-gold-dim">{t.craftingReasons}</p>

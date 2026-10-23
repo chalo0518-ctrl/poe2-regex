@@ -2,7 +2,8 @@ import { CRAFT_DIAGRAM, craftLocaleText, type CraftDiagramNodeId, type Localized
 import type { ReactNode } from "react";
 import { useLocale } from "../i18n.tsx";
 
-const BRANCH: Record<Exclude<CraftDiagramNodeId, "base">, Localized> = {
+const BRANCH: Record<Exclude<CraftDiagramNodeId, "fracture">, Localized> = {
+  base: { zhHant: "破潰之後對等級", en: "Then check item level" },
   "stop-base": { zhHant: "等級不足", en: "Level too low" },
   fill: { zhHant: "等級夠，繼續", en: "Level is high enough" },
   "stop-full": { zhHant: "目標側已滿", en: "Target side is full" },
@@ -26,29 +27,34 @@ type TreeNode = {
 
 /** Root at the top. Every child is stacked under its parent, never beside it. */
 const TREE: TreeNode = {
-  id: "base",
+  id: "fracture",
   children: [
-    { id: "stop-base" },
     {
-      id: "fill",
+      id: "base",
       children: [
-        { id: "stop-full" },
-        { id: "sockets", children: [{ id: "keep-exceptional" }] },
+        { id: "stop-base" },
         {
-          id: "desecrate",
+          id: "fill",
           children: [
-            { id: "stop-fracture" },
-            { id: "essence" },
+            { id: "stop-full" },
+            { id: "sockets", children: [{ id: "keep-exceptional" }] },
             {
-              id: "omen",
+              id: "desecrate",
               children: [
-                { id: "whittle" },
-                { id: "side-annul" },
-                { id: "light" },
-                { id: "stop-omen" },
+                { id: "stop-fracture" },
+                { id: "essence" },
+                {
+                  id: "omen",
+                  children: [
+                    { id: "whittle" },
+                    { id: "side-annul" },
+                    { id: "light" },
+                    { id: "stop-omen" },
+                  ],
+                },
+                { id: "finish" },
               ],
             },
-            { id: "finish" },
           ],
         },
       ],
@@ -66,11 +72,13 @@ function NodeButton({
   path,
   selected,
   onSelect,
+  note,
 }: {
   id: CraftDiagramNodeId;
   path: readonly CraftDiagramNodeId[];
   selected: boolean;
   onSelect?: (id: CraftDiagramNodeId) => void;
+  note?: string;
 }) {
   const { locale } = useLocale();
   const node = CRAFT_DIAGRAM.find((row) => row.id === id);
@@ -89,6 +97,11 @@ function NodeButton({
     >
       <p className="text-[11px] font-medium leading-tight text-gold">{craftLocaleText(node.title, locale)}</p>
       <p className="mt-1 text-[10px] leading-snug text-paper">{craftLocaleText(node.choice, locale)}</p>
+      {id === "fracture" && note ? (
+        <p className="mt-1 text-[10px] leading-snug text-gold" data-fracture-focus>
+          {note}
+        </p>
+      ) : null}
     </button>
   );
 }
@@ -100,6 +113,7 @@ function VerticalBranch({
   selectedId,
   onSelect,
   detail,
+  note,
 }: {
   node: TreeNode;
   parent: CraftDiagramNodeId | null;
@@ -107,6 +121,7 @@ function VerticalBranch({
   selectedId?: CraftDiagramNodeId;
   onSelect?: (id: CraftDiagramNodeId) => void;
   detail?: ReactNode;
+  note?: string;
 }) {
   const { locale } = useLocale();
   const activeEdge = parent != null && edgeOn(path, parent, node.id);
@@ -121,11 +136,11 @@ function VerticalBranch({
         >
           <div className={`w-px shrink-0 ${activeEdge ? "bg-gold" : "bg-line"}`} />
           <p className={`text-[10px] leading-tight ${activeEdge ? "text-gold" : "text-muted"}`}>
-            {craftLocaleText(BRANCH[node.id as Exclude<CraftDiagramNodeId, "base">], locale)}
+            {craftLocaleText(BRANCH[node.id as Exclude<CraftDiagramNodeId, "fracture">], locale)}
           </p>
         </div>
       )}
-      <NodeButton id={node.id} path={path} selected={selected} onSelect={onSelect} />
+      <NodeButton id={node.id} path={path} selected={selected} onSelect={onSelect} note={note} />
       {selected && detail}
       {node.children && node.children.length > 0 && (
         <div className={`mt-1 ml-3 border-l pl-2 ${path.includes(node.id) ? "border-gold/70" : "border-line"}`}>
@@ -138,6 +153,7 @@ function VerticalBranch({
               selectedId={selectedId}
               onSelect={onSelect}
               detail={detail}
+              note={note}
             />
           ))}
         </div>
@@ -152,12 +168,14 @@ export function CraftDiagram({
   selectedId,
   onSelect,
   detail,
+  fractureNote,
 }: {
   path: readonly CraftDiagramNodeId[];
   augments?: { key: string; text: string }[];
   selectedId?: CraftDiagramNodeId;
   onSelect?: (id: CraftDiagramNodeId) => void;
   detail?: ReactNode;
+  fractureNote?: string;
 }) {
   const { locale } = useLocale();
   const titles = path.map((id) => {
@@ -184,6 +202,7 @@ export function CraftDiagram({
         selectedId={selectedId}
         onSelect={onSelect}
         detail={detail}
+        note={fractureNote}
       />
     </div>
   );

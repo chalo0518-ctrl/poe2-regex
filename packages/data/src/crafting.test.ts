@@ -81,12 +81,20 @@ function input(overrides: Partial<DecideCraftInput> = {}): DecideCraftInput {
   };
 }
 
-function suffix(id: string, tierLevel: number | null = 80): CraftTarget {
-  return { id, generation: "suffix", tierLevel };
+function suffix(
+  id: string,
+  tierLevel: number | null = 80,
+  weights: { tierWeight?: number | null; weight?: number | null } = {},
+): CraftTarget {
+  return { id, generation: "suffix", tierLevel, ...weights };
 }
 
-function prefix(id: string, tierLevel: number | null = 80): CraftTarget {
-  return { id, generation: "prefix", tierLevel };
+function prefix(
+  id: string,
+  tierLevel: number | null = 80,
+  weights: { tierWeight?: number | null; weight?: number | null } = {},
+): CraftTarget {
+  return { id, generation: "prefix", tierLevel, ...weights };
 }
 
 function owned(id: string, generation: "prefix" | "suffix", highTier = true): OwnedTarget {
@@ -117,6 +125,7 @@ describe("crafting ruleset", () => {
       recombinator: "standard-only",
     });
     expect(CRAFTING_TREE.map((node) => node.id)).toEqual([
+      "fracture",
       "base",
       "rare",
       "fill",
@@ -140,7 +149,9 @@ describe("crafting ruleset", () => {
     expect(joined).toContain("重組器");
     expect(joined).toContain("標準聯盟");
     expect(joined).not.toContain("Recombinator is the next");
+    expect(joined).not.toContain("步驟");
     expect(CRAFT_DIAGRAM.map((node) => node.id)).toEqual([
+      "fracture",
       "base",
       "stop-base",
       "fill",
@@ -157,8 +168,16 @@ describe("crafting ruleset", () => {
       "stop-omen",
       "finish",
     ]);
+    expect(CRAFT_DIAGRAM[0]?.id).toBe("fracture");
+    expect(CRAFT_DIAGRAM.find((node) => node.id === "fracture")?.choice.zhHant).toContain("最稀有");
+    expect(CRAFT_DIAGRAM.find((node) => node.id === "fracture")?.choice.zhHant).toContain("破潰石");
     expect(CRAFT_DIAGRAM.find((node) => node.id === "base")?.choice.zhHant).toContain("骰不到所選階級就是換底");
+    expect(CRAFT_DIAGRAM.find((node) => node.id === "base")?.choice.zhHant).not.toMatch(/^先對/);
     expect(CRAFT_DIAGRAM.find((node) => node.id === "desecrate")?.choice.zhHant).toContain("少花光明之兆");
+    const opener = CRAFTING_TREE.find((node) => node.id === "fracture");
+    expect(opener?.action.zhHant).toContain("恰好 2 條");
+    expect(opener?.action.zhHant).toContain("瓦爾");
+    expect(opener?.action.zhHant).toContain("出現權重");
     for (const copy of [
       ...CRAFTING_CONSTRAINTS,
       ...Object.values(CRAFT_REASON_TEXT),
@@ -369,7 +388,11 @@ describe("decideCraft", () => {
     expect(early.verdict).toBe("continue");
     expect(early.reasons).toEqual(["early-progress"]);
     expect(early.targetSide).toBe("prefix");
-    expect(suggestedCraftNode(early)).toBe("rare");
+    expect(early.fracturePending).toBe(true);
+    expect(early.path[0]).toBe("fracture");
+    expect(suggestedCraftNode(early)).toBe("fracture");
+    expect(craftVerdictHeadline(early, "zh-Hant")).toBe("繼續（先破潰最稀有的目標）");
+    expect(craftVerdictHeadline(decideCraft(input()), "en")).toBe("Continue (fracture the rarest target first)");
   });
 
   it("rebases or downgrades a bad desecration that is not in the overwrite window", () => {
@@ -443,7 +466,7 @@ describe("decideCraft", () => {
     const decision = decideCraft(input());
     expect(decision.reasons).toEqual(["fresh-base"]);
     expect(decision.cleanup).toBe("none");
-    expect(decision.path).toEqual(["base", "fill"]);
+    expect(decision.path).toEqual(["fracture", "base", "fill"]);
     expect(decision.removal.recommendation).toBe("none");
   });
 
@@ -457,7 +480,7 @@ describe("decideCraft", () => {
     expect(decision.verdict).toBe("continue");
     expect(decision.reasons).toEqual(["whittle-safe"]);
     expect(decision.cleanup).toBe("whittle");
-    expect(decision.path).toEqual(["base", "fill", "desecrate", "omen", "whittle"]);
+    expect(decision.path).toEqual(["fracture", "base", "fill", "desecrate", "omen", "whittle"]);
     expect(decision.removal.whittleRemoves).toBe("str");
     expect(decision.removal.classes).toEqual([{ id: "str", classification: "acceptable" }]);
     expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("繼續（削切之兆，混沌石移除最低等級詞綴）");
@@ -476,7 +499,7 @@ describe("decideCraft", () => {
     }));
     expect(decision.cleanup).toBe("sinistral-annulment");
     expect(decision.reasons).toEqual(["side-removal-safe"]);
-    expect(decision.path).toEqual(["base", "fill", "desecrate", "omen", "side-annul"]);
+    expect(decision.path).toEqual(["fracture", "base", "fill", "desecrate", "omen", "side-annul"]);
     expect(decision.removal.classes).toEqual([{ id: "junk", classification: "bad" }]);
     expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("繼續（左旋廢止之兆，無效石只移除前綴）");
   });
@@ -492,7 +515,7 @@ describe("decideCraft", () => {
     expect(decision.verdict).toBe("rebase");
     expect(decision.reasons).toEqual(["removal-risky"]);
     expect(decision.cleanup).toBe("none");
-    expect(decision.path).toEqual(["base", "fill", "desecrate", "omen", "stop-omen"]);
+    expect(decision.path).toEqual(["fracture", "base", "fill", "desecrate", "omen", "stop-omen"]);
     expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("換底");
   });
 
@@ -503,14 +526,14 @@ describe("decideCraft", () => {
       others: [{ id: "str", generation: "prefix", level: 1 }],
     }));
     expect(blocked.reasons).toEqual(["base-cannot-roll-t1"]);
-    expect(blocked.path).toEqual(["base", "stop-base"]);
+    expect(blocked.path).toEqual(["fracture", "base", "stop-base"]);
 
     const fractured = decideCraft(input({
       garbageFracture: true,
       others: [{ id: "str", generation: "prefix", level: 1 }],
     }));
     expect(fractured.reasons).toEqual(["fracture-on-garbage"]);
-    expect(fractured.path).toEqual(["base", "fill", "desecrate", "stop-fracture"]);
+    expect(fractured.path).toEqual(["fracture", "base", "fill", "desecrate", "stop-fracture"]);
   });
 
   it("uses Light for a desecrated miss only when side removal and whittling are unsafe", () => {
@@ -525,7 +548,7 @@ describe("decideCraft", () => {
     }));
     expect(spared.removal.recommendation).toBe("light");
     expect(spared.cleanup).toBe("essence-alloy-overwrite");
-    expect(spared.path).toEqual(["base", "fill", "desecrate", "essence"]);
+    expect(spared.path).toEqual(["fracture", "base", "fill", "desecrate", "essence"]);
 
     const light = decideCraft(input({
       includes: [suffix("keep", 40), suffix("open", 15)],
@@ -535,7 +558,7 @@ describe("decideCraft", () => {
     }));
     expect(light.cleanup).toBe("omen-of-light");
     expect(light.reasons).toEqual(["omen-of-light-cleanup"]);
-    expect(light.path).toEqual(["base", "fill", "desecrate", "omen", "light"]);
+    expect(light.path).toEqual(["fracture", "base", "fill", "desecrate", "omen", "light"]);
     expect(craftVerdictHeadline(light, "en")).toBe("Continue (one Omen of Light cleanup)");
   });
 
@@ -562,7 +585,7 @@ describe("decideCraft", () => {
     expect(extra.verdict).toBe("continue");
     expect(extra.reasons[0]).toBe("exceptional-keep");
     expect(extra.reasons).toContain("target-side-full-no-fracture");
-    expect(extra.path).toEqual(["base", "fill", "sockets", "keep-exceptional"]);
+    expect(extra.path).toEqual(["fracture", "base", "fill", "sockets", "keep-exceptional"]);
     expect(craftVerdictHeadline(extra, "zh-Hant")).toBe("繼續（額外增幅槽，留下這件）");
     expect(craftVerdictHeadline(extra, "en")).toBe("Continue (extra augment socket — keep this base)");
     expect(suggestedCraftNode(extra)).toBe("finish");
@@ -598,7 +621,7 @@ describe("decideCraft", () => {
     }));
     expect(blocked.verdict).toBe("rebase");
     expect(blocked.reasons).toEqual(["base-cannot-roll-t1"]);
-    expect(blocked.path).toEqual(["base", "stop-base"]);
+    expect(blocked.path).toEqual(["fracture", "base", "stop-base"]);
     expect(blocked.socketAugments.map((row) => row.nameZh)).toEqual(["梅德偉的照料"]);
 
     const fractured = decideCraft(input({
@@ -624,7 +647,7 @@ describe("decideCraft", () => {
     expect(decision.reasons).not.toContain("exceptional-keep");
     expect(decision.socketAugments[0]?.effectZh).toContain("靈魂");
     expect(decision.socketAugments[0]?.socketBound).toBe(true);
-    expect(decision.path).toEqual(["base", "fill", "sockets", "keep-exceptional"]);
+    expect(decision.path).toEqual(["fracture", "base", "fill", "sockets", "keep-exceptional"]);
     expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("繼續");
   });
 
@@ -642,6 +665,67 @@ describe("decideCraft", () => {
     expect(decision.cleanup).toBe("whittle");
     expect(decision.socketAugments[0]?.effectZh).toBe("護甲: +14%火焰抗性");
     expect(craftVerdictHeadline(decision, "zh-Hant")).toBe("繼續（削切之兆，混沌石移除最低等級詞綴）");
-    expect(decision.path).toEqual(["base", "fill", "desecrate", "omen", "whittle", "sockets", "keep-exceptional"]);
+    expect(decision.path).toEqual(["fracture", "base", "fill", "desecrate", "omen", "whittle", "sockets", "keep-exceptional"]);
+  });
+
+  it("opens by fracturing the rarest selected target, unless a fracture lock names one", () => {
+    const open = decideCraft(input({
+      includes: [
+        suffix("life", 82, { tierWeight: 1000, weight: 13000 }),
+        suffix("cast", 60, { tierWeight: 1, weight: 5 }),
+        prefix("armour", 86, { tierWeight: 500, weight: 4000 }),
+      ],
+    }));
+    expect(open.fractureFocus).toMatchObject({
+      id: "cast",
+      reason: "tier-weight",
+      tierWeight: 1,
+      tierLevel: 60,
+    });
+    expect(open.fracturePending).toBe(true);
+    expect(open.path[0]).toBe("fracture");
+    expect(open.verdict).toBe("continue");
+    expect(suggestedCraftNode(open)).toBe("fracture");
+    expect(craftVerdictHeadline(open, "zh-Hant")).toBe("繼續（先破潰最稀有的目標）");
+
+    const locked = decideCraft(input({
+      includes: [
+        suffix("life", 82, { tierWeight: 1000, weight: 13000 }),
+        suffix("cast", 60, { tierWeight: 1, weight: 5 }),
+      ],
+      desecrationLock: "life",
+    }));
+    expect(locked.fractureFocus).toMatchObject({ id: "life", reason: "lock" });
+    expect(locked.fracturePending).toBe(false);
+    expect(locked.path[0]).toBe("fracture");
+    expect(craftVerdictHeadline(locked, "zh-Hant")).toBe("繼續");
+  });
+
+  it("uses required item level when spawn weight is missing, and breaks weight ties the same way", () => {
+    const proxy = decideCraft(input({
+      includes: [
+        suffix("low", 40),
+        prefix("high", 84),
+        suffix("mid", 70),
+      ],
+    }));
+    expect(proxy.fractureFocus).toMatchObject({ id: "high", reason: "item-level", tierLevel: 84 });
+
+    const tied = decideCraft(input({
+      includes: [
+        suffix("a", 70, { tierWeight: 100 }),
+        suffix("b", 82, { tierWeight: 100 }),
+      ],
+    }));
+    expect(tied.fractureFocus).toMatchObject({ id: "b", reason: "item-level", tierLevel: 82 });
+
+    const family = decideCraft(input({
+      includes: [
+        suffix("common", null, { weight: 8000 }),
+        prefix("rare", null, { weight: 5 }),
+      ],
+    }));
+    expect(family.fractureFocus).toMatchObject({ id: "rare", reason: "family-weight", weight: 5 });
+    expect(family.fractureFocus?.tierWeight).toBeNull();
   });
 });
