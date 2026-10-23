@@ -7,6 +7,12 @@ import EndgameLayout from "./EndgameLayout.tsx";
 import CraftingPage from "./CraftingPage.tsx";
 import { LocaleProvider } from "../i18n.tsx";
 
+function activeLibrary() {
+  const panel = document.querySelector('[role="tabpanel"]:not([hidden])');
+  if (!(panel instanceof HTMLElement)) throw new Error("missing affix sheet");
+  return within(panel);
+}
+
 function renderCrafting(path = "/endgame/crafting", locale: "zh-Hant" | "en" = "zh-Hant") {
   return render(
     <LocaleProvider initialLocale={locale}>
@@ -90,9 +96,9 @@ describe("crafting page", () => {
     expect(screen.getAllByText(/重組器不在這條主路線/).length).toBeGreaterThan(0);
     expect(screen.getByText("倉庫正則（刷這個基底／這些目標）")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "火焰" })).toBeInTheDocument();
-    expect(screen.getByText("Filter:")).toBeInTheDocument();
-    expect(screen.getByText(/Min iLvL/i)).toBeInTheDocument();
-    expect(screen.getByText(/Max iLvL/i)).toBeInTheDocument();
+    expect(activeLibrary().getByText("Filter:")).toBeInTheDocument();
+    expect(activeLibrary().getByText(/Min iLvL/i)).toBeInTheDocument();
+    expect(activeLibrary().getByText(/Max iLvL/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "匯入物品" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "切換隱藏" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "简中匹配" })).not.toBeInTheDocument();
@@ -156,7 +162,7 @@ describe("crafting page", () => {
     );
 
     await user.click(screen.getByRole("checkbox", { name: `目標 ${life.textZh}` }));
-    await user.selectOptions(screen.getByLabelText(`最低階級 ${life.textZh}`), String(top.index));
+    await user.selectOptions(activeLibrary().getByLabelText(`最低階級 ${life.textZh}`), String(top.index));
     await user.selectOptions(screen.getByLabelText("非目標詞綴"), other.id);
     await user.selectOptions(screen.getByLabelText("這件上的階級"), String(low));
     await user.click(screen.getByRole("button", { name: "記在這件上" }));
@@ -407,12 +413,14 @@ describe("crafting page", () => {
     const target = screen.getByRole("checkbox", { name: `目標 ${life.textZh}` });
     await user.click(target);
     expect(target).toBeChecked();
+    expect(screen.getByText(/這件還沒有目標詞綴/)).toBeInTheDocument();
     await user.click(owned);
     expect(screen.queryByRole("checkbox", { name: `目標 ${life.textZh}` })).not.toBeInTheDocument();
     const have = screen.getByRole("checkbox", { name: `${life.textZh} 已有` });
     expect(have).not.toBeChecked();
     await user.click(have);
     expect(have).toBeChecked();
+    expect(screen.getByText(/已有一條目標/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "這件裝備" })).toBeInTheDocument();
     expect(screen.getByLabelText("孔 1")).toBeInTheDocument();
 
@@ -420,5 +428,68 @@ describe("crafting page", () => {
     expect(screen.getByRole("checkbox", { name: `目標 ${life.textZh}` })).toBeChecked();
     await user.click(owned);
     expect(screen.getByRole("checkbox", { name: `${life.textZh} 已有` })).toBeChecked();
+  });
+
+  it("gives owned affixes the same pools, scrollers, and conflict sinking", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+    const body = earlyGearFamiliesFor("body");
+    const armour = body.find((family) => family.family === "BaseLocalDefences" && family.matchZh === "護甲值");
+    const evasion = body.find((family) => family.family === "BaseLocalDefences" && family.matchZh === "閃避值");
+    const life = lifeFamily();
+    if (!armour || !evasion) throw new Error("missing defence variants");
+
+    await user.click(screen.getByRole("tab", { name: "已有詞條" }));
+    expect(screen.getByRole("heading", { name: "已有詞條" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "目標詞綴" })).not.toBeInTheDocument();
+    const pool = screen.getByRole("region", { name: "預設詞綴" });
+    const scrolls = pool.querySelectorAll("[data-affix-scroll]");
+    expect(scrolls).toHaveLength(2);
+    expect(scrolls[0]?.className).toContain("max-h-[18rem]");
+    const abyss = screen.getByRole("region", { name: "褻瀆詞綴" });
+    expect(abyss.querySelectorAll("[data-affix-scroll]")).toHaveLength(2);
+    expect(screen.getByText(/勾這件已經有的詞綴/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("checkbox", { name: `${armour.textZh} 已有` }));
+    const evasionRow = screen.getByRole("checkbox", { name: `${evasion.textZh} 已有` }).closest("li");
+    if (!evasionRow) throw new Error("missing evasion row");
+    expect(within(evasionRow).getByRole("checkbox")).toBeDisabled();
+    expect(evasionRow).toHaveAttribute("title", "與已選詞條同類，不能同時存在");
+    const prefixSection = screen.getByRole("checkbox", { name: `${armour.textZh} 已有` }).closest("section");
+    if (!prefixSection) throw new Error("missing prefix section");
+    const sunk = within(prefixSection).getByText("互斥／不可選");
+    expect(sunk.compareDocumentPosition(evasionRow) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByText(/這件還沒有目標詞綴/)).toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText("孔 1"), "Medveds_Tending");
+    expect(screen.getByRole("region", { name: "梅德偉的照料 額外詞綴" })).toBeInTheDocument();
+
+    const lifeLock = screen.getByRole("button", { name: `破潰石鎖定的詞條 ${life.textZh}` });
+    await user.click(lifeLock);
+    expect(screen.getByRole("checkbox", { name: `${life.textZh} 已有` })).toBeDisabled();
+    await user.click(screen.getByRole("tab", { name: "目標詞綴" }));
+    expect(screen.getByRole("checkbox", { name: `目標 ${life.textZh}` })).toBeChecked();
+    expect(screen.getByRole("button", { name: `破潰石鎖定的詞條 ${life.textZh}` })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("checkbox", { name: `目標 ${armour.textZh}` })).not.toBeChecked();
+    expect(screen.getByRole("region", { name: "梅德偉的照料 額外詞綴" })).toBeInTheDocument();
+  });
+
+  it("treats a cleared owned tier as not yet met", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+    const prefixes = distinctSide("prefix", 2);
+    for (const family of prefixes) {
+      await user.click(screen.getByRole("checkbox", { name: `目標 ${family.textZh}` }));
+    }
+    await user.selectOptions(screen.getByLabelText("前綴數量"), "3");
+    expect(screen.getByText("換底")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("tab", { name: "已有詞條" }));
+    for (const family of prefixes) {
+      await user.click(screen.getByRole("checkbox", { name: `${family.textZh} 已有` }));
+    }
+    expect(screen.getByText("繼續")).toBeInTheDocument();
+    await user.selectOptions(activeLibrary().getByLabelText(`最低階級 ${prefixes[0].textZh}`), "");
+    expect(screen.getByText("換底")).toBeInTheDocument();
   });
 });
