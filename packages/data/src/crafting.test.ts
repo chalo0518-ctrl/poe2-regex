@@ -11,6 +11,9 @@ import {
   type DecideCraftInput,
   type OwnedTarget,
   craftFractureAdvice,
+  craftFractureOddsText,
+  craftTargetSource,
+  fractureOdds,
   craftTierChoices,
   decideCraft,
   craftVerdictHeadline,
@@ -705,6 +708,42 @@ describe("decideCraft", () => {
     expect(locked.fracturePending).toBe(false);
     expect(locked.path[0]).toBe("fracture");
     expect(craftVerdictHeadline(locked, "zh-Hant")).toBe("繼續");
+  });
+
+  it("counts fracture odds without the unrevealed desecration", () => {
+    expect(fractureOdds({ modCount: 4, targetsOnItem: 1, unrevealedDesecration: true })).toEqual({
+      status: "ready",
+      hits: 1,
+      pool: 3,
+    });
+    expect(fractureOdds({ modCount: 4, targetsOnItem: 1, unrevealedDesecration: false })).toEqual({
+      status: "ready",
+      hits: 1,
+      pool: 4,
+    });
+    expect(fractureOdds({ modCount: 3, targetsOnItem: 1, unrevealedDesecration: true })).toEqual({
+      status: "too-few-mods",
+      modCount: 3,
+    });
+    expect(fractureOdds({ modCount: 5, targetsOnItem: 0, unrevealedDesecration: true })).toEqual({ status: "no-target" });
+    const best = fractureOdds({ modCount: 4, targetsOnItem: 1, unrevealedDesecration: true });
+    expect(craftFractureOddsText(best, "zh-Hant")).toBe("破潰命中率：1/3（未揭露的褻瀆不算）。");
+    expect(craftFractureOddsText(fractureOdds({ modCount: 4, targetsOnItem: 1, unrevealedDesecration: false }), "zh-Hant"))
+      .toContain("1/4");
+  });
+
+  it("names where each target comes from", () => {
+    expect(craftTargetSource({ isFractureFocus: true, isDesecrated: false, tags: ["life"] })).toBe("fracture-base");
+    expect(craftTargetSource({ isFractureFocus: true, isDesecrated: true, tags: [] })).toBe("desecrate");
+    expect(craftTargetSource({ isFractureFocus: false, isDesecrated: false, tags: [] })).toBe("no-tag");
+    expect(craftTargetSource({ isFractureFocus: false, isDesecrated: false, tags: ["defences"] })).toBe("homogenise");
+  });
+
+  it("lists materials on every tree node", () => {
+    for (const node of CRAFTING_TREE) {
+      expect(node.materials.zhHant.length).toBeGreaterThan(0);
+      expect(node.materials.en.length).toBeGreaterThan(0);
+    }
   });
 
   it("uses required item level when spawn weight is missing, and breaks weight ties the same way", () => {

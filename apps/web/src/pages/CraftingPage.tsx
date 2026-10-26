@@ -6,8 +6,12 @@ import {
   CRAFTING_TREE,
   CRAFT_CLEANUP_TEXT,
   CRAFT_REASON_TEXT,
+  CRAFT_TARGET_SOURCE_TEXT,
   CRAFT_WARNING_TEXT,
   craftFractureAdvice,
+  craftFractureOddsText,
+  craftTargetSource,
+  fractureOdds,
   craftLocaleText,
   craftTierChoices,
   craftTreeNodeForDiagram,
@@ -141,6 +145,7 @@ export default function CraftingPage() {
   const [suffixCount, setSuffixCount] = useState(0);
   const [goodFracture, setGoodFracture] = useState(false);
   const [garbageFracture, setGarbageFracture] = useState(false);
+  const [unrevealed, setUnrevealed] = useState(false);
   const [keeper, setKeeper] = useState(false);
   const [tightBudget, setTightBudget] = useState(false);
   const [others, setOthers] = useState<Record<string, OtherFlag>>({});
@@ -192,6 +197,7 @@ export default function CraftingPage() {
     setSuffixCount(0);
     setGoodFracture(false);
     setGarbageFracture(false);
+    setUnrevealed(false);
     setKeeper(false);
     setOthers({});
     setSocketCount(2);
@@ -329,6 +335,26 @@ export default function CraftingPage() {
   const fractureNote = decision.fractureFocus
     ? craftFractureAdvice(decision.fractureFocus, fractureName, locale)
     : "";
+  const oddsNote =
+    decision.fractureFocus && !goodFracture && !garbageFracture && !lockedId
+      ? craftFractureOddsText(
+          fractureOdds({
+            modCount: prefixCount + suffixCount,
+            targetsOnItem: selected.filter((family) => owned[family.id]?.owned).length,
+            unrevealedDesecration: unrevealed,
+          }),
+          locale,
+        )
+      : "";
+  const desecratedIds = new Set(desecratedFamilies.map((family) => family.id));
+  const plan = selected.map((family) => {
+    const source = craftTargetSource({
+      isFractureFocus: decision.fractureFocus?.id === family.id,
+      isDesecrated: desecratedIds.has(family.id),
+      tags: family.tags,
+    });
+    return { id: family.id, name: effectText(family, locale), source, text: craftLocaleText(CRAFT_TARGET_SOURCE_TEXT[source], locale) };
+  });
   const shownDiagram = CRAFT_DIAGRAM.find((row) => row.id === shownNodeId) ?? null;
   const shownTree = CRAFTING_TREE.find((row) => row.id === craftTreeNodeForDiagram(shownNodeId)) ?? null;
   const sideLabel = decision.targetSide === "prefix" ? t.craftingSidePrefix : t.craftingSideSuffix;
@@ -493,6 +519,10 @@ export default function CraftingPage() {
           <ItemPanel
             decision={decision}
             fractureNote={fractureNote}
+            oddsNote={oddsNote}
+            plan={plan}
+            unrevealed={unrevealed}
+            onUnrevealed={setUnrevealed}
             sideLabel={sideLabel}
             itemLevelRaw={itemLevelRaw}
             onItemLevel={setItemLevelRaw}
@@ -553,6 +583,7 @@ export default function CraftingPage() {
                   </p>
                   <p>{craftLocaleText(shownDiagram.choice, locale)}</p>
                   <NodeBlock label={t.craftingSectionAction} body={craftLocaleText(shownTree.action, locale)} />
+                  <NodeBlock label={t.craftingSectionMaterials} body={craftLocaleText(shownTree.materials, locale)} />
                   <NodeBlock label={t.craftingSectionSkip} body={craftLocaleText(shownTree.skip, locale)} />
                   <NodeBlock label={t.craftingSectionIrreversible} body={craftLocaleText(shownTree.irreversible, locale)} />
                   <NodeBlock label={t.craftingSectionWarning} body={craftLocaleText(shownTree.warning, locale)} />
@@ -584,6 +615,10 @@ function NodeBlock({ label, body }: { label: string; body: string }) {
 function ItemPanel({
   decision,
   fractureNote,
+  oddsNote,
+  plan,
+  unrevealed,
+  onUnrevealed,
   sideLabel,
   itemLevelRaw,
   onItemLevel,
@@ -612,6 +647,10 @@ function ItemPanel({
 }: {
   decision: CraftDecision;
   fractureNote: string;
+  oddsNote: string;
+  plan: { id: string; name: string; source: string; text: string }[];
+  unrevealed: boolean;
+  onUnrevealed: (value: boolean) => void;
   sideLabel: string;
   itemLevelRaw: string;
   onItemLevel: (value: string) => void;
@@ -656,6 +695,7 @@ function ItemPanel({
       <div className={`mt-3 rounded-sm border px-3 py-3 ${tone}`} data-verdict={decision.verdict} aria-live="polite">
         <p className="text-base font-bold">{headline}</p>
         {fractureNote ? <p className="mt-2 text-xs text-paper">{fractureNote}</p> : null}
+        {oddsNote ? <p className="mt-1 text-xs text-gold" data-fracture-odds>{oddsNote}</p> : null}
         <p className="mt-1 text-xs text-muted">{t.craftingResolvedSide(sideLabel)}</p>
         {cleanup && <p className="mt-2 text-xs text-paper">{craftLocaleText(cleanup, locale)}</p>}
         <p className="mt-3 text-xs text-gold-dim">{t.craftingReasons}</p>
@@ -686,6 +726,20 @@ function ItemPanel({
         {tightBudget && <p className="mt-2 text-xs text-gold">{t.craftingBudgetOn}</p>}
       </div>
 
+      {plan.length > 0 && (
+        <div className="mt-3 rounded-sm border border-line px-3 py-2" data-craft-plan>
+          <p className="text-xs text-gold-dim">{t.craftingPlanHeading}</p>
+          <ul className="mt-1 space-y-1 text-xs">
+            {plan.map((row) => (
+              <li key={row.id} data-source={row.source}>
+                <span className="text-paper">{row.name}</span>
+                <span className="text-muted"> · {row.text}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="mt-3 grid gap-2">
         <label className="text-xs text-muted">
           {t.craftingItemLevel}
@@ -715,6 +769,7 @@ function ItemPanel({
         </div>
         <Check label={t.craftingGoodFracture} checked={goodFracture} onChange={onGoodFracture} />
         <Check label={t.craftingGarbageFracture} checked={garbageFracture} onChange={onGarbageFracture} />
+        <Check label={t.craftingUnrevealed} checked={unrevealed} onChange={onUnrevealed} />
         <p className="text-[11px] text-muted">{t.craftingDesecrationLockHint}</p>
         <Check label={t.craftingKeeper} checked={keeper} onChange={onKeeper} />
         <p className="ml-5 text-[11px] text-muted">{t.craftingKeeperHint}</p>

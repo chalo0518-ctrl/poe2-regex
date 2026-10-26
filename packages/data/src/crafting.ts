@@ -240,6 +240,8 @@ export type CraftTreeNode = {
   title: Localized;
   summary: Localized;
   action: Localized;
+  /** Currency and omens to have on hand for this step. */
+  materials: Localized;
   skip: Localized;
   irreversible: Localized;
   warning: Localized;
@@ -731,6 +733,86 @@ export function decideCraft(input: DecideCraftInput): CraftDecision {
   };
 }
 
+export type FractureOddsInput = {
+  /** All explicit mods on the item, an unrevealed desecration included. */
+  modCount: number;
+  /** Selected targets already on the item. */
+  targetsOnItem: number;
+  unrevealedDesecration: boolean;
+};
+
+export type FractureOdds =
+  | { status: "ready"; hits: number; pool: number }
+  | { status: "too-few-mods"; modCount: number }
+  | { status: "no-target" };
+
+/**
+ * Chance a Fracturing Orb lands on a target. The orb needs at least 4 mods and
+ * cannot pick an unrevealed desecrated modifier, so that mod leaves the pool.
+ */
+export function fractureOdds(input: FractureOddsInput): FractureOdds {
+  const modCount = Math.max(0, Math.floor(input.modCount));
+  if (modCount < 4) return { status: "too-few-mods", modCount };
+  const pool = modCount - (input.unrevealedDesecration ? 1 : 0);
+  const hits = Math.min(Math.max(0, Math.floor(input.targetsOnItem)), pool);
+  if (hits === 0) return { status: "no-target" };
+  return { status: "ready", hits, pool };
+}
+
+export function craftFractureOddsText(odds: FractureOdds, locale: UiLocale): string {
+  if (locale === "en") {
+    if (odds.status === "too-few-mods") {
+      return `Fracture odds: not yet. ${odds.modCount} mods on the item; a Fracturing Orb needs at least 4.`;
+    }
+    if (odds.status === "no-target") {
+      return "Fracture odds: 0. No selected target is on the item yet. Get the rarest target on first.";
+    }
+    const tail = odds.pool === 3 && odds.hits === 1 ? "" : " Aim for the target, 2 revealed mods, and 1 unrevealed desecration (1 in 3).";
+    return `Fracture odds: ${odds.hits} in ${odds.pool} (an unrevealed desecration is not counted).${tail}`;
+  }
+  if (odds.status === "too-few-mods") {
+    return `破潰命中率：還不能破。這件目前 ${odds.modCount} 條詞綴，破潰石至少要 4 條。`;
+  }
+  if (odds.status === "no-target") {
+    return "破潰命中率：0。身上還沒有所選目標，先把最稀有的目標弄上去。";
+  }
+  const tail = odds.pool === 3 && odds.hits === 1 ? "" : "建議湊成目標＋2 條已揭露詞綴＋1 條未揭露褻瀆（1/3）。";
+  return `破潰命中率：${odds.hits}/${odds.pool}（未揭露的褻瀆不算）。${tail}`;
+}
+
+/** Where a selected target is most reliably obtained. */
+export type CraftTargetSource = "fracture-base" | "desecrate" | "no-tag" | "homogenise";
+
+export function craftTargetSource(target: {
+  isFractureFocus: boolean;
+  isDesecrated: boolean;
+  tags: string[];
+}): CraftTargetSource {
+  if (target.isDesecrated) return "desecrate";
+  if (target.isFractureFocus) return "fracture-base";
+  if (target.tags.length === 0) return "no-tag";
+  return "homogenise";
+}
+
+export const CRAFT_TARGET_SOURCE_TEXT: Record<CraftTargetSource, Localized> = {
+  "fracture-base": {
+    zhHant: "最稀有：買底時就帶著，或用精髓釘上，再破潰鎖住。",
+    en: "Rarest: buy a base that already has it, or Essence it on, then fracture it.",
+  },
+  desecrate: {
+    zhHant: "褻瀆詞綴：上骨配左旋／右旋死靈術之兆，揭露時用深淵回響之兆多抽一次。",
+    en: "Desecrated mod: bone with Sinistral/Dextral Necromancy, and reveal with Omen of Abyssal Echoes for a second set.",
+  },
+  "no-tag": {
+    zhHant: "沒有標籤，均勻喜悅之兆帶不出來。優先買底自帶，或用精髓、合金給這一條。",
+    en: "No tags, so Homogenising Exaltation cannot pull it. Prefer a base that has it, or give it the Essence/Alloy slot.",
+  },
+  homogenise: {
+    zhHant: "有標籤：崇高石配左旋／右旋提升之兆；身上已有同標籤詞綴時，加均勻喜悅之兆。",
+    en: "Tagged: Exalted Orb with Sinistral/Dextral Exaltation; add Homogenising Exaltation once a same-tag mod is on the item.",
+  },
+};
+
 export function craftFractureAdvice(focus: FractureFocus, name: string, locale: UiLocale): string {
   const label = name.trim() || focus.id;
   if (locale === "en") {
@@ -995,6 +1077,10 @@ export const CRAFTING_CONSTRAINTS: Localized[] = [
     zhHant: "重組器不在這條主路線。它只屬於標準聯盟，不要把它當成現在的下一步。",
     en: "Recombinator is off this primary path. It belongs to Standard only — do not treat it as the next step here.",
   },
+  {
+    zhHant: "動手前先排好目標優先序與預算上限。沉沒成本不參與決策：補救成本明顯高過重做時，直接換底。",
+    en: "Rank the targets and set a budget cap before you start. Sunk cost does not count: when saving the item costs clearly more than starting over, switch bases.",
+  },
 ];
 
 export const CRAFTING_TREE: CraftTreeNode[] = [
@@ -1009,6 +1095,10 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
       zhHant:
         "破潰石只對 4 條以上詞綴的稀有裝生效，鎖哪一條是隨機的，但未揭露的褻瀆詞綴不會被鎖。所以先湊成 4 條：目標加 2 條已揭露詞綴，再上骨留 1 條未揭露褻瀆，這時破潰鎖中目標的機率是 1/3，不是 1/4。鎖中後再到靈魂之井揭露。在勾選的目標裡，先破潰出現權重最低的那一條。權重看的是所選階級的 poe2db 出現率，愈低愈稀有；沒選階級時用整條詞綴的出現權重。權重相同，或完全沒有出現權重時，改以所選階級需求等級最高的那一條為準。破潰石若已鎖在某一條，就破那一條，不再另挑。接著才核對基底與物品等級。非目標側補上，目標側維持恰好 2 條，再褻瀆與清理。最後才上品質、催化劑、插槽，瓦爾放最後。",
       en: "A Fracturing Orb needs a rare with at least 4 mods and locks one at random, but an unrevealed desecrated modifier cannot be locked. So build 4 mods first: the target plus 2 revealed mods, then bone the item and leave 1 desecration unrevealed. The fracture now lands on the target 1 time in 3, not 1 in 4. Reveal at the Well of Souls after the lock lands. Among the selected targets, fracture the lowest spawn weight first. That weight is the chosen tier's poe2db drop chance — lower is rarer — or the family's weight when no tier is chosen. When the weights tie, or none is available, use the selected tier with the highest required item level. A fracture lock names the affix instead. Then check the base and item level. Fill the non-target side, hold the target side at exactly 2, then desecrate and clean up. Quality, catalysts, and sockets come last, and Vaal is last of all.",
+    },
+    materials: {
+      zhHant: "破潰石、對應部位的骨（武器顎骨、護甲肋骨、飾品鎖骨），需要指定前後綴時加左旋／右旋死靈術之兆。",
+      en: "Fracturing Orb, the bone for the slot (Jawbone for weapons, Rib for armour, Collarbone for jewellery), and Sinistral/Dextral Necromancy when the side matters.",
     },
     skip: {
       zhHant: "目標側已經有要留下的破裂，或破潰石已鎖在目標上，就不必再破第二條。升上稀有時，若工藝槽還要拿來頂掉失敗的褻瀆，先不要做永久保留的精髓或合金。",
@@ -1034,6 +1124,10 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
       zhHant: "選定部位後，勾出這個詞綴池真的會出的目標。有指定階級時，拿物品等級去對那一階；低於門檻就骰不到。",
       en: "After you pick a slot, check the mods this pool can actually roll. When a tier is set, compare item level with that tier; below it, the tier cannot roll.",
     },
+    materials: {
+      zhHant: "物品等級 81–82 的正確基底。沒有標籤、帶不出來的目標（例如精魂、技能等級）最好買底時就有。",
+      en: "A correct base at item level 81–82. Targets with no tag to pull them (for example Spirit or skill levels) are best bought on the base.",
+    },
     skip: {
       zhHant: "沒有指定階級時，不要只因物品等級就換底。",
       en: "When no tier is set, do not switch bases on item level alone.",
@@ -1057,6 +1151,10 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
     action: {
       zhHant: "魔法物品可用煉金做成稀有。若這一手就要用精髓或合金（例如符文之父的合金）釘一條必留詞綴，會佔掉唯一的工藝槽。",
       en: "Alchemy a magic item into a rare. Using an Essence or Runic Alloy now (for example the Runefather alloy) to lock a keeper mod spends the only crafted slot.",
+    },
+    materials: {
+      zhHant: "煉金石，或高階精髓（白裝／藍裝直接升稀有並帶 1 條指定詞綴）。精髓的標籤最好和後面要帶的目標一致。",
+      en: "Orb of Alchemy, or a Greater Essence (makes it rare with one set mod). Prefer an Essence whose tag matches the targets you will pull later.",
     },
     skip: {
       zhHant: "已經是稀有，或你要把工藝槽留到後面拿來頂掉失敗的褻瀆，就先不要做永久保留的精髓或合金。",
@@ -1082,6 +1180,10 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
       zhHant: "用崇高石配左旋或右旋提升之兆，補不打算反覆重骰的那一側。目標側維持恰好 2 條：1 條準備破裂留下，另 1 條當滾動格。",
       en: "Use an Exalted Orb with a Sinistral or Dextral Exaltation omen on the side you will not reroll. Keep the target side at exactly 2: one mod to fracture and keep, one rolling slot.",
     },
+    materials: {
+      zhHant: "崇高石（高階便宜、完美保底高階）、左旋／右旋提升之兆；有同標籤可用時加均勻喜悅之兆；一次要 2 條加大幅提升之兆；戒指、項鍊先上催化劑再配催化喜悅之兆。",
+      en: "Exalted Orbs (Greater is cheaper, Perfect lifts the tier floor), Sinistral/Dextral Exaltation; Homogenising Exaltation when a same-tag mod is present; Greater Exaltation for 2 mods at once; on rings and amulets, catalysts then Catalysing Exaltation.",
+    },
     skip: {
       zhHant: "目標側已經是 2 條，且其中一條就是要破裂的詞綴時，不要再往這一側加。",
       en: "If the target side is already 2 and one of them is the mod you will fracture, do not add another there.",
@@ -1104,8 +1206,12 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
     },
     action: {
       zhHant:
-        "上骨後配左旋或右旋死靈術之兆，讓褻瀆落在目標側。維持該側恰好 2 條，而且 1 條已經破裂（要留的）。揭示若是壞詞綴：不要先走光明之兆加無效石。改用打得到該側的精髓（完美或腐化精髓可配左旋／右旋結晶之兆，只移除該側）或合金，把非破裂那格頂掉，再重新上骨並褻瀆。常見拿來做這個迴圈的是 Absent、Portent 項鍊與 Dusk 戒指；其他基底的精髓或合金不一定同樣打得到該側，先確認再花。",
-      en: "Apply a bone with Sinistral or Dextral Necromancy so the desecration lands on the target side. Keep that side at exactly 2 mods, with 1 already fractured (the keep). If the reveal is bad, do not start with Omen of Light plus an Annul. Overwrite the non-fractured slot with an Essence or Runic Alloy that hits that side — Perfect or Corrupted Essences can use Sinistral/Dextral Crystallisation so they only remove that side — then bone and desecrate again. Absent and Portent amulets and Dusk rings are the bases this loop is usually cited for; other bases do not behave the same, so check before you spend.",
+        "上骨後配左旋或右旋死靈術之兆，讓褻瀆落在目標側。維持該側恰好 2 條，而且 1 條已經破裂（要留的）。揭示若是壞詞綴：不要先走光明之兆加無效石。改用打得到該側的精髓（完美或腐化精髓可配左旋／右旋結晶之兆，只移除該側）或合金，把非破裂那格頂掉，再重新上骨並褻瀆。常見拿來做這個迴圈的是 Absent、Portent 項鍊與 Dusk 戒指；其他基底的精髓或合金不一定同樣打得到該側，先確認再花。時機：這條路線提早上骨，因為未揭露的褻瀆能把破潰命中率拉到 1/3。晚一點褻瀆可以先看清其他詞綴，但 6 條滿詞綴時褻瀆會隨機蓋掉一條現有詞綴。",
+      en: "Apply a bone with Sinistral or Dextral Necromancy so the desecration lands on the target side. Keep that side at exactly 2 mods, with 1 already fractured (the keep). If the reveal is bad, do not start with Omen of Light plus an Annul. Overwrite the non-fractured slot with an Essence or Runic Alloy that hits that side — Perfect or Corrupted Essences can use Sinistral/Dextral Crystallisation so they only remove that side — then bone and desecrate again. Absent and Portent amulets and Dusk rings are the bases this loop is usually cited for; other bases do not behave the same, so check before you spend. Timing: this route bones early because the unrevealed desecration is what lifts the fracture to 1 in 3. Desecrating late shows you the rest of the item first, but on a full 6-mod item it overwrites an existing mod at random.",
+    },
+    materials: {
+      zhHant: "骨（保存完好的骨不限物品等級；遠古骨保底較高詞綴等級）、左旋／右旋死靈術之兆、深淵回響之兆；要定向深淵領主詞綴時用領主、諸侯或黑血者之兆。失敗時：完美精髓配左旋／右旋結晶之兆，或合金；最後手段才是光明之兆加無效石。",
+      en: "Bones (Preserved works at any item level; Ancient raises the minimum mod level), Sinistral/Dextral Necromancy, Abyssal Echoes; the Sovereign, Liege, or Blackblooded omen to force an Ulaman, Amanamu, or Kurgal mod. On a miss: a Perfect Essence with Sinistral/Dextral Crystallisation, or an Alloy; Omen of Light plus an Annul only as the last resort.",
     },
     skip: {
       zhHant: "這件不需要褻瀆詞綴就不要上骨。目標側不是恰好 2 條，或沒有那條要留的破裂時，不要硬跑這個迴圈。",
@@ -1133,6 +1239,10 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
         "開手破潰的是最稀有、或破潰石鎖住的那一條，目標側維持恰好 2 條。另一側若沒有破裂，可用無效石或混沌石清理。若破潰鎖在垃圾上、目標側已是 3 條，或工藝槽已是永久保留，不要再把迴圈當成主做法：換底，或改用光明之兆一輪把褻瀆清掉。孔數高過一般上限時留下這件，不要只為了滿邊就換底。",
       en: "The opening fracture is the rarest target, or the affix named by the fracture lock, with the target side held at exactly 2. Annul or chaos the other side if it is not fractured. If the fracture is on garbage, the target side is already 3, or the crafted slot is a keeper, stop treating the loop as the plan: switch bases, or spend one Omen of Light to clear the desecration. When the socket count is above the normal maximum, keep this base instead of switching only because a side is full.",
     },
+    materials: {
+      zhHant: "削切之兆加混沌石（移除需求等級最低的詞綴，不是 T 序最低）、左旋／右旋廢止之兆加無效石（只動一側；破裂的那條不會被選，同側只剩 1 條垃圾時就是定向刪除）、光明之兆加無效石（只移除褻瀆）。",
+      en: "Omen of Whittling plus Chaos (removes the lowest required level, not the lowest T rank); Sinistral/Dextral Annulment plus an Annul (one side only; the fractured mod cannot be picked, so with one garbage mod left on that side the removal is certain); Omen of Light plus an Annul (desecration only).",
+    },
     skip: {
       zhHant: "破潰已經是要留的那條，而且兩側結構還在，就往褻瀆或收尾走。",
       en: "If the fracture is already the keeper and the sides still hold, move on to desecration or the finish.",
@@ -1156,6 +1266,10 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
     action: {
       zhHant: "剩下的空位補到你指定的階級，再上品質與催化劑，然後處理插槽。確認工藝槽與褻瀆槽都是你要的之後，才用瓦爾。",
       en: "Fill any open slots to the tier you chose, then quality and catalysts, then sockets. Vaal only after the crafted slot and the desecrated slot are the mods you want.",
+    },
+    materials: {
+      zhHant: "完美崇高石或完美精髓補最後一格（精髓配結晶之兆）、品質通貨或催化劑、神聖石（詞綴定案後才洗數值）、工匠石與符文，最後才是瓦爾寶珠。",
+      en: "A Perfect Exalted Orb or Perfect Essence for the last slot (Essence with a Crystallisation omen), quality currency or catalysts, Divine Orbs (only once the mod list is final), Artificer's Orbs and runes, and the Vaal Orb last.",
     },
     skip: {
       zhHant: "現有詞綴已經達到目標就可以停，不必為了填滿而把目標側補成 3 條。",

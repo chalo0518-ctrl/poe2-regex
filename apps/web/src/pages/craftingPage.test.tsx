@@ -317,6 +317,10 @@ describe("crafting page", () => {
     expect(note).toContain("出現權重最低");
     expect(document.querySelector("[data-craft-detail]")?.textContent).toContain("恰好 2 條");
     expect(document.querySelector("[data-craft-detail]")?.textContent).toContain("瓦爾放最後");
+    expect(document.querySelector("[data-craft-detail]")?.textContent).toContain("材料與預兆");
+    expect(document.querySelector("[data-fracture-odds]")?.textContent).toContain("至少要 4 條");
+    expect(document.querySelector(`[data-craft-plan] [data-source="fracture-base"]`)?.textContent)
+      .toContain(rare.family.textZh);
 
     await user.click(within(commonRow).getByRole("button", { name: `破潰石鎖定的詞條 ${common.family.textZh}` }));
     const lockedNote = document.querySelector("[data-fracture-focus]")?.textContent ?? "";

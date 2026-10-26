@@ -79,6 +79,9 @@ type Messages = {
   craftingSectionSkip: string;
   craftingSectionIrreversible: string;
   craftingSectionWarning: string;
+  craftingSectionMaterials: string;
+  craftingUnrevealed: string;
+  craftingPlanHeading: string;
   craftingNowHeading: string;
   craftingNowHint: string;
   craftingItemLevel: string;
@@ -283,6 +286,9 @@ const zhHant: Messages = {
   craftingSectionSkip: "何時跳過",
   craftingSectionIrreversible: "回不了頭",
   craftingSectionWarning: "互斥與停手",
+  craftingSectionMaterials: "材料與預兆",
+  craftingUnrevealed: "有 1 條未揭露的褻瀆（已上骨、還沒到靈魂之井揭露）",
+  craftingPlanHeading: "目標從哪來",
   craftingNowHeading: "這件裝備",
   craftingNowHint:
     "勾這件已經有的目標。破潰石鎖在詞條列上標，這裡會跟著顯示，再加上破裂與工藝槽。判定只看這些，不模擬整條工藝。",
@@ -484,6 +490,9 @@ const en: Messages = {
   craftingSectionSkip: "When to skip",
   craftingSectionIrreversible: "Irreversible",
   craftingSectionWarning: "Exclusion / stop",
+  craftingSectionMaterials: "Materials and omens",
+  craftingUnrevealed: "1 unrevealed desecration (boned, not yet revealed at the Well of Souls)",
+  craftingPlanHeading: "Where each target comes from",
   craftingNowHeading: "This item",
   craftingNowHint:
     "Check the target mods already on this item. The desecration lock is marked on the affix row and echoed here, along with fracture and the crafted slot. This is a checklist, not a full craft simulator.",
