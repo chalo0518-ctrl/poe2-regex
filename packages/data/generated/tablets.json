@@ -1,6 +1,6 @@
 {
   "source": "https://poe2db.tw/tw/ + /us/",
-  "generatedAt": "2026-09-18T02:33:14.515Z",
+  "generatedAt": "2026-10-26T11:37:57.854Z",
   "notes": "Each tablet kind is a separate ModsView scrape. UI must gate on kind; do not union-all then fake-filter. 繁中 `/tw`, EN `/us`; RePoE match fallback only.",
   "harvestTags": [
     {
@@ -1711,33 +1711,33 @@
         "tabletKind": "expedition"
       },
       {
-        "id": "tablet:expedition|ExpeditionExplosionRadius|2",
-        "family": "ExpeditionExplosionRadius",
+        "id": "tablet:expedition|ExpeditionVaalRemnants|2",
+        "family": "ExpeditionVaalRemnants",
         "generation": "suffix",
         "tags": [],
         "tagsZh": [],
-        "labelZh": "拆除之",
-        "labelEn": "of the Demolition",
-        "textZh": "(5—10)% increased Expedition Explosive Area of Effect in Map",
-        "textEn": "(5—10)% increased Expedition Explosive Area of Effect in Map",
-        "match": "increased Expedition Explosive Area of Effect in Map",
-        "matchZh": "increased Expedition Explosive Area of Effect in Map",
+        "labelZh": "過去之",
+        "labelEn": "of the Past",
+        "textZh": "地圖中的探險含有(1—2)個瓦爾遺物",
+        "textEn": "Expeditions contain (1—2) Vaal Relics in Map",
+        "match": "Expeditions contain Vaal Relics in Map",
+        "matchZh": "地圖中的探險含有個瓦爾遺物",
         "kind": "numeric",
         "numeric": {
-          "format": "percentPrefix",
-          "suggestedMin": 5,
-          "suggestedMax": 10
+          "format": "bare",
+          "suggestedMin": 1,
+          "suggestedMax": 2
         },
         "tiers": [
           {
-            "nameZh": "拆除之",
-            "nameEn": "of the Demolition",
+            "nameZh": "過去之",
+            "nameEn": "of the Past",
             "level": 1,
-            "textZh": "(5—10)% increased Expedition Explosive Area of Effect in Map",
-            "textEn": "(5—10)% increased Expedition Explosive Area of Effect in Map",
+            "textZh": "地圖中的探險含有(1—2)個瓦爾遺物",
+            "textEn": "Expeditions contain (1—2) Vaal Relics in Map",
             "dropChance": 1,
-            "statMin": 5,
-            "statMax": 10
+            "statMin": 1,
+            "statMax": 2
           }
         ],
         "minLevel": 1,
@@ -1786,12 +1786,8 @@
         "id": "tablet:expedition|ExpeditionFrozenBosses|2",
         "family": "ExpeditionFrozenBosses",
         "generation": "suffix",
-        "tags": [
-          "cold"
-        ],
-        "tagsZh": [
-          "冰冷"
-        ],
+        "tags": [],
+        "tagsZh": [],
         "labelZh": "護存之",
         "labelEn": "of Preservation",
         "textZh": "地圖中的探險含有(1—2)個額外封存於冰霜中的頭目",
@@ -2326,6 +2322,42 @@
         "tabletKind": "expedition"
       },
       {
+        "id": "tablet:expedition|ExpeditionExplosionRadius|2",
+        "family": "ExpeditionExplosionRadius",
+        "generation": "suffix",
+        "tags": [],
+        "tagsZh": [],
+        "labelZh": "拆除之",
+        "labelEn": "of the Demolition",
+        "textZh": "增加(5—10)%地圖中探險炸藥的範圍效果",
+        "textEn": "(5—10)% increased Expedition Explosive Area of Effect in Map",
+        "match": "increased Expedition Explosive Area of Effect in Map",
+        "matchZh": "增加地圖中探險炸藥的範圍效果",
+        "kind": "numeric",
+        "numeric": {
+          "format": "percentPrefix",
+          "suggestedMin": 5,
+          "suggestedMax": 10
+        },
+        "tiers": [
+          {
+            "nameZh": "拆除之",
+            "nameEn": "of the Demolition",
+            "level": 1,
+            "textZh": "增加(5—10)%地圖中探險炸藥的範圍效果",
+            "textEn": "(5—10)% increased Expedition Explosive Area of Effect in Map",
+            "dropChance": 1,
+            "statMin": 5,
+            "statMax": 10
+          }
+        ],
+        "minLevel": 1,
+        "maxLevel": 1,
+        "tierCount": 1,
+        "weight": 1,
+        "tabletKind": "expedition"
+      },
+      {
         "id": "tablet:expedition|MapAdditionalStoneCircle|2",
         "family": "MapAdditionalStoneCircle",
         "generation": "suffix",
@@ -2465,42 +2497,6 @@
             "dropChance": 1,
             "statMin": 70,
             "statMax": 100
-          }
-        ],
-        "minLevel": 1,
-        "maxLevel": 1,
-        "tierCount": 1,
-        "weight": 1,
-        "tabletKind": "expedition"
-      },
-      {
-        "id": "tablet:expedition|ExpeditionVaalRemnants|2",
-        "family": "ExpeditionVaalRemnants",
-        "generation": "suffix",
-        "tags": [],
-        "tagsZh": [],
-        "labelZh": "過去之",
-        "labelEn": "of the Past",
-        "textZh": "Expeditions contain (1—2) Vaal Relics in Map",
-        "textEn": "Expeditions contain (1—2) Vaal Relics in Map",
-        "match": "Expeditions contain Vaal Relics in Map",
-        "matchZh": "Expeditions contain Vaal Relics in Map",
-        "kind": "numeric",
-        "numeric": {
-          "format": "bare",
-          "suggestedMin": 1,
-          "suggestedMax": 2
-        },
-        "tiers": [
-          {
-            "nameZh": "過去之",
-            "nameEn": "of the Past",
-            "level": 1,
-            "textZh": "Expeditions contain (1—2) Vaal Relics in Map",
-            "textEn": "Expeditions contain (1—2) Vaal Relics in Map",
-            "dropChance": 1,
-            "statMin": 1,
-            "statMax": 2
           }
         ],
         "minLevel": 1,
@@ -8099,9 +8095,7 @@
             "level": 1,
             "textZh": "地圖內的瓦爾烽塔周遭擁有額外1群怪物",
             "textEn": "(30—60)% chance for an extra packs of Monsters around Vaal Beacons in Map",
-            "dropChance": 1,
-            "statMin": 30,
-            "statMax": 60
+            "dropChance": 1
           },
           {
             "nameZh": "TowerIncursionExtraPacksChance",
@@ -8633,5 +8627,5 @@
       }
     ]
   },
-  "repoeVersion": "4.5.5.2"
+  "repoeVersion": "0.5.5.4.2"
 }

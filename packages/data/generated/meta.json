@@ -6,8 +6,8 @@
     "https://poe2db.tw/tw/Shields_str_int#ModifiersCalc",
     "https://poe2db.tw/tw/Bucklers#ModifiersCalc"
   ],
-  "gameVersion": "RePoE 4.5.5.2",
-  "generatedAt": "2026-09-18T02:33:12.693Z",
+  "gameVersion": "RePoE 0.5.5.4.2",
+  "generatedAt": "2026-10-26T11:37:49.660Z",
   "familyCount": 26,
   "tierCount": 225,
   "bases": [
@@ -37,5 +37,5 @@
     }
   ],
   "notes": "Frozen Chronicles ModifiersCalc scrape for str / str_dex / str_int shields and Bucklers. 繁中 `/tw`, EN `/us`; RePoE used only as match-id fallback.",
-  "repoeVersion": "4.5.5.2"
+  "repoeVersion": "0.5.5.4.2"
 }
