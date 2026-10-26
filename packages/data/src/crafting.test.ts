@@ -10,6 +10,7 @@ import {
   type CraftTarget,
   type DecideCraftInput,
   type OwnedTarget,
+  craftFractureAdvice,
   craftTierChoices,
   decideCraft,
   craftVerdictHeadline,
@@ -696,6 +697,11 @@ describe("decideCraft", () => {
       desecrationLock: "life",
     }));
     expect(locked.fractureFocus).toMatchObject({ id: "life", reason: "lock" });
+    for (const focus of [open.fractureFocus!, locked.fractureFocus!]) {
+      expect(craftFractureAdvice(focus, "目標", "zh-Hant")).toContain("1 條未揭露褻瀆；未揭露的褻瀆不會被鎖，命中率 1/3");
+      expect(craftFractureAdvice(focus, "Target", "en")).toContain("1 unrevealed desecration");
+      expect(craftFractureAdvice(focus, "Target", "en")).toContain("1 in 3");
+    }
     expect(locked.fracturePending).toBe(false);
     expect(locked.path[0]).toBe("fracture");
     expect(craftVerdictHeadline(locked, "zh-Hant")).toBe("繼續");

@@ -734,27 +734,29 @@ export function decideCraft(input: DecideCraftInput): CraftDecision {
 export function craftFractureAdvice(focus: FractureFocus, name: string, locale: UiLocale): string {
   const label = name.trim() || focus.id;
   if (locale === "en") {
+    const odds = ` Fracture with "${label}", 2 revealed mods, and 1 unrevealed desecration: the unrevealed one cannot be locked, so the odds are 1 in 3.`;
     if (focus.reason === "lock") {
-      return `The fracture lock is on "${label}". Fracture that affix.`;
+      return `The fracture lock is on "${label}". Fracture that affix.${odds}`;
     }
     if (focus.reason === "item-level") {
       if (focus.tierWeight == null && focus.weight == null) {
-        return `Fracture "${label}" first. No spawn weight is available, so this is the selected tier with the highest required item level.`;
+        return `Fracture "${label}" first. No spawn weight is available, so this is the selected tier with the highest required item level.${odds}`;
       }
-      return `Fracture "${label}" first. The spawn weights do not separate the targets, so this is the selected tier with the higher required item level.`;
+      return `Fracture "${label}" first. The spawn weights do not separate the targets, so this is the selected tier with the higher required item level.${odds}`;
     }
-    return `Fracture "${label}" first. Among the selected targets, its spawn weight is the lowest.`;
+    return `Fracture "${label}" first. Among the selected targets, its spawn weight is the lowest.${odds}`;
   }
+  const odds = `破潰時湊成「${label}」加 2 條已揭露詞綴、1 條未揭露褻瀆；未揭露的褻瀆不會被鎖，命中率 1/3。`;
   if (focus.reason === "lock") {
-    return `破潰石鎖在「${label}」。破潰就以這條為準。`;
+    return `破潰石鎖在「${label}」。破潰就以這條為準。${odds}`;
   }
   if (focus.reason === "item-level") {
     if (focus.tierWeight == null && focus.weight == null) {
-      return `先破潰「${label}」。所選目標沒有可用的出現權重，改以所選階級需求等級最高的一條為準。`;
+      return `先破潰「${label}」。所選目標沒有可用的出現權重，改以所選階級需求等級最高的一條為準。${odds}`;
     }
-    return `先破潰「${label}」。出現權重分不出高下，改以所選階級需求等級較高的一條為準。`;
+    return `先破潰「${label}」。出現權重分不出高下，改以所選階級需求等級較高的一條為準。${odds}`;
   }
-  return `先破潰「${label}」。在所選目標裡，這條的出現權重最低。`;
+  return `先破潰「${label}」。在所選目標裡，這條的出現權重最低。${odds}`;
 }
 
 export function suggestedCraftNode(decision: CraftDecision): CraftTreeNodeId {
@@ -1000,13 +1002,13 @@ export const CRAFTING_TREE: CraftTreeNode[] = [
     id: "fracture",
     title: { zhHant: "破潰", en: "Fracture" },
     summary: {
-      zhHant: "先破潰所選目標裡最稀有的那一條，再處理物品等級、填邊、褻瀆與收尾。",
-      en: "Fracture the rarest selected target first, then item level, the sides, desecration, and the finish.",
+      zhHant: "先破潰所選目標裡最稀有的那一條（4 條詞綴、其中 1 條是未揭露褻瀆時，命中率 1/3），再處理物品等級、填邊、褻瀆與收尾。",
+      en: "Fracture the rarest selected target first (1 in 3 with 4 mods, one of them an unrevealed desecration), then item level, the sides, desecration, and the finish.",
     },
     action: {
       zhHant:
-        "在勾選的目標裡，先破潰出現權重最低的那一條。權重看的是所選階級的 poe2db 出現率，愈低愈稀有；沒選階級時用整條詞綴的出現權重。權重相同，或完全沒有出現權重時，改以所選階級需求等級最高的那一條為準。破潰石若已鎖在某一條，就破那一條，不再另挑。接著才核對基底與物品等級。非目標側補上，目標側維持恰好 2 條，再褻瀆與清理。最後才上品質、催化劑、插槽，瓦爾放最後。",
-      en: "Among the selected targets, fracture the lowest spawn weight first. That weight is the chosen tier's poe2db drop chance — lower is rarer — or the family's weight when no tier is chosen. When the weights tie, or none is available, use the selected tier with the highest required item level. A fracture lock names the affix instead. Then check the base and item level. Fill the non-target side, hold the target side at exactly 2, then desecrate and clean up. Quality, catalysts, and sockets come last, and Vaal is last of all.",
+        "破潰石只對 4 條以上詞綴的稀有裝生效，鎖哪一條是隨機的，但未揭露的褻瀆詞綴不會被鎖。所以先湊成 4 條：目標加 2 條已揭露詞綴，再上骨留 1 條未揭露褻瀆，這時破潰鎖中目標的機率是 1/3，不是 1/4。鎖中後再到靈魂之井揭露。在勾選的目標裡，先破潰出現權重最低的那一條。權重看的是所選階級的 poe2db 出現率，愈低愈稀有；沒選階級時用整條詞綴的出現權重。權重相同，或完全沒有出現權重時，改以所選階級需求等級最高的那一條為準。破潰石若已鎖在某一條，就破那一條，不再另挑。接著才核對基底與物品等級。非目標側補上，目標側維持恰好 2 條，再褻瀆與清理。最後才上品質、催化劑、插槽，瓦爾放最後。",
+      en: "A Fracturing Orb needs a rare with at least 4 mods and locks one at random, but an unrevealed desecrated modifier cannot be locked. So build 4 mods first: the target plus 2 revealed mods, then bone the item and leave 1 desecration unrevealed. The fracture now lands on the target 1 time in 3, not 1 in 4. Reveal at the Well of Souls after the lock lands. Among the selected targets, fracture the lowest spawn weight first. That weight is the chosen tier's poe2db drop chance — lower is rarer — or the family's weight when no tier is chosen. When the weights tie, or none is available, use the selected tier with the highest required item level. A fracture lock names the affix instead. Then check the base and item level. Fill the non-target side, hold the target side at exactly 2, then desecrate and clean up. Quality, catalysts, and sockets come last, and Vaal is last of all.",
     },
     skip: {
       zhHant: "目標側已經有要留下的破裂，或破潰石已鎖在目標上，就不必再破第二條。升上稀有時，若工藝槽還要拿來頂掉失敗的褻瀆，先不要做永久保留的精髓或合金。",
@@ -1175,8 +1177,8 @@ export const CRAFT_DIAGRAM: CraftDiagramNode[] = [
     id: "fracture",
     title: { zhHant: "破潰", en: "Fracture" },
     choice: {
-      zhHant: "先破潰所選目標裡最稀有的一條。有破潰石鎖定就鎖那一條。",
-      en: "Fracture the rarest selected target first. A fracture lock uses that affix.",
+      zhHant: "先破潰所選目標裡最稀有的一條。目標加 2 條已揭露詞綴、1 條未揭露褻瀆，命中率 1/3。有破潰石鎖定就鎖那一條。",
+      en: "Fracture the rarest selected target first. Target plus 2 revealed mods and 1 unrevealed desecration gives 1 in 3. A fracture lock uses that affix.",
     },
   },
   {
