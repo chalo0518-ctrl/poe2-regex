@@ -7,7 +7,7 @@ import {
   type TabletKindId,
 } from "@poe2-regex/data";
 import { ChroniclesModBuilder } from "../components/ChroniclesModBuilder.tsx";
-import { endgameModBuilderChrome } from "../endgameModBuilderChrome.ts";
+import { endgameTabletChrome } from "../endgameModBuilderChrome.ts";
 import { useLocale } from "../i18n.tsx";
 
 export default function TabletsPage() {
@@ -59,7 +59,9 @@ export default function TabletsPage() {
           statsNote={t.statsFamilies(count?.families ?? 0, count?.tiers ?? 0)}
           sourceNote={t.sourcePoe2db(meta?.path ?? "")}
           families={families}
-          {...endgameModBuilderChrome}
+          {...endgameTabletChrome}
+          clearAllLabel={t.tabletsClearAll}
+          selectionHint={t.tabletsQuickHint}
         />
       )}
     </div>

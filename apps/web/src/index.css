@@ -103,3 +103,43 @@ body {
   border-color: #d46a5c;
   color: #fff;
 }
+
+.regex-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  cursor: pointer;
+  border: 1px solid var(--color-line);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  padding: 0.1rem 0.45rem;
+  font-size: 12px;
+  line-height: 1.3;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.regex-chip[data-tone="include"] {
+  border-color: #5cbc86;
+  color: #b7ebc9;
+}
+
+.regex-chip[data-tone="or"] {
+  border-color: #5aa0c8;
+  color: #c5e4f5;
+}
+
+.regex-chip[data-tone="exclude"] {
+  border-color: #d46a5c;
+  color: #ffd0c8;
+}
+
+.regex-chip[data-tone="axis"] {
+  border-color: var(--color-gold-dim);
+  color: var(--color-paper);
+}
+
+.regex-chip[data-tone="optimized"] {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}

@@ -158,6 +158,13 @@ type Messages = {
   waystonesThresholdHint: string;
   waystonesRegexPlaceholder: string;
   waystonesActive: (n: number) => string;
+  waystonesOptimize: string;
+  waystonesOptimizeTitle: string;
+  waystonesOptimizeTight: string;
+  waystonesOptimizeMixed: string;
+  waystonesOptimized: (label: string, from: number, to: number) => string;
+  waystonesClearAll: string;
+  waystonesChipRemove: (label: string) => string;
   tabletsKindHeading: string;
   tabletsKindHint: string;
   tabletsKindAria: string;
@@ -165,6 +172,14 @@ type Messages = {
   tabletsEmptyBody: string;
   tabletsTitle: (label: string) => string;
   tabletsDesc: string;
+  tabletsSearch: string;
+  tabletsSearchPlaceholder: string;
+  tabletsClearAll: string;
+  tabletsPinnedCounts: (selected: number, excluded: number) => string;
+  tabletsQuickHint: string;
+  clickModInclude: string;
+  regexRailLabel: string;
+  regexChipList: string;
   statsFamilies: (families: number, tiers: number) => string;
   shopStats: (mods: number, defaults: number) => string;
   sourcePoe2db: (path: string) => string;
@@ -357,13 +372,29 @@ const zhHant: Messages = {
     "每項可填最小／最大（空白＝忽略）。已填的軸以 AND 組合，對換界石上的總數值（與市集相同）。",
   waystonesRegexPlaceholder: "填入數值後，正則會顯示在這裡",
   waystonesActive: (n) => (n === 0 ? "尚未設定篩選" : `已設定 ${n} 軸`),
+  waystonesOptimize: "優化長度",
+  waystonesOptimizeTitle:
+    "預設關閉，下限維持精確。開啟後先把單一數字的 \\d 寫成較短的 .（整數下限不變，. 也可能吃到非數字）。若整段仍超過 250 字，才把下限下修到上一個整百或整十，不會改成任意數字。下修的軸會標成優化，因為會匹配低於你填的最小值。仍放不下就另外顯示超過 250 字。",
+  waystonesOptimizeTight: "數字寫法已縮短（. 代表一位數字），下限仍是你填的值。",
+  waystonesOptimizeMixed: "標成優化的軸會匹配低於輸入值；沒標的軸下限仍是你填的值。",
+  waystonesOptimized: (label, from, to) => `優化：${label} 下限 ${from}→${to}（會匹配低於輸入值）`,
+  waystonesClearAll: "清空全部",
+  waystonesChipRemove: (label) => `清除${label}`,
   tabletsKindHeading: "碑牌種類",
   tabletsKindHint: "請先選擇碑牌種類。詞綴清單只顯示該種類頁面上可骰出的詞綴，不會把八種碑牌混在一起再假裝篩選。",
   tabletsKindAria: "碑牌種類",
   tabletsEmptyTitle: "尚未選擇碑牌",
   tabletsEmptyBody: "選一種碑牌後才會載入該頁的前綴／後綴。裂痕碑牌不會看到探險專屬詞綴，以此類推。",
   tabletsTitle: (label) => `${label}詞綴正則`,
-  tabletsDesc: "種類已鎖定目前碑牌。每列右側選「是」AND 包含、「或」OR 包含、「否」排除；未選不寫入。底部以 AND 產生倉庫正則，「或」項先合成一組。",
+  tabletsDesc: "種類已鎖定目前碑牌。點詞綴文字選「是」，右側「否」排除、「或」仍可選。未選不寫入。是項 AND，「或」合成一組再 AND，否走排除。",
+  tabletsSearch: "搜尋詞綴",
+  tabletsSearchPlaceholder: "搜尋此碑牌詞綴",
+  tabletsClearAll: "清空全部條件",
+  tabletsPinnedCounts: (selected, excluded) => `已選 ${selected} · 排除 ${excluded}`,
+  tabletsQuickHint: "點詞綴文字選「是」。右側「否」排除，「或」仍可選。常見範圍直接顯示在列上，展開才看完整階層。",
+  clickModInclude: "點此詞綴選「是」",
+  regexRailLabel: "倉庫正則",
+  regexChipList: "已選條件",
   statsFamilies: (families, tiers) => `${families} 組詞綴 · ${tiers} 階`,
   shopStats: (mods, defaults) => `${mods} 組商店詞綴 · ${defaults} 項預設包含`,
   sourcePoe2db: (path) => `來源 poe2db.tw /tw /us · ${path}`,
@@ -560,6 +591,14 @@ const en: Messages = {
     "Each row is min/max (leave empty to ignore). Filled axes AND together and match totals on the waystone, like trade.",
   waystonesRegexPlaceholder: "Enter a min/max value and the regex shows up here",
   waystonesActive: (n) => (n === 0 ? "No filters set" : `${n} filter${n === 1 ? "" : "s"} set`),
+  waystonesOptimize: "Shorter length",
+  waystonesOptimizeTitle:
+    "Off by default, so minimums stay exact. On: a single \\d becomes a shorter dot (same integer floor; the dot can also match a non-digit). If the string is still over 250 characters, minimums step down to the previous hundred or ten and stop before matching any number. Each lowered axis is marked 優化. A separate warning remains if it still does not fit.",
+  waystonesOptimizeTight: "Numeric tokens are shorter (a dot stands for one digit). Minimums are still what you typed.",
+  waystonesOptimizeMixed: "Axes marked 優化 can match below the typed minimum. Unmarked axes keep the typed minimum.",
+  waystonesOptimized: (label, from, to) => `優化: ${label} min ${from}→${to} (matches below the typed value)`,
+  waystonesClearAll: "Clear all",
+  waystonesChipRemove: (label) => `Clear ${label}`,
   tabletsKindHeading: "Tablet kind",
   tabletsKindHint:
     "Pick a tablet kind first. The list only shows mods from that page — it does not union all eight then fake-filter.",
@@ -568,7 +607,16 @@ const en: Messages = {
   tabletsEmptyBody: "Choose a kind to load that page’s prefixes/suffixes. Breach will not show Expedition-only mods.",
   tabletsTitle: (label) => `${label} affix regex`,
   tabletsDesc:
-    "Kind is locked. Use Yes (AND), Or (OR), or No (exclude) on each row; unselected rows are ignored. Or fragments become one OR group, then AND’d with Yes.",
+    "Kind is locked. Click the mod text for Yes. No excludes, and Or stays on the row. Unselected rows are ignored. Yes rows AND, Or rows become one group, No uses !.",
+  tabletsSearch: "Search mods",
+  tabletsSearchPlaceholder: "Search this tablet’s mods",
+  tabletsClearAll: "Clear all conditions",
+  tabletsPinnedCounts: (selected, excluded) => `Selected ${selected} · Excluded ${excluded}`,
+  tabletsQuickHint:
+    "Click the mod text for Yes. No excludes, and Or stays on the right. The common roll span sits on the row; expand for full tiers.",
+  clickModInclude: "Click this mod to select Yes",
+  regexRailLabel: "Stash regex",
+  regexChipList: "Selected conditions",
   statsFamilies: (families, tiers) => `${families} families · ${tiers} tiers`,
   shopStats: (mods, defaults) => `${mods} shop mods · ${defaults} default includes`,
   sourcePoe2db: (path) => `Source poe2db.tw /tw /us · ${path}`,

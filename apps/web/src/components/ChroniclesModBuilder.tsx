@@ -32,6 +32,7 @@ import {
   type RegexMod,
 } from "@poe2-regex/regex";
 import { useLocale } from "../i18n.tsx";
+import { RegexRail, type RegexChip } from "./RegexRail.tsx";
 
 export type ModPickState = {
   polarity: Polarity;
@@ -54,6 +55,23 @@ function tierFloor(family: AffixFamily, index: number | null | undefined): strin
   const tier = family.tiers[index];
   if (!tier || family.kind !== "numeric" || tier.statMin == null) return "";
   return String(tier.statMin);
+}
+
+/** Common roll span shown on the row. Prefers the catalog suggestion, then tier stats. */
+export function commonSpan(family: AffixFamily): { min: number; max: number } | null {
+  const suggested = family.numeric?.suggestedMin;
+  if (suggested != null) {
+    return { min: suggested, max: family.numeric?.suggestedMax ?? suggested };
+  }
+  let min: number | undefined;
+  let max: number | undefined;
+  for (const tier of family.tiers) {
+    if (tier.statMin != null) min = min == null ? tier.statMin : Math.min(min, tier.statMin);
+    const top = tier.statMax ?? tier.statMin;
+    if (top != null) max = max == null ? top : Math.max(max, top);
+  }
+  if (min == null) return null;
+  return { min, max: max ?? min };
 }
 
 /** Checked and still-selectable rows stay above conflict or cap-dimmed rows. */
@@ -178,6 +196,14 @@ export function ChroniclesModBuilder({
   rowKind = "target",
   stickyLock = false,
   selectionCount,
+  showSearch = false,
+  hanFold = false,
+  quickPolarity = false,
+  showInlineRange = false,
+  showSelectionChips = false,
+  pinSelectionCounts = false,
+  clearAllLabel,
+  selectionHint,
 }: {
   kicker: string;
   title: string;
@@ -229,6 +255,18 @@ export function ChroniclesModBuilder({
   /** Owned sheet cannot clear the row that holds the desecration lock. */
   stickyLock?: boolean;
   selectionCount?: (count: number) => string;
+  /** Search box over the current list. Tablets use this; the full filter chrome stays separate. */
+  showSearch?: boolean;
+  /** Fold simplified/traditional Han so either query hits traditional mod text. */
+  hanFold?: boolean;
+  /** Clicking the mod text selects 是. 或 and 否 stay as buttons. */
+  quickPolarity?: boolean;
+  /** Show 常見 min–max on the row, not only after expand or after a pick. */
+  showInlineRange?: boolean;
+  showSelectionChips?: boolean;
+  pinSelectionCounts?: boolean;
+  clearAllLabel?: string;
+  selectionHint?: string;
 }) {
   const { locale, t } = useLocale();
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
@@ -294,13 +332,13 @@ export function ChroniclesModBuilder({
     return families
       .map((family) => {
         const tagOk = matchesTagFilter(family, tagStates);
-        const textOk = matchesText(family, query);
+        const textOk = matchesText(family, query, { hanFold });
         const ilvlOk = matchesIlvl(family, minLv, maxLv);
         const matched = tagOk && textOk && ilvlOk;
         return { family, matched };
       })
       .filter((row) => row.matched || showHidden);
-  }, [families, tagStates, query, minLv, maxLv, showHidden]);
+  }, [families, tagStates, query, minLv, maxLv, showHidden, hanFold]);
 
   const prefixes = listed.filter((r) => r.family.generation === "prefix");
   const suffixes = listed.filter((r) => r.family.generation === "suffix");
@@ -477,10 +515,40 @@ export function ChroniclesModBuilder({
   const includeN = selected.filter((f) => picks[f.id]?.polarity === "include").length;
   const orN = selected.filter((f) => picks[f.id]?.polarity === "or").length;
   const excludeN = selected.filter((f) => picks[f.id]?.polarity === "exclude").length;
-  const lengthPct = Math.min(100, (result.length / MAX_LENGTH) * 100);
+
+  const selectionChips: RegexChip[] | undefined = showSelectionChips
+    ? selected.flatMap((family) => {
+        const polarity = picks[family.id]?.polarity;
+        if (!polarity) return [];
+        const mark =
+          polarity === "include" ? t.polarityYes : polarity === "or" ? t.polarityOr : t.polarityNo;
+        const name = effectText(family, locale);
+        const short = name.length > 22 ? `${name.slice(0, 22)}…` : name;
+        return [
+          {
+            id: family.id,
+            label: `${mark} ${short}`,
+            tone: polarity,
+            removeLabel: t.waystonesChipRemove(`${mark} ${short}`),
+            onRemove: () => setPickPolarity(family, polarity),
+          },
+        ];
+      })
+    : undefined;
+
+  const railAlerts = [
+    ...result.warnings.map((w) =>
+      w === "over-limit"
+        ? t.warningOverLimit(MAX_LENGTH)
+        : w === "missing-match"
+          ? t.warningMissing
+          : w,
+    ),
+    copyError,
+  ].filter(Boolean);
 
   return (
-    <div className={dockRegex ? "pb-40" : "pb-2"}>
+    <div className={dockRegex ? (showSelectionChips ? "pb-72" : "pb-40") : "pb-2"}>
       <header className="mb-4 flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs tracking-[0.28em] text-gold-dim">{kicker}</p>
@@ -590,6 +658,22 @@ export function ChroniclesModBuilder({
         </div>
       )}
 
+      {showSearch && (
+        <label className="mb-3 flex min-w-0 items-center gap-2 text-sm text-muted">
+          <span className="shrink-0">{t.tabletsSearch}</span>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={t.tabletsSearchPlaceholder}
+            aria-label={t.tabletsSearch}
+            className="w-full rounded-sm border border-line bg-raised px-2 py-1.5 text-paper outline-none placeholder:text-muted focus:border-gold"
+          />
+        </label>
+      )}
+
+      {selectionHint && <p className="mb-3 text-xs text-muted">{selectionHint}</p>}
+
       <p className="mb-3 text-xs text-muted">
         {t.listed(listed.filter((r) => r.matched).length)}
         {showHideToggle && showHidden ? t.listedHidden(listed.filter((r) => !r.matched).length) : ""}
@@ -614,6 +698,8 @@ export function ChroniclesModBuilder({
             pickMode={pickMode}
             rowKind={rowKind}
             stickyLock={stickyLock}
+            quickPolarity={quickPolarity}
+            showInlineRange={showInlineRange}
             blockTitles={blockTitles}
             onPolarity={setPickPolarity}
             onToggleTarget={setTargetChecked}
@@ -686,85 +772,30 @@ export function ChroniclesModBuilder({
         );
       })()}
 
-      {showRegex && <div
-        className={
-          dockRegex
-            ? "fixed inset-x-0 bottom-0 z-10 border-t border-line bg-panel/95 backdrop-blur"
-            : "mt-4 rounded-sm border border-line bg-panel"
-        }
-      >
-        <div className="mx-auto flex max-w-[1280px] flex-col gap-2 px-4 py-3 sm:px-6">
-          {regexCaption && <p className="text-xs text-gold-dim">{regexCaption}</p>}
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="min-w-16 text-xs text-muted">
-              <span className={result.overLimit ? "text-exclude" : "text-gold"}>
-                {result.length}
-              </span>
-              /{MAX_LENGTH}
-            </div>
-            <div className="h-2 min-w-24 flex-1 overflow-hidden rounded-full bg-raised">
-              <div
-                className={`h-full ${result.overLimit ? "bg-exclude" : "bg-gold"}`}
-                style={{ width: `${lengthPct}%` }}
-              />
-            </div>
-            <div className="flex overflow-hidden rounded-sm border border-line text-xs">
-              <button
-                type="button"
-                onClick={() => setLang("zh-Hant")}
-                className={`px-2 py-1 ${lang === "zh-Hant" ? "bg-gold text-ink" : "text-muted"}`}
-              >
-                {t.matchZhHant}
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang("en")}
-                className={`px-2 py-1 ${lang === "en" ? "bg-gold text-ink" : "text-muted"}`}
-              >
-                {t.matchEn}
-              </button>
-            </div>
-            <button
-              type="button"
-              onClick={() => updatePicks(() => ({ ...(defaultPicks ?? {}) }))}
-              className="rounded-sm border border-line px-3 py-1.5 text-sm text-muted hover:text-paper"
-            >
-              {t.reset}
-            </button>
-            <button
-              type="button"
-              disabled={!result.pattern}
-              onClick={() => void copyPattern()}
-              className="rounded-sm bg-gold px-3 py-1.5 text-sm font-medium text-ink disabled:opacity-40"
-            >
-              {copied ? t.copied : t.copy}
-            </button>
-          </div>
-          <div className="overflow-x-auto rounded-sm border border-line bg-ink px-3 py-2 font-mono text-sm text-gold">
-            {result.pattern || (
-              <span className="text-muted">
-                {pickMode === "target" ? t.craftingRegexPlaceholder : t.regexPlaceholder}
-              </span>
-            )}
-          </div>
-          {(result.warnings.length > 0 || copyError) && (
-            <p className="text-xs text-exclude">
-              {[
-                ...result.warnings.map((w) =>
-                  w === "over-limit"
-                    ? t.warningOverLimit(MAX_LENGTH)
-                    : w === "missing-match"
-                      ? t.warningMissing
-                      : w,
-                ),
-                copyError,
-              ]
-                .filter(Boolean)
-                .join(" · ")}
-            </p>
-          )}
-        </div>
-      </div>}
+      {showRegex && (
+        <RegexRail
+          dock={dockRegex}
+          pattern={result.pattern}
+          length={result.length}
+          overLimit={result.overLimit}
+          placeholder={pickMode === "target" ? t.craftingRegexPlaceholder : t.regexPlaceholder}
+          alerts={railAlerts}
+          copied={copied}
+          onCopy={() => void copyPattern()}
+          onReset={() => updatePicks(() => ({ ...(defaultPicks ?? {}) }))}
+          clearAllLabel={clearAllLabel}
+          onClearAll={
+            clearAllLabel ? () => updatePicks(() => ({ ...(defaultPicks ?? {}) })) : undefined
+          }
+          lang={lang}
+          onLang={setLang}
+          chips={selectionChips}
+          counts={
+            pinSelectionCounts ? t.tabletsPinnedCounts(includeN + orN, excludeN) : undefined
+          }
+          caption={regexCaption}
+        />
+      )}
 
       {showImport && importOpen && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/60 p-4">
@@ -816,6 +847,8 @@ function AffixColumn({
   pickMode,
   rowKind,
   stickyLock,
+  quickPolarity,
+  showInlineRange,
   blockTitles,
   onPolarity,
   onToggleTarget,
@@ -835,6 +868,8 @@ function AffixColumn({
   pickMode: ModPickMode;
   rowKind: "target" | "owned";
   stickyLock: boolean;
+  quickPolarity: boolean;
+  showInlineRange: boolean;
   blockTitles: Record<string, string>;
   onPolarity: (family: AffixFamily, next: Polarity) => void;
   onToggleTarget: (family: AffixFamily, on: boolean) => void;
@@ -860,6 +895,8 @@ function AffixColumn({
       pickMode={pickMode}
       rowKind={rowKind}
       stickyLock={stickyLock}
+      quickPolarity={quickPolarity}
+      showInlineRange={showInlineRange}
       blockedTitle={blockTitles[family.id]}
       onPolarity={(next) => onPolarity(family, next)}
       onToggleTarget={(on) => onToggleTarget(family, on)}
@@ -946,6 +983,8 @@ function AffixRow({
   pickMode,
   rowKind,
   stickyLock,
+  quickPolarity,
+  showInlineRange,
   blockedTitle,
   onPolarity,
   onToggleTarget,
@@ -963,6 +1002,8 @@ function AffixRow({
   pickMode: ModPickMode;
   rowKind: "target" | "owned";
   stickyLock: boolean;
+  quickPolarity: boolean;
+  showInlineRange: boolean;
   blockedTitle?: string;
   onPolarity: (next: Polarity) => void;
   onToggleTarget: (on: boolean) => void;
@@ -982,6 +1023,7 @@ function AffixRow({
     (pick?.polarity === "include" || pick?.polarity === "or");
   const primary = effectText(family, locale);
   const secondary = effectTextSecondary(family, locale);
+  const inlineSpan = showInlineRange ? commonSpan(family) : null;
   const tags = affixTagLabels(family, locale);
   const tierChoices = targetMode ? craftTierChoices(family) : [];
   const selectedTier = pick?.minTierIndex ?? null;
@@ -999,7 +1041,23 @@ function AffixRow({
             {showFamilyNames && (
               <span className="text-sm text-gold">{familyLabel(family, locale)}</span>
             )}
-            <span className="text-sm text-paper">{primary}</span>
+            {quickPolarity && !targetMode ? (
+              <button
+                type="button"
+                className="text-left text-sm text-paper hover:text-gold"
+                title={t.clickModInclude}
+                onClick={() => onPolarity("include")}
+              >
+                {primary}
+              </button>
+            ) : (
+              <span className="text-sm text-paper">{primary}</span>
+            )}
+            {inlineSpan && (
+              <span className="rounded-sm border border-line px-1.5 py-0.5 font-mono text-[11px] text-gold-dim">
+                {t.commonRange(inlineSpan.min, inlineSpan.max)}
+              </span>
+            )}
             {showAffixTags &&
               tags.map((tag) => (
                 <span
@@ -1101,7 +1159,7 @@ function AffixRow({
             placeholder={t.max}
             className="w-16 rounded-sm border border-line bg-ink px-1.5 py-1 text-paper outline-none placeholder:text-muted focus:border-gold"
           />
-          {family.numeric?.suggestedMin != null && (
+          {!showInlineRange && family.numeric?.suggestedMin != null && (
             <span className="text-muted">
               {t.commonRange(family.numeric.suggestedMin, family.numeric.suggestedMax ?? family.numeric.suggestedMin)}
             </span>
