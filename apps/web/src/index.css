@@ -146,8 +146,57 @@ body {
 }
 
 .axis-range {
-  accent-color: var(--color-gold);
+  -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   height: 1.25rem;
+  margin: 0;
+  background: transparent;
   cursor: pointer;
+}
+
+.axis-range:focus {
+  outline: none;
+}
+
+.axis-range::-webkit-slider-runnable-track {
+  height: 4px;
+  background: var(--color-line);
+  border-radius: 999px;
+}
+
+.axis-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -5px;
+  background: var(--color-gold);
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--color-gold-dim);
+}
+
+.axis-range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 4px var(--color-gold-dim);
+}
+
+.axis-range::-moz-range-track {
+  height: 4px;
+  background: var(--color-line);
+  border: none;
+  border-radius: 999px;
+}
+
+.axis-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: var(--color-gold);
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--color-gold-dim);
+}
+
+.axis-range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 4px var(--color-gold-dim);
 }
