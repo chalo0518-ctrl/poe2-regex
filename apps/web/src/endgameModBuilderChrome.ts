@@ -17,4 +17,5 @@ export const endgameTabletChrome = {
   showInlineRange: true,
   showSelectionChips: true,
   pinSelectionCounts: true,
+  polarityStyle: "yon",
 } as const;

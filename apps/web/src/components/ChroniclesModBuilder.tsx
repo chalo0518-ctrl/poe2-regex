@@ -204,6 +204,7 @@ export function ChroniclesModBuilder({
   pinSelectionCounts = false,
   clearAllLabel,
   selectionHint,
+  polarityStyle = "default",
 }: {
   kicker: string;
   title: string;
@@ -259,7 +260,7 @@ export function ChroniclesModBuilder({
   showSearch?: boolean;
   /** Fold simplified/traditional Han so either query hits traditional mod text. */
   hanFold?: boolean;
-  /** Clicking the mod text selects 是. 或 and 否 stay as buttons. */
+  /** Clicking the mod text selects include. Or and exclude stay as buttons. */
   quickPolarity?: boolean;
   /** Show 常見 min–max on the row, not only after expand or after a pick. */
   showInlineRange?: boolean;
@@ -267,6 +268,8 @@ export function ChroniclesModBuilder({
   pinSelectionCounts?: boolean;
   clearAllLabel?: string;
   selectionHint?: string;
+  /** Tablets use Y/O/N. Other pages keep 是／或／否. */
+  polarityStyle?: "default" | "yon";
 }) {
   const { locale, t } = useLocale();
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
@@ -515,13 +518,22 @@ export function ChroniclesModBuilder({
   const includeN = selected.filter((f) => picks[f.id]?.polarity === "include").length;
   const orN = selected.filter((f) => picks[f.id]?.polarity === "or").length;
   const excludeN = selected.filter((f) => picks[f.id]?.polarity === "exclude").length;
+  const yon = polarityStyle === "yon";
+  const marks = {
+    yes: yon ? t.tabletsPolarityYes : t.polarityYes,
+    or: yon ? t.tabletsPolarityOr : t.polarityOr,
+    no: yon ? t.tabletsPolarityNo : t.polarityNo,
+    yesTitle: yon ? t.tabletsPolarityYesTitle : t.polarityYesTitle,
+    orTitle: yon ? t.tabletsPolarityOrTitle : t.polarityOrTitle,
+    noTitle: yon ? t.tabletsPolarityNoTitle : t.polarityNoTitle,
+    clickInclude: yon ? t.tabletsClickInclude : t.clickModInclude,
+  };
 
   const selectionChips: RegexChip[] | undefined = showSelectionChips
     ? selected.flatMap((family) => {
         const polarity = picks[family.id]?.polarity;
         if (!polarity) return [];
-        const mark =
-          polarity === "include" ? t.polarityYes : polarity === "or" ? t.polarityOr : t.polarityNo;
+        const mark = polarity === "include" ? marks.yes : polarity === "or" ? marks.or : marks.no;
         const name = effectText(family, locale);
         const short = name.length > 22 ? `${name.slice(0, 22)}…` : name;
         return [
@@ -681,7 +693,9 @@ export function ChroniclesModBuilder({
           ? locale === "en"
             ? `. ${(selectionCount ?? t.craftingSelectedCount)(selected.length)}`
             : `。${(selectionCount ?? t.craftingSelectedCount)(selected.length)}`
-          : t.regexCounts(includeN, orN, excludeN)}
+          : yon
+            ? t.tabletsRegexCounts(includeN, orN, excludeN)
+            : t.regexCounts(includeN, orN, excludeN)}
         {showTags ? t.tagHelp : ""}
       </p>
 
@@ -700,6 +714,7 @@ export function ChroniclesModBuilder({
             stickyLock={stickyLock}
             quickPolarity={quickPolarity}
             showInlineRange={showInlineRange}
+            marks={marks}
             blockTitles={blockTitles}
             onPolarity={setPickPolarity}
             onToggleTarget={setTargetChecked}
@@ -778,7 +793,13 @@ export function ChroniclesModBuilder({
           pattern={result.pattern}
           length={result.length}
           overLimit={result.overLimit}
-          placeholder={pickMode === "target" ? t.craftingRegexPlaceholder : t.regexPlaceholder}
+          placeholder={
+            pickMode === "target"
+              ? t.craftingRegexPlaceholder
+              : yon
+                ? t.tabletsRegexPlaceholder
+                : t.regexPlaceholder
+          }
           alerts={railAlerts}
           copied={copied}
           onCopy={() => void copyPattern()}
@@ -836,6 +857,16 @@ export function ChroniclesModBuilder({
   );
 }
 
+type PolarityMarks = {
+  yes: string;
+  or: string;
+  no: string;
+  yesTitle: string;
+  orTitle: string;
+  noTitle: string;
+  clickInclude: string;
+};
+
 function AffixColumn({
   title,
   rows,
@@ -849,6 +880,7 @@ function AffixColumn({
   stickyLock,
   quickPolarity,
   showInlineRange,
+  marks,
   blockTitles,
   onPolarity,
   onToggleTarget,
@@ -870,6 +902,7 @@ function AffixColumn({
   stickyLock: boolean;
   quickPolarity: boolean;
   showInlineRange: boolean;
+  marks: PolarityMarks;
   blockTitles: Record<string, string>;
   onPolarity: (family: AffixFamily, next: Polarity) => void;
   onToggleTarget: (family: AffixFamily, on: boolean) => void;
@@ -897,6 +930,7 @@ function AffixColumn({
       stickyLock={stickyLock}
       quickPolarity={quickPolarity}
       showInlineRange={showInlineRange}
+      marks={marks}
       blockedTitle={blockTitles[family.id]}
       onPolarity={(next) => onPolarity(family, next)}
       onToggleTarget={(on) => onToggleTarget(family, on)}
@@ -940,15 +974,17 @@ function AffixColumn({
 function PolarityToggle({
   value,
   onChange,
+  marks,
 }: {
   value: Polarity | "off";
   onChange: (next: Polarity) => void;
+  marks: PolarityMarks;
 }) {
   const { t } = useLocale();
   const options: { id: Polarity; label: string; title: string }[] = [
-    { id: "include", label: t.polarityYes, title: t.polarityYesTitle },
-    { id: "or", label: t.polarityOr, title: t.polarityOrTitle },
-    { id: "exclude", label: t.polarityNo, title: t.polarityNoTitle },
+    { id: "include", label: marks.yes, title: marks.yesTitle },
+    { id: "or", label: marks.or, title: marks.orTitle },
+    { id: "exclude", label: marks.no, title: marks.noTitle },
   ];
   return (
     <div
@@ -985,6 +1021,7 @@ function AffixRow({
   stickyLock,
   quickPolarity,
   showInlineRange,
+  marks,
   blockedTitle,
   onPolarity,
   onToggleTarget,
@@ -1004,6 +1041,7 @@ function AffixRow({
   stickyLock: boolean;
   quickPolarity: boolean;
   showInlineRange: boolean;
+  marks: PolarityMarks;
   blockedTitle?: string;
   onPolarity: (next: Polarity) => void;
   onToggleTarget: (on: boolean) => void;
@@ -1045,7 +1083,7 @@ function AffixRow({
               <button
                 type="button"
                 className="text-left text-sm text-paper hover:text-gold"
-                title={t.clickModInclude}
+                title={marks.clickInclude}
                 onClick={() => onPolarity("include")}
               >
                 {primary}
@@ -1131,7 +1169,7 @@ function AffixRow({
             </button>
           </div>
         ) : (
-          <PolarityToggle value={pick?.polarity ?? "off"} onChange={onPolarity} />
+          <PolarityToggle value={pick?.polarity ?? "off"} onChange={onPolarity} marks={marks} />
         )}
         <button
           type="button"

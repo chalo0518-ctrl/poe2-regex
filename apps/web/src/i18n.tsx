@@ -177,6 +177,15 @@ type Messages = {
   tabletsClearAll: string;
   tabletsPinnedCounts: (selected: number, excluded: number) => string;
   tabletsQuickHint: string;
+  tabletsPolarityYes: string;
+  tabletsPolarityOr: string;
+  tabletsPolarityNo: string;
+  tabletsPolarityYesTitle: string;
+  tabletsPolarityOrTitle: string;
+  tabletsPolarityNoTitle: string;
+  tabletsClickInclude: string;
+  tabletsRegexPlaceholder: string;
+  tabletsRegexCounts: (includeN: number, orN: number, excludeN: number) => string;
   clickModInclude: string;
   regexRailLabel: string;
   regexChipList: string;
@@ -386,12 +395,21 @@ const zhHant: Messages = {
   tabletsEmptyTitle: "尚未選擇碑牌",
   tabletsEmptyBody: "選一種碑牌後才會載入該頁的前綴／後綴。裂痕碑牌不會看到探險專屬詞綴，以此類推。",
   tabletsTitle: (label) => `${label}詞綴正則`,
-  tabletsDesc: "種類已鎖定目前碑牌。點詞綴文字選「是」，右側「否」排除、「或」仍可選。未選不寫入。是項 AND，「或」合成一組再 AND，否走排除。",
+  tabletsDesc: "種類已鎖定目前碑牌。點詞綴文字選 Y，右側 N 排除、O 仍可選。未選不寫入。Y 項 AND，O 合成一組再 AND，N 走排除。",
   tabletsSearch: "搜尋詞綴",
   tabletsSearchPlaceholder: "搜尋此碑牌詞綴",
   tabletsClearAll: "清空全部條件",
   tabletsPinnedCounts: (selected, excluded) => `已選 ${selected} · 排除 ${excluded}`,
-  tabletsQuickHint: "點詞綴文字選「是」。右側「否」排除，「或」仍可選。常見範圍直接顯示在列上，展開才看完整階層。",
+  tabletsQuickHint: "點詞綴文字選 Y。右側 N 排除，O 仍可選。常見範圍直接顯示在列上，展開才看完整階層。",
+  tabletsPolarityYes: "Y",
+  tabletsPolarityOr: "O",
+  tabletsPolarityNo: "N",
+  tabletsPolarityYesTitle: "Y：包含此詞條（AND）",
+  tabletsPolarityOrTitle: "O：包含此詞條（OR 一組）",
+  tabletsPolarityNoTitle: "N：排除此詞條",
+  tabletsClickInclude: "點此詞綴選 Y",
+  tabletsRegexPlaceholder: "每列選 Y、O 或 N，正則會顯示在這裡",
+  tabletsRegexCounts: (includeN, orN, excludeN) => `。Y ${includeN} · O ${orN} · N ${excludeN}`,
   clickModInclude: "點此詞綴選「是」",
   regexRailLabel: "倉庫正則",
   regexChipList: "已選條件",
@@ -607,13 +625,22 @@ const en: Messages = {
   tabletsEmptyBody: "Choose a kind to load that page’s prefixes/suffixes. Breach will not show Expedition-only mods.",
   tabletsTitle: (label) => `${label} affix regex`,
   tabletsDesc:
-    "Kind is locked. Click the mod text for Yes. No excludes, and Or stays on the row. Unselected rows are ignored. Yes rows AND, Or rows become one group, No uses !.",
+    "Kind is locked. Click the mod text for Y. N excludes, and O stays on the row. Unselected rows are ignored. Y rows AND, O rows become one group, N uses !.",
   tabletsSearch: "Search mods",
   tabletsSearchPlaceholder: "Search this tablet’s mods",
   tabletsClearAll: "Clear all conditions",
   tabletsPinnedCounts: (selected, excluded) => `Selected ${selected} · Excluded ${excluded}`,
   tabletsQuickHint:
-    "Click the mod text for Yes. No excludes, and Or stays on the right. The common roll span sits on the row; expand for full tiers.",
+    "Click the mod text for Y. N excludes, and O stays on the right. The common roll span sits on the row; expand for full tiers.",
+  tabletsPolarityYes: "Y",
+  tabletsPolarityOr: "O",
+  tabletsPolarityNo: "N",
+  tabletsPolarityYesTitle: "Y: include this mod (AND)",
+  tabletsPolarityOrTitle: "O: include this mod (OR group)",
+  tabletsPolarityNoTitle: "N: exclude this mod",
+  tabletsClickInclude: "Click this mod to select Y",
+  tabletsRegexPlaceholder: "Choose Y, O, or N on a row; the regex shows up here",
+  tabletsRegexCounts: (includeN, orN, excludeN) => `. Y ${includeN} · O ${orN} · N ${excludeN}`,
   clickModInclude: "Click this mod to select Yes",
   regexRailLabel: "Stash regex",
   regexChipList: "Selected conditions",

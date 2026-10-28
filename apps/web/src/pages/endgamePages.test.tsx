@@ -49,18 +49,25 @@ describe("endgame tablets page", () => {
 
     const chestRow = screen.getByText("地圖內含有額外的(2—3)個稀有箱子").closest("li");
     expect(chestRow).toBeTruthy();
-    expect(within(chestRow as HTMLElement).getByRole("button", { name: "是" })).toHaveAttribute(
+    expect(within(chestRow as HTMLElement).getByRole("button", { name: "Y" })).toHaveAttribute(
       "aria-pressed",
       "false",
     );
-    expect(within(chestRow as HTMLElement).getByRole("button", { name: "或" })).toHaveAttribute(
+    expect(within(chestRow as HTMLElement).getByRole("button", { name: "Y" })).toHaveAttribute(
+      "title",
+      "Y：包含此詞條（AND）",
+    );
+    expect(within(chestRow as HTMLElement).getByRole("button", { name: "O" })).toHaveAttribute(
       "aria-pressed",
       "false",
     );
-    expect(within(chestRow as HTMLElement).getByRole("button", { name: "否" })).toHaveAttribute(
+    expect(within(chestRow as HTMLElement).getByRole("button", { name: "N" })).toHaveAttribute(
       "aria-pressed",
       "false",
     );
+    expect(within(chestRow as HTMLElement).queryByRole("button", { name: "是" })).not.toBeInTheDocument();
+    expect(within(chestRow as HTMLElement).queryByRole("button", { name: "或" })).not.toBeInTheDocument();
+    expect(within(chestRow as HTMLElement).queryByRole("button", { name: "否" })).not.toBeInTheDocument();
     expect(within(chestRow as HTMLElement).queryByRole("button", { name: "空" })).not.toBeInTheDocument();
     expect(screen.getByRole("searchbox", { name: "搜尋詞綴" })).toBeInTheDocument();
     expect(screen.getByText("常見 2–3")).toBeInTheDocument();
@@ -68,9 +75,12 @@ describe("endgame tablets page", () => {
     const rail = screen.getByRole("region", { name: "倉庫正則" });
     expect(rail).toHaveAttribute("data-regex-rail", "dock");
     expect(rail).toHaveTextContent("已選 0 · 排除 0");
+    expect(rail).toHaveTextContent("每列選 Y、O 或 N");
+    expect(screen.getByText(/Y 0 · O 0 · N 0/)).toBeInTheDocument();
+    expect(screen.getByText("點詞綴文字選 Y。右側 N 排除，O 仍可選。常見範圍直接顯示在列上，展開才看完整階層。")).toBeInTheDocument();
   });
 
-  it("searches the current kind, selects 是 from the mod text, and still reaches 或 and 否", async () => {
+  it("searches the current kind, selects Y from the mod text, and still reaches O and N", async () => {
     const user = userEvent.setup();
     renderPage(<TabletsPage />);
     await user.click(screen.getByRole("option", { name: /裂痕碑牌/ }));
@@ -89,20 +99,24 @@ describe("endgame tablets page", () => {
 
     await user.click(chest);
     const row = chest.closest("li") as HTMLElement;
-    expect(within(row).getByRole("button", { name: "是" })).toHaveAttribute("aria-pressed", "true");
-    expect(within(row).getByRole("button", { name: "或" })).toHaveAttribute("aria-pressed", "false");
-    expect(within(row).getByRole("button", { name: "否" })).toHaveAttribute("aria-pressed", "false");
+    expect(chest).toHaveAttribute("title", "點此詞綴選 Y");
+    expect(within(row).getByRole("button", { name: "Y" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(row).getByRole("button", { name: "O" })).toHaveAttribute("aria-pressed", "false");
+    expect(within(row).getByRole("button", { name: "N" })).toHaveAttribute("aria-pressed", "false");
 
-    await user.click(within(row).getByRole("button", { name: "或" }));
-    expect(within(row).getByRole("button", { name: "或" })).toHaveAttribute("aria-pressed", "true");
-    await user.click(within(row).getByRole("button", { name: "否" }));
-    expect(within(row).getByRole("button", { name: "否" })).toHaveAttribute("aria-pressed", "true");
+    await user.click(within(row).getByRole("button", { name: "O" }));
+    expect(within(row).getByRole("button", { name: "O" })).toHaveAttribute("aria-pressed", "true");
+    await user.click(within(row).getByRole("button", { name: "N" }));
+    expect(within(row).getByRole("button", { name: "N" })).toHaveAttribute("aria-pressed", "true");
     expect(document.querySelector(".font-mono.text-gold")?.textContent ?? "").toContain("!");
-    expect(screen.getByRole("region", { name: "倉庫正則" })).toHaveTextContent("已選 0 · 排除 1");
-    expect(screen.getByRole("button", { name: /清除否/ })).toBeInTheDocument();
+    const rail = screen.getByRole("region", { name: "倉庫正則" });
+    expect(rail).toHaveTextContent("已選 0 · 排除 1");
+    expect(rail).toHaveTextContent("N 地圖內含有額外的(2—3)個稀有箱子");
+    expect(screen.getByRole("button", { name: /清除N/ })).toBeInTheDocument();
+    expect(screen.getByText(/Y 0 · O 0 · N 1/)).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "清空全部條件" }));
-    expect(within(row).getByRole("button", { name: "否" })).toHaveAttribute("aria-pressed", "false");
+    expect(within(row).getByRole("button", { name: "N" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByRole("region", { name: "倉庫正則" })).toHaveTextContent("已選 0 · 排除 0");
   });
 
@@ -114,7 +128,7 @@ describe("endgame tablets page", () => {
     const chestText = "地圖內含有額外的(2—3)個稀有箱子";
     expect(screen.queryByText(/iLvL/)).not.toBeInTheDocument();
     const row = screen.getByText(chestText).closest("li") as HTMLElement;
-    await user.click(within(row).getByRole("button", { name: "是" }));
+    await user.click(within(row).getByRole("button", { name: "Y" }));
     expect(within(row).getByPlaceholderText("最小")).toBeInTheDocument();
     expect(within(row).getByPlaceholderText("最大")).toBeInTheDocument();
     await user.click(within(row).getByRole("button", { name: "展開階層" }));
@@ -129,9 +143,9 @@ describe("endgame tablets page", () => {
     const chest = screen.getByText("地圖內含有額外的(2—3)個稀有箱子").closest("li") as HTMLElement;
     const summon = screen.getByText("地圖內含有額外的1個召喚法陣").closest("li") as HTMLElement;
     const rarity = screen.getByText("地圖增加(15—20)%怪物稀有度").closest("li") as HTMLElement;
-    await user.click(within(chest).getByRole("button", { name: "是" }));
-    await user.click(within(summon).getByRole("button", { name: "或" }));
-    await user.click(within(rarity).getByRole("button", { name: "否" }));
+    await user.click(within(chest).getByRole("button", { name: "Y" }));
+    await user.click(within(summon).getByRole("button", { name: "O" }));
+    await user.click(within(rarity).getByRole("button", { name: "N" }));
 
     const pattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
     expect(pattern).toContain("!");
