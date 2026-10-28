@@ -222,8 +222,7 @@ describe("endgame waystones page", () => {
     expect(output?.textContent).not.toContain("物品稀有度");
   });
 
-  it("generated regex matches juiced waystone text and ignores empty axes", async () => {
-    const user = userEvent.setup();
+  it("generated regex matches juiced waystone text and ignores empty axes", () => {
     renderPage(<WaystonesPage />);
 
     dragBound("物品稀有度 最小", "40");
