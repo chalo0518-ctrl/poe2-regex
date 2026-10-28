@@ -36,6 +36,18 @@ describe("waystone stat axes", () => {
     expect(WAYSTONE_STAT_AXES.some((axis) => axis.id === "quantity")).toBe(false);
     expect(WAYSTONE_STAT_AXES.some((axis) => axis.id === "ultimatum")).toBe(false);
     expect(WAYSTONE_STAT_AXES.every(isWaystoneRangeAxis)).toBe(true);
+    const scale = Object.fromEntries(WAYSTONE_STAT_AXES.map((axis) => [axis.id, axis.slider]));
+    expect(scale).toEqual({
+      tier: { min: 1, max: 16 },
+      packSize: { min: 0, max: 100 },
+      effectiveness: { min: 0, max: 100 },
+      itemRarity: { min: 0, max: 100 },
+      monsterRarity: { min: 0, max: 100 },
+      revives: { min: 0, max: 6 },
+      dropChance: { min: 0, max: 100 },
+      gold: { min: 0, max: 1000 },
+      experience: { min: 0, max: 400 },
+    });
     const blob = JSON.stringify(WAYSTONE_STAT_AXES);
     expect(blob.includes("物品数量") || blob.includes("简")).toBe(false);
     expect(blob).not.toMatch(/混沌試煉|Ultimatum|Victorious|Cowardly|Deadly|勝利之運|怯懦之運|致命之運/);

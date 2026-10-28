@@ -4,6 +4,7 @@ export {
   integerRangePattern,
   compactAtLeast,
   compactIntegerRange,
+  dotDigitShorthand,
   numericPrefix,
 } from "./numbers.js";
 export { inferNumericPlacement } from "./placement.js";
@@ -12,6 +13,9 @@ export { escapeRegex } from "./escape.js";
 export { matchesItem } from "./match.js";
 export { buildStatThresholdRegex } from "./stats.js";
 export type {
+  LoosenedMin,
+  StatBuildOptions,
+  StatBuildResult,
   StatEffectFragment,
   StatNumberSide,
   StatThreshold,

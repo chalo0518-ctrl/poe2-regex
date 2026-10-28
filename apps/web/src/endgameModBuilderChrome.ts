@@ -7,3 +7,15 @@ export const endgameModBuilderChrome = {
   showFamilyNames: false,
   showAffixTags: false,
 } as const;
+
+/** Tablet list polish: search, click-to-include, inline ranges, sticky chips. */
+export const endgameTabletChrome = {
+  ...endgameModBuilderChrome,
+  showSearch: true,
+  hanFold: true,
+  quickPolarity: true,
+  showInlineRange: true,
+  showSelectionChips: true,
+  pinSelectionCounts: true,
+  polarityStyle: "yon",
+} as const;
