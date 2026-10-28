@@ -143,3 +143,10 @@ body {
   border-color: var(--color-gold);
   color: var(--color-gold);
 }
+
+.axis-range {
+  accent-color: var(--color-gold);
+  width: 100%;
+  height: 1.25rem;
+  cursor: pointer;
+}

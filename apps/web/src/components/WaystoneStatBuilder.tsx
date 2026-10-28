@@ -25,6 +25,26 @@ function parseBound(raw: string): number | undefined {
   return Math.round(n);
 }
 
+function boundText(raw: string, open: string): string {
+  return raw.trim() === "" ? open : raw;
+}
+
+function clampBelow(next: string, maxRaw: string, scale: { min: number; max: number }): string {
+  const n = Number(next);
+  if (!Number.isFinite(n) || n <= scale.min) return "";
+  const max = parseBound(maxRaw);
+  if (max != null && n > max) return String(max);
+  return String(Math.round(n));
+}
+
+function clampAbove(next: string, minRaw: string, scale: { min: number; max: number }): string {
+  const n = Number(next);
+  if (!Number.isFinite(n) || n >= scale.max) return "";
+  const min = parseBound(minRaw);
+  if (min != null && n < min) return String(min);
+  return String(Math.round(n));
+}
+
 function boundsLabel(min: string, max: string): string {
   const hasMin = min.trim() !== "";
   const hasMax = max.trim() !== "";
@@ -32,6 +52,48 @@ function boundsLabel(min: string, max: string): string {
   if (hasMin) return `≥${min}`;
   if (hasMax) return `≤${max}`;
   return "";
+}
+
+function BoundSlider({
+  label,
+  value,
+  floor,
+  ceiling,
+  openLabel,
+  sideLabel,
+  upper = false,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  floor: number;
+  ceiling: number;
+  openLabel: string;
+  sideLabel: string;
+  upper?: boolean;
+  onChange: (next: string) => void;
+}) {
+  const unset = value.trim() === "";
+  const shown = unset ? (upper ? ceiling : floor) : Number(value);
+  return (
+    <label className="mt-1 grid grid-cols-[2.5rem_minmax(0,1fr)_3rem] items-center gap-2 text-xs text-muted">
+      <span>{sideLabel}</span>
+      <input
+        type="range"
+        className="axis-range"
+        min={floor}
+        max={ceiling}
+        step={1}
+        value={shown}
+        aria-label={label}
+        aria-valuetext={unset ? openLabel : value}
+        onChange={(event) => onChange(event.target.value)}
+      />
+      <span data-bound={upper ? "max" : "min"} className="text-right font-mono text-paper">
+        {unset ? openLabel : value}
+      </span>
+    </label>
+  );
 }
 
 export function WaystoneStatBuilder() {
@@ -149,33 +211,55 @@ export function WaystoneStatBuilder() {
 
       <p className="mb-3 text-xs text-muted">{t.waystonesThresholdHint}</p>
 
-      <div className="mb-4 grid gap-1 sm:grid-cols-2" role="group" aria-label={t.waystonesStatAria}>
+      <div className="mb-4 grid gap-2 sm:grid-cols-2" role="group" aria-label={t.waystonesStatAria}>
         {WAYSTONE_RANGE_AXES.map((axis) => {
           const label = locale === "en" ? axis.labelEn : axis.labelZh;
+          const fields = ranges[axis.id];
+          const active = parseBound(fields.min) != null || parseBound(fields.max) != null;
           return (
             <div
               key={axis.id}
-              className="grid grid-cols-[minmax(0,1fr)_4.5rem_4.5rem] items-center gap-1 rounded-sm border border-line bg-panel px-2 py-1.5"
+              data-axis={axis.id}
+              className="rounded-sm border border-line bg-panel px-3 py-2"
             >
-              <span className="truncate text-sm font-medium text-gold">{label}</span>
-              <input
-                inputMode="numeric"
-                autoComplete="off"
-                value={ranges[axis.id].min}
-                onChange={(e) => setBound(axis.id, "min", e.target.value)}
-                placeholder={t.min}
-                aria-label={`${label} ${t.min}`}
-                className="w-full rounded-sm border border-line bg-ink px-2 py-1 text-center text-sm text-paper outline-none placeholder:text-muted focus:border-gold"
+              <div className="mb-1 flex items-center gap-2">
+                <span className="min-w-0 flex-1 truncate text-sm font-medium text-gold">{label}</span>
+                <span className="font-mono text-xs text-paper">
+                  {boundText(fields.min, t.waystonesBoundOpen)}–{boundText(fields.max, t.waystonesBoundOpen)}
+                </span>
+                {active && (
+                  <button
+                    type="button"
+                    className="rounded-sm border border-line px-1.5 py-0.5 text-[11px] text-muted"
+                    aria-label={t.waystonesIgnoreAxis(label)}
+                    onClick={() => clearAxis(axis.id)}
+                  >
+                    {t.waystonesClearAxis}
+                  </button>
+                )}
+              </div>
+              <BoundSlider
+                label={`${label} ${t.min}`}
+                value={fields.min}
+                floor={axis.slider.min}
+                ceiling={axis.slider.max}
+                openLabel={t.waystonesBoundOpen}
+                sideLabel={t.min}
+                onChange={(next) => setBound(axis.id, "min", clampBelow(next, fields.max, axis.slider))}
               />
-              <input
-                inputMode="numeric"
-                autoComplete="off"
-                value={ranges[axis.id].max}
-                onChange={(e) => setBound(axis.id, "max", e.target.value)}
-                placeholder={t.max}
-                aria-label={`${label} ${t.max}`}
-                className="w-full rounded-sm border border-line bg-ink px-2 py-1 text-center text-sm text-paper outline-none placeholder:text-muted focus:border-gold"
+              <BoundSlider
+                label={`${label} ${t.max}`}
+                value={fields.max}
+                floor={axis.slider.min}
+                ceiling={axis.slider.max}
+                openLabel={t.waystonesBoundOpen}
+                sideLabel={t.max}
+                upper
+                onChange={(next) => setBound(axis.id, "max", clampAbove(next, fields.min, axis.slider))}
               />
+              <p className="mt-0.5 text-[11px] text-muted">
+                {axis.slider.min}–{axis.slider.max}
+              </p>
             </div>
           );
         })}

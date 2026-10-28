@@ -156,6 +156,9 @@ type Messages = {
   waystonesDesc: string;
   waystonesStatAria: string;
   waystonesThresholdHint: string;
+  waystonesBoundOpen: string;
+  waystonesClearAxis: string;
+  waystonesIgnoreAxis: (label: string) => string;
   waystonesRegexPlaceholder: string;
   waystonesActive: (n: number) => string;
   waystonesOptimize: string;
@@ -378,8 +381,11 @@ const zhHant: Messages = {
     "對齊市集終局篩選：階級、怪物效用、怪物稀有度、掉落率、經驗、怪物群大小、物品稀有度、復活、金幣。空白則忽略該軸，不必選低階／中階／高階詞綴池。",
   waystonesStatAria: "換界石終局篩選",
   waystonesThresholdHint:
-    "每項可填最小／最大（空白＝忽略）。已填的軸以 AND 組合，對換界石上的總數值（與市集相同）。",
-  waystonesRegexPlaceholder: "填入數值後，正則會顯示在這裡",
+    "每軸兩支滑桿。拉到刻度端點＝忽略該邊界。已設的軸以 AND 組合，對換界石上的總數值（與市集相同）。階級 1–16，百分比多為 0–100，經驗 0–400，金幣 0–1000，復活 0–6。",
+  waystonesBoundOpen: "不限",
+  waystonesClearAxis: "清除",
+  waystonesIgnoreAxis: (label) => `忽略${label}`,
+  waystonesRegexPlaceholder: "拖動滑桿後，正則會顯示在這裡",
   waystonesActive: (n) => (n === 0 ? "尚未設定篩選" : `已設定 ${n} 軸`),
   waystonesOptimize: "優化長度",
   waystonesOptimizeTitle:
@@ -606,8 +612,11 @@ const en: Messages = {
     "Market endgame filters: tier, monster effectiveness, monster rarity, drop chance, experience, pack size, item rarity, revives, and gold. Empty = ignore. No low/mid/top affix-pool picker.",
   waystonesStatAria: "Waystone endgame filters",
   waystonesThresholdHint:
-    "Each row is min/max (leave empty to ignore). Filled axes AND together and match totals on the waystone, like trade.",
-  waystonesRegexPlaceholder: "Enter a min/max value and the regex shows up here",
+    "Each axis has two sliders. A thumb on either end ignores that bound. Filled axes AND together and match totals on the waystone, like trade. Tier 1–16, most percentages 0–100, experience 0–400, gold 0–1000, revives 0–6.",
+  waystonesBoundOpen: "Any",
+  waystonesClearAxis: "Clear",
+  waystonesIgnoreAxis: (label) => `Ignore ${label}`,
+  waystonesRegexPlaceholder: "Drag a slider and the regex shows up here",
   waystonesActive: (n) => (n === 0 ? "No filters set" : `${n} filter${n === 1 ? "" : "s"} set`),
   waystonesOptimize: "Shorter length",
   waystonesOptimizeTitle:

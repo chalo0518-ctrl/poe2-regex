@@ -41,6 +41,8 @@ type RangeAxis = {
   tradeId: string;
   labelZh: string;
   labelEn: string;
+  /** Inclusive slider scale. A thumb on an end means that bound is unset. */
+  slider: { min: number; max: number };
   numberStyle: WaystoneNumberStyle;
   /** Aggregate label on the item (stash-searchable), when known. */
   headerZh: string;
@@ -70,6 +72,7 @@ export const WAYSTONE_STAT_AXES: WaystoneStatAxis[] = [
     tradeId: "map_tier",
     labelZh: "換界石階級",
     labelEn: "Waystone Tier",
+    slider: { min: 1, max: 16 },
     numberStyle: "bare",
     headerZh: "階級",
     headerEn: "Tier",
@@ -82,6 +85,7 @@ export const WAYSTONE_STAT_AXES: WaystoneStatAxis[] = [
     tradeId: "map_packsize",
     labelZh: "換界石怪物群大小",
     labelEn: "Waystone Pack Size",
+    slider: { min: 0, max: 100 },
     numberStyle: "percent",
     headerZh: "怪物群大小",
     headerEn: "Pack Size",
@@ -94,6 +98,7 @@ export const WAYSTONE_STAT_AXES: WaystoneStatAxis[] = [
     tradeId: "map_magic_monsters",
     labelZh: "怪物效用",
     labelEn: "Monster Effectiveness",
+    slider: { min: 0, max: 100 },
     numberStyle: "percent",
     headerZh: "怪物效用",
     headerEn: "Monster Effectiveness",
@@ -106,6 +111,7 @@ export const WAYSTONE_STAT_AXES: WaystoneStatAxis[] = [
     tradeId: "map_iir",
     labelZh: "物品稀有度",
     labelEn: "Item Rarity",
+    slider: { min: 0, max: 100 },
     numberStyle: "percent",
     headerZh: "物品稀有度",
     headerEn: "Item Rarity",
@@ -118,6 +124,7 @@ export const WAYSTONE_STAT_AXES: WaystoneStatAxis[] = [
     tradeId: "map_rare_monsters",
     labelZh: "怪物稀有度",
     labelEn: "Monster Rarity",
+    slider: { min: 0, max: 100 },
     numberStyle: "percent",
     headerZh: "怪物稀有度",
     headerEn: "Monster Rarity",
@@ -136,6 +143,7 @@ export const WAYSTONE_STAT_AXES: WaystoneStatAxis[] = [
     tradeId: "map_revives",
     labelZh: "換界石復活",
     labelEn: "Waystone Revives",
+    slider: { min: 0, max: 6 },
     numberStyle: "bare",
     headerZh: "可用的復活",
     headerEn: "Revives Available",
@@ -148,6 +156,7 @@ export const WAYSTONE_STAT_AXES: WaystoneStatAxis[] = [
     tradeId: "map_bonus",
     labelZh: "換界石掉落率",
     labelEn: "Waystone Drop Chance",
+    slider: { min: 0, max: 100 },
     numberStyle: "percent",
     headerZh: "掉落率",
     headerEn: "Drop Chance",
@@ -160,6 +169,7 @@ export const WAYSTONE_STAT_AXES: WaystoneStatAxis[] = [
     tradeId: "map_gold",
     labelZh: "換界石金幣",
     labelEn: "Waystone Gold",
+    slider: { min: 0, max: 1000 },
     numberStyle: "percent",
     headerZh: "金幣的掉落",
     headerEn: "Gold found in this Area",
@@ -174,6 +184,7 @@ export const WAYSTONE_STAT_AXES: WaystoneStatAxis[] = [
     tradeId: "map_experience",
     labelZh: "換界石經驗",
     labelEn: "Waystone Experience",
+    slider: { min: 0, max: 400 },
     numberStyle: "percent",
     headerZh: "經驗獲得",
     headerEn: "Experience gain",

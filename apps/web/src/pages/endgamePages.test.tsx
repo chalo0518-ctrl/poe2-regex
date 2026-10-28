@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactElement } from "react";
 import { describe, expect, it } from "vitest";
@@ -19,6 +19,10 @@ function expectEndgameChromeGone() {
   expect(screen.queryAllByText(/Max iLvL/i)).toHaveLength(0);
   expect(screen.queryAllByRole("button", { name: "匯入物品" })).toHaveLength(0);
   expect(screen.queryAllByRole("button", { name: "切換隱藏" })).toHaveLength(0);
+}
+
+function dragBound(name: string, value: string) {
+  fireEvent.change(screen.getByLabelText(name), { target: { value } });
 }
 
 function expectRegexTools() {
@@ -200,9 +204,14 @@ describe("endgame waystones page", () => {
     expect(screen.queryByText(/更多怪物生命/)).not.toBeInTheDocument();
 
     const output = document.querySelector(".font-mono.text-gold");
-    expect(output?.textContent).toMatch(/填入數值後/);
+    expect(output?.textContent).toMatch(/拖動滑桿後/);
+    expect(screen.getByLabelText("物品稀有度 最小")).toHaveAttribute("type", "range");
+    expect(screen.getByLabelText("換界石階級 最小")).toHaveAttribute("max", "16");
+    expect(screen.getByLabelText("換界石金幣 最大")).toHaveAttribute("max", "1000");
+    expect(screen.getByLabelText("換界石經驗 最大")).toHaveAttribute("max", "400");
+    expect(screen.getByLabelText("換界石復活 最大")).toHaveAttribute("max", "6");
 
-    await user.type(screen.getByLabelText("物品稀有度 最小"), "40");
+    dragBound("物品稀有度 最小", "40");
     expect(output?.textContent).toContain("物品稀有度");
     expect(output?.textContent).not.toContain("更多稀有度");
     expect(output?.textContent).not.toContain("充盈的");
@@ -217,8 +226,8 @@ describe("endgame waystones page", () => {
     const user = userEvent.setup();
     renderPage(<WaystonesPage />);
 
-    await user.type(screen.getByLabelText("物品稀有度 最小"), "40");
-    await user.type(screen.getByLabelText("怪物效用 最小"), "20");
+    dragBound("物品稀有度 最小", "40");
+    dragBound("怪物效用 最小", "20");
 
     const pattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
     const juicy = [
@@ -242,8 +251,12 @@ describe("endgame waystones page", () => {
     expect(screen.getByRole("button", { name: "優化長度" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByRole("button", { name: "清空全部" })).toBeDisabled();
 
-    await user.type(screen.getByLabelText("物品稀有度 最小"), "47");
+    dragBound("物品稀有度 最小", "47");
     expect(screen.getByRole("button", { name: "清除物品稀有度" })).toHaveTextContent("≥47");
+    expect(screen.getByRole("button", { name: "忽略物品稀有度" })).toBeInTheDocument();
+    const rarity = screen.getByLabelText("物品稀有度 最小").closest("[data-axis]") as HTMLElement;
+    expect(rarity.querySelector('[data-bound="min"]')).toHaveTextContent("47");
+    expect(rarity.querySelector('[data-bound="max"]')).toHaveTextContent("不限");
     expect(screen.queryByText(/優化：物品稀有度/)).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "優化長度" }));
@@ -257,8 +270,13 @@ describe("endgame waystones page", () => {
     expect(matchesItem(tight, "物品稀有度: +47%")).toBe(true);
     expect(matchesItem(tight, "物品稀有度: +39%")).toBe(false);
 
+    dragBound("物品稀有度 最小", "0");
+    expect(screen.queryByRole("button", { name: "清除物品稀有度" })).not.toBeInTheDocument();
+    expect(rarity.querySelector('[data-bound="min"]')).toHaveTextContent("不限");
+
+    dragBound("物品稀有度 最小", "47");
     await user.click(screen.getByRole("button", { name: "清空全部" }));
-    expect(screen.getByLabelText("物品稀有度 最小")).toHaveValue("");
+    expect(screen.getByLabelText("物品稀有度 最小")).toHaveValue("0");
     expect(screen.queryByRole("button", { name: "清除物品稀有度" })).not.toBeInTheDocument();
   });
 
@@ -266,45 +284,46 @@ describe("endgame waystones page", () => {
     const user = userEvent.setup();
     renderPage(<WaystonesPage />);
     const mins = [
-      "換界石階級 最小",
       "換界石怪物群大小 最小",
       "怪物效用 最小",
       "物品稀有度 最小",
       "怪物稀有度 最小",
-      "換界石復活 最小",
       "換界石掉落率 最小",
+      "換界石金幣 最小",
+      "換界石經驗 最小",
     ];
     for (const name of mins) {
-      await user.type(screen.getByLabelText(name), "47");
+      dragBound(name, "47");
     }
     await user.click(screen.getByRole("button", { name: "優化長度" }));
 
     const rail = screen.getByRole("region", { name: "倉庫正則" });
-    expect(rail).toHaveTextContent("優化：物品稀有度 下限 47→40（會匹配低於輸入值）");
+    expect(rail).toHaveTextContent("優化：怪物效用 下限 47→40（會匹配低於輸入值）");
     expect(rail).toHaveTextContent("標成優化的軸會匹配低於輸入值");
+    expect(rail).not.toHaveTextContent("優化：物品稀有度");
     expect(rail).not.toHaveTextContent("47→0");
     const pattern = document.querySelector(".font-mono.text-gold")?.textContent ?? "";
     expect(pattern.length).toBeLessThanOrEqual(250);
     const item = [
-      "換界石（階級 47）",
       "怪物群大小: +47%",
-      "怪物效用: +47%",
-      "物品稀有度: +40%",
+      "怪物效用: +40%",
+      "物品稀有度: +47%",
       "怪物稀有度: +47%",
-      "可用的復活: 47",
-      "掉落率: +47%",
+      "掉落率: +40%",
+      "增加47%本區域中金幣的掉落量",
+      "增加40%經驗獲得",
     ].join("\n");
     expect(matchesItem(pattern, item)).toBe(true);
-    expect(matchesItem(pattern, item.replace("物品稀有度: +40%", "物品稀有度: +39%"))).toBe(false);
+    expect(matchesItem(pattern, item.replace("怪物效用: +40%", "怪物效用: +39%"))).toBe(false);
+    expect(matchesItem(pattern, item.replace("物品稀有度: +47%", "物品稀有度: +46%"))).toBe(false);
   });
 
-  it("ignores empty axes and ANDs filled min/max", async () => {
-    const user = userEvent.setup();
+  it("ignores empty axes and ANDs filled min/max", () => {
     renderPage(<WaystonesPage />);
 
-    await user.type(screen.getByLabelText("換界石階級 最小"), "14");
-    await user.type(screen.getByLabelText("換界石階級 最大"), "16");
-    await user.type(screen.getByLabelText("怪物效用 最小"), "20");
+    dragBound("換界石階級 最小", "14");
+    dragBound("換界石階級 最大", "15");
+    dragBound("怪物效用 最小", "20");
 
     const output = document.querySelector(".font-mono.text-gold");
     expect(output?.textContent).toContain("階級");
