@@ -268,7 +268,7 @@ export function ChroniclesModBuilder({
   pinSelectionCounts?: boolean;
   clearAllLabel?: string;
   selectionHint?: string;
-  /** Tablets use Y/O/N. Other pages keep 是／或／否. */
+  /** Tablets use YES/OR/NOT. Other pages keep 是／或／否. */
   polarityStyle?: "default" | "yon";
 }) {
   const { locale, t } = useLocale();
