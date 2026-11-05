@@ -147,6 +147,10 @@ export default function CraftingPage() {
   const [socketPicks, setSocketPicks] = useState<string[]>(["", ""]);
   const [pinnedNode, setPinnedNode] = useState<CraftDiagramNodeId | null>(null);
   const [libraryTab, setLibraryTab] = useState<"targets" | "owned">("targets");
+  const [collapsedPools, setCollapsedPools] = useState<Record<string, boolean>>({});
+  const togglePool = useCallback((poolId: string) => {
+    setCollapsedPools((prev) => ({ ...prev, [poolId]: !prev[poolId] }));
+  }, []);
   const augmentGroups = useMemo(() => {
     const seen = new Set<string>();
     const groups: { id: string; title: string; families: AffixFamily[] }[] = [];
@@ -197,6 +201,7 @@ export default function CraftingPage() {
     setSocketPicks(["", ""]);
     setPinnedNode(null);
     setLibraryTab("targets");
+    setCollapsedPools({});
   }, [slotId]);
 
   useEffect(() => {
@@ -432,6 +437,8 @@ export default function CraftingPage() {
                 families={families}
                 extraGroups={augmentGroups}
                 abyssFamilies={desecratedFamilies}
+                collapsedPools={collapsedPools}
+                onTogglePool={togglePool}
                 importHint={t.earlyGearImportHint}
                 picksValue={picks}
                 onPicksChange={setPicks}
@@ -460,6 +467,8 @@ export default function CraftingPage() {
                 families={families}
                 extraGroups={augmentGroups}
                 abyssFamilies={desecratedFamilies}
+                collapsedPools={collapsedPools}
+                onTogglePool={togglePool}
                 importHint={t.earlyGearImportHint}
                 picksValue={ownedPicks}
                 onPicksChange={onOwnedPicksChange}

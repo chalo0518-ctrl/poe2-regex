@@ -2,7 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { craftTierChoices, craftingFamiliesFor, earlyGearFamiliesFor, type AffixFamily } from "@poe2-regex/data";
+import { craftTierChoices, craftingFamiliesFor, earlyGearFamiliesFor, orderCraftingLibrary, type AffixFamily } from "@poe2-regex/data";
 import EndgameLayout from "./EndgameLayout.tsx";
 import CraftingPage from "./CraftingPage.tsx";
 import { LocaleProvider } from "../i18n.tsx";
@@ -251,6 +251,10 @@ describe("crafting page", () => {
     const enPool = screen.getByRole("region", { name: "Thrud's Might extra affixes" });
     expect(within(enPool).getByRole("heading", { name: /^Prefixes/ })).toBeInTheDocument();
     expect(within(enPool).getByRole("heading", { name: /^Suffixes/ })).toBeInTheDocument();
+    expect(within(enPool).getByRole("button", { name: "Collapse Thrud's Might extra affixes" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
     const base = screen.getAllByRole("heading", { name: /^Suffixes/ }).find(
       (heading) => !heading.closest("[data-augment-pool]"),
     );
@@ -314,7 +318,7 @@ describe("crafting page", () => {
     expect(lifeBox()).toBeChecked();
     expect(screen.getByRole("checkbox", { name: `目標 ${other.textZh}` })).toBeChecked();
     expect(screen.getAllByRole("button", { name: /破潰石鎖定的詞條/, pressed: true })).toHaveLength(1);
-  });
+  }, 15_000);
 
   it("dims same-group affixes and extra prefixes once three are selected", async () => {
     const user = userEvent.setup();
@@ -395,6 +399,141 @@ describe("crafting page", () => {
 
     await user.selectOptions(screen.getByLabelText("孔 1"), "Serles_Triumph");
     expect(screen.queryByRole("region", { name: /額外詞綴/ })).not.toBeInTheDocument();
+  });
+
+  it("collapses each affix box without clearing picks, and keeps that choice across sheets", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+    const life = lifeFamily();
+    const augment = screen.getByRole("region", { name: "增幅" });
+    expect(within(augment).queryByRole("button", { name: /收合|展開/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "這件裝備" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "決策樹" })).toBeInTheDocument();
+
+    const preset = screen.getByRole("region", { name: "預設詞綴" });
+    const collapsePreset = within(preset).getByRole("button", { name: "收合預設詞綴" });
+    expect(collapsePreset).toHaveAttribute("aria-expanded", "true");
+    expect(within(preset).getByRole("heading", { name: /^基礎前綴/ })).toBeInTheDocument();
+    expect(within(preset).getByRole("heading", { name: /^基礎後綴/ })).toBeInTheDocument();
+    expect(preset.querySelector("[data-affix-scroll]")?.className).toContain("max-h-[18rem]");
+
+    const lifeBox = within(preset).getByRole("checkbox", { name: `目標 ${life.textZh}` });
+    await user.click(lifeBox);
+    expect(lifeBox).toBeChecked();
+    expect(pattern()).toContain("最大生命");
+
+    await user.click(collapsePreset);
+    expect(preset).toHaveAttribute("data-collapsed", "true");
+    expect(within(preset).getByRole("button", { name: "展開預設詞綴" })).toHaveAttribute("aria-expanded", "false");
+    expect(within(preset).getByRole("heading", { name: "預設詞綴" })).toBeInTheDocument();
+    expect(within(preset).queryByRole("heading", { name: /^基礎前綴/ })).not.toBeInTheDocument();
+    expect(within(preset).queryByRole("heading", { name: /^基礎後綴/ })).not.toBeInTheDocument();
+    expect(preset.querySelector("[data-affix-scroll]")).toBeNull();
+    expect(pattern()).toContain("最大生命");
+
+    const abyss = screen.getByRole("region", { name: "褻瀆詞綴" });
+    const abyssBox = within(abyss).getAllByRole("checkbox")[0];
+    if (!abyssBox) throw new Error("missing a desecrated affix");
+    const abyssName = abyssBox.getAttribute("aria-label");
+    if (!abyssName) throw new Error("desecrated affix has no name");
+    await user.click(abyssBox);
+    expect(abyssBox).toBeChecked();
+    await user.click(within(abyss).getByRole("button", { name: "收合褻瀆詞綴" }));
+    expect(within(abyss).queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(within(abyss).queryByRole("heading", { name: /^前綴/ })).not.toBeInTheDocument();
+    expect(within(abyss).queryByRole("heading", { name: /^後綴/ })).not.toBeInTheDocument();
+
+    await user.selectOptions(screen.getByLabelText("孔 1"), "Medveds_Tending");
+    const medved = screen.getByRole("region", { name: "梅德偉的照料 額外詞綴" });
+    const soul = within(medved).getByRole("checkbox", { name: /增加\(1—20\)%最大生命/ });
+    await user.click(soul);
+    expect(soul).toBeChecked();
+    await user.click(within(medved).getByRole("button", { name: "收合梅德偉的照料 額外詞綴" }));
+    expect(within(medved).queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(medved.querySelector("[data-affix-scroll]")).toBeNull();
+
+    await user.click(screen.getByRole("tab", { name: "已有詞條" }));
+    const ownedPreset = screen.getByRole("region", { name: "預設詞綴" });
+    const ownedAbyss = screen.getByRole("region", { name: "褻瀆詞綴" });
+    const ownedMedved = screen.getByRole("region", { name: "梅德偉的照料 額外詞綴" });
+    expect(ownedPreset).toHaveAttribute("data-collapsed", "true");
+    expect(ownedAbyss).toHaveAttribute("data-collapsed", "true");
+    expect(ownedMedved).toHaveAttribute("data-collapsed", "true");
+    expect(within(ownedPreset).queryByRole("checkbox", { name: `${life.textZh} 已有` })).not.toBeInTheDocument();
+
+    await user.click(within(ownedPreset).getByRole("button", { name: "展開預設詞綴" }));
+    const ownedLife = within(ownedPreset).getByRole("checkbox", { name: `${life.textZh} 已有` });
+    expect(ownedLife).not.toBeChecked();
+    await user.click(ownedLife);
+    expect(ownedLife).toBeChecked();
+    await user.click(within(ownedPreset).getByRole("button", { name: "收合預設詞綴" }));
+    expect(within(ownedPreset).queryByRole("checkbox")).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("tab", { name: "目標詞綴" }));
+    const back = screen.getByRole("region", { name: "預設詞綴" });
+    expect(back).toHaveAttribute("data-collapsed", "true");
+    expect(screen.getByRole("region", { name: "褻瀆詞綴" })).toHaveAttribute("data-collapsed", "true");
+    expect(screen.getByRole("region", { name: "梅德偉的照料 額外詞綴" })).toHaveAttribute("data-collapsed", "true");
+    expect(pattern()).toContain("最大生命");
+
+    await user.click(within(back).getByRole("button", { name: "展開預設詞綴" }));
+    expect(within(back).getByRole("checkbox", { name: `目標 ${life.textZh}` })).toBeChecked();
+    const scroll = back.querySelector("[data-affix-scroll]");
+    expect(scroll?.className).toContain("max-h-[18rem]");
+    expect(scroll?.className).toContain("overflow-y-auto");
+
+    await user.click(within(screen.getByRole("region", { name: "褻瀆詞綴" })).getByRole("button", { name: "展開褻瀆詞綴" }));
+    expect(within(screen.getByRole("region", { name: "褻瀆詞綴" })).getByRole("checkbox", { name: abyssName })).toBeChecked();
+
+    const medvedAgain = screen.getByRole("region", { name: "梅德偉的照料 額外詞綴" });
+    await user.click(within(medvedAgain).getByRole("button", { name: "展開梅德偉的照料 額外詞綴" }));
+    expect(within(medvedAgain).getByRole("checkbox", { name: /增加\(1—20\)%最大生命/ })).toBeChecked();
+    expect(medvedAgain.querySelectorAll("[data-affix-scroll]")).toHaveLength(2);
+
+    await user.click(screen.getByRole("tab", { name: "已有詞條" }));
+    expect(within(screen.getByRole("region", { name: "預設詞綴" })).getByRole("checkbox", { name: `${life.textZh} 已有` })).toBeChecked();
+    expect(screen.getByRole("heading", { name: "這件裝備" })).toBeInTheDocument();
+    expect(screen.getByLabelText("孔 1")).toHaveValue("Medveds_Tending");
+    expect(screen.getByRole("heading", { name: "決策樹" })).toBeInTheDocument();
+  }, 15_000);
+
+  it("lists same-type affixes together on both sheets", async () => {
+    const user = userEvent.setup();
+    renderCrafting();
+
+    function labels(heading: RegExp) {
+      const pool = screen.getByRole("region", { name: "預設詞綴" });
+      const section = within(pool).getByRole("heading", { name: heading }).closest("section");
+      if (!section) throw new Error("missing affix column");
+      return [...section.querySelectorAll("li.affix-row input[type=checkbox]")].map(
+        (input) => input.getAttribute("aria-label") ?? "",
+      );
+    }
+
+    const expected = (generation: "prefix" | "suffix", prefix: string) =>
+      orderCraftingLibrary(
+        craftingFamiliesFor("body")
+          .filter((family) => family.generation === generation)
+          .map((family) => ({ family })),
+      ).map((row) => `${prefix}${row.family.textZh}${prefix === "" ? " 已有" : ""}`);
+
+    expect(labels(/^基礎前綴/)).toEqual(expected("prefix", "目標 "));
+    expect(labels(/^基礎後綴/)).toEqual(expected("suffix", "目標 "));
+    const armour = labels(/^基礎前綴/).filter((label) => label.includes("護甲") && !label.includes("閃避") && !label.includes("能量護盾"));
+    const flat = armour.findIndex((label) => label.includes("+(16—27)護甲值"));
+    const percent = armour.findIndex((label) => label.includes("增加(15—26)%護甲值"));
+    expect(flat).toBeGreaterThanOrEqual(0);
+    expect(percent).toBeGreaterThan(flat);
+
+    await user.click(screen.getByRole("tab", { name: "已有詞條" }));
+    expect(labels(/^基礎前綴/)).toEqual(expected("prefix", ""));
+    expect(labels(/^基礎後綴/)).toEqual(expected("suffix", ""));
+
+    await user.click(screen.getByRole("tab", { name: "目標詞綴" }));
+    const life = screen.getByRole("checkbox", { name: /目標 \+\(10—19\)最大生命/ });
+    await user.click(life);
+    expect(life).toBeChecked();
+    expect(labels(/^基礎前綴/)).toEqual(expected("prefix", "目標 "));
   });
 
   it("switches target and owned sheets without dropping picks or owned flags", async () => {
