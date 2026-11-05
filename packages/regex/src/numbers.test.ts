@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { integerRangePattern, compactAtLeast, compactIntegerRange } from "./numbers.js";
+import {
+  integerRangePattern,
+  compactAtLeast,
+  compactIntegerRange,
+  dotDigitShorthand,
+} from "./numbers.js";
 
 function matches(pattern: string, n: number): boolean {
   return new RegExp(`^${pattern}$`).test(String(n));
@@ -70,6 +75,33 @@ describe("integerRangePattern", () => {
     expect(matches(compactAtLeast(200), 199)).toBe(false);
     expect(matches(compactAtLeast(500), 800)).toBe(true);
     expect(matches(compactAtLeast(500), 499)).toBe(false);
+  });
+
+  it("dotDigitShorthand keeps the same integers and is never longer", () => {
+    const samples = [0, 1, 2, 9, 10, 11, 15, 20, 23, 40, 47, 99, 100, 101, 200, 250, 500, 999];
+    for (const min of samples) {
+      const precise = compactIntegerRange(min);
+      const short = dotDigitShorthand(precise);
+      expect(short.length).toBeLessThanOrEqual(precise.length);
+      for (let n = 0; n <= 1200; n++) {
+        expect(matches(short, n), `${min} @ ${n}`).toBe(matches(precise, n));
+      }
+    }
+    const closed: Array<[number, number]> = [
+      [14, 16],
+      [0, 2],
+      [30, 39],
+      [10, 25],
+      [500, 1000],
+    ];
+    for (const [min, max] of closed) {
+      const precise = compactIntegerRange(min, max);
+      const short = dotDigitShorthand(precise);
+      expect(short.length).toBeLessThanOrEqual(precise.length);
+      for (let n = 0; n <= max + 5; n++) {
+        expect(matches(short, n), `${min}-${max} @ ${n}`).toBe(matches(precise, n));
+      }
+    }
   });
 
   it("swaps inverted bounds", () => {

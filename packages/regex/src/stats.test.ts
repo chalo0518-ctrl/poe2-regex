@@ -199,4 +199,63 @@ describe("buildStatThresholdRegex", () => {
     expect(r.pattern).not.toContain("致命之運");
     if (r.overLimit) expect(r.warnings).toContain("over-limit");
   });
+
+  it("optimizeLength shortens a single digit without dropping the typed min", () => {
+    const precise = buildStatThresholdRegex([{ ...RARITY_ZH, min: 47 }]);
+    const optimized = buildStatThresholdRegex([{ ...RARITY_ZH, min: 47 }], {
+      optimizeLength: true,
+    });
+    expect(optimized.loosened).toEqual([]);
+    expect(optimized.length).toBeLessThan(precise.length);
+    expect(optimized.pattern).toContain("[5-9].");
+    expect(optimized.pattern).not.toContain("[5-9]\\d");
+    expect(precise.pattern).toContain("[5-9]\\d");
+    expect(matchesItem(optimized.pattern, "物品稀有度: +47%")).toBe(true);
+    expect(matchesItem(optimized.pattern, "物品稀有度: +46%")).toBe(false);
+    expect(matchesItem(optimized.pattern, "物品稀有度: +100%")).toBe(true);
+    expect(matchesItem(precise.pattern, "物品稀有度: +47%")).toBe(true);
+    expect(precise.pattern).not.toMatch(/\[4-9\]\./);
+  });
+
+  it("optimizeLength lowers the min only when the precise shorthand still exceeds the cap", () => {
+    const stat = { ...RARITY_ZH, min: 47 };
+    const tight = buildStatThresholdRegex([stat], { optimizeLength: true, maxLength: 250 });
+    expect(tight.loosened).toEqual([]);
+    expect(matchesItem(tight.pattern, "物品稀有度: +46%")).toBe(false);
+
+    const squeezed = buildStatThresholdRegex([stat], {
+      optimizeLength: true,
+      maxLength: tight.length - 1,
+    });
+    expect(squeezed.loosened).toEqual([
+      { id: "itemRarity", typedMin: 47, effectiveMin: 40 },
+    ]);
+    expect(squeezed.length).toBeLessThan(tight.length);
+    expect(squeezed.length).toBeLessThanOrEqual(tight.length - 1);
+    expect(matchesItem(squeezed.pattern, "物品稀有度: +40%")).toBe(true);
+    expect(matchesItem(squeezed.pattern, "物品稀有度: +39%")).toBe(false);
+
+    const untouched = buildStatThresholdRegex([stat], { maxLength: tight.length - 1 });
+    expect(untouched.loosened).toEqual([]);
+    expect(matchesItem(untouched.pattern, "物品稀有度: +46%")).toBe(false);
+    expect(matchesItem(untouched.pattern, "物品稀有度: +40%")).toBe(false);
+  });
+
+  it("does not collapse a round ten to any-number when the cap is still missed", () => {
+    const stats = ["階級", "怪物效用", "物品稀有度"].map((header, index) => ({
+      id: `a${index}`,
+      min: index === 0 ? 40 : 47,
+      header,
+      numberStyle: index === 0 ? ("bare" as const) : ("percent" as const),
+    }));
+    const optimized = buildStatThresholdRegex(stats, { optimizeLength: true, maxLength: 1 });
+    expect(optimized.overLimit).toBe(true);
+    expect(optimized.loosened.map((row) => row.effectiveMin)).not.toContain(0);
+    const forty = optimized.loosened.find((row) => row.id === "a0");
+    expect(forty).toBeUndefined();
+    for (const row of optimized.loosened) {
+      expect(row.effectiveMin).toBeGreaterThan(0);
+      expect(row.effectiveMin).toBeLessThan(row.typedMin);
+    }
+  });
 });

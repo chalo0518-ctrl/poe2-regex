@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { cycleTagState, hasHarvestTag, matchesTagFilter } from "./filter.ts";
+import { foldHan } from "./han.ts";
+import { cycleTagState, hasHarvestTag, matchesTagFilter, matchesText } from "./filter.ts";
 import type { ShieldFamily } from "./types.ts";
 
 function fam(tags: string[]): ShieldFamily {
@@ -53,5 +54,19 @@ describe("tag filter", () => {
       true,
     );
     expect(hasHarvestTag(fam(["fire_resistance"]), "armour")).toBe(false);
+  });
+
+  it("folds simplified queries onto traditional mod text", () => {
+    expect(foldHan("地圖機率")).toBe("地图机率");
+    expect(foldHan("地图机率")).toBe("地图机率");
+    const row = {
+      ...fam([]),
+      textZh: "地圖內含有額外的(2—3)個稀有箱子",
+      matchZh: "地圖內含有額外的個稀有箱子",
+    };
+    expect(matchesText(row, "地图", { hanFold: true })).toBe(true);
+    expect(matchesText(row, "地圖", { hanFold: true })).toBe(true);
+    expect(matchesText(row, "地图")).toBe(false);
+    expect(matchesText(row, "稀有")).toBe(true);
   });
 });
