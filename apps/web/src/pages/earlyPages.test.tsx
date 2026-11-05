@@ -131,6 +131,7 @@ describe("early gear category picker", () => {
     renderGear();
 
     expect(screen.getByRole("option", { name: "胸甲" })).toHaveAttribute("aria-selected", "true");
+    expect(document.querySelector("[data-row-stats]")).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "頭盔" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "手套" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "鞋子" })).toBeInTheDocument();
@@ -160,6 +161,12 @@ describe("early gear category picker", () => {
     expect(screen.queryByRole("button", { name: "简中匹配" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "繁中匹配" })).toBeInTheDocument();
     expect(document.querySelector("[data-affix-scroll]")).toBeNull();
+    expect(screen.queryByRole("region", { name: "預設詞綴" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /收合/ })).not.toBeInTheDocument();
+    const earlyPrefixes = screen.getByRole("heading", { name: /^基礎前綴/ }).closest("section");
+    const earlyRows = [...(earlyPrefixes?.querySelectorAll("li.affix-row") ?? [])];
+    expect(earlyRows[0]?.textContent).toContain("物理荊棘傷害");
+    expect(earlyRows[1]?.textContent).toContain("最大能量護盾");
     expect(screen.getByText("+(10—19)最大生命")).toBeInTheDocument();
     expect(screen.getByText("+(16—27)護甲值")).toBeInTheDocument();
     expect(screen.getByText("+(11—18)閃避值")).toBeInTheDocument();

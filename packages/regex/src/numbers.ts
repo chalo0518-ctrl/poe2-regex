@@ -84,6 +84,15 @@ export function compactIntegerRange(min?: number, max?: number): string {
   return integerRangePattern(hasMin ? min : 0, max);
 }
 
+/**
+ * Length shorthand for a single digit: `\d` (two characters) → `.` (one).
+ * Quantified forms (`\d+`, `\d*`, `\d{…}`) stay, so the integer floor does not drop.
+ * `.` can also match a non-digit in that one slot.
+ */
+export function dotDigitShorthand(pattern: string): string {
+  return pattern.replace(/\\d(?![+*{])/g, ".");
+}
+
 export function numericPrefix(
   format: "plusPercent" | "plusFlat" | "percentPrefix" | "bare" | undefined,
   min?: number,

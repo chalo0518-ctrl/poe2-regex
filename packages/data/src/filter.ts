@@ -1,3 +1,4 @@
+import { foldHan } from "./han.ts";
 import type { AffixFamily, TagState } from "./types.ts";
 
 export function hasHarvestTag(family: Pick<AffixFamily, "tags">, harvestId: string): boolean {
@@ -32,22 +33,31 @@ export function matchesTagFilter(
   return includes.some((id) => hasHarvestTag(family, id));
 }
 
-export function matchesText(family: AffixFamily, query: string): boolean {
-  const q = query.trim().toLowerCase();
+export function matchesText(
+  family: AffixFamily,
+  query: string,
+  options?: { hanFold?: boolean },
+): boolean {
+  const hanFold = options?.hanFold === true;
+  const normalize = (value: string) => {
+    const lower = value.trim().toLowerCase();
+    return hanFold ? foldHan(lower) : lower;
+  };
+  const q = normalize(query);
   if (!q) return true;
-  const blob = [
-    family.labelZh,
-    family.labelEn,
-    family.textZh,
-    family.textEn,
-    family.match,
-    family.matchZh,
-    family.family,
-    ...family.tagsZh,
-    ...family.tiers.flatMap((t) => [t.nameZh, t.nameEn, t.textZh, t.textEn]),
-  ]
-    .join(" ")
-    .toLowerCase();
+  const blob = normalize(
+    [
+      family.labelZh,
+      family.labelEn,
+      family.textZh,
+      family.textEn,
+      family.match,
+      family.matchZh,
+      family.family,
+      ...family.tagsZh,
+      ...family.tiers.flatMap((t) => [t.nameZh, t.nameEn, t.textZh, t.textEn]),
+    ].join(" "),
+  );
   return blob.includes(q);
 }
 
