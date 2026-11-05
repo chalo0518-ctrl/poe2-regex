@@ -10,6 +10,15 @@ import { buildStatThresholdRegex, MAX_LENGTH } from "@poe2-regex/regex";
 import { useLocale } from "../i18n.tsx";
 import { RegexRail, type RegexChip } from "./RegexRail.tsx";
 
+type SliderScale = { min: number; max: number; step: number };
+
+/** Row-major two-column grid: tier leads the left column, revives the right. */
+const WAYSTONE_DISPLAY_AXES = [
+  ...WAYSTONE_RANGE_AXES.filter((axis) => axis.id === "tier"),
+  ...WAYSTONE_RANGE_AXES.filter((axis) => axis.id === "revives"),
+  ...WAYSTONE_RANGE_AXES.filter((axis) => axis.id !== "tier" && axis.id !== "revives"),
+];
+
 type RangeFields = Record<WaystoneRangeId, { min: string; max: string }>;
 
 function emptyRanges(): RangeFields {
@@ -29,20 +38,30 @@ function boundText(raw: string, open: string): string {
   return raw.trim() === "" ? open : raw;
 }
 
-function clampBelow(next: string, maxRaw: string, scale: { min: number; max: number }): string {
-  const n = Number(next);
-  if (!Number.isFinite(n) || n <= scale.min) return "";
-  const max = parseBound(maxRaw);
-  if (max != null && n > max) return String(max);
-  return String(Math.round(n));
+function snapToStep(n: number, scale: SliderScale): number {
+  const step = scale.step > 0 ? scale.step : 1;
+  const snapped = scale.min + Math.round((n - scale.min) / step) * step;
+  return Math.min(scale.max, Math.max(scale.min, snapped));
 }
 
-function clampAbove(next: string, minRaw: string, scale: { min: number; max: number }): string {
+function clampBelow(next: string, maxRaw: string, scale: SliderScale): string {
   const n = Number(next);
-  if (!Number.isFinite(n) || n >= scale.max) return "";
+  if (!Number.isFinite(n)) return "";
+  const snapped = snapToStep(n, scale);
+  if (snapped <= scale.min) return "";
+  const max = parseBound(maxRaw);
+  if (max != null && snapped > max) return String(max);
+  return String(snapped);
+}
+
+function clampAbove(next: string, minRaw: string, scale: SliderScale): string {
+  const n = Number(next);
+  if (!Number.isFinite(n)) return "";
+  const snapped = snapToStep(n, scale);
+  if (snapped >= scale.max) return "";
   const min = parseBound(minRaw);
-  if (min != null && n < min) return String(min);
-  return String(Math.round(n));
+  if (min != null && snapped < min) return String(min);
+  return String(snapped);
 }
 
 function boundsLabel(min: string, max: string): string {
@@ -59,6 +78,7 @@ function BoundSlider({
   value,
   floor,
   ceiling,
+  step,
   openLabel,
   sideLabel,
   upper = false,
@@ -68,6 +88,7 @@ function BoundSlider({
   value: string;
   floor: number;
   ceiling: number;
+  step: number;
   openLabel: string;
   sideLabel: string;
   upper?: boolean;
@@ -83,7 +104,7 @@ function BoundSlider({
         className="axis-range"
         min={floor}
         max={ceiling}
-        step={1}
+        step={step}
         value={shown}
         aria-label={label}
         aria-valuetext={unset ? openLabel : value}
@@ -212,7 +233,7 @@ export function WaystoneStatBuilder() {
       <p className="mb-3 text-xs text-muted">{t.waystonesThresholdHint}</p>
 
       <div className="mb-4 grid gap-2 sm:grid-cols-2" role="group" aria-label={t.waystonesStatAria}>
-        {WAYSTONE_RANGE_AXES.map((axis) => {
+        {WAYSTONE_DISPLAY_AXES.map((axis) => {
           const label = locale === "en" ? axis.labelEn : axis.labelZh;
           const fields = ranges[axis.id];
           const active = parseBound(fields.min) != null || parseBound(fields.max) != null;
@@ -243,6 +264,7 @@ export function WaystoneStatBuilder() {
                 value={fields.min}
                 floor={axis.slider.min}
                 ceiling={axis.slider.max}
+                step={axis.slider.step}
                 openLabel={t.waystonesBoundOpen}
                 sideLabel={t.min}
                 onChange={(next) => setBound(axis.id, "min", clampBelow(next, fields.max, axis.slider))}
@@ -252,6 +274,7 @@ export function WaystoneStatBuilder() {
                 value={fields.max}
                 floor={axis.slider.min}
                 ceiling={axis.slider.max}
+                step={axis.slider.step}
                 openLabel={t.waystonesBoundOpen}
                 sideLabel={t.max}
                 upper

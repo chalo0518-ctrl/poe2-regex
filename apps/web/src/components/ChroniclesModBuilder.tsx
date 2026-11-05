@@ -268,7 +268,7 @@ export function ChroniclesModBuilder({
   pinSelectionCounts?: boolean;
   clearAllLabel?: string;
   selectionHint?: string;
-  /** Tablets use YES/OR/NOT. Other pages keep 是／或／否. */
+  /** Tablets are Y/N only. Other pages keep 是／或／否, including 或. */
   polarityStyle?: "default" | "yon";
 }) {
   const { locale, t } = useLocale();
@@ -355,8 +355,14 @@ export function ChroniclesModBuilder({
   );
 
   const selected = useMemo(
-    () => poolFamilies.filter((f) => picks[f.id]),
-    [poolFamilies, picks],
+    () =>
+      poolFamilies.filter((f) => {
+        const polarity = picks[f.id]?.polarity;
+        if (!polarity) return false;
+        if (polarityStyle === "yon" && polarity === "or") return false;
+        return true;
+      }),
+    [poolFamilies, picks, polarityStyle],
   );
 
   const result = useMemo(() => {
@@ -386,6 +392,7 @@ export function ChroniclesModBuilder({
   }
 
   function setPickPolarity(family: AffixFamily, next: Polarity) {
+    if (polarityStyle === "yon" && next === "or") return;
     updatePicks((prev) => {
       const cur = prev[family.id];
       const clear = () => {
@@ -521,12 +528,13 @@ export function ChroniclesModBuilder({
   const yon = polarityStyle === "yon";
   const marks = {
     yes: yon ? t.tabletsPolarityYes : t.polarityYes,
-    or: yon ? t.tabletsPolarityOr : t.polarityOr,
+    or: yon ? "" : t.polarityOr,
     no: yon ? t.tabletsPolarityNo : t.polarityNo,
     yesTitle: yon ? t.tabletsPolarityYesTitle : t.polarityYesTitle,
-    orTitle: yon ? t.tabletsPolarityOrTitle : t.polarityOrTitle,
+    orTitle: yon ? "" : t.polarityOrTitle,
     noTitle: yon ? t.tabletsPolarityNoTitle : t.polarityNoTitle,
     clickInclude: yon ? t.tabletsClickInclude : t.clickModInclude,
+    allowOr: !yon,
   };
 
   const selectionChips: RegexChip[] | undefined = showSelectionChips
@@ -694,7 +702,7 @@ export function ChroniclesModBuilder({
             ? `. ${(selectionCount ?? t.craftingSelectedCount)(selected.length)}`
             : `。${(selectionCount ?? t.craftingSelectedCount)(selected.length)}`
           : yon
-            ? t.tabletsRegexCounts(includeN, orN, excludeN)
+            ? t.tabletsRegexCounts(includeN, excludeN)
             : t.regexCounts(includeN, orN, excludeN)}
         {showTags ? t.tagHelp : ""}
       </p>
@@ -865,6 +873,8 @@ type PolarityMarks = {
   orTitle: string;
   noTitle: string;
   clickInclude: string;
+  /** Tablets are Y/N only. Early gear still offers 或. */
+  allowOr: boolean;
 };
 
 function AffixColumn({
@@ -983,7 +993,7 @@ function PolarityToggle({
   const { t } = useLocale();
   const options: { id: Polarity; label: string; title: string }[] = [
     { id: "include", label: marks.yes, title: marks.yesTitle },
-    { id: "or", label: marks.or, title: marks.orTitle },
+    ...(marks.allowOr ? [{ id: "or" as const, label: marks.or, title: marks.orTitle }] : []),
     { id: "exclude", label: marks.no, title: marks.noTitle },
   ];
   return (

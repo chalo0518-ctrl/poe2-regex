@@ -181,14 +181,12 @@ type Messages = {
   tabletsPinnedCounts: (selected: number, excluded: number) => string;
   tabletsQuickHint: string;
   tabletsPolarityYes: string;
-  tabletsPolarityOr: string;
   tabletsPolarityNo: string;
   tabletsPolarityYesTitle: string;
-  tabletsPolarityOrTitle: string;
   tabletsPolarityNoTitle: string;
   tabletsClickInclude: string;
   tabletsRegexPlaceholder: string;
-  tabletsRegexCounts: (includeN: number, orN: number, excludeN: number) => string;
+  tabletsRegexCounts: (includeN: number, excludeN: number) => string;
   clickModInclude: string;
   regexRailLabel: string;
   regexChipList: string;
@@ -381,7 +379,7 @@ const zhHant: Messages = {
     "對齊市集終局篩選：階級、怪物效用、怪物稀有度、掉落率、經驗、怪物群大小、物品稀有度、復活、金幣。空白則忽略該軸，不必選低階／中階／高階詞綴池。",
   waystonesStatAria: "換界石終局篩選",
   waystonesThresholdHint:
-    "每軸兩支滑桿。拉到刻度端點＝忽略該邊界。已設的軸以 AND 組合，對換界石上的總數值（與市集相同）。階級 1–16，百分比多為 0–100，經驗 0–400，金幣 0–1000，復活 0–6。",
+    "每軸兩支滑桿。拉到刻度端點＝忽略該邊界。左欄第一個是階級，右欄第一個是復活。已設的軸以 AND 組合，對換界石上的總數值（與市集相同）。階級 1–16、復活 0–6 每次 1；群大小、效用、稀有度、掉落率、經驗、金幣每次 10。",
   waystonesBoundOpen: "不限",
   waystonesClearAxis: "清除",
   waystonesIgnoreAxis: (label) => `忽略${label}`,
@@ -401,21 +399,19 @@ const zhHant: Messages = {
   tabletsEmptyTitle: "尚未選擇碑牌",
   tabletsEmptyBody: "選一種碑牌後才會載入該頁的前綴／後綴。裂痕碑牌不會看到探險專屬詞綴，以此類推。",
   tabletsTitle: (label) => `${label}詞綴正則`,
-  tabletsDesc: "種類已鎖定目前碑牌。點詞綴文字選 YES，右側 NOT 排除、OR 仍可選。未選不寫入。YES 項 AND，OR 合成一組再 AND，NOT 走排除。",
+  tabletsDesc: "種類已鎖定目前碑牌。點詞綴文字選 Y，右側 N 排除。未選不寫入。Y 項 AND，N 走排除。",
   tabletsSearch: "搜尋詞綴",
   tabletsSearchPlaceholder: "搜尋此碑牌詞綴",
   tabletsClearAll: "清空全部條件",
   tabletsPinnedCounts: (selected, excluded) => `已選 ${selected} · 排除 ${excluded}`,
-  tabletsQuickHint: "點詞綴文字選 YES。右側 NOT 排除，OR 仍可選。常見範圍直接顯示在列上，展開才看完整階層。",
-  tabletsPolarityYes: "YES",
-  tabletsPolarityOr: "OR",
-  tabletsPolarityNo: "NOT",
-  tabletsPolarityYesTitle: "YES：包含此詞條（AND）",
-  tabletsPolarityOrTitle: "OR：包含此詞條（OR 一組）",
-  tabletsPolarityNoTitle: "NOT：排除此詞條",
-  tabletsClickInclude: "點此詞綴選 YES",
-  tabletsRegexPlaceholder: "每列選 YES、OR 或 NOT，正則會顯示在這裡",
-  tabletsRegexCounts: (includeN, orN, excludeN) => `。YES ${includeN} · OR ${orN} · NOT ${excludeN}`,
+  tabletsQuickHint: "點詞綴文字選 Y。右側 N 排除。常見範圍直接顯示在列上，展開才看完整階層。",
+  tabletsPolarityYes: "Y",
+  tabletsPolarityNo: "N",
+  tabletsPolarityYesTitle: "Y：包含此詞條（AND）",
+  tabletsPolarityNoTitle: "N：排除此詞條",
+  tabletsClickInclude: "點此詞綴選 Y",
+  tabletsRegexPlaceholder: "每列選 Y 或 N，正則會顯示在這裡",
+  tabletsRegexCounts: (includeN, excludeN) => `。Y ${includeN} · N ${excludeN}`,
   clickModInclude: "點此詞綴選「是」",
   regexRailLabel: "倉庫正則",
   regexChipList: "已選條件",
@@ -612,7 +608,7 @@ const en: Messages = {
     "Market endgame filters: tier, monster effectiveness, monster rarity, drop chance, experience, pack size, item rarity, revives, and gold. Empty = ignore. No low/mid/top affix-pool picker.",
   waystonesStatAria: "Waystone endgame filters",
   waystonesThresholdHint:
-    "Each axis has two sliders. A thumb on either end ignores that bound. Filled axes AND together and match totals on the waystone, like trade. Tier 1–16, most percentages 0–100, experience 0–400, gold 0–1000, revives 0–6.",
+    "Each axis has two sliders. A thumb on either end ignores that bound. Tier leads the left column and revives the right. Filled axes AND together and match totals on the waystone, like trade. Tier and revives step by 1. Pack size, effectiveness, rarity, drop chance, experience, and gold step by 10.",
   waystonesBoundOpen: "Any",
   waystonesClearAxis: "Clear",
   waystonesIgnoreAxis: (label) => `Ignore ${label}`,
@@ -634,22 +630,20 @@ const en: Messages = {
   tabletsEmptyBody: "Choose a kind to load that page’s prefixes/suffixes. Breach will not show Expedition-only mods.",
   tabletsTitle: (label) => `${label} affix regex`,
   tabletsDesc:
-    "Kind is locked. Click the mod text for YES. NOT excludes, and OR stays on the row. Unselected rows are ignored. YES rows AND, OR rows become one group, NOT uses !.",
+    "Kind is locked. Click the mod text for Y. N excludes. Unselected rows are ignored. Y rows AND, and N uses !.",
   tabletsSearch: "Search mods",
   tabletsSearchPlaceholder: "Search this tablet’s mods",
   tabletsClearAll: "Clear all conditions",
   tabletsPinnedCounts: (selected, excluded) => `Selected ${selected} · Excluded ${excluded}`,
   tabletsQuickHint:
-    "Click the mod text for YES. NOT excludes, and OR stays on the right. The common roll span sits on the row; expand for full tiers.",
-  tabletsPolarityYes: "YES",
-  tabletsPolarityOr: "OR",
-  tabletsPolarityNo: "NOT",
-  tabletsPolarityYesTitle: "YES: include this mod (AND)",
-  tabletsPolarityOrTitle: "OR: include this mod (OR group)",
-  tabletsPolarityNoTitle: "NOT: exclude this mod",
-  tabletsClickInclude: "Click this mod to select YES",
-  tabletsRegexPlaceholder: "Choose YES, OR, or NOT on a row; the regex shows up here",
-  tabletsRegexCounts: (includeN, orN, excludeN) => `. YES ${includeN} · OR ${orN} · NOT ${excludeN}`,
+    "Click the mod text for Y. N excludes. The common roll span sits on the row; expand for full tiers.",
+  tabletsPolarityYes: "Y",
+  tabletsPolarityNo: "N",
+  tabletsPolarityYesTitle: "Y: include this mod (AND)",
+  tabletsPolarityNoTitle: "N: exclude this mod",
+  tabletsClickInclude: "Click this mod to select Y",
+  tabletsRegexPlaceholder: "Choose Y or N on a row; the regex shows up here",
+  tabletsRegexCounts: (includeN, excludeN) => `. Y ${includeN} · N ${excludeN}`,
   clickModInclude: "Click this mod to select Yes",
   regexRailLabel: "Stash regex",
   regexChipList: "Selected conditions",
