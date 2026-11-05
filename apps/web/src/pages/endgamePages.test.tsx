@@ -73,6 +73,7 @@ describe("endgame tablets page", () => {
     expect(within(chestRow as HTMLElement).queryByRole("button", { name: "空" })).not.toBeInTheDocument();
     expect(screen.getByRole("searchbox", { name: "搜尋詞綴" })).toBeInTheDocument();
     expect(screen.getByText("常見 2–3")).toBeInTheDocument();
+    expect(document.querySelector("[data-row-stats]")).not.toBeInTheDocument();
     expect(screen.queryByText(/iLvL/)).not.toBeInTheDocument();
     const rail = screen.getByRole("region", { name: "倉庫正則" });
     expect(rail).toHaveAttribute("data-regex-rail", "dock");

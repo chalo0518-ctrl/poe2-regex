@@ -15,6 +15,7 @@ export const endgameTabletChrome = {
   hanFold: true,
   quickPolarity: true,
   showInlineRange: true,
+  showRowStats: false,
   showSelectionChips: true,
   pinSelectionCounts: true,
   polarityStyle: "yon",

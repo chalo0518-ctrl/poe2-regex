@@ -200,6 +200,7 @@ export function ChroniclesModBuilder({
   hanFold = false,
   quickPolarity = false,
   showInlineRange = false,
+  showRowStats = true,
   showSelectionChips = false,
   pinSelectionCounts = false,
   clearAllLabel,
@@ -264,6 +265,8 @@ export function ChroniclesModBuilder({
   quickPolarity?: boolean;
   /** Show 常見 min–max on the row, not only after expand or after a pick. */
   showInlineRange?: boolean;
+  /** tierCount / maxLevel / weight on the default row. Tablets hide this. */
+  showRowStats?: boolean;
   showSelectionChips?: boolean;
   pinSelectionCounts?: boolean;
   clearAllLabel?: string;
@@ -722,6 +725,7 @@ export function ChroniclesModBuilder({
             stickyLock={stickyLock}
             quickPolarity={quickPolarity}
             showInlineRange={showInlineRange}
+            showRowStats={showRowStats}
             marks={marks}
             blockTitles={blockTitles}
             onPolarity={setPickPolarity}
@@ -890,6 +894,7 @@ function AffixColumn({
   stickyLock,
   quickPolarity,
   showInlineRange,
+  showRowStats,
   marks,
   blockTitles,
   onPolarity,
@@ -912,6 +917,7 @@ function AffixColumn({
   stickyLock: boolean;
   quickPolarity: boolean;
   showInlineRange: boolean;
+  showRowStats: boolean;
   marks: PolarityMarks;
   blockTitles: Record<string, string>;
   onPolarity: (family: AffixFamily, next: Polarity) => void;
@@ -940,6 +946,7 @@ function AffixColumn({
       stickyLock={stickyLock}
       quickPolarity={quickPolarity}
       showInlineRange={showInlineRange}
+      showRowStats={showRowStats}
       marks={marks}
       blockedTitle={blockTitles[family.id]}
       onPolarity={(next) => onPolarity(family, next)}
@@ -1031,6 +1038,7 @@ function AffixRow({
   stickyLock,
   quickPolarity,
   showInlineRange,
+  showRowStats,
   marks,
   blockedTitle,
   onPolarity,
@@ -1051,6 +1059,7 @@ function AffixRow({
   stickyLock: boolean;
   quickPolarity: boolean;
   showInlineRange: boolean;
+  showRowStats: boolean;
   marks: PolarityMarks;
   blockedTitle?: string;
   onPolarity: (next: Polarity) => void;
@@ -1115,9 +1124,11 @@ function AffixRow({
                   {tag}
                 </span>
               ))}
-            <span className="ml-auto font-mono text-[11px] text-muted">
-              {family.tierCount} {family.maxLevel} {family.weight}
-            </span>
+            {showRowStats && (
+              <span data-row-stats="" className="ml-auto font-mono text-[11px] text-muted">
+                {family.tierCount} {family.maxLevel} {family.weight}
+              </span>
+            )}
           </div>
           <div className="mt-0.5 text-xs text-muted">
             {showFamilyNames

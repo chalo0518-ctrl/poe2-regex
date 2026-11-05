@@ -131,6 +131,7 @@ describe("early gear category picker", () => {
     renderGear();
 
     expect(screen.getByRole("option", { name: "胸甲" })).toHaveAttribute("aria-selected", "true");
+    expect(document.querySelector("[data-row-stats]")).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "頭盔" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "手套" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "鞋子" })).toBeInTheDocument();
