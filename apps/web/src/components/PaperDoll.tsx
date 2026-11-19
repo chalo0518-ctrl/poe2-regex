@@ -39,7 +39,8 @@ const PLACE: Record<string, { gridColumn: string; gridRow: string }> = {
 type DollMode = "memorial" | "recommended";
 type WeaponSet = 1 | 2;
 
-const GRID_AREAS = ["weapon", "offhand", "helm", "ring3", "ring", "ring2", "amulet", "body", "gloves", "boots", "belt", "trinket", "life", "mana"] as const;
+const GRID_AREAS = ["weapon", "offhand", "helm", "ring", "ring2", "amulet", "body", "gloves", "boots", "belt", "life", "mana"] as const;
+const HIDDEN_AREAS = new Set(["ring3", "trinket"]);
 
 function labelOf(row: { labelZh: string; labelEn: string }, locale: UiLocale): string {
   return locale === "en" ? row.labelEn : row.labelZh;
@@ -88,7 +89,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
       <div className="ninja-sheet" data-testid="ninja-sheet">
         <WeaponTabs set={set} onSet={setWeaponSet} area="wtab" label={locale === "en" ? "Weapon set" : "武器組"} />
         <WeaponTabs set={set} onSet={setWeaponSet} area="otab" label={locale === "en" ? "Off-hand set" : "副手武器組"} />
-        {visible.filter((slot) => slot.group !== "charm").map((slot) => (
+        {visible.filter((slot) => slot.group !== "charm" && !HIDDEN_AREAS.has(slot.area)).map((slot) => (
           <DollCell
             key={slot.id}
             slot={slot}
@@ -132,7 +133,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
                   if (!tip?.pinned) setTip(null);
                 }}
               />
-              <JewelCaption slotId={slot.id} mode={mode} fallback={labelOf(slot, locale)} locale={locale} />
+              <JewelCaption slotId={slot.id} mode={mode} locale={locale} />
             </div>
           ))}
         </div>
@@ -205,6 +206,7 @@ function DollCell({
       <Link
         to={to}
         data-area={slot.area}
+        data-slot={slot.id}
         data-rarity={gear?.rarity || "empty"}
         className="ninja-cell"
         style={place}
@@ -216,7 +218,7 @@ function DollCell({
           {src ? <img src={src} alt={name || slotLabel} /> : null}
           {socketsOn ? <SocketOverlay gear={gear} locale={locale} /> : null}
         </span>
-        <span className={name ? "ninja-name" : "sr-only"}>{name || t.showcaseMemorialEmpty}</span>
+        <span className="sr-only">{name || t.showcaseMemorialEmpty}</span>
       </Link>
     );
   }
@@ -237,7 +239,7 @@ function DollCell({
       aria-label={[slotLabel, name || t.showcaseNamePending].join(" ")}
     >
       {src ? <img src={src} alt={name || slotLabel} /> : null}
-      <span className={name ? "ninja-name" : "sr-only"}>{name || t.showcaseNamePending}</span>
+      <span className="sr-only">{name || t.showcaseNamePending}</span>
       {base ? <span className="sr-only">{base}</span> : null}
       {gear.implicits.map((row) => (
         <span key={row.textZh} className="sr-only">
@@ -259,9 +261,10 @@ function SocketOverlay({ gear, locale }: { gear: MemorialGear | null; locale: Ui
       {sockets.map((socket, index) => {
         const name = locale === "en" ? socket.nameEn : socket.nameZh;
         const src = showcaseImageUrl(socket.imageUrl ?? "");
+        if (!src) return null;
         return (
           <span key={`${name}-${index}`} className="socket-pip" data-socket-name={name} title={name}>
-            {src ? <img src={src} alt={name} /> : <span>{name}</span>}
+            <img src={src} alt="" />
           </span>
         );
       })}
@@ -280,17 +283,16 @@ function AffixHoles({ lines, emptyLabel, locale }: { lines: ShowcaseLine[]; empt
 function JewelCaption({
   slotId,
   mode,
-  fallback,
   locale,
 }: {
   slotId: PaperDollSlotId;
   mode: DollMode;
-  fallback: string;
   locale: UiLocale;
 }) {
   const { snapshot } = useShowcase();
-  if (mode !== "memorial") return <span className="ninja-jewel-name">{fallback}</span>;
+  if (mode !== "memorial") return null;
   const gear = memorialGear(snapshot, slotId);
-  const name = gear ? nameOf(gear, locale) : fallback;
-  return <span className="ninja-jewel-name">{name}</span>;
+  const name = gear ? nameOf(gear, locale) : "";
+  if (!name) return null;
+  return <span className="sr-only">{name}</span>;
 }

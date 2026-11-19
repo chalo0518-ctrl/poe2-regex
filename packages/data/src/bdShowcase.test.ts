@@ -91,6 +91,10 @@ describe("season BD paper doll", () => {
       const gear = memorialGear(SEASON_BD_V1, slot.id);
       expect(gear?.imageUrl ?? "").not.toContain("poe.ninja");
       if (gear?.imageUrl) expect(showcaseImageUrl(gear.imageUrl)).toBe(gear.imageUrl);
+      for (const socket of gear?.sockets ?? []) {
+        expect(socket.imageUrl, `${slot.id} ${socket.nameEn}`).toMatch(/^https:\/\/cdn\.poe2db\.tw\//);
+        expect(showcaseImageUrl(socket.imageUrl ?? "")).toBe(socket.imageUrl);
+      }
       const recommended = recommendedGear(SEASON_BD_V1, slot.id);
       expect(recommended.nameZh).toBe("");
       expect(recommended.affixes).toEqual([]);

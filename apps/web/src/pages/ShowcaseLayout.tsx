@@ -12,7 +12,7 @@ export default function ShowcaseLayout({ snapshot = SEASON_BD_V1 }: { snapshot?:
 
   return (
     <ShowcaseProvider snapshot={snapshot}>
-      <PageShell kicker="SEASON" title={title}>
+      <PageShell kicker="SEASON" title={title} wide>
         <div role="tablist" aria-label={t.showcaseTabsAria} className="mb-6 flex flex-wrap gap-1 border-b border-line pb-3">
           <ShowcaseTab id="showcase-tab-memorial" to="/showcase/memorial" selected={Boolean(memorial)} label={t.showcaseTabMemorial} />
           <ShowcaseTab id="showcase-tab-recommended" to="/showcase/recommended" selected={Boolean(recommended)} label={t.showcaseTabRecommended} />

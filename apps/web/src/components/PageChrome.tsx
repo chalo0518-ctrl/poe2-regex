@@ -54,13 +54,15 @@ export function PageShell({
   kicker,
   title,
   children,
+  wide = false,
 }: {
   kicker: string;
   title: string;
   children: ReactNode;
+  wide?: boolean;
 }) {
   return (
-    <div className="mx-auto max-w-[1280px] px-4 py-6 sm:px-6">
+    <div className={`mx-auto py-6 ${wide ? "max-w-[1560px] px-6 sm:px-10" : "max-w-[1280px] px-4 sm:px-6"}`}>
       <p className="text-xs tracking-[0.28em] text-gold-dim">{kicker}</p>
       <h1 className="mt-1 mb-5 text-2xl font-bold text-gold">{title}</h1>
       {children}

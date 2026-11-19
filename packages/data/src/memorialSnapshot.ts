@@ -31,6 +31,21 @@ const ART: Record<string, string> = {
   Sapphire: "https://cdn.poe2db.tw/image/Art/2DItems/Jewels/SapphireJewel.webp",
   Diamond: "https://cdn.poe2db.tw/image/Art/2DItems/Jewels/DiamondJewel.webp",
   "Time-Lost Sapphire": "https://cdn.poe2db.tw/image/Art/2DItems/Jewels/SpecialSapphireJewel.webp",
+  "Serle's Triumph": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Expedition2/GameWarpRune2.webp",
+  "Hedgewitch Assandra's Rune of Wisdom": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Runes/NewRune1.webp",
+  "Legacy of Lifesprig": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Expedition2/GameWarpRuneUniqueFragment.webp",
+  "Rabbit Idol": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableRabbit.webp",
+  "Fox Idol": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableFox.webp",
+  "Idol of Yeena": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/TormentedSpiritSocketables/IdolofYeena.webp",
+  "Snake Idol": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableSnake.webp",
+  "Greater Storm Rune": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Runes/LightningRuneTier2.webp",
+  "Perfect Ward Rune": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Expedition2/AddedWardPerfect.webp",
+  "Perfect Iron Rune": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Runes/PerfectRuneEnhance.webp",
+  "Raven-Touched Shard": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Delirium/DeliriumEndgameSocketable.webp",
+  "Idol of Maxarius": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableStagSpecial.webp",
+  "Rune of Foundations": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Expedition2/EarlyMythicRune7.webp",
+  "Craiceann's Rune of Warding": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Runes/NewRune6.webp",
+  "Cadigan's Epiphany": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Expedition2/GameWarpRune3.webp",
 };
 
 type RawText = { kind?: string; text_en?: string; text_zh?: string };

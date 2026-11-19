@@ -54,8 +54,8 @@ describe("season BD showcase", () => {
     expect(screen.getAllByText("水井之心").length).toBeGreaterThan(0);
     expect(screen.queryByText("empty prefix")).not.toBeInTheDocument();
     expect(slotLink(/主手/)).toHaveAccessibleName(/暮色 刃痕/);
-    expect(slotLink(/戒指 3/)).toHaveAccessibleName(/尚未抄入/);
-    expect(slotLink(/飾品/)).toHaveAccessibleName(/尚未抄入/);
+    expect(screen.queryByRole("link", { name: /戒指 3/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /飾品/ })).not.toBeInTheDocument();
     await user.click(screen.getAllByRole("button", { name: "II" })[0]);
     expect(screen.getByText("林木塑像")).toBeInTheDocument();
     expect(screen.queryByText("暮色 刃痕")).not.toBeInTheDocument();
@@ -65,7 +65,6 @@ describe("season BD showcase", () => {
     expect(slotLink(/咒符 1/)).toBeInTheDocument();
     expect(slotLink(/咒符 2/)).toBeInTheDocument();
     expect(slotLink(/咒符 3/)).toBeInTheDocument();
-    expect(screen.getAllByText("尚未抄入").length).toBeGreaterThan(0);
     expect(screen.queryByText("empty prefix")).not.toBeInTheDocument();
     expect(screen.queryByText("empty suffix")).not.toBeInTheDocument();
     expect(slotLink(/主手/)).toHaveStyle({ gridRow: "2 / 6" });
@@ -113,10 +112,8 @@ describe("season BD showcase", () => {
     expect(screen.getAllByRole("tab")).toHaveLength(2);
 
     await user.click(screen.getByRole("link", { name: "返回我的狀況／紀念" }));
-    await user.click(slotLink(/戒指 3/));
-    expect(screen.getByRole("heading", { name: "戒指 3" })).toBeInTheDocument();
-    expect(screen.getByText("尚未抄入")).toBeInTheDocument();
-    expect(screen.queryByText("心靈 堅城")).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /戒指 3/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /飾品/ })).not.toBeInTheDocument();
   });
 
   it("shows transcribed memorial gear for the clicked slot only", async () => {
@@ -265,7 +262,7 @@ describe("season BD showcase", () => {
     renderAt("/showcase/memorial", "en");
     expect(screen.getByRole("tab", { name: "My setup / Memorial" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("tab", { name: "Guide / Recommended" })).toBeInTheDocument();
-    expect(screen.getAllByText("Not transcribed").length).toBeGreaterThan(0);
+    expect(screen.getByText("Dusk Scratch")).toBeInTheDocument();
     expect(document.body.textContent).not.toContain("推荐");
     await user.click(screen.getByRole("tab", { name: "Guide / Recommended" }));
     expect(screen.getAllByText("Name not set").length).toBeGreaterThan(0);

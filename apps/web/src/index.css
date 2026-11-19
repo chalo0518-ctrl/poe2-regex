@@ -334,7 +334,9 @@ header {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 2rem;
+  justify-content: space-between;
+  gap: 3.5rem;
+  width: 100%;
 }
 
 .ninja-panel {
@@ -373,7 +375,7 @@ header {
 }
 
 .ninja-sheet {
-  --cell: 48px;
+  --cell: 58px;
   --gap: 8px;
   display: grid;
   width: max-content;
@@ -570,9 +572,14 @@ header {
   font-size: 11px;
 }
 
+.ninja-cell[data-slot="weapon-1-main"] .ninja-art > img {
+  max-width: 54%;
+  max-height: 82%;
+}
+
 .ninja-art > img {
-  max-width: calc(100% - 10px);
-  max-height: calc(100% - 10px);
+  max-width: calc(100% - 12px);
+  max-height: calc(100% - 12px);
   width: auto;
   height: auto;
   object-fit: contain;
@@ -673,7 +680,7 @@ header {
 
 @media (min-width: 1024px) {
   .ninja-sheet {
-    --cell: 64px;
+    --cell: 76px;
     grid-template-rows: 48px repeat(8, var(--cell));
   }
 
