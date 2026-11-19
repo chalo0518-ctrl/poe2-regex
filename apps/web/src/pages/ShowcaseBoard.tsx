@@ -1,3 +1,4 @@
+import CharacterStats from "../components/CharacterStats.tsx";
 import PaperDoll from "../components/PaperDoll.tsx";
 import { useLocale } from "../i18n.tsx";
 import { useShowcase } from "./showcaseState.tsx";
@@ -29,7 +30,10 @@ export default function ShowcaseBoard({ mode }: { mode: "memorial" | "recommende
       ) : (
         <p className="mb-4 max-w-2xl text-sm text-muted">{t.showcaseMemorialLead}</p>
       )}
-      <PaperDoll mode={mode} />
+      <div className="memorial-layout">
+        <PaperDoll mode={mode} />
+        {mode === "memorial" && snapshot.level ? <CharacterStats /> : null}
+      </div>
     </div>
   );
 }

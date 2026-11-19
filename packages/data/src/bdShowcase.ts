@@ -54,6 +54,9 @@ export type MemorialSocket = {
   baseEn: string;
   rarity: string;
   mods: MemorialMod[];
+  tooltipEn?: string;
+  tooltipZh?: string;
+  imageUrl?: string;
 };
 
 export type MemorialNotable = {
@@ -86,6 +89,9 @@ export type MemorialGear = {
   mirroredZh?: string;
   corruptedEn?: string;
   corruptedZh?: string;
+  /** Captured poe.ninja tooltip. Not reconstructed. */
+  tooltipEn?: string;
+  tooltipZh?: string;
   implicits: ShowcaseText[];
   affixes: MemorialAffix[];
 };

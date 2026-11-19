@@ -84,6 +84,8 @@ describe("season BD paper doll", () => {
     expect(memorialGear(SEASON_BD_V1, "jewel-8")?.nameZh).toBe("鳳鳴傷口");
     expect(memorialGear(SEASON_BD_V1, "charm-1")?.nameZh).toBe("黑貓");
     expect(memorialGear(SEASON_BD_V1, "flask-life")?.nameEn).toBe("Olroth's Resolve");
+    expect(memorialGear(SEASON_BD_V1, "weapon-1-main")?.tooltipZh).toContain("已汙染");
+    expect(memorialGear(SEASON_BD_V1, "helmet")?.sockets).toHaveLength(2);
 
     for (const slot of paperDollSlots) {
       const gear = memorialGear(SEASON_BD_V1, slot.id);

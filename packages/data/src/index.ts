@@ -227,6 +227,7 @@ export {
   showcaseImageUrl,
   showcaseLines,
 } from "./bdShowcase.ts";
+export { RUO_CETACEA_STATS, ruoaStatLine } from "./ruoaStats.ts";
 export type {
   BdShowcase,
   MemorialAffix,

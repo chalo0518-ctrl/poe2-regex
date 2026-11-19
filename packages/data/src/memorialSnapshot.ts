@@ -59,6 +59,8 @@ type RawItem = {
   flavour_en?: string;
   flavour_zh?: string;
   stats_shown?: Record<string, string>;
+  tooltip_en?: string;
+  tooltip_zh?: string;
   socketed_items?: {
     name_en?: string;
     name_zh?: string;
@@ -66,6 +68,8 @@ type RawItem = {
     base_zh?: string;
     rarity?: string;
     explicit_affixes?: RawText[];
+    tooltip_en?: string;
+    tooltip_zh?: string;
   }[];
 };
 
@@ -163,6 +167,9 @@ function socketsOf(item: RawItem): MemorialSocket[] {
     baseZh: row.base_zh ?? "",
     rarity: row.rarity ?? "",
     mods: modsOf(row.explicit_affixes),
+    tooltipEn: row.tooltip_en ?? "",
+    tooltipZh: row.tooltip_zh ?? "",
+    imageUrl: artFor(row.name_en ?? "", row.base_en ?? "", row.rarity === "rare" ? "rare" : row.rarity === "unique" ? "unique" : ""),
   }));
 }
 
@@ -206,6 +213,8 @@ export function memorialGearFromRaw(item: RawItem): MemorialGear | null {
     mirroredZh: item.other_visible_text?.mirrored?.text_zh ?? "",
     corruptedEn: item.corrupted_text_en ?? "",
     corruptedZh: item.corrupted_text_zh ?? "",
+    tooltipEn: item.tooltip_en ?? "",
+    tooltipZh: item.tooltip_zh ?? "",
     implicits: modsOf(item.implicit_mods).map((mod) => ({ textEn: mod.textEn, textZh: mod.textZh })),
     affixes: [],
   };

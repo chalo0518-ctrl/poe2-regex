@@ -270,6 +270,7 @@ type Messages = {
   showcaseJewels: string;
   showcaseSockets: string;
   showcaseEquipment: string;
+  showcaseShowSockets: string;
 };
 
 const zhHant: Messages = {
@@ -531,6 +532,7 @@ const zhHant: Messages = {
   showcaseJewels: "基礎珠寶",
   showcaseSockets: "插槽",
   showcaseEquipment: "裝備",
+  showcaseShowSockets: "顯示鑲嵌",
 };
 
 const en: Messages = {
@@ -793,6 +795,7 @@ const en: Messages = {
   showcaseJewels: "BASE JEWELS",
   showcaseSockets: "Sockets",
   showcaseEquipment: "Equipment",
+  showcaseShowSockets: "Show sockets",
 };
 
 export const MESSAGES: Record<UiLocale, Messages> = {

@@ -1,0 +1,86 @@
+{
+  "source": {
+    "url_en": "https://poe.ninja/poe2/profile/TAIC_LY4TA-2922/runesofaldur/character/RUOA_CETACEA",
+    "url_zh": "https://poe.ninja/zh-tw/poe2/profile/TAIC_LY4TA-2922/runesofaldur/character/RUOA_CETACEA",
+    "captured_from": "Existing English poe.ninja character-page screenshot taken 2026-11-19 while transcribing RUOA_CETACEA gear. Numbers below were read from the visible Stats panel crop (see stats-column.png). Do not invent or round differently.",
+    "zh_labels_note": "Traditional Chinese labels for this panel were not captured from the zh-tw ninja page. Do not invent translations. Use existing repo i18n or official PoE2/poe.ninja zh-tw labels if you can verify them; otherwise keep the English label and leave a short code comment listing which labels still need a verified zh-tw string.",
+    "omitted": "ASCENDANCY & KEYSTONES was below the fold and not readable. Do not invent ascendancy or keystone data. A '127 / 4 / 8' control is visible at the bottom of the ninja stats card; copy it only if you can identify what it is from the screenshot, otherwise omit it."
+  },
+  "character": {
+    "name": "RUOA_CETACEA",
+    "level": 100,
+    "class_en": "Oracle",
+    "class_zh": "天啟先知"
+  },
+  "stats": {
+    "character": {
+      "attributes": {
+        "strength": 63,
+        "dexterity": 27,
+        "intelligence": 254,
+        "display": "63 / 27 / 254",
+        "colors": "str red, dex green, int blue"
+      },
+      "movement_speed": "138%",
+      "item_rarity": "120%",
+      "charges": {
+        "display": "3 / 3 / 3",
+        "colors": "endurance red, frenzy green, power blue"
+      }
+    },
+    "defensive": {
+      "life": "1,430",
+      "energy_shield": "-",
+      "runic_ward": 44,
+      "mana": "5,511",
+      "spirit": 366,
+      "armour": 634,
+      "damage_reduction": {
+        "display": "6% / 1% / 1% / 1%",
+        "note": "Match colors from stats-column.png; the first value is muted, the later 1% values are highlighted (red/yellow). Do not invent the damage types if the screenshot does not label them; ninja shows four values in one row."
+      },
+      "evasion_rating": 43,
+      "evade_chance": "1%",
+      "deflection_rating": 5,
+      "companion_redirect": "10%",
+      "resistances": {
+        "display": "75% / 75% / 73% / 75%",
+        "note": "Four values, colors in stats-column.png (first two yellowish, third reddish 73%, fourth pink 75%). Typical fire/cold/lightning/chaos order on ninja, but copy the screenshot; do not add labels ninja does not show."
+      },
+      "effective_health_pool": "16k",
+      "max_hit": {
+        "display": "6.6k / 23k / 23k / 22k / 26k",
+        "note": "Five values, colors in stats-column.png (pale, orange, blue, yellow, pink)."
+      }
+    },
+    "recovery": {
+      "mana_regen": "444/s"
+    },
+    "main_skills": [
+      {
+        "name_en": "Grim Pillars",
+        "name_zh": null,
+        "detail_line_1": "3.6/s - 70% / 1344% crit",
+        "detail_line_2": "4.6m radius - 12.3s duration",
+        "badge": "AVG",
+        "value": "1.0M"
+      },
+      {
+        "name_en": "Entangle",
+        "name_zh": null,
+        "detail_line_1": "2.6/s - 59% / 1344% crit",
+        "detail_line_2": "8.1m radius - 2.5s duration",
+        "badge": null,
+        "value": "46k"
+      },
+      {
+        "name_en": "Azmerian Wolf",
+        "name_zh": null,
+        "detail_line_1": "1.2/s - 100% hit",
+        "detail_line_2": null,
+        "badge": null,
+        "value": "4.3k"
+      }
+    ]
+  }
+}

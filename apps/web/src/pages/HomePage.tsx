@@ -8,7 +8,7 @@ export default function HomePage() {
       <p className="text-xs tracking-[0.28em] text-gold-dim">{t.homeKicker}</p>
       <h1 className="mt-2 text-3xl font-bold text-gold">{t.homeTitle}</h1>
       <p className="mt-3 max-w-xl text-sm text-muted">{t.homeLead}</p>
-      <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="home-cards mt-8 grid gap-4">
         <Link
           to="/early"
           className="rounded-sm border border-line bg-panel p-6 transition hover:border-gold"

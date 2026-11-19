@@ -319,13 +319,40 @@ body {
   border: 0;
 }
 
+.memorial-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
 .ninja-panel {
   width: max-content;
   max-width: 100%;
-  overflow-x: auto;
-  border: 1px solid #3c4652;
-  background: #2a3038;
-  padding: 12px 16px 18px;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.ninja-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 8px;
+}
+
+.ninja-toolbar button {
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-paper);
+  padding: 0.2rem 0.55rem;
+  font-size: 13px;
+}
+
+.ninja-toolbar button[aria-pressed="true"] {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
 }
 
 .ninja-panel-title {
@@ -342,23 +369,12 @@ body {
   grid-template-columns: repeat(8, var(--cell));
   grid-template-rows: 40px repeat(8, var(--cell));
   gap: var(--gap);
-  grid-template-areas:
-    "wtab wtab . . . . otab otab"
-    "weapon weapon . helm helm . offhand offhand"
-    "weapon weapon . helm helm . offhand offhand"
-    "weapon weapon ring3 body body amulet offhand offhand"
-    "weapon weapon ring body body ring2 offhand offhand"
-    ". gloves gloves body body boots boots ."
-    ". gloves gloves belt belt boots boots ."
-    "trinket life charms charms charms charms mana ."
-    ". life charms charms charms charms mana .";
 }
 
 .ninja-cell {
   position: relative;
   display: grid;
   min-width: 0;
-  min-height: 0;
   place-items: center;
   overflow: hidden;
   border: 1px solid #5d6974;
@@ -367,20 +383,10 @@ body {
   text-decoration: none;
 }
 
-.ninja-cell[data-area="weapon"] { grid-area: weapon; }
-.ninja-cell[data-area="offhand"] { grid-area: offhand; }
-.ninja-cell[data-area="helm"] { grid-area: helm; }
-.ninja-cell[data-area="ring3"] { grid-area: ring3; }
-.ninja-cell[data-area="ring"] { grid-area: ring; }
-.ninja-cell[data-area="ring2"] { grid-area: ring2; }
-.ninja-cell[data-area="amulet"] { grid-area: amulet; }
-.ninja-cell[data-area="body"] { grid-area: body; }
-.ninja-cell[data-area="gloves"] { grid-area: gloves; }
-.ninja-cell[data-area="boots"] { grid-area: boots; }
-.ninja-cell[data-area="belt"] { grid-area: belt; }
-.ninja-cell[data-area="trinket"] { grid-area: trinket; }
-.ninja-cell[data-area="life"] { grid-area: life; }
-.ninja-cell[data-area="mana"] { grid-area: mana; }
+.ninja-cell[data-rarity="empty"] {
+  border-color: #4a3f30;
+  background: transparent;
+}
 
 .ninja-cell[data-rarity="unique"] {
   border-color: #af6025;
@@ -392,15 +398,184 @@ body {
   box-shadow: inset 0 0 0 1px #ffff77;
 }
 
-.ninja-cell[data-rarity="empty"] {
-  border-color: #4e5964;
-  background: #2e353e;
+.socket-stack {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  pointer-events: none;
 }
 
-.ninja-cell img {
+.socket-pip {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid #d7b56a;
+  border-radius: 999px;
+  background: rgba(18, 15, 12, 0.82);
+  color: var(--color-paper);
+  font-size: 9px;
+  line-height: 1.1;
+  text-align: center;
+}
+
+.socket-pip img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.item-tip {
+  position: fixed;
+  z-index: 40;
+  width: min(22rem, calc(100vw - 1.5rem));
+  max-height: min(70vh, 36rem);
+  overflow: auto;
+  border: 1px solid #8d7340;
+  background: #120f0c;
+  color: var(--color-paper);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.item-tip header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: grab;
+  padding: 0.45rem 0.6rem;
+  background: #241e17;
+}
+
+.item-tip-unique header strong { color: #d4834a; }
+.item-tip-rare header strong { color: #f0e2a0; }
+
+.item-tip header button {
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.item-tip pre {
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  white-space: pre-wrap;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.item-tip ul {
+  margin: 0;
+  padding: 0 0.7rem 0.7rem;
+  list-style: none;
+}
+
+.item-tip li {
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+  border-top: 1px solid var(--color-line);
+  padding-top: 0.45rem;
+}
+
+.item-tip li img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.stats-col {
+  min-width: min(100%, 18rem);
+  max-width: 24rem;
+  color: var(--color-paper);
+}
+
+.stats-title {
+  margin: 0 0 0.6rem;
+  font-size: 1.25rem;
+}
+
+.stats-section {
+  margin: 0.9rem 0 0.35rem;
+  color: var(--color-muted);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.12rem 0;
+  font-size: 14px;
+}
+
+.stats-row > span:first-child { color: var(--color-muted); }
+
+.stats-skills {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stats-skills li {
+  margin-top: 0.65rem;
+  font-size: 13px;
+}
+
+.stats-skill-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.stats-skills p {
+  margin: 0.1rem 0 0;
+  color: var(--color-muted);
+}
+
+.stats-badge {
+  margin-right: 0.35rem;
+  color: var(--color-gold);
+  font-size: 11px;
+}
+
+.ninja-cell > img {
+  max-width: calc(100% - 10px);
+  max-height: calc(100% - 10px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.ninja-name {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  left: 2px;
+  overflow: hidden;
+  background: rgba(18, 15, 12, 0.78);
+  color: #f0e2a0;
+  font-size: 10px;
+  line-height: 1.25;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.home-cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
 }
 
 .ninja-cell:focus-visible {
@@ -409,7 +584,6 @@ body {
 }
 
 .ninja-charms {
-  grid-area: charms;
   display: flex;
   align-items: center;
   justify-content: center;

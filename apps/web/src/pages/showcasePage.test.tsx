@@ -68,7 +68,12 @@ describe("season BD showcase", () => {
     expect(screen.getAllByText("尚未抄入").length).toBeGreaterThan(0);
     expect(screen.queryByText("empty prefix")).not.toBeInTheDocument();
     expect(screen.queryByText("empty suffix")).not.toBeInTheDocument();
+    expect(slotLink(/生命藥劑/)).toHaveStyle({ gridRow: "8 / 10" });
+    expect(screen.getByText("5,511")).toBeInTheDocument();
+    expect(screen.getByText("Grim Pillars")).toBeInTheDocument();
+    expect(screen.getByText("16k")).toBeInTheDocument();
     expect(document.body.textContent).not.toContain("推荐");
+    expect(document.body.textContent).not.toContain("鑽嵌");
     expect(document.body.textContent).not.toContain("装备");
 
     await user.click(recommended);
@@ -85,6 +90,14 @@ describe("season BD showcase", () => {
   it("opens transcribed memorial gear and leaves ring 3 empty", async () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
+    await user.hover(slotLink(/主手/));
+    expect(screen.getByRole("dialog", { name: "暮色 刃痕" })).toHaveTextContent("單挑法杖");
+
+    const sockets = screen.getByRole("button", { name: "顯示鑲嵌" });
+    await user.click(sockets);
+    expect(sockets).toHaveAttribute("aria-pressed", "true");
+    expect(within(slotLink(/頭盔/)).getAllByTitle(/完美鍛鐵符文|渡鴉碎片/)).toHaveLength(2);
+
     await user.click(slotLink(/頭盔/));
     expect(screen.getByRole("heading", { name: "心靈 堅城" })).toBeInTheDocument();
     expect(screen.getByText("先祖頭冠")).toBeInTheDocument();
