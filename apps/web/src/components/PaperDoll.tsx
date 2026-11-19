@@ -19,12 +19,12 @@ import { useShowcase } from "../pages/showcaseState.tsx";
 
 /** Column / row tracks. Explicit indexes so a CSS minifier cannot drop grid areas. */
 const PLACE: Record<string, { gridColumn: string; gridRow: string }> = {
-  weapon: { gridColumn: "1 / 3", gridRow: "2 / 7" },
-  offhand: { gridColumn: "7 / 9", gridRow: "2 / 7" },
+  weapon: { gridColumn: "1 / 3", gridRow: "2 / 6" },
+  offhand: { gridColumn: "7 / 9", gridRow: "2 / 6" },
   helm: { gridColumn: "4 / 6", gridRow: "2 / 4" },
   ring3: { gridColumn: "3 / 4", gridRow: "4 / 5" },
   ring: { gridColumn: "3 / 4", gridRow: "5 / 6" },
-  body: { gridColumn: "4 / 6", gridRow: "4 / 8" },
+  body: { gridColumn: "4 / 6", gridRow: "4 / 7" },
   amulet: { gridColumn: "6 / 7", gridRow: "4 / 5" },
   ring2: { gridColumn: "6 / 7", gridRow: "5 / 6" },
   gloves: { gridColumn: "2 / 4", gridRow: "6 / 8" },
@@ -212,9 +212,11 @@ function DollCell({
         onMouseEnter={(event) => onHover(gear, event)}
         onMouseLeave={onLeave}
       >
-        {src ? <img src={src} alt={name || slotLabel} /> : null}
+        <span className="ninja-art">
+          {src ? <img src={src} alt={name || slotLabel} /> : null}
+          {socketsOn ? <SocketOverlay gear={gear} locale={locale} /> : null}
+        </span>
         <span className={name ? "ninja-name" : "sr-only"}>{name || t.showcaseMemorialEmpty}</span>
-        {socketsOn ? <SocketOverlay gear={gear} locale={locale} /> : null}
       </Link>
     );
   }

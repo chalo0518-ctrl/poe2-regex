@@ -68,6 +68,10 @@ describe("season BD showcase", () => {
     expect(screen.getAllByText("尚未抄入").length).toBeGreaterThan(0);
     expect(screen.queryByText("empty prefix")).not.toBeInTheDocument();
     expect(screen.queryByText("empty suffix")).not.toBeInTheDocument();
+    expect(slotLink(/主手/)).toHaveStyle({ gridRow: "2 / 6" });
+    expect(slotLink(/手套/)).toHaveStyle({ gridRow: "6 / 8" });
+    expect(slotLink(/副手/)).toHaveStyle({ gridRow: "2 / 6" });
+    expect(slotLink(/鞋子/)).toHaveStyle({ gridRow: "6 / 8" });
     expect(slotLink(/生命藥劑/)).toHaveStyle({ gridRow: "8 / 10" });
     expect(screen.getByText("5,511")).toBeInTheDocument();
     expect(screen.getByText("Grim Pillars")).toBeInTheDocument();

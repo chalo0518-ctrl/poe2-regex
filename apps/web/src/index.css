@@ -1,17 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-display: "Cinzel", "Noto Serif TC", "Noto Sans TC", serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --color-ink: #120f0c;
-  --color-panel: #1b1611;
-  --color-raised: #241e17;
-  --color-line: #3a3226;
-  --color-gold: #d7b56a;
-  --color-gold-dim: #8d7340;
-  --color-paper: #efe4ce;
-  --color-muted: #9a8b72;
+  --color-ink: #060606;
+  --color-panel: #121212;
+  --color-raised: #181818;
+  --color-line: #3a3428;
+  --color-gold: #e5cb95;
+  --color-gold-dim: #a38d6d;
+  --color-paper: #dcdcdc;
+  --color-muted: #8a8275;
   --color-include: #3f9a68;
   --color-or: #3a7ea6;
   --color-exclude: #b54b3f;
@@ -27,10 +28,20 @@ body,
 
 body {
   background:
-    radial-gradient(1200px 500px at 50% -10%, rgba(123, 79, 178, 0.12), transparent),
-    #120f0c;
+    radial-gradient(900px 420px at 50% -12%, rgba(223, 207, 153, 0.08), transparent),
+    #060606;
   color: var(--color-paper);
   font-family: var(--font-sans);
+}
+
+h1,
+h2,
+header {
+  font-family: var(--font-display);
+}
+
+header {
+  letter-spacing: 0.06em;
 }
 
 * {
@@ -373,18 +384,28 @@ body {
 
 .ninja-cell {
   position: relative;
-  display: grid;
+  display: flex;
   min-width: 0;
-  place-items: center;
+  min-height: 0;
+  flex-direction: column;
   overflow: hidden;
-  border: 1px solid #5d6974;
-  background: #343c46;
+  border: 1px solid #a38d6d;
+  background: transparent;
   color: inherit;
   text-decoration: none;
+  z-index: 0;
+}
+
+.ninja-art {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  place-items: center;
 }
 
 .ninja-cell[data-rarity="empty"] {
-  border-color: #4a3f30;
+  border-color: #3a3428;
   background: transparent;
 }
 
@@ -549,7 +570,7 @@ body {
   font-size: 11px;
 }
 
-.ninja-cell > img {
+.ninja-art > img {
   max-width: calc(100% - 10px);
   max-height: calc(100% - 10px);
   width: auto;
@@ -559,13 +580,12 @@ body {
 }
 
 .ninja-name {
-  position: absolute;
-  right: 2px;
-  bottom: 2px;
-  left: 2px;
+  position: static;
+  flex: 0 0 auto;
   overflow: hidden;
-  background: rgba(18, 15, 12, 0.78);
-  color: #f0e2a0;
+  padding: 1px 3px 2px;
+  background: #060606;
+  color: #dfcf99;
   font-size: 10px;
   line-height: 1.25;
   text-align: center;
