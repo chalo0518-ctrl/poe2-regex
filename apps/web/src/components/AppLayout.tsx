@@ -6,6 +6,7 @@ export default function AppLayout() {
   const modules = [
     { to: "/early", label: t.early, match: "/early" },
     { to: "/endgame", label: t.endgame, match: "/endgame" },
+    { to: "/showcase", label: t.showcaseNav, match: "/showcase" },
   ];
 
   return (

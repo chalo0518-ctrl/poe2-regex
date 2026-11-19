@@ -8,6 +8,7 @@ import EarlyLayout from "./pages/EarlyLayout.tsx";
 import EndgameLayout from "./pages/EndgameLayout.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import TabletsPage from "./pages/TabletsPage.tsx";
+import { showcaseRoute } from "./pages/showcaseRoutes.tsx";
 import VendorPage from "./pages/VendorPage.tsx";
 import WaystonesPage from "./pages/WaystonesPage.tsx";
 
@@ -34,6 +35,7 @@ export default function App() {
             <Route path="tablets" element={<TabletsPage />} />
             <Route path="crafting" element={<CraftingPage />} />
           </Route>
+          {showcaseRoute()}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

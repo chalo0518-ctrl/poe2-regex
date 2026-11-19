@@ -8,7 +8,7 @@ export default function HomePage() {
       <p className="text-xs tracking-[0.28em] text-gold-dim">{t.homeKicker}</p>
       <h1 className="mt-2 text-3xl font-bold text-gold">{t.homeTitle}</h1>
       <p className="mt-3 max-w-xl text-sm text-muted">{t.homeLead}</p>
-      <div className="mt-8 grid gap-4 md:grid-cols-2">
+      <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <Link
           to="/early"
           className="rounded-sm border border-line bg-panel p-6 transition hover:border-gold"
@@ -24,6 +24,14 @@ export default function HomePage() {
           <p className="text-xs text-gold-dim">ENDGAME</p>
           <h2 className="mt-1 text-xl font-bold text-gold">{t.endgame}</h2>
           <p className="mt-2 text-sm text-muted">{t.homeEndgameBody}</p>
+        </Link>
+        <Link
+          to="/showcase"
+          className="rounded-sm border border-line bg-panel p-6 transition hover:border-gold"
+        >
+          <p className="text-xs text-gold-dim">SEASON</p>
+          <h2 className="mt-1 text-xl font-bold text-gold">{t.showcaseNav}</h2>
+          <p className="mt-2 text-sm text-muted">{t.homeShowcaseBody}</p>
         </Link>
       </div>
     </div>
