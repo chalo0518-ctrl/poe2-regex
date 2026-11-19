@@ -99,7 +99,8 @@ describe("season BD showcase", () => {
     const sockets = screen.getByRole("button", { name: "顯示鑲嵌" });
     await user.click(sockets);
     expect(sockets).toHaveAttribute("aria-pressed", "true");
-    expect(within(slotLink(/頭盔/)).getAllByTitle(/完美鍛鐵符文|渡鴉碎片/)).toHaveLength(2);
+    expect(within(slotLink(/頭盔/)).getAllByTitle("完美鍛鐵符文")).toHaveLength(1);
+    expect(within(slotLink(/頭盔/)).queryByTitle("渡鴉碎片")).not.toBeInTheDocument();
 
     await user.click(slotLink(/頭盔/));
     expect(screen.getByRole("heading", { name: "心靈 堅城" })).toBeInTheDocument();
@@ -129,24 +130,25 @@ describe("season BD showcase", () => {
 
     expect(stack(/主手/)).toHaveAttribute("data-layout", "column");
     expect(stack(/主手/).querySelectorAll(".socket-pip")).toHaveLength(3);
-    expect(stack(/副手/)).toHaveAttribute("data-layout", "pair");
-    expect(stack(/副手/).querySelectorAll(".socket-pip")).toHaveLength(2);
+    expect(slotLink(/副手/).querySelector(".socket-stack")).toBeNull();
     expect(stack(/頭盔/)).toHaveAttribute("data-layout", "center");
-    expect(stack(/頭盔/).querySelectorAll(".socket-pip")).toHaveLength(2);
+    expect(stack(/頭盔/).querySelectorAll(".socket-pip")).toHaveLength(1);
     expect(stack(/胸甲/)).toHaveAttribute("data-layout", "triangle");
     expect(stack(/胸甲/).querySelectorAll(".socket-pip")).toHaveLength(3);
     expect(stack(/手套/)).toHaveAttribute("data-layout", "row");
     expect(stack(/手套/).querySelectorAll(".socket-pip")).toHaveLength(2);
+    const bootPips = stack(/鞋子/).querySelectorAll(".socket-pip");
     expect(stack(/鞋子/)).toHaveAttribute("data-layout", "split");
-    expect(stack(/鞋子/).querySelectorAll(".socket-pip")).toHaveLength(2);
+    expect(bootPips).toHaveLength(2);
+    expect(bootPips[0]).not.toHaveAttribute("title");
+    expect(bootPips[1]).toHaveAttribute("title", "費爾羅的追擊符文");
+    expect(slotLink(/鞋子/).textContent).not.toContain("完美鍛鐵符文");
     expect(slotLink(/腰帶/).querySelector(".socket-stack")).toBeNull();
     expect(slotLink(/項鍊/).querySelector(".socket-stack")).toBeNull();
 
     await user.click(screen.getAllByRole("button", { name: "II" })[0]);
-    expect(stack(/主手/)).toHaveAttribute("data-layout", "pair");
-    expect(stack(/主手/).querySelectorAll(".socket-pip")).toHaveLength(2);
-    expect(stack(/副手/)).toHaveAttribute("data-layout", "column");
-    expect(stack(/副手/).querySelectorAll(".socket-pip")).toHaveLength(3);
+    expect(slotLink(/主手/).querySelector(".socket-stack")).toBeNull();
+    expect(slotLink(/副手/).querySelector(".socket-stack")).toBeNull();
   });
 
   it("shows transcribed memorial gear for the clicked slot only", async () => {

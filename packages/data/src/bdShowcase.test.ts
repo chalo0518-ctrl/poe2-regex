@@ -86,12 +86,23 @@ describe("season BD paper doll", () => {
     expect(memorialGear(SEASON_BD_V1, "flask-life")?.nameEn).toBe("Olroth's Resolve");
     expect(memorialGear(SEASON_BD_V1, "weapon-1-main")?.tooltipZh).toContain("已汙染");
     expect(memorialGear(SEASON_BD_V1, "helmet")?.sockets).toHaveLength(2);
+    expect(memorialGear(SEASON_BD_V1, "boots")?.sockets?.map((socket) => socket.nameEn)).toEqual([
+      "Farrul's Rune of the Chase",
+    ]);
+    expect(memorialGear(SEASON_BD_V1, "boots")?.sockets?.map((socket) => socket.nameZh)).toEqual([
+      "費爾羅的追擊符文",
+    ]);
+    expect(memorialGear(SEASON_BD_V1, "boots")?.sockets?.some((socket) => socket.nameEn === "Perfect Iron Rune")).toBe(
+      false,
+    );
 
     for (const slot of paperDollSlots) {
       const gear = memorialGear(SEASON_BD_V1, slot.id);
       expect(gear?.imageUrl ?? "").not.toContain("poe.ninja");
       if (gear?.imageUrl) expect(showcaseImageUrl(gear.imageUrl)).toBe(gear.imageUrl);
       for (const socket of gear?.sockets ?? []) {
+        expect(socket.imageUrl ?? "", `${slot.id} ${socket.nameEn}`).not.toContain("poe.ninja");
+        if (slot.id === "boots") continue;
         expect(socket.imageUrl, `${slot.id} ${socket.nameEn}`).toMatch(/^https:\/\/cdn\.poe2db\.tw\//);
         expect(showcaseImageUrl(socket.imageUrl ?? "")).toBe(socket.imageUrl);
       }

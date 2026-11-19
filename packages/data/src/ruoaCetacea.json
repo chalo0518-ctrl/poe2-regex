@@ -1000,7 +1000,7 @@
             "text_en": "64% increased Armour, Evasion and Energy Shield",
             "text_zh": "增加64%護甲值、閃避和能量護盾",
             "prefix_suffix": null,
-            "note": "Two Perfect Iron Runes are socketed (20% each); the item shows a combined 64% line. Recorded as shown on the item tooltip."
+            "note": "The item tooltip shows this combined 64% line. The in-game doll does not show two Perfect Iron Runes: the left boot medal is an unnamed red eye, and the right boot is Farrul's Rune of the Chase."
           }
         ]
       },
@@ -1047,24 +1047,16 @@
       "corrupted_text_zh": "已汙染",
       "socketed_items": [
         {
-          "slot_index": 1,
-          "rarity": "currency",
-          "name_en": "Perfect Iron Rune",
-          "name_zh": "完美鍛鐵符文",
-          "base_en": "Rune",
-          "base_zh": "符文",
-          "tooltip_en": "Perfect Iron Rune\nStack Size: 1/10\nRune \nRequires: Level 50\nMartial Weapon: 20% increased Physical Damage\nWand or Staff: 35% increased Spell Damage\nArmour: 20% increased Armour, Evasion and Energy Shield\nPlace into an empty Augment Socket in a Weapon or Armour to apply its effect to that item. Once socketed it cannot be retrieved but can be replaced by other Augment items.",
-          "tooltip_zh": "完美鍛鐵符文\n堆疊數量: 1/10\n符文 \n需求: 等級 50\n軍用武器: 增加20%物理傷害\n法杖或長杖: 增加35%法術傷害\n護甲: 增加20%護甲值、閃避和能量護盾\n放入武器或護甲的一個空白符文插槽，將其效果套用至該物品。放入插槽後將無法取出，但可以使用其他的可鑲嵌物品取代。"
-        },
-        {
           "slot_index": 2,
-          "rarity": "currency",
-          "name_en": "Perfect Iron Rune",
-          "name_zh": "完美鍛鐵符文",
+          "position": "right boot",
+          "rarity": "unique",
+          "name_en": "Farrul's Rune of the Chase",
+          "name_zh": "費爾羅的追擊符文",
           "base_en": "Rune",
           "base_zh": "符文",
-          "tooltip_en": "Perfect Iron Rune\nStack Size: 1/10\nRune \nRequires: Level 50\nMartial Weapon: 20% increased Physical Damage\nWand or Staff: 35% increased Spell Damage\nArmour: 20% increased Armour, Evasion and Energy Shield\nPlace into an empty Augment Socket in a Weapon or Armour to apply its effect to that item. Once socketed it cannot be retrieved but can be replaced by other Augment items.",
-          "tooltip_zh": "完美鍛鐵符文\n堆疊數量: 1/10\n符文 \n需求: 等級 50\n軍用武器: 增加20%物理傷害\n法杖或長杖: 增加35%法術傷害\n護甲: 增加20%護甲值、閃避和能量護盾\n放入武器或護甲的一個空白符文插槽，將其效果套用至該物品。放入插槽後將無法取出，但可以使用其他的可鑲嵌物品取代。"
+          "note": "Named from the inventory tooltip on the right boot. The left boot shows a red-eye medal whose name was not captured, so it is not recorded and is not called Perfect Iron Rune.",
+          "tooltip_en": "Farrul's Rune of the Chase\nRune\nLimited to: 1\nRequires: Level 50\nBoots: 5% increased Movement Speed",
+          "tooltip_zh": "費爾羅的追擊符文\n符文\n僅限: 1\n需求: 等級 50\n鞋子: 增加5%移動速度"
         }
       ],
       "tooltip_en": "Morbid Dash\nSekhema Sandals\nBoots \nQuality: +26%\nEnergy Shield: 476\nItem Level: 82\nRequires: Level 80, 108 Int\n64% increased Armour, Evasion and Energy Shield\n+60 to maximum Energy Shield\n100% increased Energy Shield\n35% increased Movement Speed\n+42% to Fire Resistance\n60% increased effect of Socketed Augment Items\n18% increased Rarity of Items found\nCorrupted",

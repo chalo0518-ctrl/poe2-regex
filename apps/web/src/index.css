@@ -435,52 +435,40 @@ header {
   width: 34%;
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
-  overflow: hidden;
-  border: 3px solid #e6cc8a;
-  border-radius: 50%;
-  background: rgba(12, 10, 8, 0.92);
-  box-shadow:
-    inset 0 0 0 2px #6a4e22,
-    0 0 0 1px rgba(0, 0, 0, 0.55);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .socket-pip img {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
+  object-fit: contain;
 }
 
-/* Tall weapon, 3 sockets: one centered column down the shaft. */
-.socket-stack[data-layout="column"] .socket-pip { width: 46%; }
-.socket-stack[data-layout="column"] .socket-pip:nth-child(1) { top: 18%; }
+/* Wand: three large medals down the shaft. */
+.socket-stack[data-layout="column"] .socket-pip { width: 50%; }
+.socket-stack[data-layout="column"] .socket-pip:nth-child(1) { top: 20%; }
 .socket-stack[data-layout="column"] .socket-pip:nth-child(2) { top: 50%; }
-.socket-stack[data-layout="column"] .socket-pip:nth-child(3) { top: 82%; }
+.socket-stack[data-layout="column"] .socket-pip:nth-child(3) { top: 80%; }
 
-/* Tall weapon, 2 sockets: a short centered pair, not stretched to the tips. */
-.socket-stack[data-layout="pair"] .socket-pip { width: 46%; }
-.socket-stack[data-layout="pair"] .socket-pip:nth-child(1) { top: 36%; }
-.socket-stack[data-layout="pair"] .socket-pip:nth-child(2) { top: 64%; }
+/* Helm: one medal, a little larger than the body trio, centered. */
+.socket-stack[data-layout="center"][data-count="1"] .socket-pip { width: 54%; }
 
-/* Helm: large medals sharing the center. A single recorded socket stays centered. */
-.socket-stack[data-layout="center"][data-count="1"] .socket-pip { width: 46%; }
-.socket-stack[data-layout="center"][data-count="2"] .socket-pip { width: 38%; }
-.socket-stack[data-layout="center"][data-count="2"] .socket-pip:nth-child(1) { left: 34%; }
-.socket-stack[data-layout="center"][data-count="2"] .socket-pip:nth-child(2) { left: 66%; }
+/* Body: two across the chest, one centered below. */
+.socket-stack[data-layout="triangle"] .socket-pip { width: 32%; }
+.socket-stack[data-layout="triangle"] .socket-pip:nth-child(1) { left: 34%; top: 36%; }
+.socket-stack[data-layout="triangle"] .socket-pip:nth-child(2) { left: 66%; top: 36%; }
+.socket-stack[data-layout="triangle"] .socket-pip:nth-child(3) { left: 50%; top: 62%; }
 
-/* Body: two across the chest, one on the lower mantle. */
-.socket-stack[data-layout="triangle"] .socket-pip { width: 34%; }
-.socket-stack[data-layout="triangle"] .socket-pip:nth-child(1) { left: 34%; top: 38%; }
-.socket-stack[data-layout="triangle"] .socket-pip:nth-child(2) { left: 66%; top: 38%; }
-.socket-stack[data-layout="triangle"] .socket-pip:nth-child(3) { left: 50%; top: 66%; }
+/* Gloves: white burst on the left, jewel slightly higher on the right. */
+.socket-stack[data-layout="row"] .socket-pip { width: 36%; }
+.socket-stack[data-layout="row"] .socket-pip:nth-child(1) { left: 32%; top: 58%; }
+.socket-stack[data-layout="row"] .socket-pip:nth-child(2) { left: 68%; top: 46%; }
 
-/* Gloves: two medals across the hands. */
-.socket-stack[data-layout="row"] .socket-pip { width: 36%; top: 55%; }
-.socket-stack[data-layout="row"] .socket-pip:nth-child(1) { left: 32%; }
-.socket-stack[data-layout="row"] .socket-pip:nth-child(2) { left: 68%; }
-
-/* Boots: one medal on each boot. */
-.socket-stack[data-layout="split"] .socket-pip { width: 34%; top: 46%; }
+/* Boots: one medal on each boot, same height. */
+.socket-stack[data-layout="split"] .socket-pip { width: 34%; top: 44%; }
 .socket-stack[data-layout="split"] .socket-pip:nth-child(1) { left: 30%; }
 .socket-stack[data-layout="split"] .socket-pip:nth-child(2) { left: 70%; }
 

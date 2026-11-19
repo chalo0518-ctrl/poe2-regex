@@ -1,5 +1,16 @@
 import { useState, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
+import wandSerle from "../assets/socket-medals/wand-1-serles-triumph.png";
+import wandAssandra from "../assets/socket-medals/wand-2-assandra-wisdom.png";
+import wandLifesprig from "../assets/socket-medals/wand-3-legacy-lifesprig.png";
+import helmIron from "../assets/socket-medals/helm-1-perfect-iron-rune.png";
+import bodyMaxarius from "../assets/socket-medals/body-1-idol-of-maxarius.png";
+import bodyFoundations from "../assets/socket-medals/body-2-rune-of-foundations.png";
+import bodyCraiceann from "../assets/socket-medals/body-3-craiceann-warding.png";
+import glovesCadigan from "../assets/socket-medals/gloves-1-cadigan-epiphany.png";
+import glovesBehemoth from "../assets/socket-medals/gloves-2-behemoth-shard.png";
+import bootsRedEye from "../assets/socket-medals/boots-1-red-eye.png";
+import bootsFarrul from "../assets/socket-medals/boots-2-farruls-chase.png";
 import {
   catalogForDollSlot,
   memorialGear,
@@ -216,7 +227,7 @@ function DollCell({
       >
         <span className="ninja-art">
           {src ? <img src={src} alt={name || slotLabel} /> : null}
-          {socketsOn ? <SocketOverlay gear={gear} area={slot.area} locale={locale} /> : null}
+          {socketsOn ? <SocketOverlay slotId={slot.id} area={slot.area} locale={locale} /> : null}
         </span>
         <span className="sr-only">{name || t.showcaseMemorialEmpty}</span>
       </Link>
@@ -253,37 +264,68 @@ function DollCell({
   );
 }
 
-/** In-game medal placement. Counts stay the recorded sockets; nothing is invented. */
+type Medal = { src: string; nameZh: string; nameEn: string };
+
+/**
+ * Weapon set I medals cut from the in-game doll. Raven-Touched Shard stays in
+ * the helm record but is not drawn. The sceptre has no visible medals. The
+ * left boot glyph has no confirmed name. Set II has no in-game medal crops.
+ */
+const SET_I_MEDALS: Partial<Record<PaperDollSlotId, Medal[]>> = {
+  "weapon-1-main": [
+    { src: wandSerle, nameZh: "瑟雷的凱旋", nameEn: "Serle's Triumph" },
+    { src: wandAssandra, nameZh: "流浪女巫艾珊德菈的智慧符文", nameEn: "Hedgewitch Assandra's Rune of Wisdom" },
+    { src: wandLifesprig, nameZh: "傳承．生機之記", nameEn: "Legacy of Lifesprig" },
+  ],
+  "weapon-1-off": [],
+  helmet: [{ src: helmIron, nameZh: "完美鍛鐵符文", nameEn: "Perfect Iron Rune" }],
+  body: [
+    { src: bodyMaxarius, nameZh: "瑪薩里歐斯魔偶", nameEn: "Idol of Maxarius" },
+    { src: bodyFoundations, nameZh: "崇敬基準符文", nameEn: "Rune of Foundations" },
+    { src: bodyCraiceann, nameZh: "奎爾珊的守護符文", nameEn: "Craiceann's Rune of Warding" },
+  ],
+  gloves: [
+    { src: glovesCadigan, nameZh: "卡迪根的頓悟", nameEn: "Cadigan's Epiphany" },
+    { src: glovesBehemoth, nameZh: "巨獸 破碎之地", nameEn: "Behemoth Shard" },
+  ],
+  boots: [
+    { src: bootsRedEye, nameZh: "", nameEn: "" },
+    { src: bootsFarrul, nameZh: "費爾羅的追擊符文", nameEn: "Farrul's Rune of the Chase" },
+  ],
+};
+
 function socketLayout(area: string, count: number): string {
   if (area === "boots" && count >= 2) return "split";
   if (area === "gloves" && count >= 2) return "row";
   if (area === "body" && count >= 3) return "triangle";
   if (area === "helm") return "center";
-  if ((area === "weapon" || area === "offhand") && count >= 3) return "column";
-  if ((area === "weapon" || area === "offhand") && count === 2) return "pair";
+  if (area === "weapon" && count >= 3) return "column";
   return "center";
 }
 
 function SocketOverlay({
-  gear,
+  slotId,
   area,
   locale,
 }: {
-  gear: MemorialGear | null;
+  slotId: PaperDollSlotId;
   area: string;
   locale: UiLocale;
 }) {
-  const sockets = gear?.sockets ?? [];
-  if (sockets.length === 0) return null;
+  const medals = SET_I_MEDALS[slotId];
+  if (!medals || medals.length === 0) return null;
   return (
-    <span className="socket-stack" data-layout={socketLayout(area, sockets.length)} data-count={sockets.length}>
-      {sockets.map((socket, index) => {
-        const name = locale === "en" ? socket.nameEn : socket.nameZh;
-        const src = showcaseImageUrl(socket.imageUrl ?? "");
-        if (!src) return null;
+    <span className="socket-stack" data-layout={socketLayout(area, medals.length)} data-count={medals.length}>
+      {medals.map((medal, index) => {
+        const name = locale === "en" ? medal.nameEn : medal.nameZh;
         return (
-          <span key={`${name}-${index}`} className="socket-pip" data-socket-name={name} title={name}>
-            <img src={src} alt="" />
+          <span
+            key={`${medal.src}-${index}`}
+            className="socket-pip"
+            data-socket-name={name}
+            {...(name ? { title: name } : {})}
+          >
+            <img src={medal.src} alt="" />
           </span>
         );
       })}
