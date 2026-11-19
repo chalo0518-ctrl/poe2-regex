@@ -302,20 +302,28 @@ type Spot = { cx: number; cy: number; d: number };
  * Gloves and boots share the two-hole line. Body is that pair raised,
  * plus one medal under the right hole.
  */
-const PAIR: Spot[] = [
-  { cx: 0.3, cy: 0.5, d: 0.38 },
-  { cx: 0.72, cy: 0.5, d: 0.4 },
-];
+/** Two-hole line shared by gloves and boots: same height, inside the frame. */
+const PAIR_CY = 0.48;
 
 function medalSpots(slotId: PaperDollSlotId): Spot[] | null {
-  if (slotId === "helmet") return [{ cx: 0.5, cy: 0.5, d: 0.48 }];
-  if (slotId === "gloves") return [{ ...PAIR[0], d: 0.36 }, { ...PAIR[1], d: 0.4 }];
-  if (slotId === "boots") return [{ ...PAIR[0], d: 0.4 }, { ...PAIR[1], d: 0.4 }];
+  if (slotId === "helmet") return [{ cx: 0.5, cy: 0.5, d: 0.46 }];
+  if (slotId === "gloves") {
+    return [
+      { cx: 0.27, cy: PAIR_CY, d: 0.34 },
+      { cx: 0.72, cy: PAIR_CY, d: 0.38 },
+    ];
+  }
+  if (slotId === "boots") {
+    return [
+      { cx: 0.28, cy: PAIR_CY, d: 0.4 },
+      { cx: 0.72, cy: PAIR_CY, d: 0.4 },
+    ];
+  }
   if (slotId === "body") {
     return [
-      { cx: 0.24, cy: 0.34, d: 0.32 },
-      { cx: 0.76, cy: 0.34, d: 0.32 },
-      { cx: 0.76, cy: 0.64, d: 0.34 },
+      { cx: 0.22, cy: 0.33, d: 0.3 },
+      { cx: 0.69, cy: 0.33, d: 0.3 },
+      { cx: 0.68, cy: 0.68, d: 0.32 },
     ];
   }
   if (slotId === "weapon-1-main") {
