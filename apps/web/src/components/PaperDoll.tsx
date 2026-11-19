@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import { useState, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import wandSerle from "../assets/socket-medals/wand-1-serles-triumph.png";
 import wandAssandra from "../assets/socket-medals/wand-2-assandra-wisdom.png";
@@ -226,7 +226,7 @@ function DollCell({
         onMouseLeave={onLeave}
       >
         <span className="ninja-art">
-          {src ? <img className="gear-art" src={src} alt={name || slotLabel} /> : null}
+          {src ? <img src={src} alt={name || slotLabel} /> : null}
           {socketsOn ? <SocketOverlay slotId={slot.id} locale={locale} /> : null}
         </span>
         <span className="sr-only">{name || t.showcaseMemorialEmpty}</span>
@@ -297,36 +297,32 @@ const SET_I_MEDALS: Partial<Record<PaperDollSlotId, Medal[]>> = {
 type Spot = { cx: number; cy: number; d: number };
 
 /**
- * Fractions of the displayed item image, not the gold frame.
- * Helm uses the crown bowl so hanging tendrils do not pull the medal down.
- * Wand diameter is a fraction of the frame width; every other diameter is a
- * fraction of this anchor's width. Gloves and boots share the 2-hole template.
+ * Fractions of the equipment slot (the inner gold frame), not the item art.
+ * Measured on the in-game paper doll. One-hole is the slot center.
+ * Gloves and boots share the two-hole line. Body is that pair raised,
+ * plus one medal under the right hole.
  */
-const ART_ANCHOR: Partial<Record<PaperDollSlotId, { x: number; y: number; w: number; h: number }>> = {
-  helmet: { x: 0.18, y: 0.1, w: 0.64, h: 0.46 },
-};
+const PAIR: Spot[] = [
+  { cx: 0.3, cy: 0.5, d: 0.38 },
+  { cx: 0.72, cy: 0.5, d: 0.4 },
+];
 
 function medalSpots(slotId: PaperDollSlotId): Spot[] | null {
-  if (slotId === "helmet") return [{ cx: 0.5, cy: 0.5, d: 0.52 }];
-  if (slotId === "gloves" || slotId === "boots") {
-    const diameter = slotId === "gloves" ? 0.42 : 0.44;
-    return [
-      { cx: 0.25, cy: 0.48, d: diameter },
-      { cx: 0.75, cy: 0.48, d: slotId === "gloves" ? 0.46 : diameter },
-    ];
-  }
+  if (slotId === "helmet") return [{ cx: 0.5, cy: 0.5, d: 0.48 }];
+  if (slotId === "gloves") return [{ ...PAIR[0], d: 0.36 }, { ...PAIR[1], d: 0.4 }];
+  if (slotId === "boots") return [{ ...PAIR[0], d: 0.4 }, { ...PAIR[1], d: 0.4 }];
   if (slotId === "body") {
     return [
-      { cx: 0.2, cy: 0.32, d: 0.37 },
-      { cx: 0.74, cy: 0.32, d: 0.37 },
-      { cx: 0.73, cy: 0.69, d: 0.4 },
+      { cx: 0.24, cy: 0.34, d: 0.32 },
+      { cx: 0.76, cy: 0.34, d: 0.32 },
+      { cx: 0.76, cy: 0.64, d: 0.34 },
     ];
   }
   if (slotId === "weapon-1-main") {
     return [
-      { cx: 0.5, cy: 0.25, d: 0.36 },
+      { cx: 0.5, cy: 0.27, d: 0.36 },
       { cx: 0.5, cy: 0.5, d: 0.36 },
-      { cx: 0.5, cy: 0.78, d: 0.36 },
+      { cx: 0.5, cy: 0.74, d: 0.36 },
     ];
   }
   return null;
@@ -341,8 +337,6 @@ function socketLayout(slotId: PaperDollSlotId, count: number): string {
   return "center";
 }
 
-type ArtBox = { x: number; y: number; w: number; h: number; frameW: number };
-
 function SocketOverlay({
   slotId,
   locale,
@@ -352,62 +346,12 @@ function SocketOverlay({
 }) {
   const medals = SET_I_MEDALS[slotId];
   const spots = medalSpots(slotId);
-  const stackRef = useRef<HTMLSpanElement>(null);
-  const [art, setArt] = useState<ArtBox | null>(null);
-
-  useLayoutEffect(() => {
-    const stack = stackRef.current;
-    const root = stack?.parentElement;
-    if (!stack || !root) return;
-    const measure = () => {
-      const img = root.querySelector("img.gear-art");
-      if (!(img instanceof HTMLImageElement) || img.clientWidth < 2) return;
-      const rootRect = root.getBoundingClientRect();
-      const imgRect = img.getBoundingClientRect();
-      if (rootRect.width < 2 || imgRect.width < 2) return;
-      setArt({
-        x: imgRect.left - rootRect.left,
-        y: imgRect.top - rootRect.top,
-        w: imgRect.width,
-        h: imgRect.height,
-        frameW: rootRect.width,
-      });
-    };
-    measure();
-    const img = root.querySelector("img.gear-art");
-    img?.addEventListener("load", measure);
-    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(measure);
-    observer?.observe(root);
-    if (img) observer?.observe(img);
-    return () => {
-      img?.removeEventListener("load", measure);
-      observer?.disconnect();
-    };
-  }, [slotId]);
-
   if (!medals || medals.length === 0 || !spots) return null;
-  const anchor = ART_ANCHOR[slotId] ?? { x: 0, y: 0, w: 1, h: 1 };
   return (
-    <span
-      ref={stackRef}
-      className="socket-stack"
-      data-layout={socketLayout(slotId, medals.length)}
-      data-count={medals.length}
-    >
+    <span className="socket-stack" data-layout={socketLayout(slotId, medals.length)} data-count={medals.length}>
       {medals.map((medal, index) => {
         const spot = spots[index] ?? spots[spots.length - 1];
         const name = locale === "en" ? medal.nameEn : medal.nameZh;
-        const placed = art
-          ? {
-              left: art.x + anchor.x * art.w + spot.cx * anchor.w * art.w,
-              top: art.y + anchor.y * art.h + spot.cy * anchor.h * art.h,
-              width: slotId === "weapon-1-main" ? spot.d * art.frameW : spot.d * anchor.w * art.w,
-            }
-          : {
-              left: `${(anchor.x + spot.cx * anchor.w) * 100}%`,
-              top: `${(anchor.y + spot.cy * anchor.h) * 100}%`,
-              width: `${(slotId === "weapon-1-main" ? spot.d : spot.d * anchor.w) * 100}%`,
-            };
         return (
           <span
             key={`${medal.src}-${index}`}
@@ -415,7 +359,7 @@ function SocketOverlay({
             data-socket-name={name}
             data-cx={String(spot.cx)}
             data-cy={String(spot.cy)}
-            style={placed}
+            style={{ left: `${spot.cx * 100}%`, top: `${spot.cy * 100}%`, width: `${spot.d * 100}%` }}
             {...(name ? { title: name } : {})}
           >
             <img src={medal.src} alt="" />
