@@ -307,6 +307,189 @@ body {
   outline-offset: 2px;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ninja-panel {
+  width: max-content;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid #3c4652;
+  background: #2a3038;
+  padding: 12px 16px 18px;
+}
+
+.ninja-panel-title {
+  margin: 0 0 8px;
+  color: #d5dbe3;
+  font-size: 18px;
+}
+
+.ninja-sheet {
+  --cell: 48px;
+  --gap: 8px;
+  display: grid;
+  width: max-content;
+  grid-template-columns: repeat(8, var(--cell));
+  grid-template-rows: 40px repeat(8, var(--cell));
+  gap: var(--gap);
+  grid-template-areas:
+    "wtab wtab . . . . otab otab"
+    "weapon weapon . helm helm . offhand offhand"
+    "weapon weapon . helm helm . offhand offhand"
+    "weapon weapon ring3 body body amulet offhand offhand"
+    "weapon weapon ring body body ring2 offhand offhand"
+    ". gloves gloves body body boots boots ."
+    ". gloves gloves belt belt boots boots ."
+    "trinket life charms charms charms charms mana ."
+    ". life charms charms charms charms mana .";
+}
+
+.ninja-cell {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #5d6974;
+  background: #343c46;
+  color: inherit;
+  text-decoration: none;
+}
+
+.ninja-cell[data-area="weapon"] { grid-area: weapon; }
+.ninja-cell[data-area="offhand"] { grid-area: offhand; }
+.ninja-cell[data-area="helm"] { grid-area: helm; }
+.ninja-cell[data-area="ring3"] { grid-area: ring3; }
+.ninja-cell[data-area="ring"] { grid-area: ring; }
+.ninja-cell[data-area="ring2"] { grid-area: ring2; }
+.ninja-cell[data-area="amulet"] { grid-area: amulet; }
+.ninja-cell[data-area="body"] { grid-area: body; }
+.ninja-cell[data-area="gloves"] { grid-area: gloves; }
+.ninja-cell[data-area="boots"] { grid-area: boots; }
+.ninja-cell[data-area="belt"] { grid-area: belt; }
+.ninja-cell[data-area="trinket"] { grid-area: trinket; }
+.ninja-cell[data-area="life"] { grid-area: life; }
+.ninja-cell[data-area="mana"] { grid-area: mana; }
+
+.ninja-cell[data-rarity="unique"] {
+  border-color: #af6025;
+  box-shadow: inset 0 0 0 1px #af6025;
+}
+
+.ninja-cell[data-rarity="rare"] {
+  border-color: #f0e2a0;
+  box-shadow: inset 0 0 0 1px #ffff77;
+}
+
+.ninja-cell[data-rarity="empty"] {
+  border-color: #4e5964;
+  background: #2e353e;
+}
+
+.ninja-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ninja-cell:focus-visible {
+  outline: 2px solid #d7b56a;
+  outline-offset: 1px;
+}
+
+.ninja-charms {
+  grid-area: charms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap);
+}
+
+.ninja-charms .ninja-cell {
+  width: var(--cell);
+  height: var(--cell);
+}
+
+.ninja-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ninja-tabs button {
+  width: 28px;
+  height: 32px;
+  border: 1px solid #66727d;
+  border-radius: 4px;
+  background: #3d4650;
+  color: #d5dbe3;
+  font-size: 13px;
+}
+
+.ninja-tabs button[aria-pressed="true"] {
+  border-color: #c5ced6;
+  background: #54616c;
+  color: #fff;
+}
+
+.ninja-jewel-row {
+  margin-top: 18px;
+}
+
+.ninja-jewel-heading {
+  margin: 0 0 8px;
+  color: #c5ced6;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.ninja-jewels {
+  display: grid;
+  grid-template-columns: repeat(8, var(--cell, 64px));
+  gap: 8px;
+}
+
+.ninja-jewel .ninja-cell {
+  width: var(--cell, 64px);
+  height: var(--cell, 64px);
+}
+
+.ninja-jewel-name {
+  display: block;
+  width: var(--cell, 64px);
+  overflow: hidden;
+  color: #c5ced6;
+  font-size: 11px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 1024px) {
+  .ninja-sheet {
+    --cell: 64px;
+    grid-template-rows: 48px repeat(8, var(--cell));
+  }
+
+  .ninja-jewels,
+  .ninja-jewel-name,
+  .ninja-jewel .ninja-cell {
+    --cell: 64px;
+  }
+}
+
 @media (min-width: 960px) {
   .doll-sheet {
     grid-template-columns: minmax(16rem, 1.15fr) minmax(14rem, 0.85fr) minmax(16rem, 1fr);

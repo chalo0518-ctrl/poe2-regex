@@ -3,6 +3,7 @@ import shieldsJson from "../generated/shields.json";
 import { affixModGroup, earlyGearCatalog, isEarlyGearSlotId } from "./earlyGear.ts";
 import { BASE_SIDE_CAP } from "./socketPools.ts";
 import { craftingFamiliesFor, isWeaponCategoryId, weaponCatalog } from "./weapons.ts";
+import { RUO_CETACEA_META, ruoaCetaceaMemorial } from "./memorialSnapshot.ts";
 
 /**
  * Season BD memorial + recommended paper doll.
@@ -39,6 +40,28 @@ export type MemorialAffix = ShowcaseText & {
   generation: "prefix" | "suffix";
 };
 
+/** Mod kind copied from the tooltip. Prefix and suffix are not guessed. */
+export type MemorialMod = {
+  kind: string;
+  textZh: string;
+  textEn: string;
+};
+
+export type MemorialSocket = {
+  nameZh: string;
+  nameEn: string;
+  baseZh: string;
+  baseEn: string;
+  rarity: string;
+  mods: MemorialMod[];
+};
+
+export type MemorialNotable = {
+  nameZh: string;
+  nameEn: string;
+  mods: MemorialMod[];
+};
+
 /** Gear copied off a poe.ninja character. Absent slots are empty, never invented. */
 export type MemorialGear = {
   nameZh: string;
@@ -46,6 +69,23 @@ export type MemorialGear = {
   imageUrl: string;
   baseZh: string;
   baseEn: string;
+  rarity?: "" | "unique" | "rare" | "magic";
+  qualityEn?: string;
+  qualityZh?: string;
+  itemLevel?: number | null;
+  requirementsEn?: string;
+  requirementsZh?: string;
+  stats?: ShowcaseText[];
+  /** Recorded tooltip lines. `kind` is never prefix or suffix. */
+  mods?: MemorialMod[];
+  sockets?: MemorialSocket[];
+  notables?: MemorialNotable[];
+  flavourEn?: string;
+  flavourZh?: string;
+  mirroredEn?: string;
+  mirroredZh?: string;
+  corruptedEn?: string;
+  corruptedZh?: string;
   implicits: ShowcaseText[];
   affixes: MemorialAffix[];
 };
@@ -69,6 +109,11 @@ export type BdShowcase = {
   id: string;
   titleZh: string;
   titleEn: string;
+  classZh?: string;
+  classEn?: string;
+  level?: number | null;
+  leagueZh?: string;
+  leagueEn?: string;
   /** poe.ninja character URL. Null until the product owner supplies one. */
   ninjaUrl: string | null;
   /** Null means no snapshot has been transcribed. */
@@ -83,28 +128,40 @@ export const paperDollGroups = [
   { id: "jewellery", labelZh: "首飾", labelEn: "Jewellery" },
   { id: "flask", labelZh: "藥劑", labelEn: "Flasks" },
   { id: "charm", labelZh: "咒符", labelEn: "Charms" },
+  { id: "trinket", labelZh: "飾品", labelEn: "Trinket" },
+  { id: "jewel", labelZh: "基礎珠寶", labelEn: "BASE JEWELS" },
 ] as const;
 
 export type PaperDollGroupId = (typeof paperDollGroups)[number]["id"];
 
 export const paperDollSlots = [
-  { id: "weapon-1-main", group: "weapon-1", labelZh: "主手", labelEn: "Main hand" },
-  { id: "weapon-1-off", group: "weapon-1", labelZh: "副手", labelEn: "Off hand" },
-  { id: "weapon-2-main", group: "weapon-2", labelZh: "主手", labelEn: "Main hand" },
-  { id: "weapon-2-off", group: "weapon-2", labelZh: "副手", labelEn: "Off hand" },
-  { id: "helmet", group: "armour", labelZh: "頭盔", labelEn: "Helmet" },
-  { id: "body", group: "armour", labelZh: "胸甲", labelEn: "Body armour" },
-  { id: "gloves", group: "armour", labelZh: "手套", labelEn: "Gloves" },
-  { id: "boots", group: "armour", labelZh: "鞋子", labelEn: "Boots" },
-  { id: "amulet", group: "jewellery", labelZh: "項鍊", labelEn: "Amulet" },
-  { id: "ring-1", group: "jewellery", labelZh: "戒指 1", labelEn: "Ring 1" },
-  { id: "ring-2", group: "jewellery", labelZh: "戒指 2", labelEn: "Ring 2" },
-  { id: "belt", group: "jewellery", labelZh: "腰帶", labelEn: "Belt" },
-  { id: "flask-life", group: "flask", labelZh: "生命藥劑", labelEn: "Life flask" },
-  { id: "flask-mana", group: "flask", labelZh: "魔力藥劑", labelEn: "Mana flask" },
-  { id: "charm-1", group: "charm", labelZh: "咒符 1", labelEn: "Charm 1" },
-  { id: "charm-2", group: "charm", labelZh: "咒符 2", labelEn: "Charm 2" },
-  { id: "charm-3", group: "charm", labelZh: "咒符 3", labelEn: "Charm 3" },
+  { id: "weapon-1-main", group: "weapon-1", area: "weapon", set: 1, labelZh: "主手", labelEn: "Main hand" },
+  { id: "weapon-1-off", group: "weapon-1", area: "offhand", set: 1, labelZh: "副手", labelEn: "Off hand" },
+  { id: "weapon-2-main", group: "weapon-2", area: "weapon", set: 2, labelZh: "主手", labelEn: "Main hand" },
+  { id: "weapon-2-off", group: "weapon-2", area: "offhand", set: 2, labelZh: "副手", labelEn: "Off hand" },
+  { id: "helmet", group: "armour", area: "helm", set: 0, labelZh: "頭盔", labelEn: "Helmet" },
+  { id: "body", group: "armour", area: "body", set: 0, labelZh: "胸甲", labelEn: "Body armour" },
+  { id: "gloves", group: "armour", area: "gloves", set: 0, labelZh: "手套", labelEn: "Gloves" },
+  { id: "boots", group: "armour", area: "boots", set: 0, labelZh: "鞋子", labelEn: "Boots" },
+  { id: "ring-3", group: "jewellery", area: "ring3", set: 0, labelZh: "戒指 3", labelEn: "Ring 3" },
+  { id: "ring-1", group: "jewellery", area: "ring", set: 0, labelZh: "戒指", labelEn: "Ring" },
+  { id: "ring-2", group: "jewellery", area: "ring2", set: 0, labelZh: "戒指 2", labelEn: "Ring 2" },
+  { id: "amulet", group: "jewellery", area: "amulet", set: 0, labelZh: "項鍊", labelEn: "Amulet" },
+  { id: "belt", group: "jewellery", area: "belt", set: 0, labelZh: "腰帶", labelEn: "Belt" },
+  { id: "trinket", group: "trinket", area: "trinket", set: 0, labelZh: "飾品", labelEn: "Trinket" },
+  { id: "flask-life", group: "flask", area: "life", set: 0, labelZh: "生命藥劑", labelEn: "Life flask" },
+  { id: "flask-mana", group: "flask", area: "mana", set: 0, labelZh: "魔力藥劑", labelEn: "Mana flask" },
+  { id: "charm-1", group: "charm", area: "charm", set: 0, labelZh: "咒符 1", labelEn: "Charm 1" },
+  { id: "charm-2", group: "charm", area: "charm", set: 0, labelZh: "咒符 2", labelEn: "Charm 2" },
+  { id: "charm-3", group: "charm", area: "charm", set: 0, labelZh: "咒符 3", labelEn: "Charm 3" },
+  { id: "jewel-1", group: "jewel", area: "jewel", set: 0, labelZh: "珠寶 1", labelEn: "Jewel 1" },
+  { id: "jewel-2", group: "jewel", area: "jewel", set: 0, labelZh: "珠寶 2", labelEn: "Jewel 2" },
+  { id: "jewel-3", group: "jewel", area: "jewel", set: 0, labelZh: "珠寶 3", labelEn: "Jewel 3" },
+  { id: "jewel-4", group: "jewel", area: "jewel", set: 0, labelZh: "珠寶 4", labelEn: "Jewel 4" },
+  { id: "jewel-5", group: "jewel", area: "jewel", set: 0, labelZh: "珠寶 5", labelEn: "Jewel 5" },
+  { id: "jewel-6", group: "jewel", area: "jewel", set: 0, labelZh: "珠寶 6", labelEn: "Jewel 6" },
+  { id: "jewel-7", group: "jewel", area: "jewel", set: 0, labelZh: "珠寶 7", labelEn: "Jewel 7" },
+  { id: "jewel-8", group: "jewel", area: "jewel", set: 0, labelZh: "珠寶 8", labelEn: "Jewel 8" },
 ] as const;
 
 export type PaperDollSlot = (typeof paperDollSlots)[number];
@@ -118,15 +175,21 @@ const DEFAULT_CRAFT_SLOT: Partial<Record<PaperDollSlotId, CraftSlotId>> = {
   amulet: "amulet",
   "ring-1": "ring",
   "ring-2": "ring",
+  "ring-3": "ring",
   belt: "belt",
 };
 
 export const SEASON_BD_V1: BdShowcase = {
-  id: "season-current",
-  titleZh: "本季 BD",
-  titleEn: "This season's BD",
-  ninjaUrl: null,
-  memorial: null,
+  id: "ruoa-cetacea",
+  titleZh: RUO_CETACEA_META.name,
+  titleEn: RUO_CETACEA_META.name,
+  classZh: RUO_CETACEA_META.classZh,
+  classEn: RUO_CETACEA_META.classEn,
+  level: RUO_CETACEA_META.level,
+  leagueZh: RUO_CETACEA_META.leagueZh,
+  leagueEn: RUO_CETACEA_META.leagueEn,
+  ninjaUrl: RUO_CETACEA_META.ninjaUrl,
+  memorial: ruoaCetaceaMemorial(),
   recommended: {},
 };
 
@@ -264,7 +327,8 @@ export function showcaseImageUrl(url: string): string | null {
   try {
     const parsed = new URL(url);
     if (parsed.protocol !== "https:") return null;
-    if (parsed.hostname !== "poe2db.tw" && parsed.hostname !== "www.poe2db.tw") return null;
+    const host = parsed.hostname;
+    if (host !== "poe2db.tw" && host !== "www.poe2db.tw" && host !== "cdn.poe2db.tw") return null;
     return url;
   } catch {
     return null;

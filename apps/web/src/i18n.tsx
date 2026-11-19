@@ -267,6 +267,9 @@ type Messages = {
   showcaseEditorTitle: string;
   homeShowcaseBody: string;
   showcaseMemorialLead: string;
+  showcaseJewels: string;
+  showcaseSockets: string;
+  showcaseEquipment: string;
 };
 
 const zhHant: Messages = {
@@ -523,8 +526,11 @@ const zhHant: Messages = {
   showcaseNoCatalogMore: "基底抄入後才依部位篩選，不會另造詞條。",
   showcaseSearch: "搜尋詞條",
   showcaseEditorTitle: "挑選目標詞條",
-  homeShowcaseBody: "我的狀況／紀念，以及同一條 BD 的推薦／攻略。紙娃娃對齊主副手、武器組 I／II、防具、首飾、兩藥、三咒符。快照尚未抄入。",
-  showcaseMemorialLead: "點部位可看已抄入的實際裝備。還沒有快照的部位保持空白。",
+  homeShowcaseBody: "我的狀況／紀念抄入 RUOA_CETACEA 的紙娃娃，以及同一條 BD 的推薦／攻略。格位對齊 poe.ninja。",
+  showcaseMemorialLead: "點部位可看抄入的實際裝備。空白格維持空白。",
+  showcaseJewels: "基礎珠寶",
+  showcaseSockets: "插槽",
+  showcaseEquipment: "裝備",
 };
 
 const en: Messages = {
@@ -782,8 +788,11 @@ const en: Messages = {
   showcaseSearch: "Search affixes",
   showcaseEditorTitle: "Choose target affixes",
   homeShowcaseBody:
-    "My setup / Memorial, and Guide / Recommended for the same BD. The paper doll matches main and off hand, weapon sets I / II, armour, jewellery, two flasks, and three charms. No snapshot has been transcribed yet.",
-  showcaseMemorialLead: "Open a slot to read transcribed gear. Slots without a snapshot stay blank.",
+    "My setup / Memorial transcribes RUOA_CETACEA's paper doll, plus Guide / Recommended for the same BD. Slots follow poe.ninja.",
+  showcaseMemorialLead: "Open a slot to read the transcribed gear. Empty cells stay empty.",
+  showcaseJewels: "BASE JEWELS",
+  showcaseSockets: "Sockets",
+  showcaseEquipment: "Equipment",
 };
 
 export const MESSAGES: Record<UiLocale, Messages> = {

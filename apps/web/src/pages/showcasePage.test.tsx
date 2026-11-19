@@ -49,12 +49,17 @@ describe("season BD showcase", () => {
     expect(memorial).toHaveAttribute("aria-selected", "true");
     expect(recommended).toHaveAttribute("aria-selected", "false");
     expect(screen.getAllByRole("tabpanel")).toHaveLength(1);
-    expect(screen.getByRole("heading", { name: "武器組 I" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "武器組 II" })).toBeInTheDocument();
-    expect(slotLink(/武器組 I 主手/)).toBeInTheDocument();
-    expect(slotLink(/武器組 I 副手/)).toBeInTheDocument();
-    expect(slotLink(/武器組 II 主手/)).toBeInTheDocument();
-    expect(slotLink(/武器組 II 副手/)).toBeInTheDocument();
+    expect(screen.getByText("暮色 刃痕")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "基礎珠寶" })).toBeInTheDocument();
+    expect(screen.getAllByText("水井之心").length).toBeGreaterThan(0);
+    expect(screen.queryByText("empty prefix")).not.toBeInTheDocument();
+    expect(slotLink(/主手/)).toHaveAccessibleName(/暮色 刃痕/);
+    expect(slotLink(/戒指 3/)).toHaveAccessibleName(/尚未抄入/);
+    expect(slotLink(/飾品/)).toHaveAccessibleName(/尚未抄入/);
+    await user.click(screen.getAllByRole("button", { name: "II" })[0]);
+    expect(screen.getByText("林木塑像")).toBeInTheDocument();
+    expect(screen.queryByText("暮色 刃痕")).not.toBeInTheDocument();
+    await user.click(screen.getAllByRole("button", { name: "I" })[0]);
     expect(slotLink(/生命藥劑/)).toBeInTheDocument();
     expect(slotLink(/魔力藥劑/)).toBeInTheDocument();
     expect(slotLink(/咒符 1/)).toBeInTheDocument();
@@ -77,15 +82,24 @@ describe("season BD showcase", () => {
     expect(screen.queryByRole("tab", { name: /編輯/ })).not.toBeInTheDocument();
   });
 
-  it("keeps the memorial empty until a snapshot is transcribed", async () => {
+  it("opens transcribed memorial gear and leaves ring 3 empty", async () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
     await user.click(slotLink(/頭盔/));
-    expect(screen.getByRole("heading", { name: "頭盔" })).toBeInTheDocument();
-    expect(screen.getByText("尚未抄入")).toBeInTheDocument();
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
-    expect(screen.queryByText("empty prefix")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "心靈 堅城" })).toBeInTheDocument();
+    expect(screen.getByText("先祖頭冠")).toBeInTheDocument();
+    expect(screen.getByText("完美鍛鐵符文")).toBeInTheDocument();
+    expect(screen.getByText("已汙染")).toBeInTheDocument();
+    expect(screen.getAllByText("增加18%找到的物品稀有度").length).toBeGreaterThan(0);
+    expect(screen.queryByText("前綴")).not.toBeInTheDocument();
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
     expect(screen.getAllByRole("tab")).toHaveLength(2);
+
+    await user.click(screen.getByRole("link", { name: "返回我的狀況／紀念" }));
+    await user.click(slotLink(/戒指 3/));
+    expect(screen.getByRole("heading", { name: "戒指 3" })).toBeInTheDocument();
+    expect(screen.getByText("尚未抄入")).toBeInTheDocument();
+    expect(screen.queryByText("心靈 堅城")).not.toBeInTheDocument();
   });
 
   it("shows transcribed memorial gear for the clicked slot only", async () => {

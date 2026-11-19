@@ -231,6 +231,8 @@ export type {
   BdShowcase,
   MemorialAffix,
   MemorialGear,
+  MemorialMod,
+  MemorialSocket,
   PaperDollGroupId,
   PaperDollSlot,
   PaperDollSlotId,

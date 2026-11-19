@@ -27,15 +27,25 @@ describe("season BD paper doll", () => {
       "body",
       "gloves",
       "boots",
-      "amulet",
+      "ring-3",
       "ring-1",
       "ring-2",
+      "amulet",
       "belt",
+      "trinket",
       "flask-life",
       "flask-mana",
       "charm-1",
       "charm-2",
       "charm-3",
+      "jewel-1",
+      "jewel-2",
+      "jewel-3",
+      "jewel-4",
+      "jewel-5",
+      "jewel-6",
+      "jewel-7",
+      "jewel-8",
     ]);
     expect(paperDollSlots.filter((slot) => slot.group === "weapon-1")).toHaveLength(2);
     expect(paperDollSlots.filter((slot) => slot.group === "weapon-2")).toHaveLength(2);
@@ -44,19 +54,44 @@ describe("season BD paper doll", () => {
     expect(SHOWCASE_SIDE_CAP).toBe(3);
   });
 
-  it("ships an empty shell and never invents memorial gear", () => {
-    expect(SEASON_BD_V1.ninjaUrl).toBeNull();
-    expect(SEASON_BD_V1.memorial).toBeNull();
+  it("transcribes RUOA_CETACEA and leaves empty slots and recommended picks blank", () => {
+    expect(SEASON_BD_V1.ninjaUrl).toBe(
+      "https://poe.ninja/poe2/profile/TAIC_LY4TA-2922/runesofaldur/character/RUOA_CETACEA",
+    );
+    expect(SEASON_BD_V1.classZh).toBe("天啟先知");
+    expect(SEASON_BD_V1.level).toBe(100);
     expect(SEASON_BD_V1.recommended).toEqual({});
+    expect(memorialGear(SEASON_BD_V1, "ring-3")).toBeNull();
+    expect(memorialGear(SEASON_BD_V1, "trinket")).toBeNull();
+
+    const wand = memorialGear(SEASON_BD_V1, "weapon-1-main");
+    expect(wand?.nameZh).toBe("暮色 刃痕");
+    expect(wand?.nameEn).toBe("Dusk Scratch");
+    expect(wand?.baseZh).toBe("單挑法杖");
+    expect(wand?.sockets?.map((socket) => socket.nameZh)).toEqual([
+      "瑟雷的凱旋",
+      "流浪女巫艾珊德菈的智慧符文",
+      "傳承．生機之記",
+    ]);
+    expect(wand?.mods?.some((mod) => mod.kind === "prefix" || mod.kind === "suffix")).toBe(false);
+
+    const palm = memorialGear(SEASON_BD_V1, "weapon-1-off");
+    expect(palm?.nameZh).toBe("引導之掌：靈");
+    expect(palm?.corruptedZh).toBe("雙重 Corrupted");
+    expect(memorialGear(SEASON_BD_V1, "weapon-2-main")?.nameEn).toBe("Sylvan's Effigy");
+    expect(memorialGear(SEASON_BD_V1, "weapon-2-off")?.nameZh).toBe("永恆火花");
+    expect(memorialGear(SEASON_BD_V1, "jewel-1")?.nameEn).toBe("Heart of the Well");
+    expect(memorialGear(SEASON_BD_V1, "jewel-8")?.nameZh).toBe("鳳鳴傷口");
+    expect(memorialGear(SEASON_BD_V1, "charm-1")?.nameZh).toBe("黑貓");
+    expect(memorialGear(SEASON_BD_V1, "flask-life")?.nameEn).toBe("Olroth's Resolve");
+
     for (const slot of paperDollSlots) {
-      expect(memorialGear(SEASON_BD_V1, slot.id)).toBeNull();
-      const gear = recommendedGear(SEASON_BD_V1, slot.id);
-      expect(gear.nameZh).toBe("");
-      expect(gear.nameEn).toBe("");
-      expect(gear.imageUrl).toBe("");
-      expect(gear.baseZh).toBe("");
-      expect(gear.implicits).toEqual([]);
-      expect(gear.affixes).toEqual([]);
+      const gear = memorialGear(SEASON_BD_V1, slot.id);
+      expect(gear?.imageUrl ?? "").not.toContain("poe.ninja");
+      if (gear?.imageUrl) expect(showcaseImageUrl(gear.imageUrl)).toBe(gear.imageUrl);
+      const recommended = recommendedGear(SEASON_BD_V1, slot.id);
+      expect(recommended.nameZh).toBe("");
+      expect(recommended.affixes).toEqual([]);
     }
   });
 
@@ -175,6 +210,9 @@ describe("chronicle images", () => {
       "https://poe2db.tw/image/Art/2DItems/Armours/x.png",
     );
     expect(showcaseImageUrl("https://www.poe2db.tw/image/x.webp")).toBe("https://www.poe2db.tw/image/x.webp");
+    expect(showcaseImageUrl("https://cdn.poe2db.tw/image/Art/2DItems/x.webp")).toBe(
+      "https://cdn.poe2db.tw/image/Art/2DItems/x.webp",
+    );
     expect(showcaseImageUrl("https://poe.ninja/image/item.png")).toBeNull();
     expect(showcaseImageUrl("https://web.poe.ninja/image/item.png")).toBeNull();
     expect(showcaseImageUrl("https://poedb.tw/image/item.png")).toBeNull();

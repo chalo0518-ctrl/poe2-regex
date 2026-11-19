@@ -1,5 +1,6 @@
 import PaperDoll from "../components/PaperDoll.tsx";
 import { useLocale } from "../i18n.tsx";
+import { useShowcase } from "./showcaseState.tsx";
 
 export function SessionNote() {
   const { t } = useLocale();
@@ -13,9 +14,16 @@ export function SessionNote() {
 }
 
 export default function ShowcaseBoard({ mode }: { mode: "memorial" | "recommended" }) {
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
+  const { snapshot } = useShowcase();
+  const identity = snapshot.level
+    ? locale === "en"
+      ? `Level ${snapshot.level} ${snapshot.classEn ?? ""} · ${snapshot.leagueEn ?? ""}`
+      : `${snapshot.level} 級 ${snapshot.classZh ?? ""} · ${snapshot.leagueZh ?? ""}`
+    : "";
   return (
     <div>
+      {identity ? <p className="mb-2 text-sm text-muted">{identity}</p> : null}
       {mode === "recommended" ? (
         <SessionNote />
       ) : (

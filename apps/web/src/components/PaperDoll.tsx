@@ -1,14 +1,14 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   catalogForDollSlot,
   memorialGear,
-  paperDollGroups,
   paperDollSlots,
   recommendedGear,
   showcaseImageUrl,
   showcaseLines,
-  type PaperDollGroupId,
   type PaperDollSlot,
+  type PaperDollSlotId,
   type ShowcaseLine,
   type UiLocale,
 } from "@poe2-regex/data";
@@ -16,13 +16,12 @@ import { useLocale } from "../i18n.tsx";
 import { useShowcase } from "../pages/showcaseState.tsx";
 
 type DollMode = "memorial" | "recommended";
+type WeaponSet = 1 | 2;
+
+const GRID_AREAS = ["weapon", "offhand", "helm", "ring3", "ring", "ring2", "amulet", "body", "gloves", "boots", "belt", "trinket", "life", "mana"] as const;
 
 function labelOf(row: { labelZh: string; labelEn: string }, locale: UiLocale): string {
   return locale === "en" ? row.labelEn : row.labelZh;
-}
-
-function textOf(row: { textZh: string; textEn: string }, locale: UiLocale): string {
-  return locale === "en" ? row.textEn || row.textZh : row.textZh || row.textEn;
 }
 
 function nameOf(row: { nameZh: string; nameEn: string }, locale: UiLocale): string {
@@ -30,79 +29,85 @@ function nameOf(row: { nameZh: string; nameEn: string }, locale: UiLocale): stri
 }
 
 export default function PaperDoll({ mode }: { mode: DollMode }) {
-  const { locale } = useLocale();
-  return (
-    <div className="doll-sheet">
-      {paperDollGroups
-        .filter((group) => group.id === "weapon-1" || group.id === "weapon-2" || group.id === "armour" || group.id === "jewellery")
-        .map((group) => (
-          <DollGroup key={group.id} groupId={group.id} title={labelOf(group, locale)} mode={mode} />
-        ))}
-      <div className="doll-trinkets">
-        {paperDollGroups
-          .filter((group) => group.id === "flask" || group.id === "charm")
-          .map((group) => (
-            <DollGroup key={group.id} groupId={group.id} title={labelOf(group, locale)} mode={mode} />
-          ))}
-      </div>
-    </div>
-  );
-}
-
-function DollGroup({
-  groupId,
-  title,
-  mode,
-}: {
-  groupId: PaperDollGroupId;
-  title: string;
-  mode: DollMode;
-}) {
-  const slots = paperDollSlots.filter((slot) => slot.group === groupId);
-  return (
-    <div className={`doll-group doll-group-${groupId}`}>
-      <h2 className="doll-group-title">{title}</h2>
-      <div className="doll-group-slots">
-        {slots.map((slot) => (
-          <DollSlot key={slot.id} slot={slot} groupTitle={title} mode={mode} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function DollSlot({
-  slot,
-  groupTitle,
-  mode,
-}: {
-  slot: PaperDollSlot;
-  groupTitle: string;
-  mode: DollMode;
-}) {
   const { locale, t } = useLocale();
+  const [set, setWeaponSet] = useState<WeaponSet>(1);
+  const jewels = paperDollSlots.filter((slot) => slot.group === "jewel");
+  const charms = paperDollSlots.filter((slot) => slot.group === "charm");
+  const gridSlots = paperDollSlots.filter((slot) => GRID_AREAS.includes(slot.area as (typeof GRID_AREAS)[number]));
+  const visible = gridSlots.filter((slot) => slot.set === 0 || slot.set === set);
+
+  return (
+    <div className="ninja-panel">
+      <p className="ninja-panel-title">{locale === "en" ? "Equipment" : "裝備"}</p>
+      <div className="ninja-sheet" data-testid="ninja-sheet">
+        <WeaponTabs set={set} onSet={setWeaponSet} area="wtab" label={locale === "en" ? "Weapon set" : "武器組"} />
+        <WeaponTabs set={set} onSet={setWeaponSet} area="otab" label={locale === "en" ? "Off-hand set" : "副手武器組"} />
+        {visible.filter((slot) => slot.group !== "charm").map((slot) => (
+          <DollCell key={slot.id} slot={slot} mode={mode} locale={locale} />
+        ))}
+        <div className="ninja-charms">
+          {charms.map((slot) => (
+            <DollCell key={slot.id} slot={slot} mode={mode} locale={locale} />
+          ))}
+        </div>
+      </div>
+      <section className="ninja-jewel-row" aria-label={t.showcaseJewels}>
+        <h2 className="ninja-jewel-heading">{t.showcaseJewels}</h2>
+        <div className="ninja-jewels">
+          {jewels.map((slot) => (
+            <div key={slot.id} className="ninja-jewel">
+              <DollCell slot={slot} mode={mode} locale={locale} />
+              <JewelCaption slotId={slot.id} mode={mode} fallback={labelOf(slot, locale)} locale={locale} />
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function WeaponTabs({
+  set,
+  onSet,
+  area,
+  label,
+}: {
+  set: WeaponSet;
+  onSet: (next: WeaponSet) => void;
+  area: "wtab" | "otab";
+  label: string;
+}) {
+  return (
+    <div className="ninja-tabs" style={{ gridArea: area }} role="group" aria-label={label}>
+      {([1, 2] as const).map((value) => (
+        <button key={value} type="button" aria-pressed={set === value} onClick={() => onSet(value)}>
+          {value === 1 ? "I" : "II"}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function DollCell({ slot, mode, locale }: { slot: PaperDollSlot; mode: DollMode; locale: UiLocale }) {
+  const { t } = useLocale();
   const { snapshot, picks } = useShowcase();
-  const slotLabel = labelOf(slot, locale);
   const to = mode === "memorial" ? `/showcase/memorial/${slot.id}` : `/showcase/recommended/${slot.id}`;
+  const slotLabel = labelOf(slot, locale);
 
   if (mode === "memorial") {
     const gear = memorialGear(snapshot, slot.id);
     const name = gear ? nameOf(gear, locale) : "";
-    const pending = !gear;
+    const src = gear ? showcaseImageUrl(gear.imageUrl) : null;
     return (
-      <Link to={to} className="doll-slot" aria-label={[groupTitle, slotLabel, name || t.showcaseMemorialEmpty].join(" ")}>
-        <SlotFrame label={slotLabel} name={name} pending={pending ? t.showcaseMemorialEmpty : ""} imageUrl={gear?.imageUrl ?? ""} />
-        {gear?.baseZh ? <p className="doll-base">{textOf({ textZh: gear.baseZh, textEn: gear.baseEn }, locale)}</p> : null}
-        {gear?.implicits.map((row) => (
-          <p key={row.textZh} className="doll-implicit">
-            {textOf(row, locale)}
-          </p>
-        ))}
-        {gear?.affixes.map((row) => (
-          <p key={`${row.generation}-${row.textZh}`} className="doll-affix">
-            {textOf(row, locale)}
-          </p>
-        ))}
+      <Link
+        to={to}
+        data-area={slot.area}
+        data-rarity={gear?.rarity || "empty"}
+        className="ninja-cell"
+        aria-label={[slotLabel, name || t.showcaseMemorialEmpty].join(" ")}
+      >
+        {src ? <img src={src} alt={name || slotLabel} /> : null}
+        <span className={src ? "sr-only" : "sr-only"}>{name || t.showcaseMemorialEmpty}</span>
       </Link>
     );
   }
@@ -111,91 +116,53 @@ function DollSlot({
   const name = nameOf(gear, locale);
   const catalog = catalogForDollSlot(slot.id, gear);
   const lines = showcaseLines(picks[slot.id], catalog);
-  const base = textOf({ textZh: gear.baseZh, textEn: gear.baseEn }, locale);
-  const showPendingImplicit = !base && gear.implicits.length === 0;
+  const base = locale === "en" ? gear.baseEn || gear.baseZh : gear.baseZh || gear.baseEn;
+  const src = showcaseImageUrl(gear.imageUrl);
   return (
-    <Link to={to} className="doll-slot" aria-label={[groupTitle, slotLabel, name || t.showcaseNamePending].join(" ")}>
-      <SlotFrame label={slotLabel} name={name} pending={name ? "" : t.showcaseNamePending} imageUrl={gear.imageUrl} />
-      {base ? <p className="doll-base">{base}</p> : null}
+    <Link
+      to={to}
+      data-area={slot.area}
+      data-rarity={name ? "rare" : "empty"}
+      className="ninja-cell"
+      aria-label={[slotLabel, name || t.showcaseNamePending].join(" ")}
+    >
+      {src ? <img src={src} alt={name || slotLabel} /> : null}
+      <span className="sr-only">{name || t.showcaseNamePending}</span>
+      {base ? <span className="sr-only">{base}</span> : null}
       {gear.implicits.map((row) => (
-        <p key={row.textZh} className="doll-implicit">
-          {textOf(row, locale)}
-        </p>
+        <span key={row.textZh} className="sr-only">
+          {locale === "en" ? row.textEn || row.textZh : row.textZh || row.textEn}
+        </span>
       ))}
-      {showPendingImplicit ? <p className="doll-implicit">{t.showcaseImplicitPending}</p> : null}
-      <SideLines lines={lines.prefixes} emptyLabel={t.showcaseEmptyPrefix} required={t.showcaseRequired} optional={t.showcaseOptional} locale={locale} />
-      <SideLines lines={lines.suffixes} emptyLabel={t.showcaseEmptySuffix} required={t.showcaseRequired} optional={t.showcaseOptional} locale={locale} />
+      {!base && gear.implicits.length === 0 ? <span className="sr-only">{t.showcaseImplicitPending}</span> : null}
+      <AffixHoles lines={lines.prefixes} emptyLabel={t.showcaseEmptyPrefix} locale={locale} />
+      <AffixHoles lines={lines.suffixes} emptyLabel={t.showcaseEmptySuffix} locale={locale} />
     </Link>
   );
 }
 
-function SlotFrame({
-  label,
-  name,
-  pending,
-  imageUrl,
-}: {
-  label: string;
-  name: string;
-  pending: string;
-  imageUrl: string;
-}) {
-  const src = showcaseImageUrl(imageUrl);
-  return (
-    <>
-      <span className="doll-slot-label">{label}</span>
-      <span className="doll-well">
-        {src ? <img src={src} alt={name || label} /> : null}
-      </span>
-      {name ? <p className="doll-name">{name}</p> : null}
-      {pending ? <p className="doll-pending">{pending}</p> : null}
-    </>
-  );
+function AffixHoles({ lines, emptyLabel, locale }: { lines: ShowcaseLine[]; emptyLabel: string; locale: UiLocale }) {
+  return lines.map((line, index) => (
+    <span key={`${line.kind}-${line.kind === "affix" ? line.familyId : index}`} className="sr-only">
+      {line.kind === "empty" ? emptyLabel : locale === "en" ? line.labelEn : line.labelZh}
+    </span>
+  ));
 }
 
-function SideLines({
-  lines,
-  emptyLabel,
-  required,
-  optional,
+function JewelCaption({
+  slotId,
+  mode,
+  fallback,
   locale,
 }: {
-  lines: ShowcaseLine[];
-  emptyLabel: string;
-  required: string;
-  optional: string;
+  slotId: PaperDollSlotId;
+  mode: DollMode;
+  fallback: string;
   locale: UiLocale;
 }) {
-  const affixes = lines.flatMap((line) => (line.kind === "affix" ? [line] : []));
-  const empties = lines.flatMap((line) => (line.kind === "empty" ? [line] : []));
-  const requiredLines = affixes.filter((line) => line.rank === "required");
-  const optionalLines = affixes.filter((line) => line.rank === "optional");
-  return (
-    <>
-      {requiredLines.length > 0 ? <p className="doll-rank">{required}</p> : null}
-      {requiredLines.map((line) => (
-        <p key={line.familyId} className="doll-affix">
-          {locale === "en" ? line.labelEn : line.labelZh}
-        </p>
-      ))}
-      {optionalLines.length > 0 ? <p className="doll-rank">{optional}</p> : null}
-      {optionalLines.map((line) => (
-        <p key={line.familyId} className="doll-affix">
-          {locale === "en" ? line.labelEn : line.labelZh}
-        </p>
-      ))}
-      {empties.length > 0 ? (
-        <p className="doll-line-empty">
-          {empties.flatMap((line, index) => [
-            index > 0 ? (
-              <span key={`${line.generation}-sep-${index}`} aria-hidden="true">
-                {" · "}
-              </span>
-            ) : null,
-            <span key={`${line.generation}-${index}`}>{emptyLabel}</span>,
-          ])}
-        </p>
-      ) : null}
-    </>
-  );
+  const { snapshot } = useShowcase();
+  if (mode !== "memorial") return <span className="ninja-jewel-name">{fallback}</span>;
+  const gear = memorialGear(snapshot, slotId);
+  const name = gear ? nameOf(gear, locale) : fallback;
+  return <span className="ninja-jewel-name">{name}</span>;
 }
