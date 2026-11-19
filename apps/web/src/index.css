@@ -424,34 +424,65 @@ header {
 .socket-stack {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
   pointer-events: none;
 }
 
 .socket-pip {
-  display: grid;
-  width: 28px;
-  height: 28px;
-  place-items: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  box-sizing: border-box;
+  width: 34%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
   overflow: hidden;
-  border: 2px solid #d7b56a;
-  border-radius: 999px;
-  background: rgba(18, 15, 12, 0.82);
-  color: var(--color-paper);
-  font-size: 9px;
-  line-height: 1.1;
-  text-align: center;
+  border: 3px solid #e6cc8a;
+  border-radius: 50%;
+  background: rgba(12, 10, 8, 0.92);
+  box-shadow:
+    inset 0 0 0 2px #6a4e22,
+    0 0 0 1px rgba(0, 0, 0, 0.55);
 }
 
 .socket-pip img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 50%;
 }
+
+/* Tall weapon, 3 sockets: one centered column down the shaft. */
+.socket-stack[data-layout="column"] .socket-pip { width: 46%; }
+.socket-stack[data-layout="column"] .socket-pip:nth-child(1) { top: 18%; }
+.socket-stack[data-layout="column"] .socket-pip:nth-child(2) { top: 50%; }
+.socket-stack[data-layout="column"] .socket-pip:nth-child(3) { top: 82%; }
+
+/* Tall weapon, 2 sockets: a short centered pair, not stretched to the tips. */
+.socket-stack[data-layout="pair"] .socket-pip { width: 46%; }
+.socket-stack[data-layout="pair"] .socket-pip:nth-child(1) { top: 36%; }
+.socket-stack[data-layout="pair"] .socket-pip:nth-child(2) { top: 64%; }
+
+/* Helm: large medals sharing the center. A single recorded socket stays centered. */
+.socket-stack[data-layout="center"][data-count="1"] .socket-pip { width: 46%; }
+.socket-stack[data-layout="center"][data-count="2"] .socket-pip { width: 38%; }
+.socket-stack[data-layout="center"][data-count="2"] .socket-pip:nth-child(1) { left: 34%; }
+.socket-stack[data-layout="center"][data-count="2"] .socket-pip:nth-child(2) { left: 66%; }
+
+/* Body: two across the chest, one on the lower mantle. */
+.socket-stack[data-layout="triangle"] .socket-pip { width: 34%; }
+.socket-stack[data-layout="triangle"] .socket-pip:nth-child(1) { left: 34%; top: 38%; }
+.socket-stack[data-layout="triangle"] .socket-pip:nth-child(2) { left: 66%; top: 38%; }
+.socket-stack[data-layout="triangle"] .socket-pip:nth-child(3) { left: 50%; top: 66%; }
+
+/* Gloves: two medals across the hands. */
+.socket-stack[data-layout="row"] .socket-pip { width: 36%; top: 55%; }
+.socket-stack[data-layout="row"] .socket-pip:nth-child(1) { left: 32%; }
+.socket-stack[data-layout="row"] .socket-pip:nth-child(2) { left: 68%; }
+
+/* Boots: one medal on each boot. */
+.socket-stack[data-layout="split"] .socket-pip { width: 34%; top: 46%; }
+.socket-stack[data-layout="split"] .socket-pip:nth-child(1) { left: 30%; }
+.socket-stack[data-layout="split"] .socket-pip:nth-child(2) { left: 70%; }
 
 .item-tip {
   position: fixed;
@@ -516,29 +547,32 @@ header {
 }
 
 .stats-col {
-  min-width: min(100%, 18rem);
-  max-width: 24rem;
+  flex: 1 1 28rem;
+  min-width: min(100%, 22rem);
+  max-width: 36rem;
   color: var(--color-paper);
 }
 
 .stats-title {
-  margin: 0 0 0.6rem;
-  font-size: 1.25rem;
+  margin: 0 0 0.75rem;
+  font-size: 1.85rem;
+  letter-spacing: 0.04em;
 }
 
 .stats-section {
-  margin: 0.9rem 0 0.35rem;
+  margin: 1.15rem 0 0.45rem;
   color: var(--color-muted);
-  font-size: 11px;
-  letter-spacing: 0.14em;
+  font-size: 13px;
+  letter-spacing: 0.16em;
 }
 
 .stats-row {
   display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.12rem 0;
-  font-size: 14px;
+  gap: 1.75rem;
+  padding: 0.22rem 0;
+  font-size: 18px;
+  line-height: 1.35;
 }
 
 .stats-row > span:first-child { color: var(--color-muted); }
@@ -550,8 +584,8 @@ header {
 }
 
 .stats-skills li {
-  margin-top: 0.65rem;
-  font-size: 13px;
+  margin-top: 0.85rem;
+  font-size: 16px;
 }
 
 .stats-skill-head {
@@ -562,14 +596,15 @@ header {
 }
 
 .stats-skills p {
-  margin: 0.1rem 0 0;
+  margin: 0.15rem 0 0;
   color: var(--color-muted);
+  font-size: 15px;
 }
 
 .stats-badge {
-  margin-right: 0.35rem;
+  margin-right: 0.4rem;
   color: var(--color-gold);
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .ninja-cell[data-slot="weapon-1-main"] .ninja-art > img {

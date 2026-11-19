@@ -116,6 +116,39 @@ describe("season BD showcase", () => {
     expect(screen.queryByRole("link", { name: /飾品/ })).not.toBeInTheDocument();
   });
 
+  it("lays recorded sockets out like the in-game doll", async () => {
+    const user = userEvent.setup();
+    renderAt("/showcase/memorial");
+    await user.click(screen.getByRole("button", { name: "顯示鑲嵌" }));
+
+    function stack(name: RegExp) {
+      const node = slotLink(name).querySelector(".socket-stack");
+      if (!node) throw new Error(`missing sockets for ${name}`);
+      return node;
+    }
+
+    expect(stack(/主手/)).toHaveAttribute("data-layout", "column");
+    expect(stack(/主手/).querySelectorAll(".socket-pip")).toHaveLength(3);
+    expect(stack(/副手/)).toHaveAttribute("data-layout", "pair");
+    expect(stack(/副手/).querySelectorAll(".socket-pip")).toHaveLength(2);
+    expect(stack(/頭盔/)).toHaveAttribute("data-layout", "center");
+    expect(stack(/頭盔/).querySelectorAll(".socket-pip")).toHaveLength(2);
+    expect(stack(/胸甲/)).toHaveAttribute("data-layout", "triangle");
+    expect(stack(/胸甲/).querySelectorAll(".socket-pip")).toHaveLength(3);
+    expect(stack(/手套/)).toHaveAttribute("data-layout", "row");
+    expect(stack(/手套/).querySelectorAll(".socket-pip")).toHaveLength(2);
+    expect(stack(/鞋子/)).toHaveAttribute("data-layout", "split");
+    expect(stack(/鞋子/).querySelectorAll(".socket-pip")).toHaveLength(2);
+    expect(slotLink(/腰帶/).querySelector(".socket-stack")).toBeNull();
+    expect(slotLink(/項鍊/).querySelector(".socket-stack")).toBeNull();
+
+    await user.click(screen.getAllByRole("button", { name: "II" })[0]);
+    expect(stack(/主手/)).toHaveAttribute("data-layout", "pair");
+    expect(stack(/主手/).querySelectorAll(".socket-pip")).toHaveLength(2);
+    expect(stack(/副手/)).toHaveAttribute("data-layout", "column");
+    expect(stack(/副手/).querySelectorAll(".socket-pip")).toHaveLength(3);
+  });
+
   it("shows transcribed memorial gear for the clicked slot only", async () => {
     const user = userEvent.setup();
     const body: MemorialGear = {

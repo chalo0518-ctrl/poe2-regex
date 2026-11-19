@@ -216,7 +216,7 @@ function DollCell({
       >
         <span className="ninja-art">
           {src ? <img src={src} alt={name || slotLabel} /> : null}
-          {socketsOn ? <SocketOverlay gear={gear} locale={locale} /> : null}
+          {socketsOn ? <SocketOverlay gear={gear} area={slot.area} locale={locale} /> : null}
         </span>
         <span className="sr-only">{name || t.showcaseMemorialEmpty}</span>
       </Link>
@@ -253,11 +253,30 @@ function DollCell({
   );
 }
 
-function SocketOverlay({ gear, locale }: { gear: MemorialGear | null; locale: UiLocale }) {
+/** In-game medal placement. Counts stay the recorded sockets; nothing is invented. */
+function socketLayout(area: string, count: number): string {
+  if (area === "boots" && count >= 2) return "split";
+  if (area === "gloves" && count >= 2) return "row";
+  if (area === "body" && count >= 3) return "triangle";
+  if (area === "helm") return "center";
+  if ((area === "weapon" || area === "offhand") && count >= 3) return "column";
+  if ((area === "weapon" || area === "offhand") && count === 2) return "pair";
+  return "center";
+}
+
+function SocketOverlay({
+  gear,
+  area,
+  locale,
+}: {
+  gear: MemorialGear | null;
+  area: string;
+  locale: UiLocale;
+}) {
   const sockets = gear?.sockets ?? [];
   if (sockets.length === 0) return null;
   return (
-    <span className="socket-stack">
+    <span className="socket-stack" data-layout={socketLayout(area, sockets.length)} data-count={sockets.length}>
       {sockets.map((socket, index) => {
         const name = locale === "en" ? socket.nameEn : socket.nameZh;
         const src = showcaseImageUrl(socket.imageUrl ?? "");
