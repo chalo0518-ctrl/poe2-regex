@@ -5,9 +5,11 @@ import ShowcaseBoard from "./ShowcaseBoard.tsx";
 import ShowcaseEditor from "./ShowcaseEditor.tsx";
 import ShowcaseLayout from "./ShowcaseLayout.tsx";
 
+const ALDUR_PREVIEW = "https://cdn.mos.cms.futurecdn.net/P4uB2XdCnUnyvRC4k4GSDk.png";
+
 export function showcaseRoute(snapshot: BdShowcase = SEASON_BD_V1, seasonPreviewUrl?: string) {
   return (
-    <Route path="showcase" element={<ShowcaseLayout snapshot={snapshot} seasonPreviewUrl={seasonPreviewUrl} />}>
+    <Route path="showcase" element={<ShowcaseLayout snapshot={snapshot} seasonPreviewUrl={seasonPreviewUrl ?? (snapshot === SEASON_BD_V1 ? ALDUR_PREVIEW : undefined)} />}>
       <Route path="memorial" element={<ShowcaseBoard mode="memorial" />} />
       <Route path="memorial/:slotId" element={<MemorialDetail />} />
       <Route path="recommended" element={<ShowcaseBoard mode="recommended" />} />

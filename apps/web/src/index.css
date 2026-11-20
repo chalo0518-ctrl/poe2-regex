@@ -880,20 +880,15 @@ header {
   color: #f5dfb6;
   font: 700 clamp(1rem, 3vw, 1.3rem) var(--font-display);
 }
-.ledger-season-card img {
-  position: absolute;
-  z-index: -2;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.ledger-season-card:has(img) { padding: 0; }
+.ledger-season-card:has(img) h3 {
+  padding: .75rem 1.25rem;
+  border-bottom: 1px solid #9b7b52;
 }
-.ledger-season-card:has(img)::after {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: linear-gradient(150deg, #100d09e0, transparent 72%);
-  content: "";
+.ledger-season-card img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .ledger-season-tabs, .ledger-craft-tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
 .ledger-tab, .ledger-craft-tabs button[role="tab"] {

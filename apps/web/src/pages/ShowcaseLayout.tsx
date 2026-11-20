@@ -35,8 +35,8 @@ export default function ShowcaseLayout({ snapshot = SEASON_BD_V1, seasonPreviewU
               </select>
             </label>
             <div className="ledger-season-card">
-              {seasonPreviewUrl ? <img src={seasonPreviewUrl} alt="" /> : null}
               <h3>{season}</h3>
+              {seasonPreviewUrl ? <img src={seasonPreviewUrl} alt="" decoding="async" /> : null}
             </div>
           </section>
           {selected ? (
