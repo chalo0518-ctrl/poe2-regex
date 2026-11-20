@@ -1,11 +1,15 @@
-import { Link, NavLink, Outlet, useMatch } from "react-router-dom";
+import { NavLink, Outlet, useMatch, useNavigate } from "react-router-dom";
 import { SEASON_BD_V1, type BdShowcase } from "@poe2-regex/data";
 import LedgerHero from "../components/LedgerHero.tsx";
 import { useLocale } from "../i18n.tsx";
 import { ShowcaseProvider } from "./showcaseState.tsx";
 
-export default function ShowcaseLayout({ snapshot = SEASON_BD_V1 }: { snapshot?: BdShowcase }) {
+export default function ShowcaseLayout({ snapshot = SEASON_BD_V1, seasonPreviewUrl }: {
+  snapshot?: BdShowcase;
+  seasonPreviewUrl?: string;
+}) {
   const { locale, t } = useLocale();
+  const navigate = useNavigate();
   const memorial = useMatch({ path: "/showcase/memorial", end: false });
   const recommended = useMatch({ path: "/showcase/recommended", end: false });
   const english = locale === "en";
@@ -21,10 +25,19 @@ export default function ShowcaseLayout({ snapshot = SEASON_BD_V1 }: { snapshot?:
         <div className="ledger-content">
           <section className="ledger-season-select" aria-labelledby="season-choice-title">
             <h2 id="season-choice-title">{english ? "Choose a season" : "選擇賽季"}</h2>
-            <Link className="ledger-season-card" to="/showcase/memorial" data-selected={selected}>
-              <span>{season}</span>
-              <span aria-hidden="true">›</span>
-            </Link>
+            <label className="ledger-season-filter">
+              <span>{english ? "Season" : "賽季"}</span>
+              <select value={selected ? "current" : ""} onChange={(event) => {
+                navigate(event.target.value ? "/showcase/memorial" : "/showcase");
+              }}>
+                <option value="">{english ? "Select a season" : "請選擇賽季"}</option>
+                <option value="current">{season}</option>
+              </select>
+            </label>
+            <div className="ledger-season-card">
+              {seasonPreviewUrl ? <img src={seasonPreviewUrl} alt="" /> : null}
+              <h3>{season}</h3>
+            </div>
           </section>
           {selected ? (
             <>

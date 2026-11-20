@@ -851,21 +851,50 @@ header {
 .ledger-season-select h2, .ledger-next-step h2, .ledger-character { color: #f0d7aa; font-size: 1.3rem; }
 .ledger-character { margin-bottom: .6rem; font-size: clamp(1.35rem, 3vw, 2.3rem); }
 
-.ledger-season-card {
+.ledger-season-filter {
   display: flex;
-  justify-content: space-between;
-  align-items: end;
-  max-width: 34rem;
-  min-height: 7rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .55rem .85rem;
   margin-top: .75rem;
+  color: #d7c29e;
+}
+.ledger-season-filter select {
+  min-width: min(100%, 16rem);
+  max-width: 100%;
+  padding: .5rem .8rem;
+  border: 1px solid #9b7b52;
+  background: #17130f;
+  color: #f5dfb6;
+  color-scheme: dark;
+}
+.ledger-season-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: clamp(7rem, 18vw, 13rem);
+  margin-top: 1rem;
   padding: 1rem 1.25rem;
   border: 1px solid #9b7b52;
   background: var(--ledger-stone), linear-gradient(105deg, #242017, var(--ledger-scene-tint));
   color: #f5dfb6;
   font: 700 clamp(1rem, 3vw, 1.3rem) var(--font-display);
 }
-
-.ledger-season-card:hover, .ledger-season-card[data-selected="true"] { border-color: #f1c585; }
+.ledger-season-card img {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ledger-season-card:has(img)::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(150deg, #100d09e0, transparent 72%);
+  content: "";
+}
 .ledger-season-tabs, .ledger-craft-tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
 .ledger-tab, .ledger-craft-tabs button[role="tab"] {
   border: 1px solid #74573a;

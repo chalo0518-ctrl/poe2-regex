@@ -42,7 +42,8 @@ describe("season BD showcase", () => {
     const user = userEvent.setup();
     renderAt("/showcase");
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
-    await user.click(within(screen.getByRole("region", { name: "選擇賽季" })).getByRole("link"));
+    const filter = within(screen.getByRole("region", { name: "選擇賽季" })).getByRole("combobox", { name: "賽季" });
+    await user.selectOptions(filter, "current");
     expect(screen.getByRole("tabpanel")).toBeInTheDocument();
   });
 
