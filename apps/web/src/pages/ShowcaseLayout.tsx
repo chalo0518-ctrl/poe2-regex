@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useMatch, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { SEASON_BD_V1, type BdShowcase } from "@poe2-regex/data";
 import LedgerHero from "../components/LedgerHero.tsx";
 import { useLocale } from "../i18n.tsx";
@@ -10,10 +10,12 @@ export default function ShowcaseLayout({ snapshot = SEASON_BD_V1, seasonPreviewU
 }) {
   const { locale, t } = useLocale();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const memorial = useMatch({ path: "/showcase/memorial", end: false });
   const recommended = useMatch({ path: "/showcase/recommended", end: false });
   const english = locale === "en";
-  const selected = Boolean(memorial || recommended);
+  const inArchive = Boolean(memorial || recommended);
+  const selected = inArchive || params.get("season") === "current";
   const season = (english ? snapshot.leagueEn : snapshot.leagueZh) || snapshot.leagueEn || snapshot.titleEn;
 
   return (
@@ -28,18 +30,23 @@ export default function ShowcaseLayout({ snapshot = SEASON_BD_V1, seasonPreviewU
             <label className="ledger-season-filter">
               <span>{english ? "Season" : "賽季"}</span>
               <select value={selected ? "current" : ""} onChange={(event) => {
-                navigate(event.target.value ? "/showcase/memorial" : "/showcase");
+                navigate(event.target.value ? "/showcase?season=current" : "/showcase");
               }}>
                 <option value="">{english ? "Select a season" : "請選擇賽季"}</option>
                 <option value="current">{season}</option>
               </select>
             </label>
-            <div className="ledger-season-card">
-              <h3>{season}</h3>
-              {seasonPreviewUrl ? <img src={seasonPreviewUrl} alt="" decoding="async" /> : null}
-            </div>
+            {selected && !inArchive ? (
+              <Link to="/showcase/memorial" className="ledger-season-card">
+                {seasonPreviewUrl ? <img src={seasonPreviewUrl} alt="" decoding="async" /> : null}
+                <h3>{season}</h3>
+                <span className="ledger-season-enter">
+                  {english ? "Open season recap" : "進入賽季回顧"} <span aria-hidden="true">→</span>
+                </span>
+              </Link>
+            ) : null}
           </section>
-          {selected ? (
+          {inArchive ? (
             <>
               <div role="tablist" aria-label={t.showcaseTabsAria} className="ledger-season-tabs">
                 <ShowcaseTab id="showcase-tab-memorial" to="/showcase/memorial" selected={Boolean(memorial)} label={t.showcaseTabMemorial} />

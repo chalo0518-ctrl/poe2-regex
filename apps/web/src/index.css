@@ -871,25 +871,52 @@ header {
 .ledger-season-card {
   position: relative;
   isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
   overflow: hidden;
-  min-height: clamp(7rem, 18vw, 13rem);
+  min-height: 8rem;
   margin-top: 1rem;
-  padding: 1rem 1.25rem;
+  padding: clamp(.7rem, 3vw, 1.6rem);
   border: 1px solid #9b7b52;
   background: var(--ledger-stone), linear-gradient(105deg, #242017, var(--ledger-scene-tint));
   color: #f5dfb6;
-  font: 700 clamp(1rem, 3vw, 1.3rem) var(--font-display);
+  font: 700 clamp(.95rem, 2.5vw, 1.65rem) var(--font-display);
 }
-.ledger-season-card:has(img) { padding: 0; }
-.ledger-season-card:has(img) h3 {
-  padding: .75rem 1.25rem;
-  border-bottom: 1px solid #9b7b52;
+.ledger-season-card:has(img) { aspect-ratio: 16 / 9; }
+.ledger-season-card img,
+.ledger-season-card:has(img)::before {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 .ledger-season-card img {
-  display: block;
-  width: 100%;
-  height: auto;
+  z-index: -2;
+  object-fit: contain;
+  filter: saturate(.78) brightness(.9);
+  background: #16130f;
 }
+.ledger-season-card:has(img)::before {
+  z-index: -1;
+  background: radial-gradient(ellipse at 50% 45%, transparent 42%, #0c090698),
+    linear-gradient(180deg, #120d0a55, transparent 28% 74%, #120d0aca);
+  box-shadow: inset 0 0 0 4px #2f241cb0;
+  content: "";
+}
+.ledger-season-card h3, .ledger-season-enter {
+  padding: .3rem .65rem;
+  background: #120e0cdb;
+  border-inline-start: 1px solid #a47b49;
+}
+.ledger-season-enter {
+  border: 1px solid #a47b49;
+  font: 600 clamp(.78rem, 1.6vw, .95rem) var(--font-sans);
+}
+.ledger-season-card:hover, .ledger-season-card:hover .ledger-season-enter { border-color: #f1c585; }
+
 .ledger-season-tabs, .ledger-craft-tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
 .ledger-tab, .ledger-craft-tabs button[role="tab"] {
   border: 1px solid #74573a;
