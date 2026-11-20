@@ -700,7 +700,7 @@ header {
   box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 4px var(--color-gold-dim);
 }
 
-/* Scene artwork and persistent chrome for the Ledger preview. */
+/* Wallpaper source: https://www.pathofexile.com/forum/view-thread/3856010 */
 .ledger-app {
   --color-paper: #e9dcc7;
   --color-muted: #b3a38e;
@@ -763,8 +763,8 @@ header {
 .ledger-languages button { padding: .35rem .55rem; color: #c4b296; font: .78rem var(--font-sans); }
 .ledger-languages button[aria-pressed="true"] { background: #5c4430; color: #ffebc6; }
 
-.ledger-ruins { --ledger-art: url("./assets/ledger-ruins.jpg"); --ledger-scene-tint: #181d22; }
-.ledger-forge { --ledger-art: url("./assets/ledger-forge.jpg"); --ledger-scene-tint: #251611; }
+.ledger-ruins { --ledger-art: url("https://web.poecdn.com/public/news/2025-09-18/wallpapers/3840x2160_Chimera.png"); --ledger-scene-tint: #181d22; }
+.ledger-forge { --ledger-art: url("https://web.poecdn.com/public/news/2025-09-18/wallpapers/3840x2160_GreatSnake.png"); --ledger-scene-tint: #251611; }
 .ledger-home { max-width: 1400px; margin: auto; padding: 3rem clamp(1rem, 4vw, 2.5rem) 5rem; }
 .ledger-home-title { margin: 0 auto 2.5rem; text-align: center; }
 .ledger-home-title h1, .ledger-hero h1 {
