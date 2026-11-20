@@ -700,25 +700,28 @@ header {
   box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 4px var(--color-gold-dim);
 }
 
-/* Wallpaper source: https://www.pathofexile.com/forum/view-thread/3856010 */
+/* Ledger surfaces: black stone, patinated brass, and oxblood enamel. */
 .ledger-app {
   --color-paper: #e9dcc7;
   --color-muted: #b3a38e;
   --color-line: #584633;
   --color-panel: #191613;
   --color-raised: #211b16;
-  --ledger-metal: #8a6843;
-  --ledger-light: #e3c798;
-  --ledger-stone: repeating-linear-gradient(113deg, #d1b8990a 0 1px, transparent 1px 5px);
-  background: var(--ledger-stone), radial-gradient(ellipse at top, #25211e, #100e0d 70%);
+  --ledger-metal: #9f7c4f;
+  --ledger-light: #ead3a7;
+  --ledger-stone: radial-gradient(ellipse at 24% 0%, #b3925621, transparent 47%),
+    radial-gradient(ellipse at 84% 78%, #67534316, transparent 52%);
+  --ledger-frame: linear-gradient(145deg, #c5a06a, #3d2c1b 23%, #735434 54%, #302317 85%, #937048);
+  --ledger-surface: linear-gradient(168deg, #24211f, #100e0e 68%);
+  background: var(--ledger-stone), #0d0b0b;
 }
 
 .ledger-masthead {
   position: relative;
   z-index: 30;
-  border-bottom: 1px solid var(--ledger-metal);
-  background: linear-gradient(#191614, #0d0b0b);
-  box-shadow: 0 5px 18px #0008;
+  border-bottom: 1px solid transparent;
+  background: linear-gradient(#23201d, #100e0e) padding-box, var(--ledger-frame) border-box;
+  box-shadow: inset 0 2px #d4ae660d, inset 0 -4px #0008, 0 7px 20px #0009;
 }
 
 .ledger-nav {
@@ -742,13 +745,24 @@ header {
   font-weight: 700;
 }
 
-.ledger-brand-mark { color: #ac8355; font-size: 1.4em; line-height: 1; }
+.ledger-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 1.7em;
+  height: 1.7em;
+  border: 1px solid #a37a47;
+  border-radius: 50%;
+  background: radial-gradient(#5c3422, #110d0b 72%);
+  box-shadow: inset 0 0 0 2px #17110d, 0 2px 4px #000;
+  color: #e4bc7d;
+  line-height: 1;
+}
 .ledger-languages { display: flex; border: 1px solid #654d34; }
 .ledger-languages button { padding: .35rem .55rem; color: #c4b296; font: .78rem var(--font-sans); }
-.ledger-languages button[aria-pressed="true"] { background: #5c4430; color: #ffebc6; }
+.ledger-languages button[aria-pressed="true"] { background: linear-gradient(#65402a, #37211a); color: #ffebc6; }
 
-.ledger-ruins { --ledger-scene-tint: #1b2022; }
-.ledger-forge { --ledger-scene-tint: #251a16; }
+.ledger-ruins { --ledger-scene-tint: #282b2b; --ledger-portal-glow: #605545; }
+.ledger-forge { --ledger-scene-tint: #2c1917; --ledger-portal-glow: #734535; }
 .ledger-app:has(.ledger-home) .ledger-nav {
   max-width: none;
   min-height: 3.75rem;
@@ -781,22 +795,42 @@ header {
   flex-direction: column;
   justify-content: center;
   padding: .9rem clamp(1rem, 2vw, 2rem);
-  border: 1px solid #95724c;
-  background: var(--ledger-stone), radial-gradient(ellipse at top right, var(--ledger-scene-tint), #12100f 74%);
+  border: 2px solid transparent;
+  background: radial-gradient(ellipse at 93% 48%, var(--ledger-portal-glow), transparent 66%) padding-box,
+    linear-gradient(150deg, var(--ledger-scene-tint), #100d0c 72%) padding-box, var(--ledger-frame) border-box;
+  box-shadow: inset 0 0 0 3px #110d0b, 0 6px 16px #0009;
 }
 
 .ledger-portal::before, .ledger-hero::after, .ledger-archive::before {
   position: absolute;
   inset: 6px;
   z-index: -1;
-  border: 1px solid #b6915d70;
+  border: 1px solid #b6915d57;
+  background:
+    linear-gradient(135deg, #c19862 0 2px, transparent 2px) top left / 12px 12px,
+    linear-gradient(225deg, #c19862 0 2px, transparent 2px) top right / 12px 12px,
+    linear-gradient(45deg, #c19862 0 2px, transparent 2px) bottom left / 12px 12px,
+    linear-gradient(315deg, #c19862 0 2px, transparent 2px) bottom right / 12px 12px;
+  background-repeat: no-repeat;
   content: "";
   pointer-events: none;
 }
 
 .ledger-portal h2 { color: #f1d9ad; font-size: clamp(1.2rem, 2vw, 1.8rem); text-shadow: 0 2px 10px #000; }
 .ledger-portal p { margin-top: .3rem; max-width: 85%; color: #d8c7af; font-size: .9rem; }
-.ledger-portal > span { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #f2d29e; font-size: 1.45rem; }
+.ledger-portal > span {
+  position: absolute;
+  right: clamp(.9rem, 2vw, 1.5rem);
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  transform: translateY(-50%);
+  border: 1px solid #946f46;
+  background: linear-gradient(#3e2e21, #1a1310);
+  color: #f2d29e;
+}
 .ledger-portal:hover { border-color: #f1c585; box-shadow: inset 0 0 3rem #ed9d3524; }
 
 .ledger-page {
@@ -811,11 +845,13 @@ header {
   isolation: isolate;
   display: grid;
   place-content: center;
-  min-height: clamp(13rem, 23vw, 19rem);
-  padding: 2rem 1rem 4rem;
-  border-bottom: 1px solid #6f553a;
-  background: var(--ledger-stone), radial-gradient(ellipse at 50% 0%, #8b786132, transparent 75%),
-    linear-gradient(#100e0d, var(--ledger-scene-tint));
+  min-height: clamp(10rem, 18vw, 14rem);
+  margin: 0 clamp(.9rem, 4vw, 2.5rem);
+  padding: 1.5rem 1rem;
+  border: 1px solid transparent;
+  background: radial-gradient(ellipse at 50% 100%, var(--ledger-scene-tint), #171314 74%) padding-box,
+    var(--ledger-frame) border-box;
+  box-shadow: inset 0 0 0 4px #100d0d, inset 0 0 3rem #0007;
   text-align: center;
 }
 
@@ -825,15 +861,15 @@ header {
 .ledger-content {
   position: relative;
   max-width: 1320px;
-  margin: -1.6rem auto 0;
+  margin: 1rem auto 0;
   padding: 0 clamp(.9rem, 4vw, 2.5rem);
 }
 
 .ledger-season-select, .ledger-archive, .ledger-workbench-inputs, .ledger-next-step,
 .ledger-details, .ledger-base-picker {
-  border: 1px solid #74573a;
-  background: linear-gradient(145deg, #28221b, #151210 56%);
-  box-shadow: inset 0 0 0 3px #100e0c, 0 9px 20px #0006;
+  border: 1px solid transparent;
+  background: var(--ledger-surface) padding-box, var(--ledger-frame) border-box;
+  box-shadow: inset 0 0 0 3px #110e0e, inset 0 0 0 4px #aa81452e, 0 9px 20px #0008;
 }
 
 .ledger-season-select { margin-bottom: 1.5rem; padding: clamp(1rem, 3vw, 1.75rem); }
@@ -916,7 +952,8 @@ header {
 }
 .ledger-tab[aria-selected="true"], .ledger-craft-tabs button[aria-selected="true"] {
   border-color: #b78b55;
-  background: linear-gradient(#62452d, #292017);
+  background: linear-gradient(#634135, #331c18);
+  box-shadow: inset 0 1px #f1c58545;
   color: #ffe3b6;
 }
 .ledger-archive { isolation: isolate; position: relative; padding: clamp(.7rem, 2.5vw, 1.6rem); }
@@ -991,7 +1028,7 @@ header {
 .ledger-crafting .affix-filter-fields button {
   min-height: 2rem;
   border: 1px solid #8b6a46;
-  background: #2e251b;
+  background: linear-gradient(#3f3127, #1c1512);
   color: #ecdbbb;
 }
 .ledger-crafting .affix-filter-fields button[aria-pressed="true"] { background: #65482b; }
