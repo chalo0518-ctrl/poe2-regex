@@ -700,108 +700,234 @@ header {
   box-shadow: 0 0 0 2px var(--color-ink), 0 0 0 4px var(--color-gold-dim);
 }
 
-/* Shared visual language for the first two Ledger modules. */
+/* Scene artwork and persistent chrome for the Ledger preview. */
+.ledger-app {
+  --color-paper: #e9dcc7;
+  --color-muted: #b3a38e;
+  --color-line: #584633;
+  --color-panel: #191613;
+  --color-raised: #211b16;
+  --ledger-metal: #8a6843;
+  --ledger-light: #e3c798;
+  background: #0b0909;
+}
+
 .ledger-masthead {
-  background: linear-gradient(#191711, #0b0b0b);
-  border-bottom-color: #52432b;
+  position: relative;
+  z-index: 30;
+  border-bottom: 1px solid var(--ledger-metal);
+  background: linear-gradient(#191614, #0d0b0b);
+  box-shadow: 0 5px 18px #0008;
+}
+
+.ledger-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .75rem 1.25rem;
+  max-width: 1320px;
+  min-height: 4.5rem;
+  margin: auto;
+  padding: .75rem clamp(1rem, 4vw, 2.5rem);
 }
 
 .ledger-brand {
-  font-size: clamp(1.12rem, 2vw, 1.5rem);
-  white-space: nowrap;
+  display: inline-flex;
+  gap: .55rem;
+  align-items: center;
+  color: var(--ledger-light);
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
+  font-weight: 700;
 }
 
-.ledger-page {
-  --ledger-glow: #6a694d;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 1.75rem clamp(1rem, 4vw, 2rem) 4rem;
+.ledger-brand-mark { color: #ac8355; font-size: 1.4em; line-height: 1; }
+.ledger-nav nav { display: flex; align-self: stretch; flex-wrap: wrap; }
+.ledger-nav nav a {
+  display: grid;
+  align-items: center;
+  min-height: 2.5rem;
+  padding: .4rem 1rem;
+  border-bottom: 1px solid transparent;
+  color: #ccb9a1;
+  font: 600 .92rem/1.4 var(--font-display);
 }
 
-.ledger-crafting {
-  --ledger-glow: #795039;
+.ledger-nav nav a:hover, .ledger-nav nav a[aria-current="page"] {
+  border-color: #bb8e55;
+  background: linear-gradient(transparent, #a9692d36);
+  color: #ffe4af;
 }
 
-.ledger-hero {
+.ledger-languages { display: flex; border: 1px solid #654d34; }
+.ledger-languages button { padding: .35rem .55rem; color: #c4b296; font: .78rem var(--font-sans); }
+.ledger-languages button[aria-pressed="true"] { background: #5c4430; color: #ffebc6; }
+
+.ledger-ruins { --ledger-art: url("./assets/ledger-ruins.jpg"); --ledger-scene-tint: #181d22; }
+.ledger-forge { --ledger-art: url("./assets/ledger-forge.jpg"); --ledger-scene-tint: #251611; }
+.ledger-home { max-width: 1400px; margin: auto; padding: 3rem clamp(1rem, 4vw, 2.5rem) 5rem; }
+.ledger-home-title { margin: 0 auto 2.5rem; text-align: center; }
+.ledger-home-title h1, .ledger-hero h1 {
+  color: #f1d9ad;
+  font-size: clamp(2.45rem, 6vw, 5rem);
+  font-weight: 700;
+  line-height: 1.12;
+  text-shadow: 0 3px 4px #000, 0 8px 28px #000;
+}
+
+.ledger-home-title p, .ledger-hero p {
+  margin-top: .85rem;
+  color: #e2d1b7;
+  font: .96rem/1.65 var(--font-sans);
+  letter-spacing: normal;
+}
+
+.ledger-portals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.ledger-portal {
   position: relative;
   isolation: isolate;
-  display: grid;
-  place-content: center;
-  min-height: clamp(11rem, 24vw, 16rem);
-  margin-bottom: 1.75rem;
-  padding: 1.5rem;
-  border-block: 1px solid #746140;
-  background:
-    radial-gradient(ellipse at 50% 115%, var(--ledger-glow), transparent 72%),
-    repeating-linear-gradient(125deg, transparent 0 27px, #d7ba7510 28px, transparent 29px 53px),
-    linear-gradient(135deg, #100f10, #28231a 48%, #100f10);
-  box-shadow: inset 0 0 6rem #000a;
-  text-align: center;
+  display: flex;
+  min-height: clamp(18rem, 31vw, 28rem);
+  flex-direction: column;
+  justify-content: end;
+  padding: 2rem clamp(1.25rem, 4vw, 3rem);
+  border: 1px solid #95724c;
+  background: linear-gradient(0deg, #090706 2%, #0e0a08aa 34%, transparent 80%), var(--ledger-art) center/cover;
 }
 
-.ledger-hero::before {
+.ledger-portal::before, .ledger-hero::after, .ledger-archive::before {
   position: absolute;
+  inset: 6px;
   z-index: -1;
-  inset: 8px;
-  border: 1px solid #b18d4e55;
+  border: 1px solid #b6915d70;
   content: "";
   pointer-events: none;
 }
 
-.ledger-hero h1 {
-  color: #f1dbac;
-  font-size: clamp(1.9rem, 5vw, 3.3rem);
-  line-height: 1.2;
-  text-shadow: 0 2px 12px #000;
+.ledger-portal h2 { color: #f1d9ad; font-size: clamp(1.55rem, 3vw, 2.75rem); text-shadow: 0 2px 10px #000; }
+.ledger-portal p { margin-top: .3rem; max-width: 85%; color: #d8c7af; font-size: .9rem; }
+.ledger-portal > span { position: absolute; right: 1.5rem; bottom: 1.8rem; color: #f2d29e; font-size: 1.45rem; }
+.ledger-portal:hover { border-color: #f1c585; box-shadow: inset 0 0 3rem #ed9d3524; }
+
+.ledger-page {
+  min-height: calc(100svh - 4.5rem);
+  padding-bottom: 5rem;
+  background: linear-gradient(180deg, var(--ledger-scene-tint), #0b0909 48rem);
 }
 
-.ledger-hero p {
-  margin: .65rem 0 0;
-  color: #e1d5be;
-  font: .9rem/1.55 var(--font-sans);
-  letter-spacing: normal;
+.ledger-hero {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  display: grid;
+  place-content: center;
+  min-height: clamp(17rem, 31vw, 28rem);
+  padding: 2rem 1rem 4rem;
+  border-bottom: 1px solid #6f553a;
+  background: linear-gradient(0deg, var(--ledger-scene-tint), #0b08063a 48%, #0b080633),
+    radial-gradient(ellipse at center, #0009 2%, transparent 70%), var(--ledger-art) center/cover;
+  text-align: center;
 }
 
-.ledger-season-select { margin-bottom: 1.5rem; }
-.ledger-season-select h2, .ledger-next-step h2, .ledger-character {
-  color: #ead3a1;
-  font-size: 1.15rem;
+.ledger-hero::after { inset: 10px clamp(.8rem, 4vw, 3rem); border-block-color: #b6915d45; }
+.ledger-hero p { text-shadow: 0 1px 5px #000, 0 2px 12px #000; }
+
+.ledger-content {
+  position: relative;
+  max-width: 1320px;
+  margin: -1.6rem auto 0;
+  padding: 0 clamp(.9rem, 4vw, 2.5rem);
 }
 
-.ledger-character { margin-bottom: .6rem; }
-
-.ledger-season-card, .ledger-next-step, .ledger-details {
-  border: 1px solid #594a32;
-  background: linear-gradient(150deg, #242017, #151310 70%);
-  box-shadow: inset 0 0 0 2px #0d0c0a;
+.ledger-season-select, .ledger-archive, .ledger-workbench-inputs, .ledger-next-step,
+.ledger-details, .ledger-base-picker {
+  border: 1px solid #74573a;
+  background: linear-gradient(145deg, #28221b, #151210 56%);
+  box-shadow: inset 0 0 0 3px #100e0c, 0 9px 20px #0006;
 }
+
+.ledger-season-select { margin-bottom: 1.5rem; padding: clamp(1rem, 3vw, 1.75rem); }
+.ledger-season-select h2, .ledger-next-step h2, .ledger-character { color: #f0d7aa; font-size: 1.3rem; }
+.ledger-character { margin-bottom: .6rem; font-size: clamp(1.35rem, 3vw, 2.3rem); }
 
 .ledger-season-card {
   display: flex;
   justify-content: space-between;
-  max-width: 28rem;
-  margin-top: .65rem;
+  align-items: end;
+  max-width: 34rem;
+  min-height: 7rem;
+  margin-top: .75rem;
   padding: 1rem 1.25rem;
-  color: #e4d7bd;
+  border: 1px solid #9b7b52;
+  background: linear-gradient(90deg, #100e0cea, #100e0c4d), var(--ledger-art) center 57%/cover;
+  color: #f5dfb6;
+  font: 700 clamp(1rem, 3vw, 1.3rem) var(--font-display);
+}
+
+.ledger-season-card:hover, .ledger-season-card[data-selected="true"] { border-color: #f1c585; }
+.ledger-season-tabs, .ledger-craft-tabs { display: flex; flex-wrap: wrap; gap: .25rem; }
+.ledger-tab, .ledger-craft-tabs button[role="tab"] {
+  border: 1px solid #74573a;
+  padding: .65rem 1.15rem;
+  background: linear-gradient(#33291f, #17120e);
+  color: #d5c0a2;
+  font: 600 .92rem var(--font-display);
+}
+.ledger-tab[aria-selected="true"], .ledger-craft-tabs button[aria-selected="true"] {
+  border-color: #b78b55;
+  background: linear-gradient(#62452d, #292017);
+  color: #ffe3b6;
+}
+.ledger-archive { isolation: isolate; position: relative; padding: clamp(.7rem, 2.5vw, 1.6rem); }
+.ledger-archive::before { border-color: #b6915d35; }
+.ledger-archive .ninja-toolbar button {
+  border-color: #92704b;
+  background: linear-gradient(#362b21, #201811);
+  color: #eee1c8;
+}
+.ledger-archive .ninja-toolbar button[aria-pressed="true"] { background: #5b4029; }
+.ledger-archive .memorial-layout { gap: 1.4rem; }
+
+.ledger-base-picker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .65rem 1rem;
+  margin-bottom: 1rem;
+  padding: .85rem 1.1rem;
+  color: var(--ledger-light);
   font-family: var(--font-display);
 }
-
-.ledger-season-card:hover, .ledger-season-card[data-selected="true"], .ledger-tab[aria-selected="true"] {
-  border-color: #bd9a58;
-  color: #f1dbac;
-  background-color: #352819;
-}
-
-.ledger-tab {
-  border: 1px solid #594a32;
-  padding: .55rem 1rem;
-  color: #c4b69d;
-  font-size: .875rem;
-}
-
-.ledger-next-step, .ledger-details { padding: .9rem 1rem; }
+.ledger-workbench { display: grid; align-items: start; gap: 1rem; }
+.ledger-workbench-inputs, .ledger-next-step, .ledger-details { min-width: 0; padding: clamp(.75rem, 2vw, 1.1rem); }
+.ledger-workbench-guide { min-width: 0; scroll-margin-top: 1rem; }
+.ledger-guide-jump { display: inline-block; margin-bottom: 1rem; color: #f1d4a1; text-decoration: underline; }
 .ledger-details summary { cursor: pointer; }
-.ledger-page :is(a, button, summary, select, input):focus-visible {
-  outline: 2px solid #e2bd75;
-  outline-offset: 3px;
+.ledger-next-step [data-verdict] { background: #120e0abf; }
+.ledger-crafting [role="tabpanel"], .ledger-crafting [data-craft-diagram] { color: #e9dcc7; }
+.ledger-crafting :is(select, input:not([type="checkbox"])) {
+  border: 1px solid #8b6a46;
+  background-color: #120e0b;
+  color: #f3dfc1;
+}
+.ledger-crafting :is(.tag-chip, button[data-node]) { border-color: #8b6a46; }
+.ledger-crafting .affix-row[data-pick="include"] { background: #6950315c; }
+.ledger-crafting :is(button[data-active="true"], button[data-selected="true"]) { background-color: #543720; }
+.ledger-app :is(a, button, summary, select, input):focus-visible { outline: 2px solid #e2bd75; outline-offset: 3px; }
+
+@media (min-width: 960px) {
+  .ledger-workbench { grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem); }
+  .ledger-workbench-guide { position: sticky; top: 1rem; max-height: calc(100svh - 2rem); overflow-y: auto; }
+  .ledger-guide-jump { display: none; }
+}
+
+@media (max-width: 650px) {
+  .ledger-portals { grid-template-columns: 1fr; }
+  .ledger-nav nav { order: 3; width: 100%; }
+  .ledger-nav nav a { padding-inline: .65rem; }
+  .ledger-home { padding-top: 2rem; }
+  .ledger-portal { min-height: 14rem; }
+  .ledger-archive .ninja-memorial-sheet {
+    --cell: min(58px, calc((100vw - 76px - 9 * var(--gap)) / 10));
+  }
 }

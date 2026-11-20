@@ -4,48 +4,24 @@ import { LOCALES, LOCALE_LABEL, useLocale } from "../i18n.tsx";
 export default function AppLayout() {
   const { locale, setLocale, t } = useLocale();
   const modules = [
-    { to: "/early", label: t.early, match: "/early" },
-    { to: "/endgame", label: t.endgame, match: "/endgame" },
-    { to: "/showcase", label: t.showcaseNav, match: "/showcase" },
-    { to: "/endgame/crafting", label: t.crafting, match: "/endgame/crafting" },
+    { to: "/showcase", label: t.showcaseNav },
+    { to: "/endgame/crafting", label: t.crafting },
   ];
 
   return (
-    <div className="min-h-svh">
-      <header className="ledger-masthead relative z-30 border-b border-line bg-ink/95">
-        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-4 px-4 py-3 sm:px-6">
-          <NavLink to="/" className="ledger-brand shrink-0 font-bold tracking-wide text-gold">
+    <div className="ledger-app min-h-svh">
+      <header className="ledger-masthead">
+        <div className="ledger-nav">
+          <NavLink to="/" className="ledger-brand">
+            <span aria-hidden="true" className="ledger-brand-mark">◇</span>
             {t.brand}
           </NavLink>
-          <nav className="flex flex-wrap gap-1" aria-label={t.navAria}>
-            {modules.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `rounded-sm px-3 py-1.5 text-sm ${
-                    isActive
-                      ? "bg-gold/15 text-gold"
-                      : "text-muted hover:text-paper"
-                  }`
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
+          <nav aria-label={t.navAria}>
+            {modules.map(({ to, label }) => <NavLink key={to} to={to}>{label}</NavLink>)}
           </nav>
-          <div
-            className="ml-auto flex overflow-hidden rounded-sm border border-line text-xs"
-            role="group"
-            aria-label="Language"
-          >
+          <div className="ledger-languages" role="group" aria-label={locale === "en" ? "Language" : "語言"}>
             {LOCALES.map((id) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => setLocale(id)}
-                className={`px-2 py-1 ${locale === id ? "bg-gold text-ink" : "text-muted hover:text-paper"}`}
-              >
+              <button key={id} type="button" onClick={() => setLocale(id)} aria-pressed={locale === id}>
                 {LOCALE_LABEL[id]}
               </button>
             ))}

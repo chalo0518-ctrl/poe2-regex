@@ -3,39 +3,26 @@ import { useLocale } from "../i18n.tsx";
 
 export default function HomePage() {
   const { locale, t } = useLocale();
+  const english = locale === "en";
+
   return (
-    <div className="mx-auto max-w-[1280px] px-4 py-10 sm:px-6">
-      <p className="text-xs tracking-[0.28em] text-gold-dim">{t.homeKicker}</p>
-      <h1 className="mt-2 text-3xl font-bold text-gold">{t.homeTitle}</h1>
-      <p className="mt-3 max-w-xl text-sm text-muted">
-        {locale === "en" ? "PoE2 player tools and season archives." : "PoE2 玩家工具與賽季檔案。"}
-      </p>
-      <div className="home-cards mt-8 grid gap-4">
-        <Link
-          to="/early"
-          className="rounded-sm border border-line bg-panel p-6 transition hover:border-gold"
-        >
-          <p className="text-xs text-gold-dim">CAMPAIGN</p>
-          <h2 className="mt-1 text-xl font-bold text-gold">{t.early}</h2>
-          <p className="mt-2 text-sm text-muted">{t.homeEarlyBody}</p>
+    <main className="ledger-home">
+      <header className="ledger-home-title">
+        <h1>{t.homeTitle}</h1>
+        <p>{english ? "PoE2 player tools and season archives" : "PoE2 玩家工具與賽季檔案"}</p>
+      </header>
+      <div className="ledger-portals">
+        <Link to="/showcase" className="ledger-portal ledger-ruins">
+          <h2>{t.showcaseNav}</h2>
+          <p>{english ? "Browse seasons, characters, and builds." : "瀏覽賽季、角色與流派配置。"}</p>
+          <span aria-hidden="true">→</span>
         </Link>
-        <Link
-          to="/endgame"
-          className="rounded-sm border border-line bg-panel p-6 transition hover:border-gold"
-        >
-          <p className="text-xs text-gold-dim">ENDGAME</p>
-          <h2 className="mt-1 text-xl font-bold text-gold">{t.endgame}</h2>
-          <p className="mt-2 text-sm text-muted">{t.homeEndgameBody}</p>
-        </Link>
-        <Link
-          to="/showcase"
-          className="rounded-sm border border-line bg-panel p-6 transition hover:border-gold"
-        >
-          <p className="text-xs text-gold-dim">SEASON</p>
-          <h2 className="mt-1 text-xl font-bold text-gold">{t.showcaseNav}</h2>
-          <p className="mt-2 text-sm text-muted">{t.homeShowcaseBody}</p>
+        <Link to="/endgame/crafting" className="ledger-portal ledger-forge">
+          <h2>{t.crafting}</h2>
+          <p>{english ? "Choose your affixes and plan the next step." : "選擇目標詞綴，規劃裝備的下一步。"}</p>
+          <span aria-hidden="true">→</span>
         </Link>
       </div>
-    </div>
+    </main>
   );
 }

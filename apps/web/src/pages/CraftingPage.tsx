@@ -375,242 +375,247 @@ export default function CraftingPage() {
   }
 
   return (
-    <main className="ledger-page ledger-crafting">
+    <main className="ledger-page ledger-crafting ledger-forge">
       <LedgerHero title={t.crafting}>
         {locale === "en" ? "Choose an item base and target modifiers to get your next step." : "選擇裝備部位與目標詞綴，查看這件裝備下一步怎麼做。"}
       </LedgerHero>
-      <details className="ledger-details mb-5" aria-label={t.craftingConstraintsLabel}>
-        <summary className="text-sm text-gold">
-          {t.craftingConstraintsLabel}
-          <span className="ml-2 font-mono normal-case tracking-normal">{CRAFTING_RULESET.id}</span>
-        </summary>
-        <ul className="mt-2 space-y-1 text-sm text-paper">
-          {CRAFTING_CONSTRAINTS.map((line) => (
-            <li key={line.zhHant}>{craftLocaleText(line, locale)}</li>
-          ))}
-        </ul>
-      </details>
-
-      <label className="mb-5 flex items-center gap-2 text-sm text-gold">
-        {t.craftingSlotHeading}
-        <select
-          aria-label={t.craftingSlotHeading}
-          value={slotId}
-          onChange={(event) => setSlot(event.target.value as CraftSlotId)}
-          className="min-w-48 rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper outline-none focus:border-gold"
-        >
-          <optgroup label={t.craftingSlotGroupArmour}>
-            {armourSlots.map((item) => (
-              <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+      <div className="ledger-content">
+        <details className="ledger-details mb-5" aria-label={t.craftingConstraintsLabel}>
+          <summary className="text-sm text-gold">
+            {t.craftingConstraintsLabel}
+            <span className="ml-2 font-mono normal-case tracking-normal">{CRAFTING_RULESET.id}</span>
+          </summary>
+          <ul className="mt-2 space-y-1 text-sm text-paper">
+            {CRAFTING_CONSTRAINTS.map((line) => (
+              <li key={line.zhHant}>{craftLocaleText(line, locale)}</li>
             ))}
-          </optgroup>
-          <optgroup label={t.craftingSlotGroupJewellery}>
-            {jewellerySlots.map((item) => (
-              <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
-            ))}
-          </optgroup>
-          <optgroup label={t.craftingSlotGroupWeapon}>
-            {weaponSlots.map((item) => (
-              <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
-            ))}
-          </optgroup>
-        </select>
-      </label>
+          </ul>
+        </details>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)]">
-        <div className="min-w-0">
-          <SocketFilter
-            slotId={slotId}
-            socketCount={socketCount}
-            socketMax={socketMax}
-            socketPicks={socketPicks}
-            onAdd={() => {
-              setSocketCount((count) => count + 1);
-              setSocketPicks((prev) => [...prev, ""]);
-            }}
-            onRemove={() => {
-              setSocketCount((count) => Math.max(2, count - 1));
-              setSocketPicks((prev) => prev.slice(0, Math.max(2, prev.length - 1)));
-            }}
-            onPick={(index, id) => {
-              setSocketPicks((prev) => {
-                const copy = prev.slice();
-                copy[index] = id;
-                return copy;
-              });
-            }}
-          />
-          <div>
-            <div role="tablist" aria-label={t.craftingLibraryTabs} className="flex items-end gap-1 border-b border-line">
-              {([
-                ["targets", t.craftingTabTargets],
-                ["owned", t.craftingTabOwned],
-              ] as const).map(([id, label]) => {
-                const active = libraryTab === id;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    role="tab"
-                    id={`craft-library-tab-${id}`}
-                    aria-selected={active}
-                    aria-controls={`craft-library-panel-${id}`}
-                    onClick={() => setLibraryTab(id)}
-                    className={`rounded-t-sm border border-b-0 px-3 py-1.5 text-sm ${
-                      active
-                        ? "border-line bg-panel text-gold"
-                        : "border-transparent bg-raised text-muted hover:text-paper"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-            <div
-              role="tabpanel"
-              id="craft-library-panel-targets"
-              aria-labelledby="craft-library-tab-targets"
-              hidden={libraryTab !== "targets"}
-              className="pt-3"
-            >
-              <ChroniclesModBuilder
-                key={slotId}
-                kicker="CRAFTING · TARGETS"
-                title={t.craftingTargetsTitle}
-                description={t.craftingTargetsDesc}
-                statsNote={t.statsFamilies(families.length, tierCount)}
-                sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
-                harvestTags={harvestTags}
-                families={families}
-                extraGroups={augmentGroups}
-                abyssFamilies={desecratedFamilies}
-                collapsedPools={collapsedPools}
-                onTogglePool={togglePool}
-                importHint={t.earlyGearImportHint}
-                picksValue={picks}
-                onPicksChange={setPicks}
-                dockRegex={false}
-                regexCaption={t.craftingRegexCaption}
-                pickMode="target"
-                prefixCap={caps.prefix}
-                suffixCap={caps.suffix}
-              />
-            </div>
-            <div
-              role="tabpanel"
-              id="craft-library-panel-owned"
-              aria-labelledby="craft-library-tab-owned"
-              hidden={libraryTab !== "owned"}
-              className="pt-3"
-            >
-              <ChroniclesModBuilder
-                key={`${slotId}-owned`}
-                kicker="CRAFTING · OWNED"
-                title={t.craftingTabOwned}
-                description={t.craftingOwnedDesc}
-                statsNote={t.statsFamilies(families.length, tierCount)}
-                sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
-                harvestTags={harvestTags}
-                families={families}
-                extraGroups={augmentGroups}
-                abyssFamilies={desecratedFamilies}
-                collapsedPools={collapsedPools}
-                onTogglePool={togglePool}
-                importHint={t.earlyGearImportHint}
-                picksValue={ownedPicks}
-                onPicksChange={onOwnedPicksChange}
-                dockRegex={false}
-                showRegex={false}
-                pickMode="target"
-                rowKind="owned"
-                stickyLock
-                selectionCount={t.craftingOwnedCount}
-                prefixCap={caps.prefix}
-                suffixCap={caps.suffix}
-              />
-            </div>
-          </div>
-          <ItemPanel
-            plan={plan}
-            unrevealed={unrevealed}
-            onUnrevealed={setUnrevealed}
-            itemLevelRaw={itemLevelRaw}
-            onItemLevel={setItemLevelRaw}
-            targetSide={targetSide}
-            onTargetSide={setTargetSide}
-            prefixCount={prefixCount}
-            suffixCount={suffixCount}
-            onPrefixCount={setPrefixCount}
-            onSuffixCount={setSuffixCount}
-            goodFracture={goodFracture}
-            garbageFracture={garbageFracture}
-            onGoodFracture={(next) => {
-              setGoodFracture(next);
-              if (next) setGarbageFracture(false);
-            }}
-            onGarbageFracture={(next) => {
-              setGarbageFracture(next);
-              if (next) setGoodFracture(false);
-            }}
-            keeper={keeper}
-            onKeeper={setKeeper}
-            tightBudget={tightBudget}
-            onTightBudget={setTightBudget}
-            families={checklistFamilies}
-            selectedIds={selected.map((family) => family.id)}
-            others={others}
-            classes={decision.removal.classes}
-            prefixCap={caps.prefix}
-            suffixCap={caps.suffix}
-            onAddOther={(id, tierIndex, desecrated) => {
-              setOthers((prev) => ({ ...prev, [id]: { tierIndex, desecrated } }));
-            }}
-            onRemoveOther={(id) => {
-              setOthers((prev) => {
-                const next = { ...prev };
-                delete next[id];
-                return next;
-              });
-            }}
-          />
-        </div>
+        <label className="ledger-base-picker">
+          {t.craftingSlotHeading}
+          <select
+            aria-label={t.craftingSlotHeading}
+            value={slotId}
+            onChange={(event) => setSlot(event.target.value as CraftSlotId)}
+            className="min-w-48 rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper outline-none focus:border-gold"
+          >
+            <optgroup label={t.craftingSlotGroupArmour}>
+              {armourSlots.map((item) => (
+                <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+              ))}
+            </optgroup>
+            <optgroup label={t.craftingSlotGroupJewellery}>
+              {jewellerySlots.map((item) => (
+                <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+              ))}
+            </optgroup>
+            <optgroup label={t.craftingSlotGroupWeapon}>
+              {weaponSlots.map((item) => (
+                <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+              ))}
+            </optgroup>
+          </select>
+        </label>
+        <a className="ledger-guide-jump" href="#craft-guide">
+          {locale === "en" ? "View next step" : "查看建議下一步"} <span aria-hidden="true">↓</span>
+        </a>
 
-        <aside className="min-w-0 xl:sticky xl:top-20 xl:max-h-[calc(100svh-6rem)] xl:overflow-y-auto">
-          <CraftNextStep decision={decision} step={nextStep} ready={selected.length > 0}
-            fractureNote={fractureNote} oddsNote={oddsNote} sideLabel={sideLabel} tightBudget={tightBudget} />
-          <details className="ledger-details mt-4" aria-labelledby="craft-tree-heading">
-            <summary id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</summary>
-            <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
-            <CraftDiagram
-              path={decision.path}
-              fractureNote={fractureNote}
-              selectedId={shownNodeId}
-              onSelect={setPinnedNode}
-              detail={shownDiagram && shownTree ? (
-                <div className="mt-2 space-y-2 rounded-sm border border-line bg-panel px-2 py-2 text-xs leading-relaxed text-paper" data-craft-detail>
-                  <p className="text-gold">
-                    {craftLocaleText(shownDiagram.title, locale)}
-                    {" · "}
-                    {craftLocaleText(shownTree.title, locale)}
-                  </p>
-                  <p>{craftLocaleText(shownDiagram.choice, locale)}</p>
-                  <NodeBlock label={t.craftingSectionAction} body={craftLocaleText(shownTree.action, locale)} />
-                  <NodeBlock label={t.craftingSectionMaterials} body={craftLocaleText(shownTree.materials, locale)} />
-                  <NodeBlock label={t.craftingSectionSkip} body={craftLocaleText(shownTree.skip, locale)} />
-                  <NodeBlock label={t.craftingSectionIrreversible} body={craftLocaleText(shownTree.irreversible, locale)} />
-                  <NodeBlock label={t.craftingSectionWarning} body={craftLocaleText(shownTree.warning, locale)} />
-                </div>
-              ) : null}
-              augments={decision.socketAugments.map((row) => ({
-                key: `${row.socket}-${row.id}`,
-                text: `${t.craftingSocketN(row.socket)} · ${locale === "en" ? row.nameEn : row.nameZh} · ${
-                  locale === "en" ? row.effectEn : row.effectZh
-                }`,
-              }))}
+        <div className="ledger-workbench">
+          <div className="ledger-workbench-inputs">
+            <SocketFilter
+              slotId={slotId}
+              socketCount={socketCount}
+              socketMax={socketMax}
+              socketPicks={socketPicks}
+              onAdd={() => {
+                setSocketCount((count) => count + 1);
+                setSocketPicks((prev) => [...prev, ""]);
+              }}
+              onRemove={() => {
+                setSocketCount((count) => Math.max(2, count - 1));
+                setSocketPicks((prev) => prev.slice(0, Math.max(2, prev.length - 1)));
+              }}
+              onPick={(index, id) => {
+                setSocketPicks((prev) => {
+                  const copy = prev.slice();
+                  copy[index] = id;
+                  return copy;
+                });
+              }}
             />
-          </details>
-        </aside>
+            <div>
+              <div role="tablist" aria-label={t.craftingLibraryTabs} className="ledger-craft-tabs">
+                {([
+                  ["targets", t.craftingTabTargets],
+                  ["owned", t.craftingTabOwned],
+                ] as const).map(([id, label]) => {
+                  const active = libraryTab === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      role="tab"
+                      id={`craft-library-tab-${id}`}
+                      aria-selected={active}
+                      aria-controls={`craft-library-panel-${id}`}
+                      onClick={() => setLibraryTab(id)}
+                      className={`rounded-t-sm border border-b-0 px-3 py-1.5 text-sm ${
+                        active
+                          ? "border-line bg-panel text-gold"
+                          : "border-transparent bg-raised text-muted hover:text-paper"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div
+                role="tabpanel"
+                id="craft-library-panel-targets"
+                aria-labelledby="craft-library-tab-targets"
+                hidden={libraryTab !== "targets"}
+                className="pt-3"
+              >
+                <ChroniclesModBuilder
+                  key={slotId}
+                  kicker="CRAFTING · TARGETS"
+                  title={t.craftingTargetsTitle}
+                  description={t.craftingTargetsDesc}
+                  statsNote={t.statsFamilies(families.length, tierCount)}
+                  sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
+                  harvestTags={harvestTags}
+                  families={families}
+                  extraGroups={augmentGroups}
+                  abyssFamilies={desecratedFamilies}
+                  collapsedPools={collapsedPools}
+                  onTogglePool={togglePool}
+                  importHint={t.earlyGearImportHint}
+                  picksValue={picks}
+                  onPicksChange={setPicks}
+                  dockRegex={false}
+                  regexCaption={t.craftingRegexCaption}
+                  pickMode="target"
+                  prefixCap={caps.prefix}
+                  suffixCap={caps.suffix}
+                />
+              </div>
+              <div
+                role="tabpanel"
+                id="craft-library-panel-owned"
+                aria-labelledby="craft-library-tab-owned"
+                hidden={libraryTab !== "owned"}
+                className="pt-3"
+              >
+                <ChroniclesModBuilder
+                  key={`${slotId}-owned`}
+                  kicker="CRAFTING · OWNED"
+                  title={t.craftingTabOwned}
+                  description={t.craftingOwnedDesc}
+                  statsNote={t.statsFamilies(families.length, tierCount)}
+                  sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
+                  harvestTags={harvestTags}
+                  families={families}
+                  extraGroups={augmentGroups}
+                  abyssFamilies={desecratedFamilies}
+                  collapsedPools={collapsedPools}
+                  onTogglePool={togglePool}
+                  importHint={t.earlyGearImportHint}
+                  picksValue={ownedPicks}
+                  onPicksChange={onOwnedPicksChange}
+                  dockRegex={false}
+                  showRegex={false}
+                  pickMode="target"
+                  rowKind="owned"
+                  stickyLock
+                  selectionCount={t.craftingOwnedCount}
+                  prefixCap={caps.prefix}
+                  suffixCap={caps.suffix}
+                />
+              </div>
+            </div>
+            <ItemPanel
+              plan={plan}
+              unrevealed={unrevealed}
+              onUnrevealed={setUnrevealed}
+              itemLevelRaw={itemLevelRaw}
+              onItemLevel={setItemLevelRaw}
+              targetSide={targetSide}
+              onTargetSide={setTargetSide}
+              prefixCount={prefixCount}
+              suffixCount={suffixCount}
+              onPrefixCount={setPrefixCount}
+              onSuffixCount={setSuffixCount}
+              goodFracture={goodFracture}
+              garbageFracture={garbageFracture}
+              onGoodFracture={(next) => {
+                setGoodFracture(next);
+                if (next) setGarbageFracture(false);
+              }}
+              onGarbageFracture={(next) => {
+                setGarbageFracture(next);
+                if (next) setGoodFracture(false);
+              }}
+              keeper={keeper}
+              onKeeper={setKeeper}
+              tightBudget={tightBudget}
+              onTightBudget={setTightBudget}
+              families={checklistFamilies}
+              selectedIds={selected.map((family) => family.id)}
+              others={others}
+              classes={decision.removal.classes}
+              prefixCap={caps.prefix}
+              suffixCap={caps.suffix}
+              onAddOther={(id, tierIndex, desecrated) => {
+                setOthers((prev) => ({ ...prev, [id]: { tierIndex, desecrated } }));
+              }}
+              onRemoveOther={(id) => {
+                setOthers((prev) => {
+                  const next = { ...prev };
+                  delete next[id];
+                  return next;
+                });
+              }}
+            />
+          </div>
+
+          <aside className="ledger-workbench-guide" id="craft-guide">
+            <CraftNextStep decision={decision} step={nextStep} ready={selected.length > 0}
+              fractureNote={fractureNote} oddsNote={oddsNote} sideLabel={sideLabel} tightBudget={tightBudget} />
+            <details className="ledger-details mt-4" aria-labelledby="craft-tree-heading">
+              <summary id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</summary>
+              <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
+              <CraftDiagram
+                path={decision.path}
+                fractureNote={fractureNote}
+                selectedId={shownNodeId}
+                onSelect={setPinnedNode}
+                detail={shownDiagram && shownTree ? (
+                  <div className="mt-2 space-y-2 rounded-sm border border-line bg-panel px-2 py-2 text-xs leading-relaxed text-paper" data-craft-detail>
+                    <p className="text-gold">
+                      {craftLocaleText(shownDiagram.title, locale)}
+                      {" · "}
+                      {craftLocaleText(shownTree.title, locale)}
+                    </p>
+                    <p>{craftLocaleText(shownDiagram.choice, locale)}</p>
+                    <NodeBlock label={t.craftingSectionAction} body={craftLocaleText(shownTree.action, locale)} />
+                    <NodeBlock label={t.craftingSectionMaterials} body={craftLocaleText(shownTree.materials, locale)} />
+                    <NodeBlock label={t.craftingSectionSkip} body={craftLocaleText(shownTree.skip, locale)} />
+                    <NodeBlock label={t.craftingSectionIrreversible} body={craftLocaleText(shownTree.irreversible, locale)} />
+                    <NodeBlock label={t.craftingSectionWarning} body={craftLocaleText(shownTree.warning, locale)} />
+                  </div>
+                ) : null}
+                augments={decision.socketAugments.map((row) => ({
+                  key: `${row.socket}-${row.id}`,
+                  text: `${t.craftingSocketN(row.socket)} · ${locale === "en" ? row.nameEn : row.nameZh} · ${
+                    locale === "en" ? row.effectEn : row.effectZh
+                  }`,
+                }))}
+              />
+            </details>
+          </aside>
+        </div>
       </div>
     </main>
   );

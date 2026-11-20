@@ -14,28 +14,30 @@ export default function ShowcaseLayout({ snapshot = SEASON_BD_V1 }: { snapshot?:
 
   return (
     <ShowcaseProvider snapshot={snapshot}>
-      <main className="ledger-page ledger-season">
+      <main className="ledger-page ledger-season ledger-ruins">
         <LedgerHero title={t.showcaseNav}>
           {english ? "Choose a season to revisit its characters and builds." : "選擇賽季，回顧角色與流派配置。"}
         </LedgerHero>
-        <section className="ledger-season-select" aria-labelledby="season-choice-title">
-          <h2 id="season-choice-title">{english ? "Choose a season" : "選擇賽季"}</h2>
-          <Link className="ledger-season-card" to="/showcase/memorial" data-selected={selected}>
-            <span>{season}</span>
-            <span aria-hidden="true">›</span>
-          </Link>
-        </section>
-        {selected ? (
-          <>
-            <div role="tablist" aria-label={t.showcaseTabsAria} className="mb-6 flex flex-wrap gap-1 border-b border-line pb-3">
-              <ShowcaseTab id="showcase-tab-memorial" to="/showcase/memorial" selected={Boolean(memorial)} label={t.showcaseTabMemorial} />
-              <ShowcaseTab id="showcase-tab-recommended" to="/showcase/recommended" selected={Boolean(recommended)} label={t.showcaseTabRecommended} />
-            </div>
-            <div role="tabpanel" aria-labelledby={recommended ? "showcase-tab-recommended" : "showcase-tab-memorial"}>
-              <Outlet />
-            </div>
-          </>
-        ) : null}
+        <div className="ledger-content">
+          <section className="ledger-season-select" aria-labelledby="season-choice-title">
+            <h2 id="season-choice-title">{english ? "Choose a season" : "選擇賽季"}</h2>
+            <Link className="ledger-season-card" to="/showcase/memorial" data-selected={selected}>
+              <span>{season}</span>
+              <span aria-hidden="true">›</span>
+            </Link>
+          </section>
+          {selected ? (
+            <>
+              <div role="tablist" aria-label={t.showcaseTabsAria} className="ledger-season-tabs">
+                <ShowcaseTab id="showcase-tab-memorial" to="/showcase/memorial" selected={Boolean(memorial)} label={t.showcaseTabMemorial} />
+                <ShowcaseTab id="showcase-tab-recommended" to="/showcase/recommended" selected={Boolean(recommended)} label={t.showcaseTabRecommended} />
+              </div>
+              <div className="ledger-archive" role="tabpanel" aria-labelledby={recommended ? "showcase-tab-recommended" : "showcase-tab-memorial"}>
+                <Outlet />
+              </div>
+            </>
+          ) : null}
+        </div>
       </main>
     </ShowcaseProvider>
   );

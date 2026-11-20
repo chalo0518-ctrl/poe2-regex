@@ -363,11 +363,13 @@ describe("season BD showcase", () => {
     expect(screen.getAllByText("empty prefix").length).toBeGreaterThan(0);
   });
 
-  it("links the module from the home page", () => {
+  it("only links season recap and equipment crafting from the preview home", () => {
     renderAt("/");
     const links = screen.getAllByRole("link", { name: /賽季回顧/ });
     expect(links.length).toBeGreaterThan(0);
     expect(links.every((link) => link.getAttribute("href") === "/showcase")).toBe(true);
+    expect(screen.getAllByRole("link", { name: /裝備製作/ }).every((link) => link.getAttribute("href") === "/endgame/crafting")).toBe(true);
+    expect(document.querySelector('a[href="/early"], a[href="/endgame"]')).toBeNull();
   });
 
   it("keeps equipment crafting linked in the endgame navigation", () => {
