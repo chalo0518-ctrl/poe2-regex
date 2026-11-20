@@ -25,12 +25,13 @@ import { useShowcase } from "./showcaseState.tsx";
 export default function ShowcaseEditor() {
   const { slotId } = useParams();
   const [params] = useSearchParams();
+  const backTo = seasonHref("/showcase/recommended", params.get("season"));
   const slot = paperDollSlots.find((row) => row.id === slotId);
-  if (!slot) return <Navigate to={seasonHref("/showcase/recommended", params.get("season"))} replace />;
-  return <EditorBody slot={slot} />;
+  if (!slot) return <Navigate to={backTo} replace />;
+  return <EditorBody slot={slot} backTo={backTo} />;
 }
 
-function EditorBody({ slot }: { slot: PaperDollSlot }) {
+function EditorBody({ slot, backTo }: { slot: PaperDollSlot; backTo: string }) {
   const { locale, t } = useLocale();
   const { snapshot, picks, toggleRank } = useShowcase();
   const [query, setQuery] = useState("");
@@ -48,7 +49,7 @@ function EditorBody({ slot }: { slot: PaperDollSlot }) {
 
   return (
     <div>
-      <Link to={seasonHref("/showcase/recommended", params.get("season"))} className="text-sm text-gold hover:underline">
+      <Link to={backTo} className="text-sm text-gold hover:underline">
         {t.showcaseBackRecommended}
       </Link>
       <p className="mt-3 text-xs tracking-[0.2em] text-gold-dim">{groupLabel}</p>

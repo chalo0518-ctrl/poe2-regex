@@ -32,7 +32,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
   const archivePath = (path: string) => seasonHref(path, active.id);
 
   return (
-    <ShowcaseProvider snapshot={snapshot}>
+    <ShowcaseProvider key={active.id} snapshot={snapshot}>
       <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive} data-canvas-preview={canvasPreview}>
         <div className="ledger-content">
           {archiveOverview && updateImage ? (
