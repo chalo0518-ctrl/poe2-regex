@@ -2,12 +2,14 @@ import { Link } from "react-router-dom";
 import { useLocale } from "../i18n.tsx";
 
 export default function HomePage() {
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
   return (
     <div className="mx-auto max-w-[1280px] px-4 py-10 sm:px-6">
       <p className="text-xs tracking-[0.28em] text-gold-dim">{t.homeKicker}</p>
       <h1 className="mt-2 text-3xl font-bold text-gold">{t.homeTitle}</h1>
-      <p className="mt-3 max-w-xl text-sm text-muted">{t.homeLead}</p>
+      <p className="mt-3 max-w-xl text-sm text-muted">
+        {locale === "en" ? "PoE2 player tools and season archives." : "PoE2 玩家工具與賽季檔案。"}
+      </p>
       <div className="home-cards mt-8 grid gap-4">
         <Link
           to="/early"

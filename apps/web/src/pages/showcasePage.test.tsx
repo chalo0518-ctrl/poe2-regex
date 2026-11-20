@@ -38,13 +38,21 @@ function slotLink(name: RegExp) {
 }
 
 describe("season BD showcase", () => {
+  it("shows the season picker before the archive tabs", async () => {
+    const user = userEvent.setup();
+    renderAt("/showcase");
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    await user.click(within(screen.getByRole("region", { name: "選擇賽季" })).getByRole("link"));
+    expect(screen.getByRole("tabpanel")).toBeInTheDocument();
+  });
+
   it("switches two main tabs and does not show them side by side", async () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
 
-    expect(screen.getByRole("link", { name: "賽季 BD" })).toBeInTheDocument();
-    const memorial = screen.getByRole("tab", { name: "我的狀況／紀念" });
-    const recommended = screen.getByRole("tab", { name: "推薦／攻略" });
+    expect(screen.getByRole("link", { name: "賽季回顧" })).toBeInTheDocument();
+    const memorial = screen.getByRole("tab", { name: "紀念" });
+    const recommended = screen.getByRole("tab", { name: "推薦" });
     expect(screen.getAllByRole("tab")).toHaveLength(2);
     expect(memorial).toHaveAttribute("aria-selected", "true");
     expect(recommended).toHaveAttribute("aria-selected", "false");
@@ -257,7 +265,7 @@ describe("season BD showcase", () => {
 
     await user.click(helmet);
     expect(screen.getAllByRole("tab")).toHaveLength(2);
-    expect(screen.getByRole("tab", { name: "推薦／攻略" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "推薦" })).toHaveAttribute("aria-selected", "true");
     expect(screen.queryByRole("tab", { name: /編輯/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "武器組 I" })).not.toBeInTheDocument();
     expect(screen.getByText("不會寫回網站")).toBeInTheDocument();
@@ -347,17 +355,17 @@ describe("season BD showcase", () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial", "en");
     expect(screen.getByRole("tab", { name: "My setup / Memorial" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "Guide / Recommended" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Recommended" })).toBeInTheDocument();
     expect(screen.getByText("Dusk Scratch")).toBeInTheDocument();
     expect(document.body.textContent).not.toContain("推荐");
-    await user.click(screen.getByRole("tab", { name: "Guide / Recommended" }));
+    await user.click(screen.getByRole("tab", { name: "Recommended" }));
     expect(screen.getAllByText("Name not set").length).toBeGreaterThan(0);
     expect(screen.getAllByText("empty prefix").length).toBeGreaterThan(0);
   });
 
   it("links the module from the home page", () => {
     renderAt("/");
-    const links = screen.getAllByRole("link", { name: /賽季 BD/ });
+    const links = screen.getAllByRole("link", { name: /賽季回顧/ });
     expect(links.length).toBeGreaterThan(0);
     expect(links.every((link) => link.getAttribute("href") === "/showcase")).toBe(true);
   });
@@ -377,7 +385,7 @@ describe("season BD showcase", () => {
     expect(screen.getByRole("link", { name: "做裝" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "換界石" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "碑牌" })).toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "我的狀況／紀念" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "紀念" })).not.toBeInTheDocument();
   });
 });
 

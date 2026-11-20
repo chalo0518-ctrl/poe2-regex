@@ -7,13 +7,14 @@ export default function AppLayout() {
     { to: "/early", label: t.early, match: "/early" },
     { to: "/endgame", label: t.endgame, match: "/endgame" },
     { to: "/showcase", label: t.showcaseNav, match: "/showcase" },
+    { to: "/endgame/crafting", label: t.crafting, match: "/endgame/crafting" },
   ];
 
   return (
     <div className="min-h-svh">
-      <header className="relative z-30 border-b border-line bg-ink/95">
-        <div className="mx-auto flex max-w-[1280px] items-center gap-4 px-4 py-3 sm:px-6">
-          <NavLink to="/" className="shrink-0 text-sm font-bold tracking-wide text-gold">
+      <header className="ledger-masthead relative z-30 border-b border-line bg-ink/95">
+        <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-4 px-4 py-3 sm:px-6">
+          <NavLink to="/" className="ledger-brand shrink-0 font-bold tracking-wide text-gold">
             {t.brand}
           </NavLink>
           <nav className="flex flex-wrap gap-1" aria-label={t.navAria}>

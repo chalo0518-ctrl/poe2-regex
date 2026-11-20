@@ -39,6 +39,7 @@ import {
   type NonTargetClass,
 } from "@poe2-regex/data";
 import { ChroniclesModBuilder, type ModPickState } from "../components/ChroniclesModBuilder.tsx";
+import LedgerHero from "../components/LedgerHero.tsx";
 import { CraftDiagram } from "../components/CraftDiagram.tsx";
 import { useLocale } from "../i18n.tsx";
 
@@ -329,7 +330,9 @@ export default function CraftingPage() {
     socketPicks,
   ]);
 
-  const shownNodeId = pinnedNode ?? (decision.fracturePending ? "fracture" : (decision.path.at(-1) ?? "fracture"));
+  const nextNodeId = decision.fracturePending ? "fracture" : (decision.path.at(-1) ?? "fracture");
+  const shownNodeId = pinnedNode ?? nextNodeId;
+  const nextStep = CRAFTING_TREE.find((row) => row.id === craftTreeNodeForDiagram(nextNodeId));
   const fractureName = (() => {
     const focus = decision.fractureFocus;
     if (!focus) return "";
@@ -372,18 +375,21 @@ export default function CraftingPage() {
   }
 
   return (
-    <div>
-      <section className="mb-5 rounded-sm border border-line bg-panel px-4 py-3" aria-label={t.craftingConstraintsLabel}>
-        <p className="text-xs tracking-[0.18em] text-gold-dim">
+    <main className="ledger-page ledger-crafting">
+      <LedgerHero title={t.crafting}>
+        {locale === "en" ? "Choose an item base and target modifiers to get your next step." : "選擇裝備部位與目標詞綴，查看這件裝備下一步怎麼做。"}
+      </LedgerHero>
+      <details className="ledger-details mb-5" aria-label={t.craftingConstraintsLabel}>
+        <summary className="text-sm text-gold">
           {t.craftingConstraintsLabel}
           <span className="ml-2 font-mono normal-case tracking-normal">{CRAFTING_RULESET.id}</span>
-        </p>
+        </summary>
         <ul className="mt-2 space-y-1 text-sm text-paper">
           {CRAFTING_CONSTRAINTS.map((line) => (
             <li key={line.zhHant}>{craftLocaleText(line, locale)}</li>
           ))}
         </ul>
-      </section>
+      </details>
 
       <label className="mb-5 flex items-center gap-2 text-sm text-gold">
         {t.craftingSlotHeading}
@@ -526,13 +532,9 @@ export default function CraftingPage() {
             </div>
           </div>
           <ItemPanel
-            decision={decision}
-            fractureNote={fractureNote}
-            oddsNote={oddsNote}
             plan={plan}
             unrevealed={unrevealed}
             onUnrevealed={setUnrevealed}
-            sideLabel={sideLabel}
             itemLevelRaw={itemLevelRaw}
             onItemLevel={setItemLevelRaw}
             targetSide={targetSide}
@@ -575,8 +577,10 @@ export default function CraftingPage() {
         </div>
 
         <aside className="min-w-0 xl:sticky xl:top-20 xl:max-h-[calc(100svh-6rem)] xl:overflow-y-auto">
-          <section className="rounded-sm border border-line bg-panel px-3 py-3" aria-labelledby="craft-tree-heading">
-            <h2 id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</h2>
+          <CraftNextStep decision={decision} step={nextStep} ready={selected.length > 0}
+            fractureNote={fractureNote} oddsNote={oddsNote} sideLabel={sideLabel} tightBudget={tightBudget} />
+          <details className="ledger-details mt-4" aria-labelledby="craft-tree-heading">
+            <summary id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</summary>
             <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
             <CraftDiagram
               path={decision.path}
@@ -605,86 +609,21 @@ export default function CraftingPage() {
                 }`,
               }))}
             />
-          </section>
+          </details>
         </aside>
       </div>
-    </div>
+    </main>
   );
 }
 
-function NodeBlock({ label, body }: { label: string; body: string }) {
-  return (
-    <p>
-      <span className="text-gold-dim">{label} · </span>
-      {body}
-    </p>
-  );
-}
-
-function ItemPanel({
-  decision,
-  fractureNote,
-  oddsNote,
-  plan,
-  unrevealed,
-  onUnrevealed,
-  sideLabel,
-  itemLevelRaw,
-  onItemLevel,
-  targetSide,
-  onTargetSide,
-  prefixCount,
-  suffixCount,
-  onPrefixCount,
-  onSuffixCount,
-  goodFracture,
-  garbageFracture,
-  onGoodFracture,
-  onGarbageFracture,
-  keeper,
-  onKeeper,
-  tightBudget,
-  onTightBudget,
-  families,
-  selectedIds,
-  others,
-  classes,
-  onAddOther,
-  onRemoveOther,
-  prefixCap,
-  suffixCap,
-}: {
+function CraftNextStep({ decision, step, ready, fractureNote, oddsNote, sideLabel, tightBudget }: {
   decision: CraftDecision;
+  step: (typeof CRAFTING_TREE)[number] | undefined;
+  ready: boolean;
   fractureNote: string;
   oddsNote: string;
-  plan: { id: string; name: string; source: string; text: string }[];
-  unrevealed: boolean;
-  onUnrevealed: (value: boolean) => void;
   sideLabel: string;
-  itemLevelRaw: string;
-  onItemLevel: (value: string) => void;
-  targetSide: ModSide | "auto";
-  onTargetSide: (value: ModSide | "auto") => void;
-  prefixCount: number;
-  suffixCount: number;
-  onPrefixCount: (value: number) => void;
-  onSuffixCount: (value: number) => void;
-  goodFracture: boolean;
-  garbageFracture: boolean;
-  onGoodFracture: (value: boolean) => void;
-  onGarbageFracture: (value: boolean) => void;
-  keeper: boolean;
-  onKeeper: (value: boolean) => void;
   tightBudget: boolean;
-  onTightBudget: (value: boolean) => void;
-  families: AffixFamily[];
-  selectedIds: string[];
-  others: Record<string, OtherFlag>;
-  classes: { id: string; classification: NonTargetClass }[];
-  onAddOther: (id: string, tierIndex: number | null, desecrated: boolean) => void;
-  onRemoveOther: (id: string) => void;
-  prefixCap: number;
-  suffixCap: number;
 }) {
   const { locale, t } = useLocale();
   const headline = craftVerdictHeadline(decision, locale);
@@ -697,12 +636,20 @@ function ItemPanel({
   const cleanup = decision.cleanup === "none" ? null : CRAFT_CLEANUP_TEXT[decision.cleanup];
 
   return (
-    <section className="mt-6 rounded-sm border border-line bg-panel p-3" aria-labelledby="craft-now-heading">
-      <h2 id="craft-now-heading" className="text-sm font-medium text-gold">{t.craftingNowHeading}</h2>
-      <p className="mt-1 text-xs text-muted">{t.craftingNowHint}</p>
-
+    <section className="ledger-next-step" aria-labelledby="craft-next-heading">
+      <h2 id="craft-next-heading">{locale === "en" ? "Next step" : "建議下一步"}</h2>
+      {!ready ? <p className="mt-2 text-sm text-muted">
+        {locale === "en" ? "Select at least one target modifier to get a recommendation." : "先選擇至少一條目標詞綴，即可查看建議。"}
+      </p> : (
       <div className={`mt-3 rounded-sm border px-3 py-3 ${tone}`} data-verdict={decision.verdict} aria-live="polite">
         <p className="text-base font-bold">{headline}</p>
+        {step && decision.verdict === "continue" ? (
+          <div className="mt-3 space-y-2 text-sm text-paper">
+            <p className="font-semibold text-gold">{craftLocaleText(step.title, locale)}</p>
+            <p>{craftLocaleText(step.action, locale)}</p>
+            <NodeBlock label={locale === "en" ? "When to stop" : "停手條件"} body={craftLocaleText(step.warning, locale)} />
+          </div>
+        ) : null}
         {fractureNote ? <p className="mt-2 text-xs text-paper">{fractureNote}</p> : null}
         {oddsNote ? <p className="mt-1 text-xs text-gold" data-fracture-odds>{oddsNote}</p> : null}
         <p className="mt-1 text-xs text-muted">{t.craftingResolvedSide(sideLabel)}</p>
@@ -734,6 +681,83 @@ function ItemPanel({
         )}
         {tightBudget && <p className="mt-2 text-xs text-gold">{t.craftingBudgetOn}</p>}
       </div>
+      )}
+    </section>
+  );
+}
+
+function NodeBlock({ label, body }: { label: string; body: string }) {
+  return (
+    <p>
+      <span className="text-gold-dim">{label} · </span>
+      {body}
+    </p>
+  );
+}
+
+function ItemPanel({
+  plan,
+  unrevealed,
+  onUnrevealed,
+  itemLevelRaw,
+  onItemLevel,
+  targetSide,
+  onTargetSide,
+  prefixCount,
+  suffixCount,
+  onPrefixCount,
+  onSuffixCount,
+  goodFracture,
+  garbageFracture,
+  onGoodFracture,
+  onGarbageFracture,
+  keeper,
+  onKeeper,
+  tightBudget,
+  onTightBudget,
+  families,
+  selectedIds,
+  others,
+  classes,
+  onAddOther,
+  onRemoveOther,
+  prefixCap,
+  suffixCap,
+}: {
+  plan: { id: string; name: string; source: string; text: string }[];
+  unrevealed: boolean;
+  onUnrevealed: (value: boolean) => void;
+  itemLevelRaw: string;
+  onItemLevel: (value: string) => void;
+  targetSide: ModSide | "auto";
+  onTargetSide: (value: ModSide | "auto") => void;
+  prefixCount: number;
+  suffixCount: number;
+  onPrefixCount: (value: number) => void;
+  onSuffixCount: (value: number) => void;
+  goodFracture: boolean;
+  garbageFracture: boolean;
+  onGoodFracture: (value: boolean) => void;
+  onGarbageFracture: (value: boolean) => void;
+  keeper: boolean;
+  onKeeper: (value: boolean) => void;
+  tightBudget: boolean;
+  onTightBudget: (value: boolean) => void;
+  families: AffixFamily[];
+  selectedIds: string[];
+  others: Record<string, OtherFlag>;
+  classes: { id: string; classification: NonTargetClass }[];
+  onAddOther: (id: string, tierIndex: number | null, desecrated: boolean) => void;
+  onRemoveOther: (id: string) => void;
+  prefixCap: number;
+  suffixCap: number;
+}) {
+  const { locale, t } = useLocale();
+
+  return (
+    <section className="mt-6 rounded-sm border border-line bg-panel p-3" aria-labelledby="craft-now-heading">
+      <h2 id="craft-now-heading" className="text-sm font-medium text-gold">{t.craftingNowHeading}</h2>
+      <p className="mt-1 text-xs text-muted">{t.craftingNowHint}</p>
 
       {plan.length > 0 && (
         <div className="mt-3 rounded-sm border border-line px-3 py-2" data-craft-plan>
