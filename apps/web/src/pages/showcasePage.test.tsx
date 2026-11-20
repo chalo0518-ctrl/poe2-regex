@@ -43,7 +43,7 @@ describe("season BD showcase", () => {
     renderAt("/showcase");
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     const filter = within(screen.getByRole("region", { name: "選擇賽季" })).getByRole("combobox", { name: "賽季" });
-    await user.selectOptions(filter, "current");
+    await user.selectOptions(filter, "runes-of-aldur");
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     await user.click(screen.getByRole("link", { name: /進入賽季回顧/ }));
     expect(screen.getByRole("tabpanel")).toBeInTheDocument();
@@ -366,17 +366,17 @@ describe("season BD showcase", () => {
     expect(screen.getAllByText("empty prefix").length).toBeGreaterThan(0);
   });
 
-  it("only links season recap and equipment crafting from the preview home", () => {
+  it("only links season recap from the preview home", () => {
     renderAt("/");
     expect(screen.queryByRole("link", { name: "返回" })).not.toBeInTheDocument();
     const links = screen.getAllByRole("link", { name: /賽季回顧/ });
     expect(links.length).toBeGreaterThan(0);
     expect(links.every((link) => link.getAttribute("href") === "/showcase")).toBe(true);
-    expect(screen.getAllByRole("link", { name: /裝備製作/ }).every((link) => link.getAttribute("href") === "/endgame/crafting")).toBe(true);
+    expect(screen.queryByRole("link", { name: /裝備製作/ })).not.toBeInTheDocument();
     expect(document.querySelector('a[href="/early"], a[href="/endgame"]')).toBeNull();
   });
 
-  it("keeps equipment crafting linked in the endgame navigation", () => {
+  it("hides equipment crafting in the endgame navigation", () => {
     render(
       <LocaleProvider initialLocale="zh-Hant">
         <MemoryRouter initialEntries={["/endgame/waystones"]}>
@@ -388,7 +388,7 @@ describe("season BD showcase", () => {
         </MemoryRouter>
       </LocaleProvider>,
     );
-    expect(screen.getByRole("link", { name: "裝備製作" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "裝備製作" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "換界石" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "碑牌" })).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "紀念" })).not.toBeInTheDocument();

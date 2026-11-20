@@ -9,7 +9,6 @@ export default function EndgameLayout() {
   const items = [
     { to: "/endgame/waystones", label: t.endgameWaystones },
     { to: "/endgame/tablets", label: t.endgameTablets },
-    { to: "/endgame/crafting", label: t.crafting },
   ];
   return (
     <PageShell kicker="ENDGAME" title={t.endgame}>

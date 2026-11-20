@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { seasonHref } from "../pages/showcaseSeasons.ts";
 import wandSerle from "../assets/socket-medals/wand-1-serles-triumph.png";
 import wandAssandra from "../assets/socket-medals/wand-2-assandra-wisdom.png";
 import wandLifesprig from "../assets/socket-medals/wand-3-legacy-lifesprig.png";
@@ -248,7 +249,8 @@ function DollCell({
 }) {
   const { t } = useLocale();
   const { snapshot, picks } = useShowcase();
-  const to = mode === "memorial" ? `/showcase/memorial/${slot.id}` : `/showcase/recommended/${slot.id}`;
+  const [params] = useSearchParams();
+  const to = seasonHref(`/showcase/${mode}/${slot.id}`, params.get("season"));
   const slotLabel = labelOf(slot, locale);
   const place = PLACE[slot.area];
 

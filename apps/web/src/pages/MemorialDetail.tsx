@@ -1,4 +1,5 @@
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { seasonHref } from "./showcaseSeasons.ts";
 import {
   memorialGear,
   paperDollSlots,
@@ -22,8 +23,9 @@ const KIND_LABEL: Record<string, { zh: string; en: string }> = {
 
 export default function MemorialDetail() {
   const { slotId } = useParams();
+  const [params] = useSearchParams();
   const slot = paperDollSlots.find((row) => row.id === slotId);
-  if (!slot) return <Navigate to="/showcase/memorial" replace />;
+  if (!slot) return <Navigate to={seasonHref("/showcase/memorial", params.get("season"))} replace />;
   return <DetailBody slot={slot} />;
 }
 
@@ -36,7 +38,7 @@ function DetailBody({ slot }: { slot: PaperDollSlot }) {
 
   return (
     <div className="max-w-xl">
-      <Link to="/showcase/memorial" className="text-sm text-gold hover:underline">
+      <Link to={seasonHref("/showcase/memorial", params.get("season"))} className="text-sm text-gold hover:underline">
         {t.showcaseBackMemorial}
       </Link>
       <p className="mt-3 text-xs tracking-[0.2em] text-gold-dim">{slotLabel}</p>

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { seasonHref } from "./showcaseSeasons.ts";
 import {
   affixModGroup,
   catalogForDollSlot,
@@ -23,8 +24,9 @@ import { useShowcase } from "./showcaseState.tsx";
 
 export default function ShowcaseEditor() {
   const { slotId } = useParams();
+  const [params] = useSearchParams();
   const slot = paperDollSlots.find((row) => row.id === slotId);
-  if (!slot) return <Navigate to="/showcase/recommended" replace />;
+  if (!slot) return <Navigate to={seasonHref("/showcase/recommended", params.get("season"))} replace />;
   return <EditorBody slot={slot} />;
 }
 
@@ -46,7 +48,7 @@ function EditorBody({ slot }: { slot: PaperDollSlot }) {
 
   return (
     <div>
-      <Link to="/showcase/recommended" className="text-sm text-gold hover:underline">
+      <Link to={seasonHref("/showcase/recommended", params.get("season"))} className="text-sm text-gold hover:underline">
         {t.showcaseBackRecommended}
       </Link>
       <p className="mt-3 text-xs tracking-[0.2em] text-gold-dim">{groupLabel}</p>

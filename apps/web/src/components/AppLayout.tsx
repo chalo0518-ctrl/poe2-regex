@@ -1,4 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { seasonHref } from "../pages/showcaseSeasons.ts";
 import { LOCALES, LOCALE_LABEL, useLocale } from "../i18n.tsx";
 
 export default function AppLayout() {
@@ -6,10 +7,10 @@ export default function AppLayout() {
   const { pathname, search } = useLocation();
   const archive = pathname.match(/^\/showcase\/(memorial|recommended)(?:\/([^/]+))?\/?$/);
   const backTo = archive?.[2]
-    ? `/showcase/${archive[1]}`
+    ? seasonHref(`/showcase/${archive[1]}`, new URLSearchParams(search).get("season"))
     : archive || (pathname === "/showcase" && new URLSearchParams(search).has("season"))
       ? "/showcase"
-      : pathname === "/showcase" || pathname === "/endgame/crafting"
+      : pathname === "/showcase"
         ? "/"
         : null;
 
