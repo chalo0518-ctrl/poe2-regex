@@ -147,34 +147,34 @@ describe("season BD showcase", () => {
     expect(bootPips).toHaveLength(2);
     for (const pip of [...glovePips, ...bootPips]) {
       expect(pip).toHaveAttribute("data-cy", "0.5");
-      expect(pip).toHaveAttribute("data-d", "0.32");
+      expect(pip).toHaveAttribute("data-d", String(56 / 154));
     }
-    expect(glovePips[0]).toHaveAttribute("data-cx", "0.27");
-    expect(glovePips[1]).toHaveAttribute("data-cx", "0.78");
-    expect(bootPips[0]).toHaveAttribute("data-cx", "0.27");
-    expect(bootPips[1]).toHaveAttribute("data-cx", "0.78");
-    expect(helmPips[0]).toHaveAttribute("data-cx", "0.28");
-    expect(helmPips[0]).toHaveAttribute("data-cy", "0.44");
-    expect(helmPips[1]).toHaveAttribute("data-cx", "0.79");
-    expect(helmPips[1]).toHaveAttribute("data-cy", "0.51");
+    expect(glovePips[0]).toHaveAttribute("data-cx", String(38 / 154));
+    expect(glovePips[1]).toHaveAttribute("data-cx", String(116 / 154));
+    expect(bootPips[0]).toHaveAttribute("data-cx", String(38 / 154));
+    expect(bootPips[1]).toHaveAttribute("data-cx", String(116 / 154));
+    expect(helmPips[0]).toHaveAttribute("data-cx", String(38 / 154));
+    expect(helmPips[0]).toHaveAttribute("data-cy", String(76 / 154));
+    expect(helmPips[1]).toHaveAttribute("data-cx", String(116 / 154));
+    expect(helmPips[1]).toHaveAttribute("data-cy", String(76 / 154));
     expect(helmPips[0]).toHaveAttribute("title", "完美鍛鐵符文");
     expect(helmPips[1]).toHaveAttribute("title", "渡鴉碎片");
     expect(helmPips[1].querySelector("img")).not.toBeNull();
     const bodyPips = stack(/胸甲/).querySelectorAll(".socket-pip");
-    expect(bodyPips[0]).toHaveAttribute("data-cx", "0.25");
-    expect(bodyPips[0]).toHaveAttribute("data-cy", "0.41");
-    expect(bodyPips[1]).toHaveAttribute("data-cx", "0.76");
-    expect(bodyPips[1]).toHaveAttribute("data-cy", "0.41");
-    expect(bodyPips[2]).toHaveAttribute("data-cx", "0.76");
-    expect(bodyPips[2]).toHaveAttribute("data-cy", "0.75");
+    expect(bodyPips[0]).toHaveAttribute("data-cx", String(38 / 154));
+    expect(bodyPips[0]).toHaveAttribute("data-cy", String(76 / 232));
+    expect(bodyPips[1]).toHaveAttribute("data-cx", String(116 / 154));
+    expect(bodyPips[1]).toHaveAttribute("data-cy", String(76 / 232));
+    expect(bodyPips[2]).toHaveAttribute("data-cx", String(116 / 154));
+    expect(bodyPips[2]).toHaveAttribute("data-cy", String(155 / 232));
     const wandPips = stack(/主手/).querySelectorAll(".socket-pip");
-    expect(wandPips[0]).toHaveAttribute("data-cy", "0.21");
-    expect(wandPips[1]).toHaveAttribute("data-cy", "0.5");
-    expect(wandPips[0]).toHaveAttribute("data-cx", "0.5");
-    expect(wandPips[2]).toHaveAttribute("data-cx", "0.53");
-    expect(wandPips[2]).toHaveAttribute("data-cy", "0.7");
+    expect(wandPips[0]).toHaveAttribute("data-cy", String(76 / 308));
+    expect(wandPips[1]).toHaveAttribute("data-cy", String(153 / 308));
+    expect(wandPips[0]).toHaveAttribute("data-cx", String(77 / 154));
+    expect(wandPips[2]).toHaveAttribute("data-cx", String(77 / 154));
+    expect(wandPips[2]).toHaveAttribute("data-cy", String(231 / 308));
     for (const pip of [...helmPips, ...bodyPips, ...wandPips, ...stack(/副手/).querySelectorAll(".socket-pip")]) {
-      expect(pip).toHaveAttribute("data-d", "0.32");
+      expect(pip).toHaveAttribute("data-d", String(56 / 154));
     }
     expect(bootPips[0]).not.toHaveAttribute("title");
     expect(bootPips[1]).toHaveAttribute("title", "費爾羅的追擊符文");
@@ -182,7 +182,14 @@ describe("season BD showcase", () => {
     expect(slotLink(/腰帶/).querySelector(".socket-stack")).toBeNull();
     expect(slotLink(/項鍊/).querySelector(".socket-stack")).toBeNull();
 
+    const thumbnails = () => [...document.querySelectorAll(".ninja-weapon-thumbnail")];
+    expect(thumbnails().map((node) => node.getAttribute("data-slot"))).toEqual(["weapon-2-main", "weapon-2-off"]);
+    expect(thumbnails().map((node) => node.querySelectorAll(".socket-pip").length)).toEqual([2, 3]);
+    expect(thumbnails()[1].querySelector(".socket-pip")).toHaveAttribute("data-d", String(28 / 74));
+
     await user.click(screen.getAllByRole("button", { name: "II" })[0]);
+    expect(thumbnails().map((node) => node.getAttribute("data-slot"))).toEqual(["weapon-1-main", "weapon-1-off"]);
+    expect(thumbnails().map((node) => node.querySelectorAll(".socket-pip").length)).toEqual([3, 2]);
     expect(stack(/主手/)).toHaveAttribute("data-layout", "row");
     expect(stack(/主手/).querySelectorAll(".socket-pip")).toHaveLength(2);
     expect(stack(/副手/)).toHaveAttribute("data-layout", "triangle");

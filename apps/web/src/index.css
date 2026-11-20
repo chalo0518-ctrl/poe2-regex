@@ -307,6 +307,43 @@ header {
   gap: var(--gap);
 }
 
+.ninja-memorial-sheet {
+  position: relative;
+  --thumbnail-width: var(--cell);
+  margin-inline: calc(var(--thumbnail-width) + var(--gap));
+}
+
+.ninja-cell.ninja-weapon-thumbnail {
+  position: absolute;
+  top: 48px;
+  width: var(--thumbnail-width);
+  height: calc(2 * var(--cell) + var(--gap));
+}
+
+.ninja-weapon-thumbnail-main {
+  right: calc(100% + var(--gap));
+}
+
+.ninja-weapon-thumbnail-off {
+  left: calc(100% + var(--gap));
+}
+
+@media (max-width: 767px) {
+  .ninja-memorial-sheet {
+    --gap: 3px;
+    --cell: min(58px, calc((100vw - 64px - 9 * var(--gap)) / 10));
+  }
+
+  .ninja-weapon-thumbnail {
+    top: 43px;
+  }
+
+  .ninja-weapon-thumbnail .ninja-art > img {
+    max-width: 90%;
+    max-height: 90%;
+  }
+}
+
 .ninja-cell {
   position: relative;
   display: flex;
@@ -627,6 +664,10 @@ header {
   .ninja-sheet {
     --cell: 76px;
     grid-template-rows: 48px repeat(8, var(--cell));
+  }
+
+  .ninja-weapon-thumbnail {
+    top: 56px;
   }
 
   .ninja-jewels,

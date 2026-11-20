@@ -78,6 +78,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
   const charms = paperDollSlots.filter((slot) => slot.group === "charm");
   const gridSlots = paperDollSlots.filter((slot) => GRID_AREAS.includes(slot.area as (typeof GRID_AREAS)[number]));
   const visible = gridSlots.filter((slot) => slot.set === 0 || slot.set === set);
+  const alternate = gridSlots.filter((slot) => slot.set !== 0 && slot.set !== set);
 
   function showTip(gear: MemorialGear | null, event: MouseEvent<HTMLElement>) {
     if (!gear) {
@@ -137,7 +138,10 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
           {debugLines.join("\n") || (locale === "en" ? "Turn on sockets to read holes." : "先打開顯示鑲嵌才能讀孔位。")}
         </pre>
       ) : null}
-      <div className="ninja-sheet">
+      <div className={mode === "memorial" ? "ninja-sheet ninja-memorial-sheet" : "ninja-sheet"}>
+        {mode === "memorial" ? alternate.map((slot) => (
+          <WeaponThumbnail key={slot.id} slot={slot} locale={locale} socketsOn={socketsOn} debugOn={debugOn} />
+        )) : null}
         <WeaponTabs set={set} onSet={setWeaponSet} area="wtab" label={locale === "en" ? "Weapon set" : "武器組"} />
         <WeaponTabs set={set} onSet={setWeaponSet} area="otab" label={locale === "en" ? "Off-hand set" : "副手武器組"} />
         {visible.map((slot) => (
@@ -301,6 +305,29 @@ function DollCell({
   );
 }
 
+function WeaponThumbnail({ slot, locale, socketsOn, debugOn }: {
+  slot: PaperDollSlot;
+  locale: UiLocale;
+  socketsOn: boolean;
+  debugOn: boolean;
+}) {
+  const { snapshot } = useShowcase();
+  const gear = memorialGear(snapshot, slot.id);
+  if (!gear) return null;
+  const src = showcaseImageUrl(gear.imageUrl);
+  const side = slot.area === "weapon" ? "main" : "off";
+
+  return (
+    <div className={`ninja-cell ninja-weapon-thumbnail ninja-weapon-thumbnail-${side}`}
+      data-slot={slot.id} data-rarity={gear.rarity}>
+      <span className="ninja-art">
+        {src ? <img src={src} alt={nameOf(gear, locale)} /> : null}
+        {socketsOn ? <SocketOverlay slotId={slot.id} locale={locale} debug={debugOn} thumbnail /> : null}
+      </span>
+    </div>
+  );
+}
+
 /** Pewter-disc center and diameter as fractions of the tight crop. Glow outside this disc is clipped. */
 type Disc = { cx: number; cy: number; span: number };
 
@@ -363,51 +390,26 @@ const SET_I_MEDALS: Partial<Record<PaperDollSlotId, Medal[]>> = {
 
 type Spot = { cx: number; cy: number };
 
-/**
- * One hole size for every socket, as a fraction of the 2-cell slot width.
- * Calibrated centers are fractions of the inner equipment slot, measured on
- * set-i-close.png / set-ii-close.png. Unlisted gear keeps the previous template
- * and is marked fallback in debug mode.
- */
-const HOLE = 0.32;
-const BASIS = "slot";
+// Centers and disc diameters measured from the equipment-slot inner edges.
+const HOLE = 56 / 154;
+const THUMBNAIL_HOLE = 28 / 74;
 
 const CALIBRATED: Partial<Record<PaperDollSlotId, Spot[]>> = {
-  "weapon-1-main": [
-    { cx: 0.5, cy: 0.21 },
-    { cx: 0.5, cy: 0.5 },
-    { cx: 0.53, cy: 0.7 },
-  ],
-  "weapon-1-off": [
-    { cx: 0.25, cy: 0.52 },
-    { cx: 0.81, cy: 0.52 },
-  ],
-  "weapon-2-main": [
-    { cx: 0.26, cy: 0.48 },
-    { cx: 0.73, cy: 0.48 },
-  ],
-  "weapon-2-off": [
-    { cx: 0.27, cy: 0.4 },
-    { cx: 0.78, cy: 0.4 },
-    { cx: 0.74, cy: 0.64 },
-  ],
-  helmet: [
-    { cx: 0.28, cy: 0.44 },
-    { cx: 0.79, cy: 0.51 },
-  ],
-  body: [
-    { cx: 0.25, cy: 0.41 },
-    { cx: 0.76, cy: 0.41 },
-    { cx: 0.76, cy: 0.75 },
-  ],
-  gloves: [
-    { cx: 0.27, cy: 0.5 },
-    { cx: 0.78, cy: 0.5 },
-  ],
-  boots: [
-    { cx: 0.27, cy: 0.5 },
-    { cx: 0.78, cy: 0.5 },
-  ],
+  "weapon-1-main": [{ cx: 77 / 154, cy: 76 / 308 }, { cx: 77 / 154, cy: 153 / 308 }, { cx: 77 / 154, cy: 231 / 308 }],
+  "weapon-1-off": [{ cx: 38 / 154, cy: 153 / 308 }, { cx: 116 / 154, cy: 153 / 308 }],
+  "weapon-2-main": [{ cx: 38 / 154, cy: 153 / 308 }, { cx: 116 / 154, cy: 153 / 308 }],
+  "weapon-2-off": [{ cx: 38 / 154, cy: 114 / 308 }, { cx: 116 / 154, cy: 114 / 308 }, { cx: 116 / 154, cy: 192 / 308 }],
+  "helmet": [{ cx: 38 / 154, cy: 76 / 154 }, { cx: 116 / 154, cy: 76 / 154 }],
+  "body": [{ cx: 38 / 154, cy: 76 / 232 }, { cx: 116 / 154, cy: 76 / 232 }, { cx: 116 / 154, cy: 155 / 232 }],
+  "gloves": [{ cx: 38 / 154, cy: 77 / 154 }, { cx: 116 / 154, cy: 77 / 154 }],
+  "boots": [{ cx: 38 / 154, cy: 77 / 154 }, { cx: 116 / 154, cy: 77 / 154 }],
+};
+
+const THUMBNAIL_SPOTS: Partial<Record<PaperDollSlotId, Spot[]>> = {
+  "weapon-1-main": [{ cx: 38 / 74, cy: 36 / 152 }, { cx: 38 / 74, cy: 75 / 152 }, { cx: 38 / 74, cy: 114 / 152 }],
+  "weapon-1-off": [{ cx: 18 / 74, cy: 75 / 152 }, { cx: 58 / 74, cy: 75 / 152 }],
+  "weapon-2-main": [{ cx: 19 / 74, cy: 75 / 152 }, { cx: 58 / 74, cy: 75 / 152 }],
+  "weapon-2-off": [{ cx: 19 / 74, cy: 55 / 152 }, { cx: 57 / 74, cy: 55 / 152 }, { cx: 57 / 74, cy: 94 / 152 }],
 };
 
 const FALLBACK_PAIR: Spot[] = [
@@ -434,8 +436,8 @@ function fallbackSpots(slotId: PaperDollSlotId): Spot[] | null {
   return null;
 }
 
-function resolveSpots(slotId: PaperDollSlotId, count: number): { spots: Spot[] | null; fallback: boolean } {
-  const calibrated = CALIBRATED[slotId];
+function resolveSpots(slotId: PaperDollSlotId, count: number, thumbnail: boolean): { spots: Spot[] | null; fallback: boolean } {
+  const calibrated = (thumbnail ? THUMBNAIL_SPOTS : CALIBRATED)[slotId];
   if (calibrated && calibrated.length === count) return { spots: calibrated, fallback: false };
   const fallback = fallbackSpots(slotId);
   if (!fallback) return { spots: null, fallback: true };
@@ -464,20 +466,23 @@ function SocketOverlay({
   slotId,
   locale,
   debug,
+  thumbnail = false,
 }: {
   slotId: PaperDollSlotId;
   locale: UiLocale;
   debug: boolean;
+  thumbnail?: boolean;
 }) {
   const medals = SET_I_MEDALS[slotId];
-  const resolved = medals ? resolveSpots(slotId, medals.length) : { spots: null, fallback: true };
+  const resolved = medals ? resolveSpots(slotId, medals.length, thumbnail) : { spots: null, fallback: true };
   const spots = resolved.spots;
+  const diameter = thumbnail ? THUMBNAIL_HOLE : HOLE;
   if (!medals || medals.length === 0 || !spots) return null;
   return (
     <span
       className="socket-stack"
       data-layout={socketLayout(slotId, medals.length)}
-      data-basis={BASIS}
+      data-basis="slot"
       data-fallback={resolved.fallback ? "true" : "false"}
     >
       {medals.map((medal, index) => {
@@ -490,9 +495,9 @@ function SocketOverlay({
             data-socket-name={name}
             data-cx={String(spot.cx)}
             data-cy={String(spot.cy)}
-            data-d={String(HOLE)}
+            data-d={String(diameter)}
             {...(medal.src ? {} : { "data-missing": "true" })}
-            style={{ left: `${spot.cx * 100}%`, top: `${spot.cy * 100}%`, width: `${HOLE * 100}%` }}
+            style={{ left: `${spot.cx * 100}%`, top: `${spot.cy * 100}%`, width: `${diameter * 100}%` }}
             {...(name ? { title: name } : {})}
           >
             {debug ? <i className="socket-cross socket-cross-icon" /> : null}
