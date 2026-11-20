@@ -1086,11 +1086,12 @@ header {
   --ledger-masonry: url("./assets/canvas-wall-v2.jpg");
   --ledger-archive-casting: url("./assets/canvas-frame-v2.png");
   --ledger-casting: url("./assets/ledger-canvas-bronze.jpg");
-  background: #0d0c0c var(--ledger-masonry) center top / clamp(420px, 53vw, 720px) repeat;
+  background: linear-gradient(#0908097d, #090809a6),
+    #0d0c0c var(--ledger-masonry) center top / clamp(420px, 53vw, 720px) repeat;
 }
 .ledger-masthead { background: linear-gradient(110deg, #111111, #080808); }
 .ledger-page { background: transparent; }
-.ledger-hero { background: linear-gradient(#0b0b0b80, #0b0b0baa), var(--ledger-masonry) repeat; }
+.ledger-hero { background: linear-gradient(#0b0b0baa, #0b0b0bd9), var(--ledger-masonry) repeat; }
 .ledger-portal, .ledger-season-poster, .ledger-archive, .ledger-workbench-inputs, .ledger-next-step {
   border: clamp(7px, 1vw, 14px) solid #755633;
   border-image: var(--ledger-archive-casting) 18% 18% 23% 16% round;
@@ -1187,3 +1188,42 @@ header {
   .ledger-season-card[data-art="canvas"] { gap: .3rem; }
   .ledger-season-card[data-art="canvas"] .ledger-season-enter { padding: .2em .45em; }
 }
+
+.ledger-home .ledger-portals {
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(.8rem, 2.3vw, 1.8rem);
+}
+.ledger-home .ledger-portal {
+  min-height: clamp(11rem, 30vw, 26rem);
+  padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1.65rem, 6vw, 6rem);
+  border: 0;
+  border-image: none;
+  background: none;
+  box-shadow: none;
+}
+.ledger-home .ledger-portal::before,
+.ledger-home .ledger-portal::after {
+  position: absolute;
+  content: "";
+  pointer-events: none;
+}
+.ledger-home .ledger-portal::before {
+  z-index: -2;
+  inset: 6% 2.5% 7%;
+  border: 0;
+  background: radial-gradient(ellipse at 85% 48%, var(--ledger-scene-tint), transparent 67%),
+    linear-gradient(110deg, #131110, #201913);
+}
+.ledger-home .ledger-portal::after {
+  z-index: -1;
+  inset: 0;
+  background: var(--ledger-archive-casting) center / 100% 100% no-repeat;
+  filter: drop-shadow(0 .45rem .5rem #000b);
+}
+.ledger-home .ledger-portal:hover::before {
+  background: radial-gradient(ellipse at 85% 48%, var(--ledger-portal-glow), transparent 64%),
+    linear-gradient(110deg, #131110, #201913);
+}
+.ledger-home .ledger-portal h2 { font-size: clamp(1.5rem, 3.1vw, 3rem); }
+.ledger-home .ledger-portal p { max-width: 82%; }
+.ledger-home .ledger-portal > span { right: clamp(1.65rem, 6vw, 6rem); }
