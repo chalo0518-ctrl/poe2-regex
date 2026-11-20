@@ -328,63 +328,46 @@ function WeaponThumbnail({ slot, locale, socketsOn, debugOn }: {
   );
 }
 
-/** Pewter-disc center and diameter as fractions of the tight crop. Glow outside this disc is clipped. */
-type Disc = { cx: number; cy: number; span: number };
-
-type Medal = { src: string | null; nameZh: string; nameEn: string; disc?: Disc };
-
-const DISC: Record<string, Disc> = {
-  wand: { cx: 0.491, cy: 0.491, span: 0.966 },
-  helm: { cx: 0.492, cy: 0.492, span: 0.938 },
-  maxarius: { cx: 0.491, cy: 0.491, span: 0.926 },
-  foundations: { cx: 0.491, cy: 0.491, span: 0.963 },
-  craiceann: { cx: 0.491, cy: 0.491, span: 0.964 },
-  cadigan: { cx: 0.492, cy: 0.492, span: 0.967 },
-  behemoth: { cx: 0.491, cy: 0.491, span: 0.966 },
-  redEye: { cx: 0.491, cy: 0.491, span: 0.966 },
-  farrul: { cx: 0.491, cy: 0.491, span: 0.966 },
-};
-/** Fresh circular crops are centered in the file. */
-const CROP: Disc = { cx: 0.5, cy: 0.5, span: 0.887 };
+type Medal = { src: string; nameZh: string; nameEn: string };
 
 /**
  * Medals cut from the in-game doll. The left boot glyph has no confirmed name.
  */
-const SET_I_MEDALS: Partial<Record<PaperDollSlotId, Medal[]>> = {
+const MEDALS: Partial<Record<PaperDollSlotId, Medal[]>> = {
   "weapon-1-main": [
-    { src: wandSerle, nameZh: "瑟雷的凱旋", nameEn: "Serle's Triumph", disc: DISC.wand },
-    { src: wandAssandra, nameZh: "流浪女巫艾珊德菈的智慧符文", nameEn: "Hedgewitch Assandra's Rune of Wisdom", disc: DISC.wand },
-    { src: wandLifesprig, nameZh: "傳承．生機之記", nameEn: "Legacy of Lifesprig", disc: DISC.wand },
+    { src: wandSerle, nameZh: "瑟雷的凱旋", nameEn: "Serle's Triumph" },
+    { src: wandAssandra, nameZh: "流浪女巫艾珊德菈的智慧符文", nameEn: "Hedgewitch Assandra's Rune of Wisdom" },
+    { src: wandLifesprig, nameZh: "傳承．生機之記", nameEn: "Legacy of Lifesprig" },
   ],
   "weapon-1-off": [
-    { src: offRabbit, nameZh: "狡兔魔偶", nameEn: "Rabbit Idol", disc: CROP },
-    { src: offFox, nameZh: "狐狸魔偶", nameEn: "Fox Idol", disc: CROP },
+    { src: offRabbit, nameZh: "狡兔魔偶", nameEn: "Rabbit Idol" },
+    { src: offFox, nameZh: "狐狸魔偶", nameEn: "Fox Idol" },
   ],
   "weapon-2-main": [
-    { src: wandYeena, nameZh: "伊娜魔偶", nameEn: "Idol of Yeena", disc: CROP },
-    { src: wandSnake, nameZh: "蝮蛇魔偶", nameEn: "Snake Idol", disc: CROP },
+    { src: wandYeena, nameZh: "伊娜魔偶", nameEn: "Idol of Yeena" },
+    { src: wandSnake, nameZh: "蝮蛇魔偶", nameEn: "Snake Idol" },
   ],
   "weapon-2-off": [
-    { src: focusStorm, nameZh: "高階暴風符文", nameEn: "Greater Storm Rune", disc: CROP },
-    { src: focusWardA, nameZh: "完美保護符文", nameEn: "Perfect Ward Rune", disc: CROP },
-    { src: focusWardB, nameZh: "完美保護符文", nameEn: "Perfect Ward Rune", disc: CROP },
+    { src: focusStorm, nameZh: "高階暴風符文", nameEn: "Greater Storm Rune" },
+    { src: focusWardA, nameZh: "完美保護符文", nameEn: "Perfect Ward Rune" },
+    { src: focusWardB, nameZh: "完美保護符文", nameEn: "Perfect Ward Rune" },
   ],
   helmet: [
-    { src: helmIron, nameZh: "完美鍛鐵符文", nameEn: "Perfect Iron Rune", disc: DISC.helm },
-    { src: helmRaven, nameZh: "渡鴉碎片", nameEn: "Raven-Touched Shard", disc: CROP },
+    { src: helmIron, nameZh: "完美鍛鐵符文", nameEn: "Perfect Iron Rune" },
+    { src: helmRaven, nameZh: "渡鴉碎片", nameEn: "Raven-Touched Shard" },
   ],
   body: [
-    { src: bodyMaxarius, nameZh: "瑪薩里歐斯魔偶", nameEn: "Idol of Maxarius", disc: DISC.maxarius },
-    { src: bodyFoundations, nameZh: "崇敬基準符文", nameEn: "Rune of Foundations", disc: DISC.foundations },
-    { src: bodyCraiceann, nameZh: "奎爾珊的守護符文", nameEn: "Craiceann's Rune of Warding", disc: DISC.craiceann },
+    { src: bodyMaxarius, nameZh: "瑪薩里歐斯魔偶", nameEn: "Idol of Maxarius" },
+    { src: bodyFoundations, nameZh: "崇敬基準符文", nameEn: "Rune of Foundations" },
+    { src: bodyCraiceann, nameZh: "奎爾珊的守護符文", nameEn: "Craiceann's Rune of Warding" },
   ],
   gloves: [
-    { src: glovesCadigan, nameZh: "卡迪根的頓悟", nameEn: "Cadigan's Epiphany", disc: DISC.cadigan },
-    { src: glovesBehemoth, nameZh: "巨獸 破碎之地", nameEn: "Behemoth Shard", disc: DISC.behemoth },
+    { src: glovesCadigan, nameZh: "卡迪根的頓悟", nameEn: "Cadigan's Epiphany" },
+    { src: glovesBehemoth, nameZh: "巨獸 破碎之地", nameEn: "Behemoth Shard" },
   ],
   boots: [
-    { src: bootsRedEye, nameZh: "", nameEn: "", disc: DISC.redEye },
-    { src: bootsFarrul, nameZh: "費爾羅的追擊符文", nameEn: "Farrul's Rune of the Chase", disc: DISC.farrul },
+    { src: bootsRedEye, nameZh: "", nameEn: "" },
+    { src: bootsFarrul, nameZh: "費爾羅的追擊符文", nameEn: "Farrul's Rune of the Chase" },
   ],
 };
 
@@ -452,16 +435,6 @@ function socketLayout(slotId: PaperDollSlotId, count: number): string {
   return "center";
 }
 
-function discStyle(disc: Disc): { width: string; height: string; left: string; top: string } {
-  const scale = 100 / disc.span;
-  return {
-    width: `${scale}%`,
-    height: `${scale}%`,
-    left: `${50 - disc.cx * scale}%`,
-    top: `${50 - disc.cy * scale}%`,
-  };
-}
-
 function SocketOverlay({
   slotId,
   locale,
@@ -473,7 +446,7 @@ function SocketOverlay({
   debug: boolean;
   thumbnail?: boolean;
 }) {
-  const medals = SET_I_MEDALS[slotId];
+  const medals = MEDALS[slotId];
   const resolved = medals ? resolveSpots(slotId, medals.length, thumbnail) : { spots: null, fallback: true };
   const spots = resolved.spots;
   const diameter = thumbnail ? THUMBNAIL_HOLE : HOLE;
@@ -491,17 +464,16 @@ function SocketOverlay({
         return (
           <span
             key={`${medal.nameEn || "socket"}-${index}`}
-            className={medal.src ? "socket-pip" : "socket-pip socket-pip-empty"}
+            className="socket-pip"
             data-socket-name={name}
             data-cx={String(spot.cx)}
             data-cy={String(spot.cy)}
             data-d={String(diameter)}
-            {...(medal.src ? {} : { "data-missing": "true" })}
             style={{ left: `${spot.cx * 100}%`, top: `${spot.cy * 100}%`, width: `${diameter * 100}%` }}
             {...(name ? { title: name } : {})}
           >
             {debug ? <i className="socket-cross socket-cross-icon" /> : null}
-            {medal.src && medal.disc ? <img src={medal.src} alt="" style={discStyle(medal.disc)} /> : null}
+            <img src={medal.src} alt="" />
             {debug ? <b className="socket-cross socket-cross-anchor" /> : null}
           </span>
         );

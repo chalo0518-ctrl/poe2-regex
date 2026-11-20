@@ -338,10 +338,6 @@ header {
     top: 43px;
   }
 
-  .ninja-weapon-thumbnail .ninja-art > img {
-    max-width: 90%;
-    max-height: 90%;
-  }
 }
 
 .ninja-cell {
@@ -402,16 +398,12 @@ header {
   box-shadow: none;
 }
 
-.socket-pip-empty {
-  background: rgba(8, 6, 4, 0.45);
-  box-shadow: inset 0 0 0 2px #c4a86e;
-}
-
 .socket-pip img {
   position: absolute;
+  inset: 0;
   display: block;
-  max-width: none;
-  object-fit: fill;
+  width: 100%;
+  height: 100%;
 }
 
 .socket-debug .ninja-art {
@@ -580,18 +572,46 @@ header {
   font-size: 13px;
 }
 
-.ninja-cell[data-slot="weapon-1-main"] .ninja-art > img {
-  max-width: 54%;
-  max-height: 82%;
-}
-
+/* The equipment art fits its own box. Socket coordinates stay relative to the slot. */
 .ninja-art > img {
-  max-width: calc(100% - 12px);
-  max-height: calc(100% - 12px);
-  width: auto;
-  height: auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--art-width, 94%);
+  height: var(--art-height, 94%);
+  transform: translate(-50%, -50%);
   object-fit: contain;
   pointer-events: none;
+}
+
+.ninja-memorial-sheet [data-slot="weapon-1-main"] {
+  --art-width: 60%;
+  --art-height: 72%;
+}
+
+.ninja-memorial-sheet :is([data-slot="weapon-1-off"], [data-slot="weapon-2-main"]) {
+  --art-width: 94%;
+  --art-height: 75%;
+}
+
+.ninja-memorial-sheet [data-slot="weapon-2-off"] {
+  --art-width: 92%;
+  --art-height: 52%;
+}
+
+.ninja-memorial-sheet [data-slot="helmet"] {
+  --art-width: 84%;
+  --art-height: 94%;
+}
+
+.ninja-memorial-sheet [data-slot="body"] {
+  --art-width: 88%;
+  --art-height: 98%;
+}
+
+.ninja-memorial-sheet :is([data-slot="gloves"], [data-slot="boots"]) {
+  --art-width: 92%;
+  --art-height: 96%;
 }
 
 .home-cards {
