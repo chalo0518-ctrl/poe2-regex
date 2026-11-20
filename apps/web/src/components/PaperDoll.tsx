@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from "react";
+import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import wandSerle from "../assets/socket-medals/wand-1-serles-triumph.png";
 import wandAssandra from "../assets/socket-medals/wand-2-assandra-wisdom.png";
@@ -11,6 +11,14 @@ import glovesCadigan from "../assets/socket-medals/gloves-1-cadigan-epiphany.png
 import glovesBehemoth from "../assets/socket-medals/gloves-2-behemoth-shard.png";
 import bootsRedEye from "../assets/socket-medals/boots-1-red-eye.png";
 import bootsFarrul from "../assets/socket-medals/boots-2-farruls-chase.png";
+import helmRaven from "../assets/socket-medals/helm-2-raven-shard.png";
+import offRabbit from "../assets/socket-medals/off-1-rabbit-idol.png";
+import offFox from "../assets/socket-medals/off-2-fox-idol.png";
+import wandYeena from "../assets/socket-medals/wand2-1-yeena.png";
+import wandSnake from "../assets/socket-medals/wand2-2-snake.png";
+import focusStorm from "../assets/socket-medals/focus-1-storm.png";
+import focusWardA from "../assets/socket-medals/focus-2-ward.png";
+import focusWardB from "../assets/socket-medals/focus-3-ward.png";
 import {
   catalogForDollSlot,
   memorialGear,
@@ -62,7 +70,10 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
   const { locale, t } = useLocale();
   const [set, setWeaponSet] = useState<WeaponSet>(1);
   const [socketsOn, setSocketsOn] = useState(false);
+  const [debugOn, setDebugOn] = useState(false);
   const [tip, setTip] = useState<TooltipState | null>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [debugLines, setDebugLines] = useState<string[]>([]);
   const jewels = paperDollSlots.filter((slot) => slot.group === "jewel");
   const charms = paperDollSlots.filter((slot) => slot.group === "charm");
   const gridSlots = paperDollSlots.filter((slot) => GRID_AREAS.includes(slot.area as (typeof GRID_AREAS)[number]));
@@ -86,8 +97,28 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
     if (!tip?.pinned) setTip(null);
   }
 
+  useLayoutEffect(() => {
+    if (!debugOn || !panelRef.current) {
+      setDebugLines([]);
+      return;
+    }
+    const lines = [...panelRef.current.querySelectorAll<HTMLElement>(".socket-pip")].map((pip) => {
+      const stack = pip.parentElement;
+      const cell = pip.closest<HTMLElement>("[data-slot]");
+      if (!stack || !cell) return "";
+      const pr = pip.getBoundingClientRect();
+      const sr = stack.getBoundingClientRect();
+      const slot = cell.dataset.slot ?? "";
+      const fx = ((pr.left + pr.width / 2 - sr.left) / sr.width).toFixed(3);
+      const fy = ((pr.top + pr.height / 2 - sr.top) / sr.height).toFixed(3);
+      const fallback = stack.dataset.fallback === "true" ? " fallback" : "";
+      return `${slot} ${pip.dataset.socketName || "unnamed"} px (${Math.round(pr.left + pr.width / 2)},${Math.round(pr.top + pr.height / 2)}) slot (${fx},${fy}) d=${Math.round(pr.width)}px${fallback}`;
+    });
+    setDebugLines(lines.filter(Boolean));
+  }, [debugOn, socketsOn, set]);
+
   return (
-    <div className="ninja-panel">
+    <div className={debugOn ? "ninja-panel socket-debug" : "ninja-panel"} ref={panelRef}>
       <div className="ninja-toolbar">
         <p className="ninja-panel-title">{locale === "en" ? "Equipment" : "裝備"}</p>
         <button
@@ -97,7 +128,15 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
         >
           {t.showcaseShowSockets}
         </button>
+        <button type="button" aria-pressed={debugOn} onClick={() => setDebugOn((on) => !on)}>
+          {locale === "en" ? "Socket debug" : "孔位除錯"}
+        </button>
       </div>
+      {debugOn ? (
+        <pre className="socket-debug-readout" aria-label={locale === "en" ? "Socket debug readout" : "孔位除錯讀數"}>
+          {debugLines.join("\n") || (locale === "en" ? "Turn on sockets to read holes." : "先打開顯示鑲嵌才能讀孔位。")}
+        </pre>
+      ) : null}
       <div className="ninja-sheet">
         <WeaponTabs set={set} onSet={setWeaponSet} area="wtab" label={locale === "en" ? "Weapon set" : "武器組"} />
         <WeaponTabs set={set} onSet={setWeaponSet} area="otab" label={locale === "en" ? "Off-hand set" : "副手武器組"} />
@@ -108,6 +147,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
             mode={mode}
             locale={locale}
             socketsOn={socketsOn}
+            debugOn={debugOn}
             onHover={showTip}
             onLeave={hideTip}
           />
@@ -120,6 +160,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
               mode={mode}
               locale={locale}
               socketsOn={socketsOn}
+              debugOn={debugOn}
               onHover={showTip}
               onLeave={hideTip}
             />
@@ -136,6 +177,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
                 mode={mode}
                 locale={locale}
                 socketsOn={socketsOn}
+                debugOn={debugOn}
                 onHover={showTip}
                 onLeave={hideTip}
               />
@@ -188,6 +230,7 @@ function DollCell({
   mode,
   locale,
   socketsOn,
+  debugOn,
   onHover,
   onLeave,
 }: {
@@ -195,6 +238,7 @@ function DollCell({
   mode: DollMode;
   locale: UiLocale;
   socketsOn: boolean;
+  debugOn: boolean;
   onHover: (gear: MemorialGear | null, event: MouseEvent<HTMLElement>) => void;
   onLeave: () => void;
 }) {
@@ -221,7 +265,7 @@ function DollCell({
       >
         <span className="ninja-art">
           {src ? <img src={src} alt={name || slotLabel} /> : null}
-          {socketsOn ? <SocketOverlay slotId={slot.id} locale={locale} /> : null}
+          {socketsOn ? <SocketOverlay slotId={slot.id} locale={locale} debug={debugOn} /> : null}
         </span>
         <span className="sr-only">{name || t.showcaseMemorialEmpty}</span>
       </Link>
@@ -273,12 +317,11 @@ const DISC: Record<string, Disc> = {
   redEye: { cx: 0.491, cy: 0.491, span: 0.966 },
   farrul: { cx: 0.491, cy: 0.491, span: 0.966 },
 };
+/** Fresh circular crops are centered in the file. */
+const CROP: Disc = { cx: 0.5, cy: 0.5, span: 0.887 };
 
 /**
- * Weapon set I medals cut from the in-game doll. The helm's second socket is
- * Raven-Touched Shard; there is no tight crop, so the right hole stays empty.
- * The sceptre has no visible medals. The left boot glyph has no confirmed name.
- * Set II has no in-game medal crops.
+ * Medals cut from the in-game doll. The left boot glyph has no confirmed name.
  */
 const SET_I_MEDALS: Partial<Record<PaperDollSlotId, Medal[]>> = {
   "weapon-1-main": [
@@ -286,9 +329,22 @@ const SET_I_MEDALS: Partial<Record<PaperDollSlotId, Medal[]>> = {
     { src: wandAssandra, nameZh: "流浪女巫艾珊德菈的智慧符文", nameEn: "Hedgewitch Assandra's Rune of Wisdom", disc: DISC.wand },
     { src: wandLifesprig, nameZh: "傳承．生機之記", nameEn: "Legacy of Lifesprig", disc: DISC.wand },
   ],
+  "weapon-1-off": [
+    { src: offRabbit, nameZh: "狡兔魔偶", nameEn: "Rabbit Idol", disc: CROP },
+    { src: offFox, nameZh: "狐狸魔偶", nameEn: "Fox Idol", disc: CROP },
+  ],
+  "weapon-2-main": [
+    { src: wandYeena, nameZh: "伊娜魔偶", nameEn: "Idol of Yeena", disc: CROP },
+    { src: wandSnake, nameZh: "蝮蛇魔偶", nameEn: "Snake Idol", disc: CROP },
+  ],
+  "weapon-2-off": [
+    { src: focusStorm, nameZh: "高階暴風符文", nameEn: "Greater Storm Rune", disc: CROP },
+    { src: focusWardA, nameZh: "完美保護符文", nameEn: "Perfect Ward Rune", disc: CROP },
+    { src: focusWardB, nameZh: "完美保護符文", nameEn: "Perfect Ward Rune", disc: CROP },
+  ],
   helmet: [
     { src: helmIron, nameZh: "完美鍛鐵符文", nameEn: "Perfect Iron Rune", disc: DISC.helm },
-    { src: null, nameZh: "渡鴉碎片", nameEn: "Raven-Touched Shard" },
+    { src: helmRaven, nameZh: "渡鴉碎片", nameEn: "Raven-Touched Shard", disc: CROP },
   ],
   body: [
     { src: bodyMaxarius, nameZh: "瑪薩里歐斯魔偶", nameEn: "Idol of Maxarius", disc: DISC.maxarius },
@@ -309,18 +365,58 @@ type Spot = { cx: number; cy: number };
 
 /**
  * One hole size for every socket, as a fraction of the 2-cell slot width.
- * Centers are fractions of that slot's inner gold frame, measured on the
- * in-game doll. Helm, gloves, and boots share the two-hole line.
+ * Calibrated centers are fractions of the inner equipment slot, measured on
+ * set-i-close.png / set-ii-close.png. Unlisted gear keeps the previous template
+ * and is marked fallback in debug mode.
  */
-const HOLE = 0.36;
-const PAIR_CY = 0.48;
-const PAIR: Spot[] = [
-  { cx: 0.27, cy: PAIR_CY },
-  { cx: 0.73, cy: PAIR_CY },
+const HOLE = 0.32;
+const BASIS = "slot";
+
+const CALIBRATED: Partial<Record<PaperDollSlotId, Spot[]>> = {
+  "weapon-1-main": [
+    { cx: 0.5, cy: 0.21 },
+    { cx: 0.5, cy: 0.5 },
+    { cx: 0.53, cy: 0.7 },
+  ],
+  "weapon-1-off": [
+    { cx: 0.25, cy: 0.52 },
+    { cx: 0.81, cy: 0.52 },
+  ],
+  "weapon-2-main": [
+    { cx: 0.26, cy: 0.48 },
+    { cx: 0.73, cy: 0.48 },
+  ],
+  "weapon-2-off": [
+    { cx: 0.27, cy: 0.4 },
+    { cx: 0.78, cy: 0.4 },
+    { cx: 0.74, cy: 0.64 },
+  ],
+  helmet: [
+    { cx: 0.28, cy: 0.44 },
+    { cx: 0.79, cy: 0.51 },
+  ],
+  body: [
+    { cx: 0.25, cy: 0.41 },
+    { cx: 0.76, cy: 0.41 },
+    { cx: 0.76, cy: 0.75 },
+  ],
+  gloves: [
+    { cx: 0.27, cy: 0.5 },
+    { cx: 0.78, cy: 0.5 },
+  ],
+  boots: [
+    { cx: 0.27, cy: 0.5 },
+    { cx: 0.78, cy: 0.5 },
+  ],
+};
+
+const FALLBACK_PAIR: Spot[] = [
+  { cx: 0.27, cy: 0.48 },
+  { cx: 0.73, cy: 0.48 },
 ];
 
-function medalSpots(slotId: PaperDollSlotId): Spot[] | null {
-  if (slotId === "helmet" || slotId === "gloves" || slotId === "boots") return PAIR;
+function fallbackSpots(slotId: PaperDollSlotId): Spot[] | null {
+  if (slotId === "helmet" || slotId === "gloves" || slotId === "boots") return FALLBACK_PAIR;
   if (slotId === "body") {
     return [
       { cx: 0.23, cy: 0.33 },
@@ -338,10 +434,18 @@ function medalSpots(slotId: PaperDollSlotId): Spot[] | null {
   return null;
 }
 
+function resolveSpots(slotId: PaperDollSlotId, count: number): { spots: Spot[] | null; fallback: boolean } {
+  const calibrated = CALIBRATED[slotId];
+  if (calibrated && calibrated.length === count) return { spots: calibrated, fallback: false };
+  const fallback = fallbackSpots(slotId);
+  if (!fallback) return { spots: null, fallback: true };
+  return { spots: fallback.slice(0, count), fallback: true };
+}
+
 function socketLayout(slotId: PaperDollSlotId, count: number): string {
   if (slotId === "boots") return "split";
-  if (slotId === "gloves" || slotId === "helmet") return "row";
-  if (slotId === "body") return "triangle";
+  if (slotId === "gloves" || slotId === "helmet" || slotId === "weapon-1-off" || slotId === "weapon-2-main") return "row";
+  if (slotId === "body" || slotId === "weapon-2-off") return "triangle";
   if (count >= 3) return "column";
   return "center";
 }
@@ -359,15 +463,23 @@ function discStyle(disc: Disc): { width: string; height: string; left: string; t
 function SocketOverlay({
   slotId,
   locale,
+  debug,
 }: {
   slotId: PaperDollSlotId;
   locale: UiLocale;
+  debug: boolean;
 }) {
   const medals = SET_I_MEDALS[slotId];
-  const spots = medalSpots(slotId);
+  const resolved = medals ? resolveSpots(slotId, medals.length) : { spots: null, fallback: true };
+  const spots = resolved.spots;
   if (!medals || medals.length === 0 || !spots) return null;
   return (
-    <span className="socket-stack" data-layout={socketLayout(slotId, medals.length)}>
+    <span
+      className="socket-stack"
+      data-layout={socketLayout(slotId, medals.length)}
+      data-basis={BASIS}
+      data-fallback={resolved.fallback ? "true" : "false"}
+    >
       {medals.map((medal, index) => {
         const spot = spots[index] ?? spots[spots.length - 1];
         const name = locale === "en" ? medal.nameEn : medal.nameZh;
@@ -375,6 +487,7 @@ function SocketOverlay({
           <span
             key={`${medal.nameEn || "socket"}-${index}`}
             className={medal.src ? "socket-pip" : "socket-pip socket-pip-empty"}
+            data-socket-name={name}
             data-cx={String(spot.cx)}
             data-cy={String(spot.cy)}
             data-d={String(HOLE)}
@@ -382,7 +495,9 @@ function SocketOverlay({
             style={{ left: `${spot.cx * 100}%`, top: `${spot.cy * 100}%`, width: `${HOLE * 100}%` }}
             {...(name ? { title: name } : {})}
           >
+            {debug ? <i className="socket-cross socket-cross-icon" /> : null}
             {medal.src && medal.disc ? <img src={medal.src} alt="" style={discStyle(medal.disc)} /> : null}
+            {debug ? <b className="socket-cross socket-cross-anchor" /> : null}
           </span>
         );
       })}

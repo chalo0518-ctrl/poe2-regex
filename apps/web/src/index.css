@@ -377,6 +377,49 @@ header {
   object-fit: fill;
 }
 
+.socket-debug .ninja-art {
+  outline: 1px solid #3dff7a;
+  outline-offset: -1px;
+}
+
+.socket-debug .ninja-art > img {
+  outline: 1px dashed #ffb020;
+}
+
+.socket-cross {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.socket-cross-anchor {
+  background:
+    linear-gradient(#3dff7a, #3dff7a) center / 1px 14px no-repeat,
+    linear-gradient(#3dff7a, #3dff7a) center / 14px 1px no-repeat;
+}
+
+.socket-cross-icon {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #ff5a5a;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.socket-debug-readout {
+  margin: 0 0 8px;
+  max-width: 40rem;
+  color: #9dffb0;
+  font-size: 11px;
+  line-height: 1.35;
+  white-space: pre-wrap;
+}
+
 .item-tip {
   position: fixed;
   z-index: 40;
