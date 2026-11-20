@@ -6,11 +6,12 @@ export default function AppLayout() {
   const modules = [
     { to: "/early", label: t.early, match: "/early" },
     { to: "/endgame", label: t.endgame, match: "/endgame" },
+    { to: "/showcase", label: t.showcaseNav, match: "/showcase" },
   ];
 
   return (
     <div className="min-h-svh">
-      <header className="sticky top-0 z-30 border-b border-line bg-ink/95 backdrop-blur">
+      <header className="relative z-30 border-b border-line bg-ink/95">
         <div className="mx-auto flex max-w-[1280px] items-center gap-4 px-4 py-3 sm:px-6">
           <NavLink to="/" className="shrink-0 text-sm font-bold tracking-wide text-gold">
             {t.brand}

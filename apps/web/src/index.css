@@ -1,17 +1,18 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-display: "Cinzel", "Noto Serif TC", "Noto Sans TC", serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --color-ink: #120f0c;
-  --color-panel: #1b1611;
-  --color-raised: #241e17;
-  --color-line: #3a3226;
-  --color-gold: #d7b56a;
-  --color-gold-dim: #8d7340;
-  --color-paper: #efe4ce;
-  --color-muted: #9a8b72;
+  --color-ink: #060606;
+  --color-panel: #121212;
+  --color-raised: #181818;
+  --color-line: #3a3428;
+  --color-gold: #e5cb95;
+  --color-gold-dim: #a38d6d;
+  --color-paper: #dcdcdc;
+  --color-muted: #8a8275;
   --color-include: #3f9a68;
   --color-or: #3a7ea6;
   --color-exclude: #b54b3f;
@@ -27,10 +28,20 @@ body,
 
 body {
   background:
-    radial-gradient(1200px 500px at 50% -10%, rgba(123, 79, 178, 0.12), transparent),
-    #120f0c;
+    radial-gradient(900px 420px at 50% -12%, rgba(223, 207, 153, 0.08), transparent),
+    #060606;
   color: var(--color-paper);
   font-family: var(--font-sans);
+}
+
+h1,
+h2,
+header {
+  font-family: var(--font-display);
+}
+
+header {
+  letter-spacing: 0.06em;
 }
 
 * {
@@ -195,6 +206,494 @@ body {
   border: 2px solid var(--color-ink);
   border-radius: 50%;
   box-shadow: 0 0 0 1px var(--color-gold-dim);
+}
+
+.doll-well {
+  display: grid;
+  width: 3.25rem;
+  height: 3.25rem;
+  place-items: center;
+  border: 1px solid #3a3226;
+  background: radial-gradient(circle at 50% 35%, #2c261c, #0c0a08 72%);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.72);
+}
+
+.doll-well img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.doll-line-empty {
+  margin: 0;
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.doll-check {
+  accent-color: var(--color-gold);
+}
+
+.doll-check:focus-visible {
+  outline: 2px solid var(--color-gold-dim);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.memorial-layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 3.5rem;
+  width: 100%;
+}
+
+.ninja-panel {
+  width: max-content;
+  max-width: 100%;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+.ninja-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 8px;
+}
+
+.ninja-toolbar button {
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-paper);
+  padding: 0.2rem 0.55rem;
+  font-size: 13px;
+}
+
+.ninja-toolbar button[aria-pressed="true"] {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.ninja-panel-title {
+  margin: 0 0 8px;
+  color: #d5dbe3;
+  font-size: 18px;
+}
+
+.ninja-sheet {
+  --cell: 58px;
+  --gap: 8px;
+  display: grid;
+  width: max-content;
+  grid-template-columns: repeat(8, var(--cell));
+  grid-template-rows: 40px repeat(8, var(--cell));
+  gap: var(--gap);
+}
+
+.ninja-memorial-sheet {
+  position: relative;
+  --thumbnail-width: var(--cell);
+  margin-inline: calc(var(--thumbnail-width) + var(--gap));
+}
+
+.ninja-cell.ninja-weapon-thumbnail {
+  position: absolute;
+  top: 48px;
+  width: var(--thumbnail-width);
+  height: calc(2 * var(--cell) + var(--gap));
+}
+
+.ninja-weapon-thumbnail-main {
+  right: calc(100% + var(--gap));
+}
+
+.ninja-weapon-thumbnail-off {
+  left: calc(100% + var(--gap));
+}
+
+@media (max-width: 767px) {
+  .ninja-memorial-sheet {
+    --gap: 3px;
+    --cell: min(58px, calc((100vw - 64px - 9 * var(--gap)) / 10));
+  }
+
+  .ninja-weapon-thumbnail {
+    top: 43px;
+  }
+
+}
+
+.ninja-cell {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #a38d6d;
+  background: transparent;
+  color: inherit;
+  text-decoration: none;
+  z-index: 0;
+}
+
+.ninja-art {
+  position: relative;
+  display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
+  place-items: center;
+}
+
+.ninja-cell[data-rarity="empty"] {
+  border-color: #3a3428;
+  background: transparent;
+}
+
+.ninja-cell[data-rarity="unique"] {
+  border-color: #af6025;
+  box-shadow: inset 0 0 0 1px #af6025;
+}
+
+.ninja-cell[data-rarity="rare"] {
+  border-color: #f0e2a0;
+  box-shadow: inset 0 0 0 1px #ffff77;
+}
+
+.socket-stack {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.socket-pip {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  box-sizing: border-box;
+  width: 36%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  border-radius: 50%;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.socket-pip img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.socket-debug .ninja-art {
+  outline: 1px solid #3dff7a;
+  outline-offset: -1px;
+}
+
+.socket-debug .ninja-art > img {
+  outline: 1px dashed #ffb020;
+}
+
+.socket-cross {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 14px;
+  height: 14px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.socket-cross-anchor {
+  background:
+    linear-gradient(#3dff7a, #3dff7a) center / 1px 14px no-repeat,
+    linear-gradient(#3dff7a, #3dff7a) center / 14px 1px no-repeat;
+}
+
+.socket-cross-icon {
+  width: 8px;
+  height: 8px;
+  border: 1px solid #ff5a5a;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.socket-debug-readout {
+  margin: 0 0 8px;
+  max-width: 40rem;
+  color: #9dffb0;
+  font-size: 11px;
+  line-height: 1.35;
+  white-space: pre-wrap;
+}
+
+.item-tip {
+  position: fixed;
+  z-index: 40;
+  width: min(22rem, calc(100vw - 1.5rem));
+  max-height: min(70vh, 36rem);
+  overflow: auto;
+  border: 1px solid #8d7340;
+  background: #120f0c;
+  color: var(--color-paper);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.item-tip header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: grab;
+  padding: 0.45rem 0.6rem;
+  background: #241e17;
+}
+
+.item-tip-unique header strong { color: #d4834a; }
+.item-tip-rare header strong { color: #f0e2a0; }
+
+.item-tip header button {
+  border: 0;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.item-tip pre {
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  white-space: pre-wrap;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.item-tip ul {
+  margin: 0;
+  padding: 0 0.7rem 0.7rem;
+  list-style: none;
+}
+
+.item-tip li {
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 0.45rem;
+  border-top: 1px solid var(--color-line);
+  padding-top: 0.45rem;
+}
+
+.item-tip li img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.stats-col {
+  flex: 1 1 28rem;
+  min-width: min(100%, 22rem);
+  max-width: 36rem;
+  color: var(--color-paper);
+}
+
+.stats-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.85rem;
+  letter-spacing: 0.04em;
+}
+
+.stats-section {
+  margin: 1.15rem 0 0.45rem;
+  color: var(--color-muted);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.75rem;
+  padding: 0.22rem 0;
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.stats-row > span:first-child { color: var(--color-muted); }
+
+.stats-skills {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stats-skills li {
+  margin-top: 0.85rem;
+  font-size: 16px;
+}
+
+.stats-skill-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.stats-skills p {
+  margin: 0.15rem 0 0;
+  color: var(--color-muted);
+  font-size: 15px;
+}
+
+.stats-badge {
+  margin-right: 0.4rem;
+  color: var(--color-gold);
+  font-size: 13px;
+}
+
+/* The equipment art fits its own box. Socket coordinates stay relative to the slot. */
+.ninja-art > img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--art-width, 94%);
+  height: var(--art-height, 94%);
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.ninja-memorial-sheet [data-slot="weapon-1-main"] {
+  --art-width: 60%;
+  --art-height: 72%;
+}
+
+.ninja-memorial-sheet :is([data-slot="weapon-1-off"], [data-slot="weapon-2-main"]) {
+  --art-width: 94%;
+  --art-height: 75%;
+}
+
+.ninja-memorial-sheet [data-slot="weapon-2-off"] {
+  --art-width: 92%;
+  --art-height: 52%;
+}
+
+.ninja-memorial-sheet [data-slot="helmet"] {
+  --art-width: 84%;
+  --art-height: 94%;
+}
+
+.ninja-memorial-sheet [data-slot="body"] {
+  --art-width: 88%;
+  --art-height: 98%;
+}
+
+.ninja-memorial-sheet :is([data-slot="gloves"], [data-slot="boots"]) {
+  --art-width: 92%;
+  --art-height: 96%;
+}
+
+.home-cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+}
+
+.ninja-cell:focus-visible {
+  outline: 2px solid #d7b56a;
+  outline-offset: 1px;
+}
+
+.ninja-charms {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap);
+}
+
+.ninja-charms .ninja-cell {
+  width: var(--cell);
+  height: var(--cell);
+}
+
+.ninja-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ninja-tabs button {
+  width: 28px;
+  height: 32px;
+  border: 1px solid #66727d;
+  border-radius: 4px;
+  background: #3d4650;
+  color: #d5dbe3;
+  font-size: 13px;
+}
+
+.ninja-tabs button[aria-pressed="true"] {
+  border-color: #c5ced6;
+  background: #54616c;
+  color: #fff;
+}
+
+.ninja-jewel-row {
+  margin-top: 18px;
+}
+
+.ninja-jewel-heading {
+  margin: 0 0 8px;
+  color: #c5ced6;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+}
+
+.ninja-jewels {
+  display: grid;
+  grid-template-columns: repeat(8, var(--cell, 64px));
+  gap: 8px;
+}
+
+.ninja-jewel .ninja-cell {
+  width: var(--cell, 64px);
+  height: var(--cell, 64px);
+}
+
+@media (min-width: 1024px) {
+  .ninja-sheet {
+    --cell: 76px;
+    grid-template-rows: 48px repeat(8, var(--cell));
+  }
+
+  .ninja-weapon-thumbnail {
+    top: 56px;
+  }
+
+  .ninja-jewels,
+  .ninja-jewel .ninja-cell {
+    --cell: 64px;
+  }
 }
 
 .axis-range:focus-visible::-moz-range-thumb {

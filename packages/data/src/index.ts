@@ -213,6 +213,40 @@ export { DESECRATED_POOL_LABEL, desecratedFamiliesFor } from "./desecrated.ts";
 export { compareCraftingLibrary, orderCraftingLibrary } from "./craftingOrder.ts";
 
 export {
+  SEASON_BD_V1,
+  SHOWCASE_SIDE_CAP,
+  catalogForDollSlot,
+  emptyRecommendedGear,
+  memorialGear,
+  paperDollGroups,
+  paperDollSlots,
+  recommendedGear,
+  resolveCraftSlot,
+  setShowcasePick,
+  showcaseCatalog,
+  showcaseImageUrl,
+  showcaseLines,
+} from "./bdShowcase.ts";
+export { RUO_CETACEA_STATS, ruoaStatLine } from "./ruoaStats.ts";
+export type {
+  BdShowcase,
+  MemorialAffix,
+  MemorialGear,
+  MemorialMod,
+  MemorialSocket,
+  PaperDollGroupId,
+  PaperDollSlot,
+  PaperDollSlotId,
+  RecommendedGear,
+  ShowcaseAffixLine,
+  ShowcaseEmptyLine,
+  ShowcaseLine,
+  ShowcasePick,
+  ShowcaseRank,
+  ShowcaseText,
+} from "./bdShowcase.ts";
+
+export {
   REMOVAL_OMENS,
   classifyNonTarget,
   evaluateGreater,

@@ -243,6 +243,34 @@ type Messages = {
   cancel: string;
   warningMissing: string;
   warningOverLimit: (n: number) => string;
+  showcaseNav: string;
+  showcaseTabsAria: string;
+  showcaseTabMemorial: string;
+  showcaseTabRecommended: string;
+  showcaseMemorialEmpty: string;
+  showcaseNamePending: string;
+  showcaseImplicitPending: string;
+  showcaseBackRecommended: string;
+  showcaseBackMemorial: string;
+  showcasePrefix: string;
+  showcaseSuffix: string;
+  showcaseRequired: string;
+  showcaseOptional: string;
+  showcaseEmptyPrefix: string;
+  showcaseEmptySuffix: string;
+  showcaseSessionBefore: string;
+  showcaseSessionStrong: string;
+  showcaseSessionAfter: string;
+  showcaseNoCatalog: string;
+  showcaseNoCatalogMore: string;
+  showcaseSearch: string;
+  showcaseEditorTitle: string;
+  homeShowcaseBody: string;
+  showcaseMemorialLead: string;
+  showcaseJewels: string;
+  showcaseSockets: string;
+  showcaseEquipment: string;
+  showcaseShowSockets: string;
 };
 
 const zhHant: Messages = {
@@ -252,7 +280,8 @@ const zhHant: Messages = {
   endgame: "終局",
   homeKicker: "PATH OF EXILE 2",
   homeTitle: "正則工具",
-  homeLead: "依遊玩階段選擇模組。開荒依章節提供商店裝備預設正則；終局有換界石、碑牌詞綴正則，以及做裝決策。",
+  homeLead:
+    "依遊玩階段選擇模組。開荒依章節提供商店裝備預設正則；終局有換界石、碑牌詞綴正則，以及做裝決策。賽季 BD 用紙娃娃紀念當下配裝，並整理同一條 BD 的推薦詞條。",
   homeEarlyBody:
     "章節地圖、商店裝備篩選（各章預設生命／移速／抗性）、流派推薦裝備。開荒裝備詞綴可切換胸甲／頭盔／手套／鞋子／飾品／單手錘／盾牌。",
   homeEndgameBody:
@@ -476,6 +505,34 @@ const zhHant: Messages = {
   cancel: "取消",
   warningMissing: "部分詞綴缺少匹配文本，已跳過",
   warningOverLimit: (n) => `已超過 ${n} 字限制，請取消部分詞綴或放寬數值範圍`,
+  showcaseNav: "賽季 BD",
+  showcaseTabsAria: "主分頁",
+  showcaseTabMemorial: "我的狀況／紀念",
+  showcaseTabRecommended: "推薦／攻略",
+  showcaseMemorialEmpty: "尚未抄入",
+  showcaseNamePending: "名稱待填",
+  showcaseImplicitPending: "固有尚未填入",
+  showcaseBackRecommended: "返回推薦／攻略",
+  showcaseBackMemorial: "返回我的狀況／紀念",
+  showcasePrefix: "前綴",
+  showcaseSuffix: "後綴",
+  showcaseRequired: "必要",
+  showcaseOptional: "可選",
+  showcaseEmptyPrefix: "empty prefix",
+  showcaseEmptySuffix: "empty suffix",
+  showcaseSessionBefore: "勾選只留在這次瀏覽，",
+  showcaseSessionStrong: "不會寫回網站",
+  showcaseSessionAfter: "。選定後告訴流放者，再寫進倉內。",
+  showcaseNoCatalog: "這個部位還沒有對上的做裝詞庫",
+  showcaseNoCatalogMore: "基底抄入後才依部位篩選，不會另造詞條。",
+  showcaseSearch: "搜尋詞條",
+  showcaseEditorTitle: "挑選目標詞條",
+  homeShowcaseBody: "我的狀況／紀念抄入 RUOA_CETACEA 的紙娃娃，以及同一條 BD 的推薦／攻略。格位對齊 poe.ninja。",
+  showcaseMemorialLead: "點部位可看抄入的實際裝備。空白格維持空白。",
+  showcaseJewels: "基礎珠寶",
+  showcaseSockets: "插槽",
+  showcaseEquipment: "裝備",
+  showcaseShowSockets: "顯示鑲嵌",
 };
 
 const en: Messages = {
@@ -486,7 +543,7 @@ const en: Messages = {
   endgame: "Endgame",
   homeTitle: "Regex tools",
   homeLead:
-    "Pick a stage. Campaign chapters ship default shop regexes; endgame has waystone and tablet regexes, plus a crafting decision tree.",
+    "Pick a stage. Campaign chapters ship default shop regexes; endgame has waystone and tablet regexes, plus a crafting decision tree. Season BD keeps a paper doll of the current gear and the same build's recommended affixes.",
   homeEarlyBody:
     "Chapter maps, vendor gear filters (life / move speed / resists per act), and build presets. Campaign affixes cover body / helm / gloves / boots / jewellery / one-hand maces / shields.",
   homeEndgameBody:
@@ -710,6 +767,35 @@ const en: Messages = {
   cancel: "Cancel",
   warningMissing: "Some affixes have no match text and were skipped",
   warningOverLimit: (n) => `Over the ${n}-character cap — drop affixes or loosen numeric bounds`,
+  showcaseNav: "Season BD",
+  showcaseTabsAria: "Main tabs",
+  showcaseTabMemorial: "My setup / Memorial",
+  showcaseTabRecommended: "Guide / Recommended",
+  showcaseMemorialEmpty: "Not transcribed",
+  showcaseNamePending: "Name not set",
+  showcaseImplicitPending: "Implicit not set",
+  showcaseBackRecommended: "Back to Guide / Recommended",
+  showcaseBackMemorial: "Back to My setup / Memorial",
+  showcasePrefix: "Prefixes",
+  showcaseSuffix: "Suffixes",
+  showcaseRequired: "Required",
+  showcaseOptional: "Optional",
+  showcaseEmptyPrefix: "empty prefix",
+  showcaseEmptySuffix: "empty suffix",
+  showcaseSessionBefore: "Picks stay in this visit and are ",
+  showcaseSessionStrong: "not saved to the site",
+  showcaseSessionAfter: ". Tell us what you chose and we will check the data into the repo.",
+  showcaseNoCatalog: "This slot has no crafting-library pool yet",
+  showcaseNoCatalogMore: "A base has to be transcribed before it can be filtered. No second library is added.",
+  showcaseSearch: "Search affixes",
+  showcaseEditorTitle: "Choose target affixes",
+  homeShowcaseBody:
+    "My setup / Memorial transcribes RUOA_CETACEA's paper doll, plus Guide / Recommended for the same BD. Slots follow poe.ninja.",
+  showcaseMemorialLead: "Open a slot to read the transcribed gear. Empty cells stay empty.",
+  showcaseJewels: "BASE JEWELS",
+  showcaseSockets: "Sockets",
+  showcaseEquipment: "Equipment",
+  showcaseShowSockets: "Show sockets",
 };
 
 export const MESSAGES: Record<UiLocale, Messages> = {
