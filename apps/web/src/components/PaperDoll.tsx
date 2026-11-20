@@ -264,73 +264,83 @@ function DollCell({
   );
 }
 
-type Medal = { src: string; nameZh: string; nameEn: string };
+/** Pewter-disc center and diameter as fractions of the tight crop. Glow outside this disc is clipped. */
+type Disc = { cx: number; cy: number; span: number };
+
+type Medal = { src: string | null; nameZh: string; nameEn: string; disc?: Disc };
+
+const DISC: Record<string, Disc> = {
+  wand: { cx: 0.491, cy: 0.491, span: 0.966 },
+  helm: { cx: 0.492, cy: 0.492, span: 0.938 },
+  maxarius: { cx: 0.491, cy: 0.491, span: 0.926 },
+  foundations: { cx: 0.491, cy: 0.491, span: 0.963 },
+  craiceann: { cx: 0.491, cy: 0.491, span: 0.964 },
+  cadigan: { cx: 0.492, cy: 0.492, span: 0.967 },
+  behemoth: { cx: 0.491, cy: 0.491, span: 0.966 },
+  redEye: { cx: 0.491, cy: 0.491, span: 0.966 },
+  farrul: { cx: 0.491, cy: 0.491, span: 0.966 },
+};
 
 /**
- * Weapon set I medals cut from the in-game doll. Raven-Touched Shard stays in
- * the helm record but is not drawn. The sceptre has no visible medals. The
- * left boot glyph has no confirmed name. Set II has no in-game medal crops.
+ * Weapon set I medals cut from the in-game doll. The helm's second socket is
+ * Raven-Touched Shard; there is no tight crop, so the right hole stays empty.
+ * The sceptre has no visible medals. The left boot glyph has no confirmed name.
+ * Set II has no in-game medal crops.
  */
 const SET_I_MEDALS: Partial<Record<PaperDollSlotId, Medal[]>> = {
   "weapon-1-main": [
-    { src: wandSerle, nameZh: "瑟雷的凱旋", nameEn: "Serle's Triumph" },
-    { src: wandAssandra, nameZh: "流浪女巫艾珊德菈的智慧符文", nameEn: "Hedgewitch Assandra's Rune of Wisdom" },
-    { src: wandLifesprig, nameZh: "傳承．生機之記", nameEn: "Legacy of Lifesprig" },
+    { src: wandSerle, nameZh: "瑟雷的凱旋", nameEn: "Serle's Triumph", disc: DISC.wand },
+    { src: wandAssandra, nameZh: "流浪女巫艾珊德菈的智慧符文", nameEn: "Hedgewitch Assandra's Rune of Wisdom", disc: DISC.wand },
+    { src: wandLifesprig, nameZh: "傳承．生機之記", nameEn: "Legacy of Lifesprig", disc: DISC.wand },
   ],
   "weapon-1-off": [],
-  helmet: [{ src: helmIron, nameZh: "完美鍛鐵符文", nameEn: "Perfect Iron Rune" }],
+  helmet: [
+    { src: helmIron, nameZh: "完美鍛鐵符文", nameEn: "Perfect Iron Rune", disc: DISC.helm },
+    { src: null, nameZh: "渡鴉碎片", nameEn: "Raven-Touched Shard" },
+  ],
   body: [
-    { src: bodyMaxarius, nameZh: "瑪薩里歐斯魔偶", nameEn: "Idol of Maxarius" },
-    { src: bodyFoundations, nameZh: "崇敬基準符文", nameEn: "Rune of Foundations" },
-    { src: bodyCraiceann, nameZh: "奎爾珊的守護符文", nameEn: "Craiceann's Rune of Warding" },
+    { src: bodyMaxarius, nameZh: "瑪薩里歐斯魔偶", nameEn: "Idol of Maxarius", disc: DISC.maxarius },
+    { src: bodyFoundations, nameZh: "崇敬基準符文", nameEn: "Rune of Foundations", disc: DISC.foundations },
+    { src: bodyCraiceann, nameZh: "奎爾珊的守護符文", nameEn: "Craiceann's Rune of Warding", disc: DISC.craiceann },
   ],
   gloves: [
-    { src: glovesCadigan, nameZh: "卡迪根的頓悟", nameEn: "Cadigan's Epiphany" },
-    { src: glovesBehemoth, nameZh: "巨獸 破碎之地", nameEn: "Behemoth Shard" },
+    { src: glovesCadigan, nameZh: "卡迪根的頓悟", nameEn: "Cadigan's Epiphany", disc: DISC.cadigan },
+    { src: glovesBehemoth, nameZh: "巨獸 破碎之地", nameEn: "Behemoth Shard", disc: DISC.behemoth },
   ],
   boots: [
-    { src: bootsRedEye, nameZh: "", nameEn: "" },
-    { src: bootsFarrul, nameZh: "費爾羅的追擊符文", nameEn: "Farrul's Rune of the Chase" },
+    { src: bootsRedEye, nameZh: "", nameEn: "", disc: DISC.redEye },
+    { src: bootsFarrul, nameZh: "費爾羅的追擊符文", nameEn: "Farrul's Rune of the Chase", disc: DISC.farrul },
   ],
 };
 
-type Spot = { cx: number; cy: number; d: number };
+type Spot = { cx: number; cy: number };
 
 /**
- * Fractions of the equipment slot (the inner gold frame), not the item art.
- * Measured on the in-game paper doll. One-hole is the slot center.
- * Gloves and boots share the two-hole line. Body is that pair raised,
- * plus one medal under the right hole.
+ * One hole size for every socket, as a fraction of the 2-cell slot width.
+ * Centers are fractions of that slot's inner gold frame, measured on the
+ * in-game doll. Helm, gloves, and boots share the two-hole line.
  */
-/** Two-hole line shared by gloves and boots: same height, inside the frame. */
+const HOLE = 0.36;
 const PAIR_CY = 0.48;
+const PAIR: Spot[] = [
+  { cx: 0.27, cy: PAIR_CY },
+  { cx: 0.73, cy: PAIR_CY },
+];
 
 function medalSpots(slotId: PaperDollSlotId): Spot[] | null {
-  if (slotId === "helmet") return [{ cx: 0.5, cy: 0.5, d: 0.46 }];
-  if (slotId === "gloves") {
-    return [
-      { cx: 0.27, cy: PAIR_CY, d: 0.34 },
-      { cx: 0.72, cy: PAIR_CY, d: 0.38 },
-    ];
-  }
-  if (slotId === "boots") {
-    return [
-      { cx: 0.28, cy: PAIR_CY, d: 0.4 },
-      { cx: 0.72, cy: PAIR_CY, d: 0.4 },
-    ];
-  }
+  if (slotId === "helmet" || slotId === "gloves" || slotId === "boots") return PAIR;
   if (slotId === "body") {
     return [
-      { cx: 0.22, cy: 0.33, d: 0.3 },
-      { cx: 0.69, cy: 0.33, d: 0.3 },
-      { cx: 0.68, cy: 0.68, d: 0.32 },
+      { cx: 0.23, cy: 0.33 },
+      { cx: 0.75, cy: 0.33 },
+      { cx: 0.74, cy: 0.68 },
     ];
   }
   if (slotId === "weapon-1-main") {
     return [
-      { cx: 0.5, cy: 0.27, d: 0.36 },
-      { cx: 0.5, cy: 0.5, d: 0.36 },
-      { cx: 0.5, cy: 0.74, d: 0.36 },
+      { cx: 0.5, cy: 0.23 },
+      { cx: 0.5, cy: 0.5 },
+      { cx: 0.5, cy: 0.77 },
     ];
   }
   return null;
@@ -338,11 +348,20 @@ function medalSpots(slotId: PaperDollSlotId): Spot[] | null {
 
 function socketLayout(slotId: PaperDollSlotId, count: number): string {
   if (slotId === "boots") return "split";
-  if (slotId === "gloves") return "row";
+  if (slotId === "gloves" || slotId === "helmet") return "row";
   if (slotId === "body") return "triangle";
-  if (slotId === "helmet") return "center";
   if (count >= 3) return "column";
   return "center";
+}
+
+function discStyle(disc: Disc): { width: string; height: string; left: string; top: string } {
+  const scale = 100 / disc.span;
+  return {
+    width: `${scale}%`,
+    height: `${scale}%`,
+    left: `${50 - disc.cx * scale}%`,
+    top: `${50 - disc.cy * scale}%`,
+  };
 }
 
 function SocketOverlay({
@@ -362,15 +381,17 @@ function SocketOverlay({
         const name = locale === "en" ? medal.nameEn : medal.nameZh;
         return (
           <span
-            key={`${medal.src}-${index}`}
-            className="socket-pip"
+            key={`${medal.nameEn || "socket"}-${index}`}
+            className={medal.src ? "socket-pip" : "socket-pip socket-pip-empty"}
             data-socket-name={name}
             data-cx={String(spot.cx)}
             data-cy={String(spot.cy)}
-            style={{ left: `${spot.cx * 100}%`, top: `${spot.cy * 100}%`, width: `${spot.d * 100}%` }}
+            data-d={String(HOLE)}
+            {...(medal.src ? {} : { "data-missing": "true" })}
+            style={{ left: `${spot.cx * 100}%`, top: `${spot.cy * 100}%`, width: `${HOLE * 100}%` }}
             {...(name ? { title: name } : {})}
           >
-            <img src={medal.src} alt="" />
+            {medal.src && medal.disc ? <img src={medal.src} alt="" style={discStyle(medal.disc)} /> : null}
           </span>
         );
       })}

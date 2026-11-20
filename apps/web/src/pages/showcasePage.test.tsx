@@ -100,7 +100,7 @@ describe("season BD showcase", () => {
     await user.click(sockets);
     expect(sockets).toHaveAttribute("aria-pressed", "true");
     expect(within(slotLink(/頭盔/)).getAllByTitle("完美鍛鐵符文")).toHaveLength(1);
-    expect(within(slotLink(/頭盔/)).queryByTitle("渡鴉碎片")).not.toBeInTheDocument();
+    expect(within(slotLink(/頭盔/)).getByTitle("渡鴉碎片")).toHaveAttribute("data-missing", "true");
 
     await user.click(slotLink(/頭盔/));
     expect(screen.getByRole("heading", { name: "心靈 堅城" })).toBeInTheDocument();
@@ -131,8 +131,9 @@ describe("season BD showcase", () => {
     expect(stack(/主手/)).toHaveAttribute("data-layout", "column");
     expect(stack(/主手/).querySelectorAll(".socket-pip")).toHaveLength(3);
     expect(slotLink(/副手/).querySelector(".socket-stack")).toBeNull();
-    expect(stack(/頭盔/)).toHaveAttribute("data-layout", "center");
-    expect(stack(/頭盔/).querySelectorAll(".socket-pip")).toHaveLength(1);
+    expect(stack(/頭盔/)).toHaveAttribute("data-layout", "row");
+    const helmPips = stack(/頭盔/).querySelectorAll(".socket-pip");
+    expect(helmPips).toHaveLength(2);
     expect(stack(/胸甲/)).toHaveAttribute("data-layout", "triangle");
     expect(stack(/胸甲/).querySelectorAll(".socket-pip")).toHaveLength(3);
     expect(stack(/手套/)).toHaveAttribute("data-layout", "row");
@@ -141,22 +142,38 @@ describe("season BD showcase", () => {
     const bootPips = stack(/鞋子/).querySelectorAll(".socket-pip");
     expect(stack(/鞋子/)).toHaveAttribute("data-layout", "split");
     expect(bootPips).toHaveLength(2);
+    for (const pip of [...glovePips, ...bootPips, ...helmPips]) {
+      expect(pip).toHaveAttribute("data-cy", "0.48");
+      expect(pip).toHaveAttribute("data-d", "0.36");
+    }
     expect(glovePips[0]).toHaveAttribute("data-cx", "0.27");
-    expect(glovePips[1]).toHaveAttribute("data-cx", "0.72");
-    expect(bootPips[0]).toHaveAttribute("data-cx", "0.28");
-    expect(bootPips[1]).toHaveAttribute("data-cx", "0.72");
-    expect(glovePips[0]).toHaveAttribute("data-cy", "0.48");
-    expect(bootPips[0]).toHaveAttribute("data-cy", "0.48");
-    expect(bootPips[1]).toHaveAttribute("data-cy", "0.48");
-    const helmPip = stack(/頭盔/).querySelector(".socket-pip");
-    expect(helmPip).toHaveAttribute("data-cx", "0.5");
-    expect(helmPip).toHaveAttribute("data-cy", "0.5");
+    expect(glovePips[1]).toHaveAttribute("data-cx", "0.73");
+    expect(bootPips[0]).toHaveAttribute("data-cx", "0.27");
+    expect(bootPips[1]).toHaveAttribute("data-cx", "0.73");
+    expect(helmPips[0]).toHaveAttribute("data-cx", "0.27");
+    expect(helmPips[1]).toHaveAttribute("data-cx", "0.73");
+    expect(helmPips[0]).toHaveAttribute("title", "完美鍛鐵符文");
+    expect(helmPips[0].querySelector("img")).not.toBeNull();
+    expect(helmPips[1]).toHaveAttribute("data-missing", "true");
+    expect(helmPips[1]).toHaveAttribute("title", "渡鴉碎片");
+    expect(helmPips[1].querySelector("img")).toBeNull();
     const bodyPips = stack(/胸甲/).querySelectorAll(".socket-pip");
+    expect(bodyPips[0]).toHaveAttribute("data-cx", "0.23");
     expect(bodyPips[0]).toHaveAttribute("data-cy", "0.33");
+    expect(bodyPips[1]).toHaveAttribute("data-cx", "0.75");
     expect(bodyPips[1]).toHaveAttribute("data-cy", "0.33");
-    expect(bodyPips[1]).toHaveAttribute("data-cx", "0.69");
-    expect(bodyPips[2]).toHaveAttribute("data-cx", "0.68");
+    expect(bodyPips[2]).toHaveAttribute("data-cx", "0.74");
     expect(bodyPips[2]).toHaveAttribute("data-cy", "0.68");
+    const wandPips = stack(/主手/).querySelectorAll(".socket-pip");
+    expect(wandPips[0]).toHaveAttribute("data-cx", "0.5");
+    expect(wandPips[1]).toHaveAttribute("data-cx", "0.5");
+    expect(wandPips[2]).toHaveAttribute("data-cx", "0.5");
+    expect(wandPips[0]).toHaveAttribute("data-cy", "0.23");
+    expect(wandPips[1]).toHaveAttribute("data-cy", "0.5");
+    expect(wandPips[2]).toHaveAttribute("data-cy", "0.77");
+    for (const pip of [...bodyPips, ...wandPips]) {
+      expect(pip).toHaveAttribute("data-d", "0.36");
+    }
     expect(bootPips[0]).not.toHaveAttribute("title");
     expect(bootPips[1]).toHaveAttribute("title", "費爾羅的追擊符文");
     expect(slotLink(/鞋子/).textContent).not.toContain("完美鍛鐵符文");
