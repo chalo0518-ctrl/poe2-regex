@@ -640,10 +640,10 @@ function CraftNextStep({ decision, step, ready, fractureNote, oddsNote, sideLabe
       <h2 id="craft-next-heading">{locale === "en" ? "Next step" : "建議下一步"}</h2>
       {!ready ? <p className="mt-2 text-sm text-muted">
         {locale === "en" ? "Select at least one target modifier to get a recommendation." : "先選擇至少一條目標詞綴，即可查看建議。"}
-      </p> : (
+      </p> : null}
       <div className={`mt-3 rounded-sm border px-3 py-3 ${tone}`} data-verdict={decision.verdict} aria-live="polite">
         <p className="text-base font-bold">{headline}</p>
-        {step && decision.verdict === "continue" ? (
+        {ready && step && decision.verdict === "continue" ? (
           <div className="mt-3 space-y-2 text-sm text-paper">
             <p className="font-semibold text-gold">{craftLocaleText(step.title, locale)}</p>
             <p>{craftLocaleText(step.action, locale)}</p>
@@ -681,7 +681,6 @@ function CraftNextStep({ decision, step, ready, fractureNote, oddsNote, sideLabe
         )}
         {tightBudget && <p className="mt-2 text-xs text-gold">{t.craftingBudgetOn}</p>}
       </div>
-      )}
     </section>
   );
 }

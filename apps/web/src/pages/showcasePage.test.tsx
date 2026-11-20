@@ -354,7 +354,7 @@ describe("season BD showcase", () => {
   it("uses English chrome without simplified Chinese", async () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial", "en");
-    expect(screen.getByRole("tab", { name: "My setup / Memorial" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "Memorial" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("tab", { name: "Recommended" })).toBeInTheDocument();
     expect(screen.getByText("Dusk Scratch")).toBeInTheDocument();
     expect(document.body.textContent).not.toContain("推荐");
@@ -370,19 +370,19 @@ describe("season BD showcase", () => {
     expect(links.every((link) => link.getAttribute("href") === "/showcase")).toBe(true);
   });
 
-  it("leaves the endgame crafting navigation unchanged", () => {
+  it("keeps equipment crafting linked in the endgame navigation", () => {
     render(
       <LocaleProvider initialLocale="zh-Hant">
-        <MemoryRouter initialEntries={["/endgame/crafting"]}>
+        <MemoryRouter initialEntries={["/endgame/waystones"]}>
           <Routes>
             <Route path="endgame" element={<EndgameLayout />}>
-              <Route path="crafting" element={<p>做裝頁</p>} />
+              <Route path="waystones" element={<p>換界石頁</p>} />
             </Route>
           </Routes>
         </MemoryRouter>
       </LocaleProvider>,
     );
-    expect(screen.getByRole("link", { name: "做裝" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "裝備製作" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "換界石" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "碑牌" })).toBeInTheDocument();
     expect(screen.queryByRole("tab", { name: "紀念" })).not.toBeInTheDocument();
