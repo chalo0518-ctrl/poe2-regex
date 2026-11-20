@@ -13,6 +13,9 @@ export default function ShowcaseLayout({ snapshot = SEASON_BD_V1, seasonPreviewU
   const [params] = useSearchParams();
   const memorial = useMatch({ path: "/showcase/memorial", end: false });
   const recommended = useMatch({ path: "/showcase/recommended", end: false });
+  const memorialOverview = useMatch("/showcase/memorial");
+  const recommendedOverview = useMatch("/showcase/recommended");
+  const archiveOverview = memorialOverview || recommendedOverview;
   const english = locale === "en";
   const inArchive = Boolean(memorial || recommended);
   const selected = inArchive || params.get("season") === "current";
@@ -20,11 +23,18 @@ export default function ShowcaseLayout({ snapshot = SEASON_BD_V1, seasonPreviewU
 
   return (
     <ShowcaseProvider snapshot={snapshot}>
-      <main className="ledger-page ledger-season ledger-ruins">
-        <LedgerHero title={t.showcaseNav}>
-          {english ? "Choose a season to revisit its characters and builds." : "選擇賽季，回顧角色與流派配置。"}
-        </LedgerHero>
+      <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive}>
+        {!inArchive ? (
+          <LedgerHero title={t.showcaseNav}>
+            {english ? "Choose a season to revisit its characters and builds." : "選擇賽季，回顧角色與流派配置。"}
+          </LedgerHero>
+        ) : null}
         <div className="ledger-content">
+          {archiveOverview && seasonPreviewUrl ? (
+            <figure className="ledger-season-poster">
+              <img src={seasonPreviewUrl} alt={english ? `${season} update overview` : `${season} 更新總覽`} decoding="async" />
+            </figure>
+          ) : null}
           <section className="ledger-season-select" aria-labelledby="season-choice-title">
             <h2 id="season-choice-title">{english ? "Choose a season" : "選擇賽季"}</h2>
             <label className="ledger-season-filter">

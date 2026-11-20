@@ -18,8 +18,12 @@ export default function AppLayout() {
       <header className="ledger-masthead">
         <div className="ledger-nav">
           <Link to="/" className="ledger-brand">
-            <span aria-hidden="true" className="ledger-brand-mark">◇</span>
-            {t.brand}
+            <img
+              className="ledger-brand-logo"
+              src="https://cdn2.unrealengine.com/egs-pathofexile2-grindinggeargames-ic1-2-766x680-f06bc65a22ab.png?h=270&quality=medium&resize=1&w=480"
+              alt=""
+            />
+            <span>{t.brand}</span>
           </Link>
           <div className="ledger-languages" role="group" aria-label={locale === "en" ? "Language" : "語言"}>
             {LOCALES.map((id) => (
