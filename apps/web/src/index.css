@@ -1263,7 +1263,7 @@ header {
 .ledger-season-card .ledger-season-copy :is(h2, h3) {
   color: #e3c491;
   font-family: "Cinzel", Georgia, "Noto Serif TC", serif;
-  font-weight: 400;
+  font-weight: 500;
   font-variant-caps: small-caps;
   letter-spacing: .04em;
   text-shadow: 0 1px #8d6940, 0 3px 4px #000;
@@ -1284,7 +1284,8 @@ header {
   color: #f3e3c5;
   font-family: var(--font-display);
   font-size: clamp(.75rem, 1.48vw, 1.4rem);
-  font-weight: 500;
+  line-height: 1;
+  font-weight: 700;
   letter-spacing: .09em;
 }
 @media (max-width: 600px) {
@@ -1293,3 +1294,9 @@ header {
 }
 
 .ledger-app { font-family: var(--font-sans); }
+
+:lang(zh-TW) .ledger-season-card .ledger-season-enter,
+:lang(zh-Hant) .ledger-season-card .ledger-season-enter {
+  padding-block-start: 0;
+  padding-block-end: .28em;
+}
