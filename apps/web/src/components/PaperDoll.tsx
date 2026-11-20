@@ -33,7 +33,6 @@ const PLACE: Record<string, { gridColumn: string; gridRow: string }> = {
   weapon: { gridColumn: "1 / 3", gridRow: "2 / 6" },
   offhand: { gridColumn: "7 / 9", gridRow: "2 / 6" },
   helm: { gridColumn: "4 / 6", gridRow: "2 / 4" },
-  ring3: { gridColumn: "3 / 4", gridRow: "4 / 5" },
   ring: { gridColumn: "3 / 4", gridRow: "5 / 6" },
   body: { gridColumn: "4 / 6", gridRow: "4 / 7" },
   amulet: { gridColumn: "6 / 7", gridRow: "4 / 5" },
@@ -41,7 +40,6 @@ const PLACE: Record<string, { gridColumn: string; gridRow: string }> = {
   gloves: { gridColumn: "2 / 4", gridRow: "6 / 8" },
   boots: { gridColumn: "6 / 8", gridRow: "6 / 8" },
   belt: { gridColumn: "4 / 6", gridRow: "7 / 8" },
-  trinket: { gridColumn: "1 / 2", gridRow: "8 / 9" },
   life: { gridColumn: "2 / 3", gridRow: "8 / 10" },
   mana: { gridColumn: "7 / 8", gridRow: "8 / 10" },
   charms: { gridColumn: "3 / 7", gridRow: "8 / 10" },
@@ -51,7 +49,6 @@ type DollMode = "memorial" | "recommended";
 type WeaponSet = 1 | 2;
 
 const GRID_AREAS = ["weapon", "offhand", "helm", "ring", "ring2", "amulet", "body", "gloves", "boots", "belt", "life", "mana"] as const;
-const HIDDEN_AREAS = new Set(["ring3", "trinket"]);
 
 function labelOf(row: { labelZh: string; labelEn: string }, locale: UiLocale): string {
   return locale === "en" ? row.labelEn : row.labelZh;
@@ -73,7 +70,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
 
   function showTip(gear: MemorialGear | null, event: MouseEvent<HTMLElement>) {
     if (!gear) {
-      if (!tip?.pinned) setTip(null);
+      hideTip();
       return;
     }
     const rect = event.currentTarget.getBoundingClientRect();
@@ -83,6 +80,10 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
       y: current?.pinned ? current.y : rect.top,
       pinned: current?.pinned ?? false,
     }));
+  }
+
+  function hideTip() {
+    if (!tip?.pinned) setTip(null);
   }
 
   return (
@@ -97,10 +98,10 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
           {t.showcaseShowSockets}
         </button>
       </div>
-      <div className="ninja-sheet" data-testid="ninja-sheet">
+      <div className="ninja-sheet">
         <WeaponTabs set={set} onSet={setWeaponSet} area="wtab" label={locale === "en" ? "Weapon set" : "武器組"} />
         <WeaponTabs set={set} onSet={setWeaponSet} area="otab" label={locale === "en" ? "Off-hand set" : "副手武器組"} />
-        {visible.filter((slot) => slot.group !== "charm" && !HIDDEN_AREAS.has(slot.area)).map((slot) => (
+        {visible.map((slot) => (
           <DollCell
             key={slot.id}
             slot={slot}
@@ -108,9 +109,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
             locale={locale}
             socketsOn={socketsOn}
             onHover={showTip}
-            onLeave={() => {
-              if (!tip?.pinned) setTip(null);
-            }}
+            onLeave={hideTip}
           />
         ))}
         <div className="ninja-charms" style={PLACE.charms}>
@@ -122,9 +121,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
               locale={locale}
               socketsOn={socketsOn}
               onHover={showTip}
-              onLeave={() => {
-                if (!tip?.pinned) setTip(null);
-              }}
+              onLeave={hideTip}
             />
           ))}
         </div>
@@ -140,9 +137,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
                 locale={locale}
                 socketsOn={socketsOn}
                 onHover={showTip}
-                onLeave={() => {
-                  if (!tip?.pinned) setTip(null);
-                }}
+                onLeave={hideTip}
               />
               <JewelCaption slotId={slot.id} mode={mode} locale={locale} />
             </div>
@@ -216,7 +211,6 @@ function DollCell({
     return (
       <Link
         to={to}
-        data-area={slot.area}
         data-slot={slot.id}
         data-rarity={gear?.rarity || "empty"}
         className="ninja-cell"
@@ -243,7 +237,6 @@ function DollCell({
   return (
     <Link
       to={to}
-      data-area={slot.area}
       data-rarity={name ? "rare" : "empty"}
       className="ninja-cell"
       style={place}
@@ -293,7 +286,6 @@ const SET_I_MEDALS: Partial<Record<PaperDollSlotId, Medal[]>> = {
     { src: wandAssandra, nameZh: "流浪女巫艾珊德菈的智慧符文", nameEn: "Hedgewitch Assandra's Rune of Wisdom", disc: DISC.wand },
     { src: wandLifesprig, nameZh: "傳承．生機之記", nameEn: "Legacy of Lifesprig", disc: DISC.wand },
   ],
-  "weapon-1-off": [],
   helmet: [
     { src: helmIron, nameZh: "完美鍛鐵符文", nameEn: "Perfect Iron Rune", disc: DISC.helm },
     { src: null, nameZh: "渡鴉碎片", nameEn: "Raven-Touched Shard" },
@@ -375,7 +367,7 @@ function SocketOverlay({
   const spots = medalSpots(slotId);
   if (!medals || medals.length === 0 || !spots) return null;
   return (
-    <span className="socket-stack" data-layout={socketLayout(slotId, medals.length)} data-count={medals.length}>
+    <span className="socket-stack" data-layout={socketLayout(slotId, medals.length)}>
       {medals.map((medal, index) => {
         const spot = spots[index] ?? spots[spots.length - 1];
         const name = locale === "en" ? medal.nameEn : medal.nameZh;
@@ -383,7 +375,6 @@ function SocketOverlay({
           <span
             key={`${medal.nameEn || "socket"}-${index}`}
             className={medal.src ? "socket-pip" : "socket-pip socket-pip-empty"}
-            data-socket-name={name}
             data-cx={String(spot.cx)}
             data-cy={String(spot.cy)}
             data-d={String(HOLE)}
