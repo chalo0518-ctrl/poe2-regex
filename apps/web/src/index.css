@@ -1081,18 +1081,19 @@ header {
   .ledger-brand-logo { height: 2.2rem; }
 }
 
-/* Scene and masonry sampled from the approved Ledger mockup. */
+/* Isolated wall and frame assets from the approved Canvas reference. */
 .ledger-app {
-  --ledger-masonry: url("./assets/ledger-canvas-stone.jpg");
+  --ledger-masonry: url("./assets/canvas-wall-v2.jpg");
+  --ledger-archive-casting: url("./assets/canvas-frame-v2.png");
   --ledger-casting: url("./assets/ledger-canvas-bronze.jpg");
-  background: #0d0c0c var(--ledger-masonry) repeat;
+  background: #0d0c0c var(--ledger-masonry) center top / clamp(420px, 53vw, 720px) repeat;
 }
 .ledger-masthead { background: linear-gradient(110deg, #111111, #080808); }
 .ledger-page { background: transparent; }
 .ledger-hero { background: linear-gradient(#0b0b0b80, #0b0b0baa), var(--ledger-masonry) repeat; }
 .ledger-portal, .ledger-season-poster, .ledger-archive, .ledger-workbench-inputs, .ledger-next-step {
   border: clamp(7px, 1vw, 14px) solid #755633;
-  border-image: var(--ledger-casting) 12% round;
+  border-image: var(--ledger-archive-casting) 18% 18% 23% 16% round;
   background-clip: padding-box;
 }
 .ledger-portal::before, .ledger-archive::before { content: none; }
@@ -1146,15 +1147,25 @@ header {
   padding: 0 7.8%;
   border: 0;
   border-radius: 0;
-  background: center / 100% 100% no-repeat url("./assets/aldur-canvas.jpg");
+  background: transparent;
   box-shadow: 0 10px 30px #000a;
 }
-.ledger-season-card[data-art="canvas"]::before {
+.ledger-season-card[data-art="canvas"]::before,
+.ledger-season-card[data-art="canvas"]::after {
   position: absolute;
-  z-index: -1;
-  inset: 7.8% 4.2% 8.5%;
-  background: linear-gradient(90deg, #0a0c0e 0%, #0a0c0efa 49%, #0c0f13a0 58%, transparent 68%);
+  pointer-events: none;
   content: "";
+}
+.ledger-season-card[data-art="canvas"]::before {
+  z-index: -2;
+  inset: 7.4% 3.5% 8%;
+  background: linear-gradient(90deg, #0a0c0e 0%, #0a0c0e 46%, #0c0f13a0 57%, transparent 68%),
+    url("./assets/aldur-canvas.jpg") 50% 48% / 111% 121% no-repeat;
+}
+.ledger-season-card[data-art="canvas"]::after {
+  z-index: -1;
+  inset: 0;
+  background: var(--ledger-archive-casting) center / 100% 100% no-repeat;
 }
 .ledger-season-card[data-art="canvas"] h3 {
   padding: 0;
