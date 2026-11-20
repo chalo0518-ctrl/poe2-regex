@@ -752,7 +752,7 @@ function ItemPanel({
   prefixCap: number;
   suffixCap: number;
 }) {
-  const { locale, t } = useLocale();
+  const { t } = useLocale();
 
   return (
     <section className="mt-6 rounded-sm border border-line bg-panel p-3" aria-labelledby="craft-now-heading">
