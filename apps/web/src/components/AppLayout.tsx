@@ -1,24 +1,26 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { LOCALES, LOCALE_LABEL, useLocale } from "../i18n.tsx";
 
 export default function AppLayout() {
   const { locale, setLocale, t } = useLocale();
-  const modules = [
-    { to: "/showcase", label: t.showcaseNav },
-    { to: "/endgame/crafting", label: t.crafting },
-  ];
+  const { pathname, search } = useLocation();
+  const archive = pathname.match(/^\/showcase\/(memorial|recommended)(?:\/([^/]+))?\/?$/);
+  const backTo = archive?.[2]
+    ? `/showcase/${archive[1]}`
+    : archive || (pathname === "/showcase" && new URLSearchParams(search).has("season"))
+      ? "/showcase"
+      : pathname === "/showcase" || pathname === "/endgame/crafting"
+        ? "/"
+        : null;
 
   return (
     <div className="ledger-app min-h-svh">
       <header className="ledger-masthead">
         <div className="ledger-nav">
-          <NavLink to="/" className="ledger-brand">
+          <Link to="/" className="ledger-brand">
             <span aria-hidden="true" className="ledger-brand-mark">◇</span>
             {t.brand}
-          </NavLink>
-          <nav aria-label={t.navAria}>
-            {modules.map(({ to, label }) => <NavLink key={to} to={to}>{label}</NavLink>)}
-          </nav>
+          </Link>
           <div className="ledger-languages" role="group" aria-label={locale === "en" ? "Language" : "語言"}>
             {LOCALES.map((id) => (
               <button key={id} type="button" onClick={() => setLocale(id)} aria-pressed={locale === id}>
@@ -28,6 +30,13 @@ export default function AppLayout() {
           </div>
         </div>
       </header>
+      {backTo ? (
+        <div className="ledger-back-row">
+          <Link className="ledger-back" to={backTo}>
+            <span aria-hidden="true">←</span> {locale === "en" ? "Back" : "返回"}
+          </Link>
+        </div>
+      ) : null}
       <Outlet />
     </div>
   );

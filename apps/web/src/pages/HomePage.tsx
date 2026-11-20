@@ -7,10 +7,6 @@ export default function HomePage() {
 
   return (
     <main className="ledger-home">
-      <header className="ledger-home-title">
-        <h1>{t.homeTitle}</h1>
-        <p>{english ? "PoE2 player tools and season archives" : "PoE2 玩家工具與賽季檔案"}</p>
-      </header>
       <div className="ledger-portals">
         <Link to="/showcase" className="ledger-portal ledger-ruins">
           <h2>{t.showcaseNav}</h2>

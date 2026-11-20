@@ -743,23 +743,6 @@ header {
 }
 
 .ledger-brand-mark { color: #ac8355; font-size: 1.4em; line-height: 1; }
-.ledger-nav nav { display: flex; align-self: stretch; flex-wrap: wrap; }
-.ledger-nav nav a {
-  display: grid;
-  align-items: center;
-  min-height: 2.5rem;
-  padding: .4rem 1rem;
-  border-bottom: 1px solid transparent;
-  color: #ccb9a1;
-  font: 600 .92rem/1.4 var(--font-display);
-}
-
-.ledger-nav nav a:hover, .ledger-nav nav a[aria-current="page"] {
-  border-color: #bb8e55;
-  background: linear-gradient(transparent, #a9692d36);
-  color: #ffe4af;
-}
-
 .ledger-languages { display: flex; border: 1px solid #654d34; }
 .ledger-languages button { padding: .35rem .55rem; color: #c4b296; font: .78rem var(--font-sans); }
 .ledger-languages button[aria-pressed="true"] { background: #5c4430; color: #ffebc6; }
@@ -774,10 +757,7 @@ header {
 .ledger-home {
   padding: clamp(1rem, 2vw, 1.6rem) clamp(.8rem, 1.25vw, 1.5rem) 4rem;
 }
-.ledger-home-title { margin-bottom: clamp(.9rem, 2vw, 1.55rem); text-align: center; }
-.ledger-home .ledger-home-title h1 { font-size: clamp(1.75rem, 3vw, 2.7rem); }
-.ledger-home .ledger-home-title p { margin-top: .35rem; }
-.ledger-home-title h1, .ledger-hero h1 {
+.ledger-hero h1 {
   color: #f1d9ad;
   font-size: clamp(2.45rem, 6vw, 5rem);
   font-weight: 700;
@@ -785,7 +765,7 @@ header {
   text-shadow: 0 3px 4px #000, 0 8px 28px #000;
 }
 
-.ledger-home-title p, .ledger-hero p {
+.ledger-hero p {
   margin-top: .85rem;
   color: #e2d1b7;
   font: .96rem/1.65 var(--font-sans);
@@ -984,8 +964,6 @@ header {
 
 @media (max-width: 650px) {
   .ledger-portals { grid-template-columns: 1fr; }
-  .ledger-nav nav { order: 3; width: 100%; }
-  .ledger-nav nav a { padding-inline: .65rem; }
   .ledger-portal { min-height: 6.5rem; }
   .ledger-archive .ninja-memorial-sheet {
     --cell: min(58px, calc((100vw - 76px - 9 * var(--gap)) / 10));
@@ -1023,3 +1001,18 @@ header {
   .ledger-crafting .affix-filter-fields { grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)); }
   .ledger-crafting .affix-filter-fields label:first-child { grid-column: auto; }
 }
+
+.ledger-back-row {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: .75rem clamp(.9rem, 4vw, 2.5rem);
+}
+.ledger-back {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .35rem .65rem;
+  border: 1px solid #654d34;
+  color: #e3c798;
+}
+.ledger-back:hover { border-color: #d3ab70; }

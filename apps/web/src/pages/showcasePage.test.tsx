@@ -53,7 +53,7 @@ describe("season BD showcase", () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
 
-    expect(screen.getByRole("link", { name: "賽季回顧" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "返回" })).toHaveAttribute("href", "/showcase");
     const memorial = screen.getByRole("tab", { name: "紀念" });
     const recommended = screen.getByRole("tab", { name: "推薦" });
     expect(screen.getAllByRole("tab")).toHaveLength(2);
@@ -368,6 +368,7 @@ describe("season BD showcase", () => {
 
   it("only links season recap and equipment crafting from the preview home", () => {
     renderAt("/");
+    expect(screen.queryByRole("link", { name: "返回" })).not.toBeInTheDocument();
     const links = screen.getAllByRole("link", { name: /賽季回顧/ });
     expect(links.length).toBeGreaterThan(0);
     expect(links.every((link) => link.getAttribute("href") === "/showcase")).toBe(true);
