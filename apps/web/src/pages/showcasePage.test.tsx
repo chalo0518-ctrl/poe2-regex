@@ -271,7 +271,7 @@ describe("season BD showcase", () => {
     expect(screen.queryByRole("heading", { name: "武器組 I" })).not.toBeInTheDocument();
     expect(screen.getByText("不會寫回網站")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "展開階層" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("combobox")).toEqual([screen.getByRole("combobox", { name: "賽季" })]);
 
     const prefix = screen.getByRole("region", { name: "前綴" });
     const suffix = screen.getByRole("region", { name: "後綴" });
