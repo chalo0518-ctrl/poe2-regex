@@ -1,9 +1,9 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { seasonHref } from "../pages/showcaseSeasons.ts";
-import { LOCALES, LOCALE_LABEL, useLocale } from "../i18n.tsx";
+import { useLocale } from "../i18n.tsx";
 
 export default function AppLayout() {
-  const { locale, setLocale, t } = useLocale();
+  const { locale, t } = useLocale();
   const { pathname, search } = useLocation();
   const archive = pathname.match(/^\/showcase\/(memorial|recommended)(?:\/([^/]+))?\/?$/);
   const backTo = archive?.[2]
@@ -26,13 +26,6 @@ export default function AppLayout() {
             />
             <span>{t.brand}</span>
           </Link>
-          <div className="ledger-languages" role="group" aria-label={locale === "en" ? "Language" : "語言"}>
-            {LOCALES.map((id) => (
-              <button key={id} type="button" onClick={() => setLocale(id)} aria-pressed={locale === id}>
-                {LOCALE_LABEL[id]}
-              </button>
-            ))}
-          </div>
         </div>
       </header>
       {backTo ? (

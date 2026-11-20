@@ -760,9 +760,6 @@ header {
   letter-spacing: .12em;
   text-shadow: 0 2px 5px #000;
 }
-.ledger-languages { display: flex; border: 1px solid #654d34; }
-.ledger-languages button { padding: .35rem .55rem; color: #c4b296; font: .78rem var(--font-sans); }
-.ledger-languages button[aria-pressed="true"] { background: linear-gradient(#65402a, #37211a); color: #ffebc6; }
 
 .ledger-ruins { --ledger-scene-tint: #282b2b; --ledger-portal-glow: #605545; }
 .ledger-forge { --ledger-scene-tint: #2c1917; --ledger-portal-glow: #734535; }
@@ -1085,7 +1082,7 @@ header {
 /* Isolated wall and frame assets from the approved Canvas reference. */
 .ledger-app {
   --ledger-masonry: url("./assets/canvas-wall-v2.jpg");
-  --ledger-archive-casting: url("./assets/canvas-frame-v2.png");
+  --ledger-archive-casting: url("./assets/ledger-frame-hd.webp");
   --ledger-casting: url("./assets/ledger-canvas-bronze.jpg");
   background: linear-gradient(#0908097d, #090809a6),
     #0d0c0c var(--ledger-masonry) center top / clamp(420px, 53vw, 720px) repeat;
@@ -1143,7 +1140,7 @@ header {
   font-family: var(--font-display);
 }
 .ledger-season-card[data-art="canvas"] {
-  aspect-ratio: 1638 / 682;
+  aspect-ratio: 1940 / 811;
   min-height: 0;
   margin-top: 0;
   padding: 0 7.8%;
@@ -1161,8 +1158,7 @@ header {
 .ledger-season-card[data-art="canvas"]::before {
   z-index: -2;
   inset: 7.4% 3.5% 8%;
-  background: linear-gradient(90deg, #0a0c0e 0%, #0a0c0e 46%, #0c0f13a0 57%, transparent 68%),
-    url("./assets/aldur-canvas.jpg") 50% 48% / 111% 121% no-repeat;
+  background: url("./assets/aldur-scene-hd.webp") center / cover no-repeat;
 }
 .ledger-season-card[data-art="canvas"]::after {
   z-index: -1;
@@ -1247,18 +1243,10 @@ header {
   --font-mono: var(--font-sans);
 }
 .ledger-app .ledger-brand span { font-family: var(--font-display); }
-.ledger-app .ledger-languages button { font-family: var(--font-display); }
 .ledger-app:has(.ledger-season) .ledger-nav {
   max-width: 1720px;
   padding-inline: clamp(.75rem, 2.8vw, 2.5rem);
 }
-.ledger-languages {
-  border: 5px solid #785737;
-  border-image: var(--ledger-casting) 12% round;
-  background: linear-gradient(#30251c, #0e0c0b);
-  box-shadow: 0 2px 7px #000b;
-}
-.ledger-languages button { padding: .3rem .65rem; }
 .ledger-season-copy {
   display: flex;
   flex-direction: column;
@@ -1274,28 +1262,20 @@ header {
 .ledger-season-card .ledger-season-enter,
 .ledger-season-card[data-art="canvas"] .ledger-season-enter {
   position: relative;
-  padding: .6em 2.55em;
-  border: 2px solid #96724a;
-  border-radius: 3px;
-  background: var(--ledger-masonry) center / 360px, #2f2016;
-  box-shadow: inset 0 0 0 1px #160e0a, inset 0 0 13px #140d09, 0 3px 8px #0009;
+  display: grid;
+  place-items: center;
+  min-width: clamp(8rem, 19vw, 21rem);
+  aspect-ratio: 940 / 207;
+  padding: .25em 2.1em;
+  border: 0;
+  background: url("./assets/ledger-copper-plaque.webp") center / 100% 100% no-repeat;
+  box-shadow: none;
+  text-shadow: 0 1px 3px #0a0705;
+  white-space: nowrap;
   color: #f3e3c5;
   font-family: var(--font-display);
   font-size: clamp(.75rem, 1.48vw, 1.4rem);
 }
-.ledger-season-enter::before, .ledger-season-enter::after {
-  position: absolute;
-  top: 50%;
-  width: .62em;
-  height: .62em;
-  transform: translateY(-50%);
-  border: 1px solid #664121;
-  border-radius: 50%;
-  background: radial-gradient(circle at 33% 30%, #ffe3ac, #a77945 49%, #432819 78%);
-  content: "";
-}
-.ledger-season-enter::before { left: .62em; }
-.ledger-season-enter::after { right: .62em; }
 @media (max-width: 600px) {
   .ledger-season-card[data-art="canvas"] .ledger-season-copy { transform: none; }
   .ledger-season-card[data-art="canvas"] .ledger-season-enter { padding: .35em 1.8em; }
