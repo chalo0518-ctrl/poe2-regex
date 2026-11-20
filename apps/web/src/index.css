@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
 @import url("https://db.onlinewebfonts.com/c/2170cb963ea1047f6b8289e1d70b8f06?family=Fontin+Regular");
 @import "tailwindcss";
 
@@ -1234,7 +1234,7 @@ header {
 
 :lang(zh-TW) .ledger-app, :lang(zh-Hant) .ledger-app {
   --font-sans: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-  --font-display: var(--font-sans);
+  --font-display: "Noto Serif TC", "PMingLiU", serif;
   --font-mono: var(--font-sans);
 }
 :lang(en) .ledger-app {
@@ -1242,7 +1242,13 @@ header {
   --font-display: var(--font-sans);
   --font-mono: var(--font-sans);
 }
-.ledger-app .ledger-brand span { font-family: var(--font-display); }
+.ledger-app .ledger-brand span {
+  color: #e6cca0;
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-shadow: 0 1px #392710, 0 2px 5px #000;
+}
 .ledger-app:has(.ledger-season) .ledger-nav {
   max-width: 1720px;
   padding-inline: clamp(.75rem, 2.8vw, 2.5rem);
@@ -1255,9 +1261,12 @@ header {
 }
 .ledger-season-card[data-art="canvas"] .ledger-season-copy { transform: translateY(-8%); }
 .ledger-season-card .ledger-season-copy :is(h2, h3) {
-  font-family: "Fontin Regular", "Cinzel", var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: .025em;
+  color: #e3c491;
+  font-family: "Cinzel", Georgia, "Noto Serif TC", serif;
+  font-weight: 400;
+  font-variant-caps: small-caps;
+  letter-spacing: .04em;
+  text-shadow: 0 1px #8d6940, 0 3px 4px #000;
 }
 .ledger-season-card .ledger-season-enter,
 .ledger-season-card[data-art="canvas"] .ledger-season-enter {
@@ -1275,6 +1284,8 @@ header {
   color: #f3e3c5;
   font-family: var(--font-display);
   font-size: clamp(.75rem, 1.48vw, 1.4rem);
+  font-weight: 500;
+  letter-spacing: .09em;
 }
 @media (max-width: 600px) {
   .ledger-season-card[data-art="canvas"] .ledger-season-copy { transform: none; }
