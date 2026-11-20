@@ -1,6 +1,5 @@
 import { Link, NavLink, Outlet, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { SEASON_BD_V1, type BdShowcase } from "@poe2-regex/data";
-import LedgerHero from "../components/LedgerHero.tsx";
 import { useLocale } from "../i18n.tsx";
 import { ShowcaseProvider } from "./showcaseState.tsx";
 
@@ -19,24 +18,23 @@ export default function ShowcaseLayout({ snapshot = SEASON_BD_V1, seasonPreviewU
   const english = locale === "en";
   const inArchive = Boolean(memorial || recommended);
   const selected = inArchive || params.get("season") === "current";
+  const canvasPreview = selected && !inArchive && snapshot === SEASON_BD_V1;
   const season = (english ? snapshot.leagueEn : snapshot.leagueZh) || snapshot.leagueEn || snapshot.titleEn;
 
   return (
     <ShowcaseProvider snapshot={snapshot}>
-      <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive}>
-        {!inArchive ? (
-          <LedgerHero title={t.showcaseNav}>
-            {english ? "Choose a season to revisit its characters and builds." : "選擇賽季，回顧角色與流派配置。"}
-          </LedgerHero>
-        ) : null}
+      <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive} data-canvas-preview={canvasPreview}>
         <div className="ledger-content">
           {archiveOverview && seasonPreviewUrl ? (
             <figure className="ledger-season-poster">
               <img src={seasonPreviewUrl} alt={english ? `${season} update overview` : `${season} 更新總覽`} decoding="async" />
             </figure>
           ) : null}
-          <section className="ledger-season-select" aria-labelledby="season-choice-title">
-            <h2 id="season-choice-title">{english ? "Choose a season" : "選擇賽季"}</h2>
+          <section className="ledger-season-select" aria-label={english ? "Choose a season" : "選擇賽季"}>
+            <div className="ledger-season-controls">
+              {!inArchive ? (
+                <h1>{t.showcaseNav}</h1>
+              ) : null}
             <label className="ledger-season-filter">
               <span>{english ? "Season" : "賽季"}</span>
               <select value={selected ? "current" : ""} onChange={(event) => {
@@ -46,9 +44,10 @@ export default function ShowcaseLayout({ snapshot = SEASON_BD_V1, seasonPreviewU
                 <option value="current">{season}</option>
               </select>
             </label>
+            </div>
             {selected && !inArchive ? (
-              <Link to="/showcase/memorial" className="ledger-season-card">
-                {seasonPreviewUrl ? <img src={seasonPreviewUrl} alt="" decoding="async" /> : null}
+              <Link to="/showcase/memorial" className="ledger-season-card" data-art={canvasPreview ? "canvas" : undefined}>
+                {!canvasPreview && seasonPreviewUrl ? <img src={seasonPreviewUrl} alt="" decoding="async" /> : null}
                 <h3>{season}</h3>
                 <span className="ledger-season-enter">
                   {english ? "Open season recap" : "進入賽季回顧"} <span aria-hidden="true">→</span>

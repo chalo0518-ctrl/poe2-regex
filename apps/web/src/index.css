@@ -1080,3 +1080,99 @@ header {
   .ledger-brand span { letter-spacing: .045em; }
   .ledger-brand-logo { height: 2.2rem; }
 }
+
+/* Scene and masonry sampled from the approved Ledger mockup. */
+.ledger-app {
+  --ledger-masonry: url("./assets/ledger-canvas-stone.jpg");
+  --ledger-casting: url("./assets/ledger-canvas-bronze.jpg");
+  background: #0d0c0c var(--ledger-masonry) repeat;
+}
+.ledger-masthead { background: linear-gradient(110deg, #111111, #080808); }
+.ledger-page { background: transparent; }
+.ledger-hero { background: linear-gradient(#0b0b0b80, #0b0b0baa), var(--ledger-masonry) repeat; }
+.ledger-portal, .ledger-season-poster, .ledger-archive, .ledger-workbench-inputs, .ledger-next-step {
+  border: clamp(7px, 1vw, 14px) solid #755633;
+  border-image: var(--ledger-casting) 12% round;
+  background-clip: padding-box;
+}
+.ledger-portal::before, .ledger-archive::before { content: none; }
+.ledger-workbench-inputs, .ledger-next-step, .ledger-archive {
+  background-color: #151211;
+}
+.ledger-season .ledger-content {
+  max-width: 1720px;
+  margin-top: .2rem;
+  padding-inline: clamp(.75rem, 2.8vw, 2.5rem);
+}
+.ledger-season-select {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.ledger-season-controls {
+  display: flex;
+  align-items: center;
+  gap: clamp(.7rem, 2.1vw, 2rem);
+  flex-wrap: wrap;
+  padding: .35rem .55rem 1.1rem;
+}
+.ledger-season-controls h1 {
+  font-size: clamp(1.45rem, 2.5vw, 2.45rem);
+  color: #efdfbe;
+  line-height: 1.15;
+  text-shadow: 0 2px 5px #000;
+}
+.ledger-season-filter { margin: 0; }
+.ledger-season-filter > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.ledger-season-filter select {
+  border: 4px solid #795a39;
+  border-image: var(--ledger-casting) 12% round;
+  background: #110f0e;
+  font-family: var(--font-display);
+}
+.ledger-season-card[data-art="canvas"] {
+  aspect-ratio: 1638 / 682;
+  min-height: 0;
+  margin-top: 0;
+  padding: 0 7.8%;
+  border: 0;
+  border-radius: 0;
+  background: center / 100% 100% no-repeat url("./assets/aldur-canvas.jpg");
+  box-shadow: 0 10px 30px #000a;
+}
+.ledger-season-card[data-art="canvas"]::before {
+  position: absolute;
+  z-index: -1;
+  inset: 7.8% 4.2% 8.5%;
+  background: linear-gradient(90deg, #0a0c0e 0%, #0a0c0efa 49%, #0c0f13a0 58%, transparent 68%);
+  content: "";
+}
+.ledger-season-card[data-art="canvas"] h3 {
+  padding: 0;
+  color: #e7c997;
+  font-size: clamp(1rem, 3.65vw, 4rem);
+  font-weight: 500;
+  text-shadow: 0 2px 5px #000;
+}
+.ledger-season-card[data-art="canvas"] .ledger-season-enter {
+  padding: .45em .9em;
+  border: 4px solid #7c593c;
+  border-image: var(--ledger-casting) 12% round;
+  background: linear-gradient(#503a2c, #1c1511);
+  font-family: var(--font-display);
+}
+.ledger-season-card[data-art="canvas"]:hover { box-shadow: 0 10px 30px #000a, 0 0 18px #b8834533; }
+.ledger-app:has(.ledger-season) .ledger-back-row { max-width: 1720px; padding-inline: clamp(.75rem, 2.8vw, 2.5rem); }
+@media (max-width: 600px) {
+  .ledger-season-card[data-art="canvas"] { gap: .3rem; }
+  .ledger-season-card[data-art="canvas"] .ledger-season-enter { padding: .2em .45em; }
+}
