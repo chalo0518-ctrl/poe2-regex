@@ -709,7 +709,8 @@ header {
   --color-raised: #211b16;
   --ledger-metal: #8a6843;
   --ledger-light: #e3c798;
-  background: #0b0909;
+  --ledger-stone: repeating-linear-gradient(113deg, #d1b8990a 0 1px, transparent 1px 5px);
+  background: var(--ledger-stone), radial-gradient(ellipse at top, #25211e, #100e0d 70%);
 }
 
 .ledger-masthead {
@@ -763,8 +764,8 @@ header {
 .ledger-languages button { padding: .35rem .55rem; color: #c4b296; font: .78rem var(--font-sans); }
 .ledger-languages button[aria-pressed="true"] { background: #5c4430; color: #ffebc6; }
 
-.ledger-ruins { --ledger-art: url("https://web.poecdn.com/public/news/2025-09-18/wallpapers/3840x2160_Chimera.png"); --ledger-scene-tint: #181d22; }
-.ledger-forge { --ledger-art: url("https://web.poecdn.com/public/news/2025-09-18/wallpapers/3840x2160_GreatSnake.png"); --ledger-scene-tint: #251611; }
+.ledger-ruins { --ledger-scene-tint: #1b2022; }
+.ledger-forge { --ledger-scene-tint: #251a16; }
 .ledger-home { max-width: 1400px; margin: auto; padding: 3rem clamp(1rem, 4vw, 2.5rem) 5rem; }
 .ledger-home-title { margin: 0 auto 2.5rem; text-align: center; }
 .ledger-home-title h1, .ledger-hero h1 {
@@ -792,7 +793,7 @@ header {
   justify-content: end;
   padding: 2rem clamp(1.25rem, 4vw, 3rem);
   border: 1px solid #95724c;
-  background: linear-gradient(0deg, #090706 2%, #0e0a08aa 34%, transparent 80%), var(--ledger-art) center/cover;
+  background: var(--ledger-stone), radial-gradient(ellipse at top right, var(--ledger-scene-tint), #12100f 74%);
 }
 
 .ledger-portal::before, .ledger-hero::after, .ledger-archive::before {
@@ -812,7 +813,7 @@ header {
 .ledger-page {
   min-height: calc(100svh - 4.5rem);
   padding-bottom: 5rem;
-  background: linear-gradient(180deg, var(--ledger-scene-tint), #0b0909 48rem);
+  background: var(--ledger-stone), linear-gradient(180deg, var(--ledger-scene-tint), #100e0d 48rem);
 }
 
 .ledger-hero {
@@ -821,11 +822,11 @@ header {
   isolation: isolate;
   display: grid;
   place-content: center;
-  min-height: clamp(17rem, 31vw, 28rem);
+  min-height: clamp(13rem, 23vw, 19rem);
   padding: 2rem 1rem 4rem;
   border-bottom: 1px solid #6f553a;
-  background: linear-gradient(0deg, var(--ledger-scene-tint), #0b08063a 48%, #0b080633),
-    radial-gradient(ellipse at center, #0009 2%, transparent 70%), var(--ledger-art) center/cover;
+  background: var(--ledger-stone), radial-gradient(ellipse at 50% 0%, #8b786132, transparent 75%),
+    linear-gradient(#100e0d, var(--ledger-scene-tint));
   text-align: center;
 }
 
@@ -859,7 +860,7 @@ header {
   margin-top: .75rem;
   padding: 1rem 1.25rem;
   border: 1px solid #9b7b52;
-  background: linear-gradient(90deg, #100e0cea, #100e0c4d), var(--ledger-art) center 57%/cover;
+  background: var(--ledger-stone), linear-gradient(105deg, #242017, var(--ledger-scene-tint));
   color: #f5dfb6;
   font: 700 clamp(1rem, 3vw, 1.3rem) var(--font-display);
 }
@@ -930,4 +931,36 @@ header {
   .ledger-archive .ninja-memorial-sheet {
     --cell: min(58px, calc((100vw - 76px - 9 * var(--gap)) / 10));
   }
+}
+
+.ledger-crafting .affix-filter-tags,
+.ledger-crafting .affix-filter-fields {
+  border: 1px solid #624e37;
+  background-color: #151210;
+  padding: .7rem;
+}
+.ledger-crafting .affix-filter-tags {
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+.ledger-crafting .affix-filter-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+}
+.ledger-crafting .affix-filter-fields label { display: grid; gap: .35rem; }
+.ledger-crafting .affix-filter-fields label:first-child { grid-column: 1 / -1; }
+.ledger-crafting .affix-filter-fields input { width: 100%; min-width: 0; }
+.ledger-crafting .affix-filter-fields button {
+  min-height: 2rem;
+  border: 1px solid #8b6a46;
+  background: #2e251b;
+  color: #ecdbbb;
+}
+.ledger-crafting .affix-filter-fields button[aria-pressed="true"] { background: #65482b; }
+.ledger-crafting .affix-filter-tags button { padding: .28rem .55rem; }
+.ledger-crafting .affix-row[data-pick="include"] { box-shadow: inset 2px 0 #b58a51; }
+@media (min-width: 520px) {
+  .ledger-crafting .affix-filter-fields { grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)); }
+  .ledger-crafting .affix-filter-fields label:first-child { grid-column: auto; }
 }

@@ -632,7 +632,7 @@ export function ChroniclesModBuilder({
       )}
 
       {showTags && harvestTags.length > 0 && (
-        <div className="mb-3 flex flex-wrap gap-1">
+        <div className="affix-filter-tags mb-3 flex flex-wrap gap-1">
           {harvestTags.map((tag) => {
             const state = tagStates[tag.id] ?? "off";
             const tint = TAG_TINT[tag.id];
@@ -653,7 +653,7 @@ export function ChroniclesModBuilder({
       )}
 
       {(showFilter || showImport || showHideToggle) && (
-        <div className="mb-4 flex flex-col gap-2 lg:flex-row lg:items-center">
+        <div className="affix-filter-fields mb-4 flex flex-col gap-2 lg:flex-row lg:items-center">
           {showFilter && (
             <>
               <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-muted">
@@ -697,6 +697,7 @@ export function ChroniclesModBuilder({
             <button
               type="button"
               onClick={() => setShowHidden((v) => !v)}
+              aria-pressed={showHidden}
               className={`rounded-sm px-3 py-1.5 text-sm ${
                 showHidden ? "bg-gold text-ink" : "bg-[#8a6a3a] text-paper"
               }`}
