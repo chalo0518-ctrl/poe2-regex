@@ -1168,11 +1168,12 @@ header {
   inset: 0;
   background: var(--ledger-archive-casting) center / 100% 100% no-repeat;
 }
-.ledger-season-card[data-art="canvas"] h3 {
+.ledger-season-card[data-art="canvas"] :is(h2, h3) {
   padding: 0;
   color: #e7c997;
   font-size: clamp(1rem, 3.65vw, 4rem);
   font-weight: 500;
+  line-height: 1.08;
   text-shadow: 0 2px 5px #000;
 }
 .ledger-season-card[data-art="canvas"] .ledger-season-enter {
@@ -1227,3 +1228,9 @@ header {
 .ledger-home .ledger-portal h2 { font-size: clamp(1.5rem, 3.1vw, 3rem); }
 .ledger-home .ledger-portal p { max-width: 82%; }
 .ledger-home .ledger-portal > span { right: clamp(1.65rem, 6vw, 6rem); }
+
+.ledger-home-season[data-art="canvas"] { gap: clamp(.45rem, 2.6vw, 2.2rem); }
+.ledger-home-season[data-art="canvas"] h2 { font-size: clamp(1.2rem, 4.25vw, 4.7rem); }
+.ledger-home-season[data-art="canvas"] .ledger-season-enter {
+  font-size: clamp(.75rem, 1.6vw, 1.45rem);
+}

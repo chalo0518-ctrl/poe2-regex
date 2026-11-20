@@ -8,10 +8,11 @@ export default function HomePage() {
   return (
     <main className="ledger-home">
       <div className="ledger-portals">
-        <Link to="/showcase" className="ledger-portal ledger-ruins">
-          <h2>{t.showcaseNav}</h2>
-          <p>{english ? "Browse seasons, characters, and builds." : "瀏覽賽季、角色與流派配置。"}</p>
-          <span aria-hidden="true">→</span>
+        <Link to="/showcase" className="ledger-season-card ledger-home-season" data-art="canvas">
+          <h2>Runes of Aldur</h2>
+          <span className="ledger-season-enter">
+            {english ? "Open season recap" : "進入賽季回顧"}
+          </span>
         </Link>
         <Link to="/endgame/crafting" className="ledger-portal ledger-forge">
           <h2>{t.crafting}</h2>
