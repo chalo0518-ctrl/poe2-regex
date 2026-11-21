@@ -1090,8 +1090,20 @@ header {
 .ledger-masthead {
   background: linear-gradient(90deg, #0a0908a8, #09090955),
     #10100f url("./assets/ledger-header-iron.webp") left center / cover no-repeat;
-  border-bottom: 1px solid #594831;
-  box-shadow: inset 0 -2px #05050580, 0 3px 12px #0007;
+  border-bottom: 1px solid #17120e;
+  box-shadow: inset 0 -3px 6px #0505059c;
+}
+.ledger-masthead::after {
+  position: absolute;
+  z-index: -1;
+  inset-inline: 0;
+  top: calc(100% - 1px);
+  height: clamp(.65rem, 1.5vw, 1.25rem);
+  background:
+    linear-gradient(90deg, #674b2b40, #9e7a4d92 17%, #5d442850 65%, #24201c30) top / 100% 1px no-repeat,
+    linear-gradient(180deg, #090807b0, transparent);
+  content: "";
+  pointer-events: none;
 }
 .ledger-page { background: transparent; }
 .ledger-hero { background: linear-gradient(#0b0b0baa, #0b0b0bd9), var(--ledger-masonry) repeat; }
