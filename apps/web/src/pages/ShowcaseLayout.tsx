@@ -44,7 +44,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
           <button type="button" className="ledger-bookmarks-toggle" aria-expanded={bookmarksOpen}
             aria-controls="season-bookmarks" onClick={() => setBookmarksOpen((open) => !open)}>
             <span aria-hidden="true">{bookmarksOpen ? "‹" : "›"}</span>
-            {english ? (bookmarksOpen ? "Hide bookmarks" : "Show bookmarks") : (bookmarksOpen ? "收合書籤" : "展開書籤")}
+            <span className="sr-only">{english ? (bookmarksOpen ? "Hide bookmarks" : "Show bookmarks") : (bookmarksOpen ? "收合書籤" : "展開書籤")}</span>
           </button>
           <nav id="season-bookmarks" hidden={!bookmarksOpen} className="ledger-bookmarks" aria-label={english ? "Season bookmarks" : "賽季書籤"}>
             <Link className="ledger-bookmark" to="/">{english ? "Home" : "首頁"}</Link>
