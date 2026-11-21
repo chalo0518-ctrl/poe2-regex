@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { type BdShowcase } from "@poe2-regex/data";
 import { useLocale } from "../i18n.tsx";
@@ -10,6 +10,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
   seasonPreviewUrl?: string;
 }) {
   const { locale, t } = useLocale();
+  const [bookmarksOpen, setBookmarksOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
@@ -39,8 +40,13 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
   return (
     <ShowcaseProvider key={active.id} snapshot={snapshot}>
       <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive}>
-        <div className="ledger-content ledger-season-layout">
-          <nav className="ledger-bookmarks" aria-label={english ? "Season bookmarks" : "賽季書籤"}>
+        <div className="ledger-content ledger-season-layout" data-bookmarks-open={bookmarksOpen}>
+          <button type="button" className="ledger-bookmarks-toggle" aria-expanded={bookmarksOpen}
+            aria-controls="season-bookmarks" onClick={() => setBookmarksOpen((open) => !open)}>
+            <span aria-hidden="true">{bookmarksOpen ? "‹" : "›"}</span>
+            {english ? (bookmarksOpen ? "Hide bookmarks" : "Show bookmarks") : (bookmarksOpen ? "收合書籤" : "展開書籤")}
+          </button>
+          <nav id="season-bookmarks" hidden={!bookmarksOpen} className="ledger-bookmarks" aria-label={english ? "Season bookmarks" : "賽季書籤"}>
             <Link className="ledger-bookmark" to="/">{english ? "Home" : "首頁"}</Link>
             {inArchive ? (
               <>

@@ -51,10 +51,14 @@ describe("season BD showcase", () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
 
+    const toggle = screen.getByRole("button", { name: "展開書籤" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
     expect(within(screen.getByRole("navigation", { name: "賽季書籤" })).getByRole("link", { name: "首頁" })).toHaveAttribute("href", "/");
     const memorial = screen.getByRole("tab", { name: "紀念" });
     const recommended = screen.getByRole("tab", { name: "推薦" });
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
     expect(memorial).toHaveAttribute("aria-selected", "true");
     expect(recommended).toHaveAttribute("aria-selected", "false");
     expect(screen.getAllByRole("tabpanel")).toHaveLength(1);
@@ -89,7 +93,7 @@ describe("season BD showcase", () => {
     expect(document.body.textContent).not.toContain("装备");
 
     await user.click(recommended);
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
     expect(screen.getAllByRole("tabpanel")).toHaveLength(1);
     expect(recommended).toHaveAttribute("aria-selected", "true");
     expect(memorial).toHaveAttribute("aria-selected", "false");
@@ -119,7 +123,7 @@ describe("season BD showcase", () => {
     expect(screen.getAllByText("增加18%找到的物品稀有度").length).toBeGreaterThan(0);
     expect(screen.queryByText("前綴")).not.toBeInTheDocument();
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
 
     await user.click(screen.getByRole("link", { name: "返回我的狀況／紀念" }));
     expect(screen.queryByRole("link", { name: /戒指 3/ })).not.toBeInTheDocument();
@@ -236,7 +240,7 @@ describe("season BD showcase", () => {
     expect(screen.getByText("+10 護甲")).toBeInTheDocument();
     expect(screen.getByText("+80 最大生命")).toBeInTheDocument();
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
   });
 
   it("drops a poe.ninja image even if one was pasted into the snapshot", () => {
@@ -265,7 +269,8 @@ describe("season BD showcase", () => {
     expect(within(helmet).getByText("固有尚未填入")).toBeInTheDocument();
 
     await user.click(helmet);
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    await user.click(screen.getByRole("button", { name: "展開書籤" }));
+    expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
     expect(screen.getByRole("tab", { name: "推薦" })).toHaveAttribute("aria-selected", "true");
     expect(screen.queryByRole("tab", { name: /編輯/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "武器組 I" })).not.toBeInTheDocument();
@@ -355,6 +360,7 @@ describe("season BD showcase", () => {
   it("uses English chrome without simplified Chinese", async () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial", "en");
+    await user.click(screen.getByRole("button", { name: "Show bookmarks" }));
     expect(screen.getByRole("tab", { name: "Memorial" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("tab", { name: "Recommended" })).toBeInTheDocument();
     expect(screen.getByText("Dusk Scratch")).toBeInTheDocument();
