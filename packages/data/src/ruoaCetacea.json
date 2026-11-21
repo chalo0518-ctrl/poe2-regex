@@ -53,7 +53,7 @@
       "position": "Left weapon, 2x5 (set I selected)",
       "rarity": "rare",
       "name_en": "Dusk Scratch",
-      "name_zh": "暮色 刃痕",
+      "name_zh": "暮色刃痕",
       "base_en": "Dueling Wand",
       "base_zh": "單挑法杖",
       "item_class_en": "Wand",
@@ -79,8 +79,14 @@
           },
           {
             "kind": "enchanted",
-            "text_en": "+3 to Level of all Spell Skills",
-            "text_zh": "+3全部法術技能等級",
+            "text_en": "+1 to Level of all Spell Skills",
+            "text_zh": "+1全部法術技能等級",
+            "prefix_suffix": null
+          },
+          {
+            "kind": "enchanted",
+            "text_en": "+2 to Level of all Spell Skills",
+            "text_zh": "+2全部法術技能等級",
             "prefix_suffix": null
           }
         ]

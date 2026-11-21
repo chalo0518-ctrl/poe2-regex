@@ -196,7 +196,7 @@ export function memorialGearFromRaw(item: RawItem): MemorialGear | null {
   const mods = [
     ...modsOf(item.implicit_mods),
     ...modsOf(item.other_visible_text?.enchanted),
-    ...modsOf(item.other_visible_text?.enchanted_from_sockets),
+    ...modsOf(item.other_visible_text?.enchanted_from_sockets).map((mod) => ({ ...mod, kind: "socket" })),
     ...modsOf(item.explicit_affixes),
   ];
   if (item.corrupted_text_en || item.corrupted_text_zh) {

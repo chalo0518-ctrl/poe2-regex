@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import wandSerle from "../assets/socket-medals/wand-1-serles-triumph.png";
 import wandAssandra from "../assets/socket-medals/wand-2-assandra-wisdom.png";
@@ -98,6 +98,27 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
     if (!tip?.pinned) setTip(null);
   }
 
+  useEffect(() => {
+    if (mode !== "memorial") return;
+    const press = (event: KeyboardEvent) => {
+      if (event.key === "Alt") setSocketsOn(true);
+    };
+    const release = (event: KeyboardEvent) => {
+      if (!event.altKey) setSocketsOn(false);
+    };
+    const reset = () => setSocketsOn(false);
+    window.addEventListener("keydown", press);
+    window.addEventListener("keyup", release);
+    window.addEventListener("blur", reset);
+    document.addEventListener("visibilitychange", reset);
+    return () => {
+      window.removeEventListener("keydown", press);
+      window.removeEventListener("keyup", release);
+      window.removeEventListener("blur", reset);
+      document.removeEventListener("visibilitychange", reset);
+    };
+  }, [mode]);
+
   useLayoutEffect(() => {
     if (!debugOn || !panelRef.current) {
       setDebugLines([]);
@@ -122,20 +143,14 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
     <div className={debugOn ? "ninja-panel socket-debug" : "ninja-panel"} ref={panelRef}>
       <div className="ninja-toolbar">
         <p className="ninja-panel-title">{locale === "en" ? "Equipment" : "裝備"}</p>
-        <button
-          type="button"
-          aria-pressed={socketsOn}
-          onClick={() => setSocketsOn((on) => !on)}
-        >
-          {t.showcaseShowSockets}
-        </button>
+        {mode === "memorial" && <span>{locale === "en" ? "Hold Alt for sockets" : "按住 Alt 顯示鑲嵌"}</span>}
         <button type="button" aria-pressed={debugOn} onClick={() => setDebugOn((on) => !on)}>
           {locale === "en" ? "Socket debug" : "孔位除錯"}
         </button>
       </div>
       {debugOn ? (
         <pre className="socket-debug-readout" aria-label={locale === "en" ? "Socket debug readout" : "孔位除錯讀數"}>
-          {debugLines.join("\n") || (locale === "en" ? "Turn on sockets to read holes." : "先打開顯示鑲嵌才能讀孔位。")}
+          {debugLines.join("\n") || (locale === "en" ? "Turn on sockets to read holes." : "按住 Alt 才能讀取孔位。")}
         </pre>
       ) : null}
       <div className={mode === "memorial" ? "ninja-sheet ninja-memorial-sheet" : "ninja-sheet"}>
