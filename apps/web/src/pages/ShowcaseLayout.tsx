@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { type BdShowcase } from "@poe2-regex/data";
 import { useLocale } from "../i18n.tsx";
@@ -11,6 +11,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
 }) {
   const { locale, t } = useLocale();
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
+  const bookmarkToggle = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
@@ -41,15 +42,24 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
     <ShowcaseProvider key={active.id} snapshot={snapshot}>
       <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive}>
         <div className="ledger-content ledger-season-layout" data-bookmarks-open={bookmarksOpen}>
-          <button type="button" className="ledger-bookmarks-toggle" aria-expanded={bookmarksOpen}
+          <button ref={bookmarkToggle} type="button" className="ledger-bookmarks-toggle" aria-expanded={bookmarksOpen}
             aria-controls="season-bookmarks" onClick={() => setBookmarksOpen((open) => !open)}>
-            <span className="ledger-bookmark-fold" aria-hidden="true" />
+            <span className="ledger-bookmark-star" aria-hidden="true">☆</span>
             <span className="sr-only">{english ? (bookmarksOpen ? "Hide bookmarks" : "Show bookmarks") : (bookmarksOpen ? "收合書籤" : "展開書籤")}</span>
           </button>
           <nav id="season-bookmarks" hidden={!bookmarksOpen} className="ledger-bookmarks" aria-label={english ? "Season bookmarks" : "賽季書籤"}>
-            <Link className="ledger-bookmark" to="/">{english ? "Home" : "首頁"}</Link>
+            <div className="ledger-bookmark-title">
+              <span>{english ? "Bookmarks" : "書籤"}</span>
+              <button type="button" className="ledger-bookmark-close"
+                aria-label={english ? "Close bookmarks" : "關閉書籤"}
+                onClick={() => { setBookmarksOpen(false); bookmarkToggle.current?.focus(); }}>
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <Link className="ledger-bookmark" to="/"><span aria-hidden="true">⌂</span>{english ? "Home" : "首頁"}</Link>
             {inArchive ? (
-              <>
+              <details className="ledger-bookmark-folder" open>
+                <summary>{seasonName(snapshot)}</summary>
                 {updateImage ? <Link className="ledger-bookmark ledger-bookmark-update" aria-current={location.hash === "#season-update" ? "location" : undefined} to={archivePath("/showcase/memorial") + "#season-update"}>
                   {english ? "Season update" : "版本更新"}
                 </Link> : null}
@@ -57,7 +67,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
                   <ShowcaseTab id="showcase-tab-memorial" to={archivePath("/showcase/memorial") + "#season-build"} selected={Boolean(memorial) && location.hash !== "#season-update"} label={t.showcaseTabMemorial} />
                   <ShowcaseTab id="showcase-tab-recommended" to={archivePath("/showcase/recommended") + "#season-build"} selected={Boolean(recommended)} label={t.showcaseTabRecommended} />
                 </div>
-              </>
+              </details>
             ) : null}
           </nav>
           <div className="ledger-season-main">

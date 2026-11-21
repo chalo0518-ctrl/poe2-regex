@@ -1333,7 +1333,7 @@ header {
 
 .ledger-season .ledger-season-layout {
   --archive-gutter: clamp(.9rem, 3vw, 2.5rem);
-  --bookmarks-width: clamp(8rem, 13vw, 11.5rem);
+  --bookmarks-width: clamp(12rem, 19vw, 16rem);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
@@ -1351,8 +1351,8 @@ header {
   inset-inline-start: max(0px, calc((100vw - 1720px) / 2));
   display: grid;
   place-items: center;
-  width: 1.5rem;
-  height: 3.25rem;
+  width: 2rem;
+  height: 2.65rem;
   padding: 0;
   border: 1px solid #756040;
   border-inline-start: 0;
@@ -1363,44 +1363,75 @@ header {
 }
 
 .ledger-bookmarks-toggle:hover { border-color: #c59a62; }
-.ledger-bookmark-fold {
-  width: .48rem;
-  height: .48rem;
-  border-block-start: 1px solid currentColor;
-  border-inline-end: 1px solid currentColor;
-  transform: translateX(-1px) rotate(45deg);
-}
-.ledger-bookmarks-toggle[aria-expanded="true"] .ledger-bookmark-fold {
-  transform: translateX(1px) rotate(225deg);
-}
+.ledger-bookmark-star { font: 1.35rem/1 system-ui, sans-serif; }
+.ledger-bookmarks-toggle[aria-expanded="true"] { color: #ffe5ae; background: #533b27; }
 
 .ledger-bookmarks[hidden] { display: none; }
 .ledger-bookmarks {
   position: sticky;
   top: 1rem;
   display: grid;
-  padding: .65rem .5rem;
-  border-block: 1px solid #675033;
-  border-inline-start: 1px solid #634a30;
-  background: linear-gradient(105deg, #211a14 0%, #171310ed 65%, #131110);
-  box-shadow: inset 0 0 0 2px #0a090880, 0 8px 18px #0006;
+  align-content: start;
+  min-height: clamp(16rem, 40vh, 28rem);
+  padding: .7rem;
+  border: 1px solid #56432f;
+  border-radius: .45rem;
+  background: #171412;
+  box-shadow: 0 8px 18px #0007;
+}
+.ledger-bookmark-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .25rem .35rem .65rem;
+  margin-bottom: .4rem;
+  border-bottom: 1px solid #604a35;
+  color: #f0ddbc;
+  font: 700 1rem var(--font-display);
+}
+.ledger-bookmark-close {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: .25rem;
+  color: #d9c7ac;
+  font: 1.35rem/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+.ledger-bookmark-close:hover { background: #3a2e23; color: #fff0d1; }
+.ledger-bookmark-folder { min-width: 0; margin-top: .2rem; }
+.ledger-bookmark-folder summary {
+  padding: .48rem .48rem .45rem;
+  border-radius: .22rem;
+  color: #e6d6bd;
+  font: 600 .85rem/1.4 var(--font-sans);
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.ledger-bookmark-folder summary:hover { background: #2a231d; }
+.ledger-bookmark-folder > .ledger-bookmark,
+.ledger-bookmark-sections {
+  margin-inline-start: .65rem;
+  border-inline-start: 1px solid #533e2a;
 }
 .ledger-bookmark-sections { display: grid; }
-.ledger-bookmark-update { margin-block-end: .25rem; border-block-end: 1px solid #a980484a; }
 .ledger-bookmarks .ledger-bookmark {
   display: flex;
   align-items: center;
-  min-height: 2.6rem;
-  padding: .42rem .65rem;
-  border-inline-start: 2px solid transparent;
+  gap: .5rem;
+  min-height: 2.15rem;
+  padding: .33rem .55rem;
+  border-radius: .22rem;
   color: #d0b997;
-  font: 600 .9rem var(--font-display);
+  font: 500 .88rem var(--font-sans);
 }
-.ledger-bookmarks .ledger-bookmark:hover { color: #fff0d1; }
+.ledger-bookmark-folder .ledger-bookmark { padding-inline-start: .75rem; }
+.ledger-bookmarks .ledger-bookmark:hover { color: #fff0d1; background: #29221b; }
 .ledger-bookmarks .ledger-bookmark[aria-selected="true"],
 .ledger-bookmarks .ledger-bookmark[aria-current="location"] {
-  border-inline-start-color: #c6945c;
-  background: linear-gradient(90deg, #7550356b, transparent);
+  box-shadow: inset 2px 0 #c6945c;
+  background: #483324;
   color: #ffdfac;
 }
 
@@ -1421,7 +1452,6 @@ header {
   }
 }
 @media (max-width: 720px) {
-  .ledger-bookmarks, .ledger-bookmark-sections { display: flex; flex-wrap: wrap; }
-  .ledger-bookmarks { position: static; padding: .25rem; }
-  .ledger-bookmark-update { margin: 0; border-block-end: 0; }
+  .ledger-bookmarks { position: static; min-height: 0; }
+  .ledger-bookmark-sections { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
