@@ -65,7 +65,7 @@ describe("season BD paper doll", () => {
     expect(memorialGear(SEASON_BD_V1, "trinket")).toBeNull();
 
     const wand = memorialGear(SEASON_BD_V1, "weapon-1-main");
-    expect(wand?.nameZh).toBe("暮色 刃痕");
+    expect(wand?.nameZh).toBe("暮色刃痕");
     expect(wand?.nameEn).toBe("Dusk Scratch");
     expect(wand?.baseZh).toBe("單挑法杖");
     expect(wand?.sockets?.map((socket) => socket.nameZh)).toEqual([
