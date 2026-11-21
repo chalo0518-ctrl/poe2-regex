@@ -51,7 +51,7 @@ describe("season BD showcase", () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
 
-    expect(screen.getByRole("link", { name: "返回" })).toHaveAttribute("href", "/");
+    expect(within(screen.getByRole("navigation", { name: "賽季書籤" })).getByRole("link", { name: "首頁" })).toHaveAttribute("href", "/");
     const memorial = screen.getByRole("tab", { name: "紀念" });
     const recommended = screen.getByRole("tab", { name: "推薦" });
     expect(screen.getAllByRole("tab")).toHaveLength(2);

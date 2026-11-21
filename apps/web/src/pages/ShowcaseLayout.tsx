@@ -1,4 +1,5 @@
-import { NavLink, Outlet, useMatch, useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, NavLink, Outlet, useLocation, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { type BdShowcase } from "@poe2-regex/data";
 import { useLocale } from "../i18n.tsx";
 import { SHOWCASE_SEASONS, seasonHref, type ShowcaseSeason } from "./showcaseSeasons.ts";
@@ -10,6 +11,12 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
 }) {
   const { locale, t } = useLocale();
   const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash === "#season-update" || location.hash === "#season-build") {
+      document.getElementById(location.hash.slice(1))?.scrollIntoView?.({ block: "start" });
+    }
+  }, [location.hash, location.key]);
   const [params] = useSearchParams();
   const memorial = useMatch({ path: "/showcase/memorial", end: false });
   const recommended = useMatch({ path: "/showcase/recommended", end: false });
@@ -32,9 +39,24 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
   return (
     <ShowcaseProvider key={active.id} snapshot={snapshot}>
       <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive}>
-        <div className="ledger-content">
+        <div className="ledger-content ledger-season-layout">
+          <nav className="ledger-bookmarks" aria-label={english ? "Season bookmarks" : "賽季書籤"}>
+            <Link className="ledger-bookmark" to="/">{english ? "Home" : "首頁"}</Link>
+            {inArchive ? (
+              <>
+                {updateImage ? <Link className="ledger-bookmark" aria-current={location.hash === "#season-update" ? "location" : undefined} to={archivePath("/showcase/memorial") + "#season-update"}>
+                  {english ? "Season update" : "版本更新"}
+                </Link> : null}
+                <div role="tablist" aria-label={t.showcaseTabsAria} className="ledger-season-tabs">
+                  <ShowcaseTab id="showcase-tab-memorial" to={archivePath("/showcase/memorial") + "#season-build"} selected={Boolean(memorial) && location.hash !== "#season-update"} label={t.showcaseTabMemorial} />
+                  <ShowcaseTab id="showcase-tab-recommended" to={archivePath("/showcase/recommended") + "#season-build"} selected={Boolean(recommended)} label={t.showcaseTabRecommended} />
+                </div>
+              </>
+            ) : null}
+          </nav>
+          <div className="ledger-season-main">
           {archiveOverview && updateImage ? (
-            <figure className="ledger-season-poster">
+            <figure className="ledger-season-poster" id="season-update">
               <img src={updateImage} alt={english ? `${seasonName(snapshot)} update overview` : `${seasonName(snapshot)} 更新總覽`} decoding="async" />
             </figure>
           ) : null}
@@ -56,15 +78,12 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
           </section>
           {inArchive ? (
             <>
-              <div role="tablist" aria-label={t.showcaseTabsAria} className="ledger-season-tabs">
-                <ShowcaseTab id="showcase-tab-memorial" to={archivePath("/showcase/memorial")} selected={Boolean(memorial)} label={t.showcaseTabMemorial} />
-                <ShowcaseTab id="showcase-tab-recommended" to={archivePath("/showcase/recommended")} selected={Boolean(recommended)} label={t.showcaseTabRecommended} />
-              </div>
-              <div className="ledger-archive" role="tabpanel" aria-labelledby={recommended ? "showcase-tab-recommended" : "showcase-tab-memorial"}>
+              <div className="ledger-archive" id="season-build" role="tabpanel" aria-labelledby={recommended ? "showcase-tab-recommended" : "showcase-tab-memorial"}>
                 <Outlet />
               </div>
             </>
           ) : null}
+          </div>
         </div>
       </main>
     </ShowcaseProvider>
@@ -88,7 +107,7 @@ function ShowcaseTab({
       to={to}
       role="tab"
       aria-selected={selected}
-      className="ledger-tab"
+      className="ledger-tab ledger-bookmark"
     >
       {label}
     </NavLink>
