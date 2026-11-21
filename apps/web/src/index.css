@@ -1098,10 +1098,9 @@ header {
   z-index: -1;
   inset-inline: 0;
   top: calc(100% - 1px);
-  height: clamp(.65rem, 1.5vw, 1.25rem);
-  background:
-    linear-gradient(90deg, #674b2b40, #9e7a4d92 17%, #5d442850 65%, #24201c30) top / 100% 1px no-repeat,
-    linear-gradient(180deg, #090807b0, transparent);
+  height: clamp(6px, .8vw, 13px);
+  background: url("./assets/ledger-masthead-seam.webp") center / 100% 100% no-repeat;
+  box-shadow: 0 4px 8px #0504037a;
   content: "";
   pointer-events: none;
 }
