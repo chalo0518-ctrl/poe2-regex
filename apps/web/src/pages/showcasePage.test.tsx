@@ -38,14 +38,27 @@ function slotLink(name: RegExp) {
 }
 
 describe("season BD showcase", () => {
+  it("shows the season picker before the archive tabs", async () => {
+    const user = userEvent.setup();
+    renderAt("/showcase");
+    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
+    const filter = within(screen.getByRole("region", { name: "選擇賽季" })).getByRole("combobox", { name: "賽季" });
+    await user.selectOptions(filter, "runes-of-aldur");
+    expect(screen.getByRole("tabpanel")).toBeInTheDocument();
+  });
+
   it("switches two main tabs and does not show them side by side", async () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
 
-    expect(screen.getByRole("link", { name: "賽季 BD" })).toBeInTheDocument();
-    const memorial = screen.getByRole("tab", { name: "我的狀況／紀念" });
-    const recommended = screen.getByRole("tab", { name: "推薦／攻略" });
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    const toggle = screen.getByRole("button", { name: "展開書籤" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await user.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    expect(within(screen.getByRole("navigation", { name: "賽季書籤" })).getByRole("link", { name: "首頁" })).toHaveAttribute("href", "/");
+    const memorial = screen.getByRole("tab", { name: "紀念" });
+    const recommended = screen.getByRole("tab", { name: "推薦" });
+    expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
     expect(memorial).toHaveAttribute("aria-selected", "true");
     expect(recommended).toHaveAttribute("aria-selected", "false");
     expect(screen.getAllByRole("tabpanel")).toHaveLength(1);
@@ -80,7 +93,7 @@ describe("season BD showcase", () => {
     expect(document.body.textContent).not.toContain("装备");
 
     await user.click(recommended);
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
     expect(screen.getAllByRole("tabpanel")).toHaveLength(1);
     expect(recommended).toHaveAttribute("aria-selected", "true");
     expect(memorial).toHaveAttribute("aria-selected", "false");
@@ -96,11 +109,14 @@ describe("season BD showcase", () => {
     await user.hover(slotLink(/主手/));
     expect(screen.getByRole("dialog", { name: "暮色刃痕" })).toHaveTextContent("單挑法杖");
 
+    expect(screen.queryByRole("button", { name: "顯示鑲嵌" })).not.toBeInTheDocument();
+    expect(slotLink(/頭盔/).querySelector(".socket-stack")).toBeNull();
     await user.keyboard("{Alt>}");
     expect(within(slotLink(/頭盔/)).getAllByTitle("完美鍛鐵符文")).toHaveLength(1);
     expect(within(slotLink(/頭盔/)).getByTitle("渡鴉碎片").querySelector("img")).not.toBeNull();
 
     await user.keyboard("{/Alt}");
+    expect(slotLink(/頭盔/).querySelector(".socket-stack")).toBeNull();
     await user.click(slotLink(/頭盔/));
     expect(screen.getByRole("heading", { name: "心靈 堅城" })).toBeInTheDocument();
     expect(screen.getByText("先祖頭冠")).toBeInTheDocument();
@@ -109,7 +125,7 @@ describe("season BD showcase", () => {
     expect(screen.getAllByText("增加18%找到的物品稀有度").length).toBeGreaterThan(0);
     expect(screen.queryByText("前綴")).not.toBeInTheDocument();
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
 
     await user.click(screen.getByRole("link", { name: "返回我的狀況／紀念" }));
     expect(screen.queryByRole("link", { name: /戒指 3/ })).not.toBeInTheDocument();
@@ -193,12 +209,9 @@ describe("season BD showcase", () => {
     expect(stack(/主手/).querySelectorAll(".socket-pip")).toHaveLength(2);
     expect(stack(/副手/)).toHaveAttribute("data-layout", "triangle");
     expect(stack(/副手/).querySelectorAll(".socket-pip")).toHaveLength(3);
-    const debug = screen.getByRole("button", { name: "孔位除錯" });
-    await user.click(debug);
-    expect(debug).toHaveAttribute("aria-pressed", "true");
-    expect(document.querySelector(".socket-debug")).not.toBeNull();
-    await user.click(debug);
-    expect(document.querySelector(".socket-debug")).toBeNull();
+    await user.keyboard("{/Alt}");
+    expect(document.querySelector(".socket-pip")).toBeNull();
+    expect(screen.queryByRole("button", { name: "孔位除錯" })).not.toBeInTheDocument();
   });
 
   it("shows transcribed memorial gear for the clicked slot only", async () => {
@@ -226,7 +239,7 @@ describe("season BD showcase", () => {
     expect(screen.getByText("+10 護甲")).toBeInTheDocument();
     expect(screen.getByText("+80 最大生命")).toBeInTheDocument();
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
   });
 
   it("drops a poe.ninja image even if one was pasted into the snapshot", () => {
@@ -255,13 +268,14 @@ describe("season BD showcase", () => {
     expect(within(helmet).getByText("固有尚未填入")).toBeInTheDocument();
 
     await user.click(helmet);
-    expect(screen.getAllByRole("tab")).toHaveLength(2);
-    expect(screen.getByRole("tab", { name: "推薦／攻略" })).toHaveAttribute("aria-selected", "true");
+    await user.click(screen.getByRole("button", { name: "展開書籤" }));
+    expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
+    expect(screen.getByRole("tab", { name: "推薦" })).toHaveAttribute("aria-selected", "true");
     expect(screen.queryByRole("tab", { name: /編輯/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "武器組 I" })).not.toBeInTheDocument();
     expect(screen.getByText("不會寫回網站")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "展開階層" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox", { name: "賽季" })).not.toBeInTheDocument();
 
     const prefix = screen.getByRole("region", { name: "前綴" });
     const suffix = screen.getByRole("region", { name: "後綴" });
@@ -345,38 +359,42 @@ describe("season BD showcase", () => {
   it("uses English chrome without simplified Chinese", async () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial", "en");
-    expect(screen.getByRole("tab", { name: "My setup / Memorial" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "Guide / Recommended" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Show bookmarks" }));
+    expect(screen.getByRole("tab", { name: "Memorial" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "Recommended" })).toBeInTheDocument();
     expect(screen.getByText("Dusk Scratch")).toBeInTheDocument();
     expect(document.body.textContent).not.toContain("推荐");
-    await user.click(screen.getByRole("tab", { name: "Guide / Recommended" }));
+    await user.click(screen.getByRole("tab", { name: "Recommended" }));
     expect(screen.getAllByText("Name not set").length).toBeGreaterThan(0);
     expect(screen.getAllByText("empty prefix").length).toBeGreaterThan(0);
   });
 
-  it("links the module from the home page", () => {
+  it("only links season recap from the preview home", () => {
     renderAt("/");
-    const links = screen.getAllByRole("link", { name: /賽季 BD/ });
+    expect(screen.queryByRole("link", { name: "返回" })).not.toBeInTheDocument();
+    const links = screen.getAllByRole("link", { name: /賽季回顧/ });
     expect(links.length).toBeGreaterThan(0);
-    expect(links.every((link) => link.getAttribute("href") === "/showcase")).toBe(true);
+    expect(links.every((link) => link.getAttribute("href") === "/showcase/memorial#season-update")).toBe(true);
+    expect(screen.queryByRole("link", { name: /裝備製作/ })).not.toBeInTheDocument();
+    expect(document.querySelector('a[href="/early"], a[href="/endgame"]')).toBeNull();
   });
 
-  it("leaves the endgame crafting navigation unchanged", () => {
+  it("hides equipment crafting in the endgame navigation", () => {
     render(
       <LocaleProvider initialLocale="zh-Hant">
-        <MemoryRouter initialEntries={["/endgame/crafting"]}>
+        <MemoryRouter initialEntries={["/endgame/waystones"]}>
           <Routes>
             <Route path="endgame" element={<EndgameLayout />}>
-              <Route path="crafting" element={<p>做裝頁</p>} />
+              <Route path="waystones" element={<p>換界石頁</p>} />
             </Route>
           </Routes>
         </MemoryRouter>
       </LocaleProvider>,
     );
-    expect(screen.getByRole("link", { name: "做裝" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "裝備製作" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "換界石" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "碑牌" })).toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "我的狀況／紀念" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "紀念" })).not.toBeInTheDocument();
   });
 });
 

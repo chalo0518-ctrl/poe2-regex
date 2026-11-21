@@ -1,14 +1,13 @@
-import { Navigate, Route } from "react-router-dom";
-import { SEASON_BD_V1, type BdShowcase } from "@poe2-regex/data";
+import { Route } from "react-router-dom";
+import { type BdShowcase } from "@poe2-regex/data";
 import MemorialDetail from "./MemorialDetail.tsx";
 import ShowcaseBoard from "./ShowcaseBoard.tsx";
 import ShowcaseEditor from "./ShowcaseEditor.tsx";
 import ShowcaseLayout from "./ShowcaseLayout.tsx";
 
-export function showcaseRoute(snapshot: BdShowcase = SEASON_BD_V1) {
+export function showcaseRoute(snapshot?: BdShowcase, seasonPreviewUrl?: string) {
   return (
-    <Route path="showcase" element={<ShowcaseLayout snapshot={snapshot} />}>
-      <Route index element={<Navigate to="memorial" replace />} />
+    <Route path="showcase" element={<ShowcaseLayout snapshot={snapshot} seasonPreviewUrl={seasonPreviewUrl} />}>
       <Route path="memorial" element={<ShowcaseBoard mode="memorial" />} />
       <Route path="memorial/:slotId" element={<MemorialDetail />} />
       <Route path="recommended" element={<ShowcaseBoard mode="recommended" />} />

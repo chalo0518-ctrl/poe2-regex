@@ -70,7 +70,7 @@ export default function ItemTooltip({
       className={`item-tip item-tip-${tip.gear.rarity || "rare"}`}
       role="dialog"
       aria-label={name}
-      style={{ left: `clamp(8px, ${pos.x}px, calc(100vw - min(40rem, 100vw - 2rem) - 8px))`, top: `clamp(8px, ${pos.y}px, calc(100dvh - min(70vh, 36rem) - 8px))` }}
+      style={{ left: `clamp(8px, ${pos.x}px, calc(100vw - min(46rem, 100vw - 2rem) - 8px))`, top: `clamp(8px, ${pos.y}px, calc(100dvh - min(70vh, 36rem) - 8px))` }}
       onMouseEnter={(event) => event.stopPropagation()}
     >
       <header onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag}>

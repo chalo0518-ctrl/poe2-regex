@@ -9,7 +9,6 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
   const name = marketItemTitle(gear, locale);
   const base = locale === "en" ? gear.baseEn || gear.baseZh : gear.baseZh || gear.baseEn;
   const quality = locale === "en" ? gear.qualityEn : gear.qualityZh || gear.qualityEn;
-  const requirements = locale === "en" ? gear.requirementsEn : gear.requirementsZh || gear.requirementsEn;
   const flavour = locale === "en" ? gear.flavourEn : gear.flavourZh || gear.flavourEn;
   const mirrored = locale === "en" ? gear.mirroredEn : gear.mirroredZh || gear.mirroredEn;
   const mods = gear.mods ?? [];
@@ -21,18 +20,14 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
           <h2>{name}</h2>
           {base && base !== name ? <p>{base}</p> : null}
         </div>
-        <section className="market-item-group market-item-stats">
+        {(quality || gear.stats?.length) ? <section className="market-item-group market-item-stats">
           {quality ? <p>{quality.includes("品質") || quality.includes("Quality") ? quality : `${locale === "en" ? "Quality" : "品質"}: ${quality}`}</p> : null}
           {(gear.stats ?? []).map((row) => (
             <p key={row.textEn || row.textZh} className="mt-1">
               {line(row, locale)}
             </p>
           ))}
-          {gear.itemLevel != null ? (
-            <p className="mt-1">{locale === "en" ? `Item Level: ${gear.itemLevel}` : `物品等級: ${gear.itemLevel}`}</p>
-          ) : null}
-          {requirements ? <p className="mt-1 text-sm text-muted">{requirements}</p> : null}
-        </section>
+        </section> : null}
         {[
           { label: locale === "en" ? "Base effects" : "底材效果", rows: mods.length ? mods.filter((mod) => mod.kind === "implicit") : gear.implicits.map((row) => ({ ...row, kind: "implicit" })) },
           { label: locale === "en" ? "Socket effects" : "鑲嵌效果", rows: mods.filter((mod) => mod.kind === "socket") },
@@ -46,7 +41,7 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
                 <li key={rowIndex} className="market-item-mod" data-kind={mod.kind}>
                   {mod.kind === "fractured" && <small>{locale === "en" ? "Fractured" : "鎖定"}</small>}
                   {mod.kind === "crafted" && <small>{locale === "en" ? "Crafted" : "工藝"}</small>}
-                  {line(mod, locale)}
+                  <span>{line(mod, locale)}</span>
                 </li>
               ))}
             </ul>

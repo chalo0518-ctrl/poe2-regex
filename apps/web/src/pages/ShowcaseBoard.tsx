@@ -22,8 +22,10 @@ export default function ShowcaseBoard({ mode }: { mode: "memorial" | "recommende
       ? `Level ${snapshot.level} ${snapshot.classEn ?? ""} · ${snapshot.leagueEn ?? ""}`
       : `${snapshot.level} 級 ${snapshot.classZh ?? ""} · ${snapshot.leagueZh ?? ""}`
     : "";
+  const character = locale === "en" ? snapshot.titleEn : snapshot.titleZh;
   return (
     <div>
+      <h2 className="ledger-character">{character}</h2>
       {identity ? <p className="mb-2 text-sm text-muted">{identity}</p> : null}
       {mode === "recommended" ? (
         <SessionNote />
