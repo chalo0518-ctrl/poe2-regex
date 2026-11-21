@@ -1388,7 +1388,97 @@ header {
 }
 #season-update, #season-build { scroll-margin-top: 1rem; }
 @media (max-width: 720px) {
-  .ledger-season .ledger-season-layout { grid-template-columns: minmax(0, 1fr); }
-  .ledger-bookmarks, .ledger-bookmarks .ledger-season-tabs { display: flex; flex-wrap: wrap; }
-  .ledger-bookmarks { position: static; }
+  .ledger-season .ledger-season-layout {
+  --archive-gutter: clamp(.9rem, 3vw, 2.5rem);
+  --bookmarks-width: clamp(8rem, 13vw, 11.5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1.15rem;
+  margin-top: clamp(1rem, 2.4vw, 2.25rem);
+  padding-inline: var(--archive-gutter);
+}
+
+.ledger-season-main { min-width: 0; }
+
+.ledger-bookmarks-toggle {
+  position: fixed;
+  z-index: 20;
+  top: clamp(6.5rem, 20vh, 11rem);
+  inset-inline-start: max(0px, calc((100vw - 1720px) / 2));
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 3.25rem;
+  padding: 0;
+  border: 1px solid #756040;
+  border-inline-start: 0;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(90deg, #17120f, #3a2b1e 83%, #211811);
+  box-shadow: inset -1px 0 #c7a67236, 3px 3px 9px #0009;
+  color: #e3c491;
+}
+
+.ledger-bookmarks-toggle:hover { border-color: #c59a62; }
+.ledger-bookmark-fold {
+  width: .48rem;
+  height: .48rem;
+  border-block-start: 1px solid currentColor;
+  border-inline-end: 1px solid currentColor;
+  transform: translateX(-1px) rotate(45deg);
+}
+.ledger-bookmarks-toggle[aria-expanded="true"] .ledger-bookmark-fold {
+  transform: translateX(1px) rotate(225deg);
+}
+
+.ledger-bookmarks[hidden] { display: none; }
+.ledger-bookmarks {
+  position: sticky;
+  top: 1rem;
+  display: grid;
+  padding: .65rem .5rem;
+  border-block: 1px solid #675033;
+  border-inline-start: 1px solid #634a30;
+  background: linear-gradient(105deg, #211a14 0%, #171310ed 65%, #131110);
+  box-shadow: inset 0 0 0 2px #0a090880, 0 8px 18px #0006;
+}
+.ledger-bookmark-sections { display: grid; }
+.ledger-bookmark-update { margin-block-end: .25rem; border-block-end: 1px solid #a980484a; }
+.ledger-bookmarks .ledger-bookmark {
+  display: flex;
+  align-items: center;
+  min-height: 2.6rem;
+  padding: .42rem .65rem;
+  border-inline-start: 2px solid transparent;
+  color: #d0b997;
+  font: 600 .9rem var(--font-display);
+}
+.ledger-bookmarks .ledger-bookmark:hover { color: #fff0d1; }
+.ledger-bookmarks .ledger-bookmark[aria-selected="true"],
+.ledger-bookmarks .ledger-bookmark[aria-current="location"] {
+  border-inline-start-color: #c6945c;
+  background: linear-gradient(90deg, #7550356b, transparent);
+  color: #ffdfac;
+}
+
+.ledger-season-main .ledger-season-poster {
+  margin-block-end: clamp(.9rem, 2vw, 1.5rem);
+  padding: clamp(.3rem, .75vw, .65rem);
+  background: #0d0b09;
+}
+.ledger-season-main .ledger-season-select { margin-block-end: .7rem; }
+.ledger-season-main .ledger-season-controls { padding-inline: 0; padding-block-end: .45rem; }
+.ledger-season-main .ledger-archive { padding: clamp(.85rem, 2.4vw, 2rem); }
+
+#season-update, #season-build { scroll-margin-top: 1rem; }
+
+@media (min-width: 721px) {
+  .ledger-season .ledger-season-layout[data-bookmarks-open="true"] {
+    grid-template-columns: var(--bookmarks-width) minmax(0, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .ledger-bookmarks, .ledger-bookmark-sections { display: flex; flex-wrap: wrap; }
+  .ledger-bookmarks { position: static; padding: .25rem; }
+  .ledger-bookmark-update { margin: 0; border-block-end: 0; }
 }

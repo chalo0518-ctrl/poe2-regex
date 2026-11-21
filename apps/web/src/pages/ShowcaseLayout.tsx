@@ -43,17 +43,17 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
         <div className="ledger-content ledger-season-layout" data-bookmarks-open={bookmarksOpen}>
           <button type="button" className="ledger-bookmarks-toggle" aria-expanded={bookmarksOpen}
             aria-controls="season-bookmarks" onClick={() => setBookmarksOpen((open) => !open)}>
-            <span aria-hidden="true">{bookmarksOpen ? "‹" : "›"}</span>
+            <span className="ledger-bookmark-fold" aria-hidden="true" />
             <span className="sr-only">{english ? (bookmarksOpen ? "Hide bookmarks" : "Show bookmarks") : (bookmarksOpen ? "收合書籤" : "展開書籤")}</span>
           </button>
           <nav id="season-bookmarks" hidden={!bookmarksOpen} className="ledger-bookmarks" aria-label={english ? "Season bookmarks" : "賽季書籤"}>
             <Link className="ledger-bookmark" to="/">{english ? "Home" : "首頁"}</Link>
             {inArchive ? (
               <>
-                {updateImage ? <Link className="ledger-bookmark" aria-current={location.hash === "#season-update" ? "location" : undefined} to={archivePath("/showcase/memorial") + "#season-update"}>
+                {updateImage ? <Link className="ledger-bookmark ledger-bookmark-update" aria-current={location.hash === "#season-update" ? "location" : undefined} to={archivePath("/showcase/memorial") + "#season-update"}>
                   {english ? "Season update" : "版本更新"}
                 </Link> : null}
-                <div role="tablist" aria-label={t.showcaseTabsAria} className="ledger-season-tabs">
+                <div role="tablist" aria-label={t.showcaseTabsAria} className="ledger-bookmark-sections">
                   <ShowcaseTab id="showcase-tab-memorial" to={archivePath("/showcase/memorial") + "#season-build"} selected={Boolean(memorial) && location.hash !== "#season-update"} label={t.showcaseTabMemorial} />
                   <ShowcaseTab id="showcase-tab-recommended" to={archivePath("/showcase/recommended") + "#season-build"} selected={Boolean(recommended)} label={t.showcaseTabRecommended} />
                 </div>
@@ -113,7 +113,7 @@ function ShowcaseTab({
       to={to}
       role="tab"
       aria-selected={selected}
-      className="ledger-tab ledger-bookmark"
+      className="ledger-bookmark"
     >
       {label}
     </NavLink>
