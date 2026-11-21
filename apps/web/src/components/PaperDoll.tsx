@@ -68,7 +68,7 @@ function nameOf(row: { nameZh: string; nameEn: string }, locale: UiLocale): stri
 }
 
 export default function PaperDoll({ mode }: { mode: DollMode }) {
-  const { locale } = useLocale();
+  const { locale, t } = useLocale();
   const [set, setWeaponSet] = useState<WeaponSet>(1);
   const [socketsOn, setSocketsOn] = useState(false);
   const [tip, setTip] = useState<TooltipState | null>(null);
