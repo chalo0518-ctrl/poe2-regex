@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { seasonHref } from "../pages/showcaseSeasons.ts";
 import wandSerle from "../assets/socket-medals/wand-1-serles-triumph.png";
@@ -68,13 +68,10 @@ function nameOf(row: { nameZh: string; nameEn: string }, locale: UiLocale): stri
 }
 
 export default function PaperDoll({ mode }: { mode: DollMode }) {
-  const { locale, t } = useLocale();
+  const { locale } = useLocale();
   const [set, setWeaponSet] = useState<WeaponSet>(1);
   const [socketsOn, setSocketsOn] = useState(false);
-  const [debugOn, setDebugOn] = useState(false);
   const [tip, setTip] = useState<TooltipState | null>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const [debugLines, setDebugLines] = useState<string[]>([]);
   const jewels = paperDollSlots.filter((slot) => slot.group === "jewel");
   const charms = paperDollSlots.filter((slot) => slot.group === "charm");
   const gridSlots = paperDollSlots.filter((slot) => GRID_AREAS.includes(slot.area as (typeof GRID_AREAS)[number]));
@@ -99,49 +96,37 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
     if (!tip?.pinned) setTip(null);
   }
 
-  useLayoutEffect(() => {
-    if (!debugOn || !panelRef.current) {
-      setDebugLines([]);
-      return;
+  useEffect(() => {
+    if (mode !== "memorial") return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Alt") setSocketsOn(true);
     }
-    const lines = [...panelRef.current.querySelectorAll<HTMLElement>(".socket-pip")].map((pip) => {
-      const stack = pip.parentElement;
-      const cell = pip.closest<HTMLElement>("[data-slot]");
-      if (!stack || !cell) return "";
-      const pr = pip.getBoundingClientRect();
-      const sr = stack.getBoundingClientRect();
-      const slot = cell.dataset.slot ?? "";
-      const fx = ((pr.left + pr.width / 2 - sr.left) / sr.width).toFixed(3);
-      const fy = ((pr.top + pr.height / 2 - sr.top) / sr.height).toFixed(3);
-      const fallback = stack.dataset.fallback === "true" ? " fallback" : "";
-      return `${slot} ${pip.dataset.socketName || "unnamed"} px (${Math.round(pr.left + pr.width / 2)},${Math.round(pr.top + pr.height / 2)}) slot (${fx},${fy}) d=${Math.round(pr.width)}px${fallback}`;
-    });
-    setDebugLines(lines.filter(Boolean));
-  }, [debugOn, socketsOn, set]);
+    function onKeyUp(event: KeyboardEvent) {
+      if (event.key === "Alt" || !event.altKey) setSocketsOn(false);
+    }
+    function resetSockets() {
+      setSocketsOn(false);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keyup", onKeyUp);
+    window.addEventListener("blur", resetSockets);
+    document.addEventListener("visibilitychange", resetSockets);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", resetSockets);
+      document.removeEventListener("visibilitychange", resetSockets);
+    };
+  }, [mode]);
 
   return (
-    <div className={debugOn ? "ninja-panel socket-debug" : "ninja-panel"} ref={panelRef}>
+    <div className="ninja-panel">
       <div className="ninja-toolbar">
         <p className="ninja-panel-title">{locale === "en" ? "Equipment" : "裝備"}</p>
-        <button
-          type="button"
-          aria-pressed={socketsOn}
-          onClick={() => setSocketsOn((on) => !on)}
-        >
-          {t.showcaseShowSockets}
-        </button>
-        <button type="button" aria-pressed={debugOn} onClick={() => setDebugOn((on) => !on)}>
-          {locale === "en" ? "Socket debug" : "孔位除錯"}
-        </button>
       </div>
-      {debugOn ? (
-        <pre className="socket-debug-readout" aria-label={locale === "en" ? "Socket debug readout" : "孔位除錯讀數"}>
-          {debugLines.join("\n") || (locale === "en" ? "Turn on sockets to read holes." : "先打開顯示鑲嵌才能讀孔位。")}
-        </pre>
-      ) : null}
       <div className={mode === "memorial" ? "ninja-sheet ninja-memorial-sheet" : "ninja-sheet"}>
         {mode === "memorial" ? alternate.map((slot) => (
-          <WeaponThumbnail key={slot.id} slot={slot} locale={locale} socketsOn={socketsOn} debugOn={debugOn} />
+          <WeaponThumbnail key={slot.id} slot={slot} locale={locale} socketsOn={socketsOn} />
         )) : null}
         <WeaponTabs set={set} onSet={setWeaponSet} area="wtab" label={locale === "en" ? "Weapon set" : "武器組"} />
         <WeaponTabs set={set} onSet={setWeaponSet} area="otab" label={locale === "en" ? "Off-hand set" : "副手武器組"} />
@@ -152,7 +137,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
             mode={mode}
             locale={locale}
             socketsOn={socketsOn}
-            debugOn={debugOn}
+           
             onHover={showTip}
             onLeave={hideTip}
           />
@@ -165,7 +150,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
               mode={mode}
               locale={locale}
               socketsOn={socketsOn}
-              debugOn={debugOn}
+             
               onHover={showTip}
               onLeave={hideTip}
             />
@@ -182,7 +167,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
                 mode={mode}
                 locale={locale}
                 socketsOn={socketsOn}
-                debugOn={debugOn}
+               
                 onHover={showTip}
                 onLeave={hideTip}
               />
@@ -223,7 +208,7 @@ function WeaponTabs({
     >
       {([1, 2] as const).map((value) => (
         <button key={value} type="button" aria-pressed={set === value} onClick={() => onSet(value)}>
-          {value === 1 ? "I" : "II"}
+          <span>{value === 1 ? "I" : "II"}</span>
         </button>
       ))}
     </div>
@@ -235,7 +220,6 @@ function DollCell({
   mode,
   locale,
   socketsOn,
-  debugOn,
   onHover,
   onLeave,
 }: {
@@ -243,7 +227,6 @@ function DollCell({
   mode: DollMode;
   locale: UiLocale;
   socketsOn: boolean;
-  debugOn: boolean;
   onHover: (gear: MemorialGear | null, event: MouseEvent<HTMLElement>) => void;
   onLeave: () => void;
 }) {
@@ -271,7 +254,7 @@ function DollCell({
       >
         <span className="ninja-art">
           {src ? <img src={src} alt={name || slotLabel} /> : null}
-          {socketsOn ? <SocketOverlay slotId={slot.id} locale={locale} debug={debugOn} /> : null}
+          {socketsOn ? <SocketOverlay slotId={slot.id} locale={locale} /> : null}
         </span>
         <span className="sr-only">{name || t.showcaseMemorialEmpty}</span>
       </Link>
@@ -307,11 +290,10 @@ function DollCell({
   );
 }
 
-function WeaponThumbnail({ slot, locale, socketsOn, debugOn }: {
+function WeaponThumbnail({ slot, locale, socketsOn }: {
   slot: PaperDollSlot;
   locale: UiLocale;
   socketsOn: boolean;
-  debugOn: boolean;
 }) {
   const { snapshot } = useShowcase();
   const gear = memorialGear(snapshot, slot.id);
@@ -324,7 +306,7 @@ function WeaponThumbnail({ slot, locale, socketsOn, debugOn }: {
       data-slot={slot.id} data-rarity={gear.rarity}>
       <span className="ninja-art">
         {src ? <img src={src} alt={nameOf(gear, locale)} /> : null}
-        {socketsOn ? <SocketOverlay slotId={slot.id} locale={locale} debug={debugOn} thumbnail /> : null}
+        {socketsOn ? <SocketOverlay slotId={slot.id} locale={locale} thumbnail /> : null}
       </span>
     </div>
   );
@@ -440,12 +422,10 @@ function socketLayout(slotId: PaperDollSlotId, count: number): string {
 function SocketOverlay({
   slotId,
   locale,
-  debug,
   thumbnail = false,
 }: {
   slotId: PaperDollSlotId;
   locale: UiLocale;
-  debug: boolean;
   thumbnail?: boolean;
 }) {
   const medals = MEDALS[slotId];
@@ -474,9 +454,7 @@ function SocketOverlay({
             style={{ left: `${spot.cx * 100}%`, top: `${spot.cy * 100}%`, width: `${diameter * 100}%` }}
             {...(name ? { title: name } : {})}
           >
-            {debug ? <i className="socket-cross socket-cross-icon" /> : null}
             <img src={medal.src} alt="" />
-            {debug ? <b className="socket-cross socket-cross-anchor" /> : null}
           </span>
         );
       })}

@@ -39,7 +39,10 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
   const resizeBookmarks = (width: number) => {
     setBookmarkWidth(Math.max(180, Math.min(width, 480, window.innerWidth * 0.42)));
   };
-  const seasonName = (item: BdShowcase) => (english ? item.leagueEn : item.leagueZh) || item.leagueEn || item.titleEn;
+  const seasonName = (item: BdShowcase) => {
+    const name = (english ? item.leagueEn : item.leagueZh) || item.leagueEn || item.titleEn;
+    return name.replace(/\s*聯盟\s*$/u, "");
+  };
   const archivePath = (path: string) => seasonHref(path, active.id);
 
   return (
@@ -94,7 +97,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
               <img src={updateImage} alt={english ? `${seasonName(snapshot)} update overview` : `${seasonName(snapshot)} 更新總覽`} decoding="async" />
             </figure>
           ) : null}
-          <section className="ledger-season-select" aria-label={english ? "Choose a season" : "選擇賽季"}>
+          {!inArchive ? <section className="ledger-season-select" aria-label={english ? "Choose a season" : "選擇賽季"}>
             <div className="ledger-season-controls">
               {!inArchive ? (
                 <h1>{t.showcaseNav}</h1>
@@ -109,7 +112,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
               </select>
             </label>
             </div>
-          </section>
+          </section> : null}
           {inArchive && !showUpdate ? (
             <>
               <div className="ledger-archive" id="season-build" role="tabpanel" aria-labelledby={recommended ? "showcase-tab-recommended" : "showcase-tab-memorial"}>

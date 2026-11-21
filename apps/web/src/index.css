@@ -1348,12 +1348,13 @@ header {
 .ledger-bookmarks-toggle {
   position: fixed;
   z-index: 20;
-  top: clamp(6.5rem, 20vh, 11rem);
-  inset-inline-start: max(0px, calc((100vw - 1720px) / 2));
+  top: 50%;
+  inset-inline-start: 0;
+  transform: translateY(-50%);
   display: grid;
   place-items: center;
-  width: 2rem;
-  height: 2.65rem;
+  width: 1.1rem;
+  height: 3.8rem;
   padding: 0;
   border: 1px solid #756040;
   border-inline-start: 0;
@@ -1377,15 +1378,15 @@ header {
 .ledger-bookmarks[hidden] { display: none; }
 .ledger-bookmarks {
   position: sticky;
-  top: 1rem;
+  top: 0;
   display: grid;
   align-content: start;
-  min-height: max(18rem, calc(100svh - 3rem));
+  min-height: max(18rem, 100svh);
   padding: .7rem;
-  border: 1px solid #56432f;
-  border-radius: .45rem;
-  background: #171412;
-  box-shadow: 0 8px 18px #0007;
+  border: 0;
+  border-inline-end: 1px solid #9b764e;
+  background: linear-gradient(110deg, #120d0aee, #1b1511d9), var(--ledger-masonry) center top / 460px repeat;
+  box-shadow: inset -3px 0 #3e2c21, 6px 0 20px #0009;
 }
 .ledger-bookmark-title {
   display: flex;
@@ -1402,6 +1403,8 @@ header {
   padding: .48rem .48rem .45rem;
   border-radius: .22rem;
   color: #e6d6bd;
+  background: linear-gradient(#3d2c21, #211914);
+  border: 1px solid #665039;
   font: 600 .85rem/1.4 var(--font-sans);
   overflow-wrap: anywhere;
   cursor: pointer;
@@ -1446,6 +1449,12 @@ header {
 @media (min-width: 721px) {
   .ledger-season .ledger-season-layout[data-bookmarks-open="true"] {
     grid-template-columns: var(--bookmarks-column) minmax(0, 1fr);
+    max-width: none;
+    margin-top: 0;
+    padding-inline-start: 0;
+  }
+  .ledger-season-layout[data-bookmarks-open="true"] .ledger-season-main {
+    padding-top: clamp(1rem, 2.4vw, 2.25rem);
   }
 }
 @media (max-width: 720px) {
@@ -1456,8 +1465,8 @@ header {
 .ledger-bookmark-resize { display: none; }
 @media (min-width: 721px) {
   .ledger-bookmarks-toggle[aria-expanded="true"] {
-    inset-inline-start: calc(max(0px, (100vw - 1720px) / 2) + var(--archive-gutter) + var(--bookmarks-column) - 1px);
-    width: 1.15rem;
+    inset-inline-start: calc(var(--bookmarks-column) - 1px);
+    width: 1.1rem;
   }
   .ledger-bookmark-resize {
     position: absolute;
@@ -1475,4 +1484,44 @@ header {
   .ledger-season-layout[data-bookmarks-open="true"] .ninja-memorial-sheet {
     --cell: min(76px, calc((100vw - var(--bookmarks-column) - 8rem - 9 * var(--gap)) / 10));
   }
+}
+
+.ledger-bookmark-title {
+  background: linear-gradient(90deg, #4e3523a6, transparent);
+  border-bottom-color: #8c6745;
+  box-shadow: 0 2px 6px #0006;
+}
+@media (max-width: 720px) {
+  .ledger-season .ledger-season-layout[data-bookmarks-open="true"] {
+    margin-top: 0;
+    padding-inline: 0;
+  }
+  .ledger-season-layout[data-bookmarks-open="true"] .ledger-season-main { padding-inline: var(--archive-gutter); }
+}
+
+.ninja-memorial-sheet .ninja-tabs {
+  align-items: end;
+  justify-content: center;
+  gap: .15rem;
+  padding-inline: .2rem;
+}
+.ninja-memorial-sheet .ninja-tabs button {
+  width: clamp(1.3rem, 3vw, 2rem);
+  height: 1.65rem;
+  padding: 0;
+  border: 1px solid #765535;
+  border-radius: .45rem .45rem 0 0;
+  background: linear-gradient(#2c2218, #100e0d 75%);
+  box-shadow: inset 0 0 0 1px #090807;
+  color: #a99372;
+  font-family: "Cinzel", Georgia, serif;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+.ninja-memorial-sheet .ninja-tabs button[aria-pressed="true"] {
+  border-color: #c19a61 #9f7543 #4b3621;
+  background: linear-gradient(#6e5030, #281e14 85%);
+  box-shadow: inset 0 1px #efd18259, inset 0 0 0 1px #150f0b;
+  color: #ffe0a5;
 }

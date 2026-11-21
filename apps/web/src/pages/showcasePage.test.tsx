@@ -109,12 +109,14 @@ describe("season BD showcase", () => {
     await user.hover(slotLink(/主手/));
     expect(screen.getByRole("dialog", { name: "暮色 刃痕" })).toHaveTextContent("單挑法杖");
 
-    const sockets = screen.getByRole("button", { name: "顯示鑲嵌" });
-    await user.click(sockets);
-    expect(sockets).toHaveAttribute("aria-pressed", "true");
+    expect(screen.queryByRole("button", { name: "顯示鑲嵌" })).not.toBeInTheDocument();
+    expect(slotLink(/頭盔/).querySelector(".socket-stack")).toBeNull();
+    await user.keyboard("{Alt>}");
     expect(within(slotLink(/頭盔/)).getAllByTitle("完美鍛鐵符文")).toHaveLength(1);
     expect(within(slotLink(/頭盔/)).getByTitle("渡鴉碎片").querySelector("img")).not.toBeNull();
 
+    await user.keyboard("{/Alt}");
+    expect(slotLink(/頭盔/).querySelector(".socket-stack")).toBeNull();
     await user.click(slotLink(/頭盔/));
     expect(screen.getByRole("heading", { name: "心靈 堅城" })).toBeInTheDocument();
     expect(screen.getByText("先祖頭冠")).toBeInTheDocument();
@@ -133,7 +135,7 @@ describe("season BD showcase", () => {
   it("lays recorded sockets out like the in-game doll", async () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
-    await user.click(screen.getByRole("button", { name: "顯示鑲嵌" }));
+    await user.keyboard("{Alt>}");
 
     function stack(name: RegExp) {
       const node = slotLink(name).querySelector(".socket-stack");
@@ -207,12 +209,9 @@ describe("season BD showcase", () => {
     expect(stack(/主手/).querySelectorAll(".socket-pip")).toHaveLength(2);
     expect(stack(/副手/)).toHaveAttribute("data-layout", "triangle");
     expect(stack(/副手/).querySelectorAll(".socket-pip")).toHaveLength(3);
-    const debug = screen.getByRole("button", { name: "孔位除錯" });
-    await user.click(debug);
-    expect(debug).toHaveAttribute("aria-pressed", "true");
-    expect(document.querySelector(".socket-debug")).not.toBeNull();
-    await user.click(debug);
-    expect(document.querySelector(".socket-debug")).toBeNull();
+    await user.keyboard("{/Alt}");
+    expect(document.querySelector(".socket-pip")).toBeNull();
+    expect(screen.queryByRole("button", { name: "孔位除錯" })).not.toBeInTheDocument();
   });
 
   it("shows transcribed memorial gear for the clicked slot only", async () => {
@@ -276,7 +275,7 @@ describe("season BD showcase", () => {
     expect(screen.queryByRole("heading", { name: "武器組 I" })).not.toBeInTheDocument();
     expect(screen.getByText("不會寫回網站")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "展開階層" })).not.toBeInTheDocument();
-    expect(screen.getAllByRole("combobox")).toEqual([screen.getByRole("combobox", { name: "賽季" })]);
+    expect(screen.queryByRole("combobox", { name: "賽季" })).not.toBeInTheDocument();
 
     const prefix = screen.getByRole("region", { name: "前綴" });
     const suffix = screen.getByRole("region", { name: "後綴" });
