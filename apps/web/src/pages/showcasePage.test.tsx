@@ -62,16 +62,16 @@ describe("season BD showcase", () => {
     expect(memorial).toHaveAttribute("aria-selected", "true");
     expect(recommended).toHaveAttribute("aria-selected", "false");
     expect(screen.getAllByRole("tabpanel")).toHaveLength(1);
-    expect(screen.getByText("暮色 刃痕")).toBeInTheDocument();
+    expect(screen.getByText("暮色刃痕")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "基礎珠寶" })).toBeInTheDocument();
     expect(screen.getAllByText("水井之心").length).toBeGreaterThan(0);
     expect(screen.queryByText("empty prefix")).not.toBeInTheDocument();
-    expect(slotLink(/主手/)).toHaveAccessibleName(/暮色 刃痕/);
+    expect(slotLink(/主手/)).toHaveAccessibleName(/暮色刃痕/);
     expect(screen.queryByRole("link", { name: /戒指 3/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /飾品/ })).not.toBeInTheDocument();
     await user.click(screen.getAllByRole("button", { name: "II" })[0]);
     expect(screen.getByText("林木塑像")).toBeInTheDocument();
-    expect(screen.queryByText("暮色 刃痕")).not.toBeInTheDocument();
+    expect(screen.queryByText("暮色刃痕")).not.toBeInTheDocument();
     await user.click(screen.getAllByRole("button", { name: "I" })[0]);
     expect(slotLink(/生命藥劑/)).toBeInTheDocument();
     expect(slotLink(/魔力藥劑/)).toBeInTheDocument();
@@ -107,7 +107,7 @@ describe("season BD showcase", () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
     await user.hover(slotLink(/主手/));
-    expect(screen.getByRole("dialog", { name: "單挑法杖" })).toHaveTextContent("單挑法杖");
+    expect(screen.getByRole("dialog", { name: "暮色刃痕" })).toHaveTextContent("單挑法杖");
 
     expect(screen.queryByRole("button", { name: "顯示鑲嵌" })).not.toBeInTheDocument();
     expect(slotLink(/頭盔/).querySelector(".socket-stack")).toBeNull();
@@ -118,9 +118,9 @@ describe("season BD showcase", () => {
     await user.keyboard("{/Alt}");
     expect(slotLink(/頭盔/).querySelector(".socket-stack")).toBeNull();
     await user.click(slotLink(/頭盔/));
-    expect(screen.getByRole("heading", { name: "先祖頭冠" })).toBeInTheDocument();
-    expect(screen.queryByText("心靈 堅城")).not.toBeInTheDocument();
-    expect(screen.getByText("完美鍛鐵符文")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "心靈 堅城" })).toBeInTheDocument();
+    expect(screen.getByText("先祖頭冠")).toBeInTheDocument();
+    expect(screen.queryByText("完美鍛鐵符文")).not.toBeInTheDocument();
     expect(screen.getByText("已汙染")).toBeInTheDocument();
     expect(screen.getAllByText("增加18%找到的物品稀有度").length).toBeGreaterThan(0);
     expect(screen.queryByText("前綴")).not.toBeInTheDocument();

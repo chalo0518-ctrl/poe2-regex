@@ -44,7 +44,8 @@ export default function ItemTooltip({
 
   function startDrag(event: ReactPointerEvent<HTMLElement>) {
     if (event.button !== 0) return;
-    drag.current = { dx: event.clientX - pos.x, dy: event.clientY - pos.y, moved: false };
+    const bounds = root.current?.getBoundingClientRect();
+    drag.current = { dx: event.clientX - (bounds?.left ?? pos.x), dy: event.clientY - (bounds?.top ?? pos.y), moved: false };
     event.currentTarget.setPointerCapture(event.pointerId);
   }
 
@@ -69,7 +70,7 @@ export default function ItemTooltip({
       className={`item-tip item-tip-${tip.gear.rarity || "rare"}`}
       role="dialog"
       aria-label={name}
-      style={{ left: pos.x, top: pos.y }}
+      style={{ left: `clamp(8px, ${pos.x}px, calc(100vw - min(46rem, 100vw - 2rem) - 8px))`, top: `clamp(8px, ${pos.y}px, calc(100dvh - min(70vh, 36rem) - 8px))` }}
       onMouseEnter={(event) => event.stopPropagation()}
     >
       <header onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag}>
