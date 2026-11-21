@@ -107,7 +107,7 @@ describe("season BD showcase", () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
     await user.hover(slotLink(/主手/));
-    expect(screen.getByRole("dialog", { name: "暮色 刃痕" })).toHaveTextContent("單挑法杖");
+    expect(screen.getByRole("dialog", { name: "單挑法杖" })).toHaveTextContent("單挑法杖");
 
     expect(screen.queryByRole("button", { name: "顯示鑲嵌" })).not.toBeInTheDocument();
     expect(slotLink(/頭盔/).querySelector(".socket-stack")).toBeNull();
@@ -118,8 +118,8 @@ describe("season BD showcase", () => {
     await user.keyboard("{/Alt}");
     expect(slotLink(/頭盔/).querySelector(".socket-stack")).toBeNull();
     await user.click(slotLink(/頭盔/));
-    expect(screen.getByRole("heading", { name: "心靈 堅城" })).toBeInTheDocument();
-    expect(screen.getByText("先祖頭冠")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "先祖頭冠" })).toBeInTheDocument();
+    expect(screen.queryByText("心靈 堅城")).not.toBeInTheDocument();
     expect(screen.getByText("完美鍛鐵符文")).toBeInTheDocument();
     expect(screen.getByText("已汙染")).toBeInTheDocument();
     expect(screen.getAllByText("增加18%找到的物品稀有度").length).toBeGreaterThan(0);

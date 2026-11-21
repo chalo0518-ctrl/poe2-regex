@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
-import { showcaseImageUrl, type MemorialGear, type UiLocale } from "@poe2-regex/data";
+import { type MemorialGear, type UiLocale } from "@poe2-regex/data";
+
+import MarketItemCard, { marketItemTitle } from "./MarketItemCard.tsx";
 
 export type TooltipState = {
   gear: MemorialGear;
@@ -24,8 +26,7 @@ export default function ItemTooltip({
   const [pos, setPos] = useState({ x: tip.x, y: tip.y });
   const posRef = useRef(pos);
   posRef.current = pos;
-  const name = locale === "en" ? tip.gear.nameEn || tip.gear.nameZh : tip.gear.nameZh || tip.gear.nameEn;
-  const body = locale === "en" ? tip.gear.tooltipEn || tip.gear.tooltipZh || "" : tip.gear.tooltipZh || tip.gear.tooltipEn || "";
+  const name = marketItemTitle(tip.gear, locale);
 
   useEffect(() => {
     if (!tip.pinned) setPos({ x: tip.x, y: tip.y });
@@ -72,30 +73,12 @@ export default function ItemTooltip({
       onMouseEnter={(event) => event.stopPropagation()}
     >
       <header onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag}>
-        <strong>{name}</strong>
-        <button type="button" onClick={onDismiss} aria-label={locale === "en" ? "Close" : "關閉"}>
+        <span aria-hidden="true">⋯</span>
+        <button type="button" onPointerDown={(event) => event.stopPropagation()} onClick={onDismiss} aria-label={locale === "en" ? "Close" : "關閉"}>
           ×
         </button>
       </header>
-      <pre>{body}</pre>
-      {(tip.gear.sockets ?? []).length > 0 ? (
-        <ul>
-          {(tip.gear.sockets ?? []).map((socket, index) => {
-            const socketName = locale === "en" ? socket.nameEn : socket.nameZh;
-            const socketBody = locale === "en" ? socket.tooltipEn : socket.tooltipZh;
-            const src = showcaseImageUrl(socket.imageUrl ?? "");
-            return (
-              <li key={`${socket.nameEn}-${index}`}>
-                {src ? <img src={src} alt="" /> : null}
-                <div>
-                  <p>{socketName}</p>
-                  {socketBody ? <pre>{socketBody}</pre> : null}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
+      <MarketItemCard gear={tip.gear} locale={locale} />
     </div>
   );
 }

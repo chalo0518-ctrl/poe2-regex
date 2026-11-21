@@ -472,8 +472,7 @@ header {
   background: #241e17;
 }
 
-.item-tip-unique header strong { color: #d4834a; }
-.item-tip-rare header strong { color: #f0e2a0; }
+
 
 .item-tip header button {
   border: 0;
@@ -483,34 +482,61 @@ header {
   line-height: 1;
 }
 
-.item-tip pre {
-  margin: 0;
-  padding: 0.55rem 0.7rem;
-  white-space: pre-wrap;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  line-height: 1.45;
-}
 
-.item-tip ul {
-  margin: 0;
-  padding: 0 0.7rem 0.7rem;
-  list-style: none;
+.market-item {
+  --item-accent: #e3c873;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  background: #101112;
+  border: 1px solid #3f3627;
 }
+.market-item:has(.market-item-art) {
+  grid-template-columns: minmax(3rem, 18%) minmax(0, 1fr);
+}
+.market-item--unique { --item-accent: #ef9857; }
+.market-item-art {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: clamp(.25rem, 1vw, .9rem);
+  background: radial-gradient(ellipse, #252722, #121314 72%);
+}
+.market-item-art img { max-width: 100%; max-height: 9rem; object-fit: contain; }
+.market-item-copy {
+  min-width: 0;
+  padding-bottom: .65rem;
+  background: #090909;
+  text-align: center;
+  font-size: .92rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.market-item-name {
+  padding: .4rem .6rem;
+  color: var(--item-accent);
+  background: linear-gradient(180deg, #363027, #161510 55%, #22201b);
+  border-block: 1px solid var(--item-accent);
+}
+.market-item-name h2 { font-weight: 700; font-size: 1.08em; }
+.market-item-name p { font-size: .93em; }
+.market-item-group { margin: 0; padding: .45rem .6rem; list-style: none; }
+.market-item-group + .market-item-group {
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent 20%, #7e653d 50%, transparent 80%) 1;
+}
+.market-item-stats { color: #c7c1b7; }
+.market-item-mod { padding: .12rem .15rem; color: #a9a6ff; }
+.market-item-mod[data-kind="implicit"],
+.market-item-mod[data-kind="enchanted"] { color: #b1def0; background: #142229; }
+.market-item-mod[data-kind="fractured"] { color: #e0bd79; background: #302411; }
+.market-item-mod[data-kind="corrupted"] { color: #ff7775; }
+.market-item-mod[data-kind="crafted"],
+.market-item-mod[data-kind="poe2-mutated"] { color: #bdcef9; }
+.market-item-flavour { color: #eaa36c; font-style: italic; white-space: pre-line; }
+.item-tip header { color: #dfcba7; touch-action: none; }
+.item-tip .market-item { border: 0; }
+.item-tip .market-item-copy { font-size: .82rem; }
 
-.item-tip li {
-  display: flex;
-  gap: 0.45rem;
-  margin-top: 0.45rem;
-  border-top: 1px solid var(--color-line);
-  padding-top: 0.45rem;
-}
-
-.item-tip li img {
-  width: 36px;
-  height: 36px;
-  object-fit: contain;
-}
 
 .stats-col {
   flex: 1 1 28rem;
