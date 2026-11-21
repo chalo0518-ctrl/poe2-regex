@@ -8,7 +8,7 @@ export default function HomePage() {
   return (
     <main className="ledger-home">
       <div className="ledger-portals">
-        <Link to="/showcase" className="ledger-season-card ledger-home-season" data-art="canvas">
+        <Link to="/showcase/memorial" className="ledger-season-card ledger-home-season" data-art="canvas">
           <div className="ledger-season-copy">
             <h2>Runes of Aldur</h2>
             <span className="ledger-season-enter">{english ? "Open season recap" : "進入賽季回顧"}</span>

@@ -3,16 +3,12 @@ import { seasonHref } from "../pages/showcaseSeasons.ts";
 import { useLocale } from "../i18n.tsx";
 
 export default function AppLayout() {
-  const { locale, t } = useLocale();
+  const { locale } = useLocale();
   const { pathname, search } = useLocation();
   const archive = pathname.match(/^\/showcase\/(memorial|recommended)(?:\/([^/]+))?\/?$/);
   const backTo = archive?.[2]
     ? seasonHref(`/showcase/${archive[1]}`, new URLSearchParams(search).get("season"))
-    : archive || (pathname === "/showcase" && new URLSearchParams(search).has("season"))
-      ? "/showcase"
-      : pathname === "/showcase"
-        ? "/"
-        : null;
+    : archive || pathname === "/showcase" ? "/" : null;
 
   return (
     <div className="ledger-app min-h-svh">
@@ -24,7 +20,7 @@ export default function AppLayout() {
               src="https://cdn2.unrealengine.com/egs-pathofexile2-grindinggeargames-ic1-2-766x680-f06bc65a22ab.png?h=270&quality=medium&resize=1&w=480"
               alt=""
             />
-            <span>{t.brand}</span>
+            <span lang="en">Exile’s Ledger</span>
           </Link>
         </div>
       </header>

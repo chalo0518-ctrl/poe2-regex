@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet, useMatch, useNavigate, useSearchParams } from "react-router-dom";
+import { NavLink, Outlet, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { type BdShowcase } from "@poe2-regex/data";
 import { useLocale } from "../i18n.tsx";
 import { SHOWCASE_SEASONS, seasonHref, type ShowcaseSeason } from "./showcaseSeasons.ts";
@@ -26,14 +26,12 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
     ?? (requested === "current" || inArchive ? seasons[0] : undefined);
   const active = selectedSeason ?? seasons[0];
   const { snapshot, updateImage } = active;
-  const cardImage = active.previewImage ?? updateImage;
-  const canvasPreview = !inArchive && active.previewStyle === "canvas";
   const seasonName = (item: BdShowcase) => (english ? item.leagueEn : item.leagueZh) || item.leagueEn || item.titleEn;
   const archivePath = (path: string) => seasonHref(path, active.id);
 
   return (
     <ShowcaseProvider key={active.id} snapshot={snapshot}>
-      <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive} data-canvas-preview={canvasPreview}>
+      <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive}>
         <div className="ledger-content">
           {archiveOverview && updateImage ? (
             <figure className="ledger-season-poster">
@@ -48,22 +46,13 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
             <label className="ledger-season-filter">
               <span>{english ? "Season" : "賽季"}</span>
               <select value={selectedSeason?.id ?? ""} onChange={(event) => {
-                navigate(event.target.value ? `/showcase?season=${encodeURIComponent(event.target.value)}` : "/showcase");
+                navigate(event.target.value ? seasonHref("/showcase/memorial", event.target.value) : "/showcase");
               }}>
                 <option value="">{english ? "Select a season" : "請選擇賽季"}</option>
                 {seasons.map((entry) => <option key={entry.id} value={entry.id}>{seasonName(entry.snapshot)}</option>)}
               </select>
             </label>
             </div>
-            {selectedSeason && !inArchive ? (
-              <Link to={archivePath("/showcase/memorial")} className="ledger-season-card" data-art={canvasPreview ? "canvas" : undefined}>
-                {!canvasPreview && cardImage ? <img src={cardImage} alt="" decoding="async" /> : null}
-                <div className="ledger-season-copy">
-                  <h3>{canvasPreview ? "Runes of Aldur" : seasonName(snapshot)}</h3>
-                  <span className="ledger-season-enter">{english ? "Open season recap" : "進入賽季回顧"}</span>
-                </div>
-              </Link>
-            ) : null}
           </section>
           {inArchive ? (
             <>

@@ -44,8 +44,6 @@ describe("season BD showcase", () => {
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
     const filter = within(screen.getByRole("region", { name: "選擇賽季" })).getByRole("combobox", { name: "賽季" });
     await user.selectOptions(filter, "runes-of-aldur");
-    expect(screen.queryByRole("tab")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("link", { name: /進入賽季回顧/ }));
     expect(screen.getByRole("tabpanel")).toBeInTheDocument();
   });
 
@@ -53,7 +51,7 @@ describe("season BD showcase", () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial");
 
-    expect(screen.getByRole("link", { name: "返回" })).toHaveAttribute("href", "/showcase");
+    expect(screen.getByRole("link", { name: "返回" })).toHaveAttribute("href", "/");
     const memorial = screen.getByRole("tab", { name: "紀念" });
     const recommended = screen.getByRole("tab", { name: "推薦" });
     expect(screen.getAllByRole("tab")).toHaveLength(2);
@@ -371,7 +369,7 @@ describe("season BD showcase", () => {
     expect(screen.queryByRole("link", { name: "返回" })).not.toBeInTheDocument();
     const links = screen.getAllByRole("link", { name: /賽季回顧/ });
     expect(links.length).toBeGreaterThan(0);
-    expect(links.every((link) => link.getAttribute("href") === "/showcase")).toBe(true);
+    expect(links.every((link) => link.getAttribute("href") === "/showcase/memorial")).toBe(true);
     expect(screen.queryByRole("link", { name: /裝備製作/ })).not.toBeInTheDocument();
     expect(document.querySelector('a[href="/early"], a[href="/endgame"]')).toBeNull();
   });
