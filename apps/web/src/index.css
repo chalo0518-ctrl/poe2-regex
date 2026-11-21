@@ -1333,7 +1333,8 @@ header {
 
 .ledger-season .ledger-season-layout {
   --archive-gutter: clamp(.9rem, 3vw, 2.5rem);
-  --bookmarks-width: clamp(12rem, 19vw, 16rem);
+  --bookmarks-width: 270px;
+  --bookmarks-column: min(var(--bookmarks-width), 42vw);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
@@ -1363,7 +1364,14 @@ header {
 }
 
 .ledger-bookmarks-toggle:hover { border-color: #c59a62; }
-.ledger-bookmark-star { font: 1.35rem/1 system-ui, sans-serif; }
+.ledger-bookmark-arrow {
+  width: .52rem;
+  height: .52rem;
+  border-block-start: 1px solid currentColor;
+  border-inline-end: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+.ledger-bookmarks-toggle[aria-expanded="true"] .ledger-bookmark-arrow { transform: rotate(225deg); }
 .ledger-bookmarks-toggle[aria-expanded="true"] { color: #ffe5ae; background: #533b27; }
 
 .ledger-bookmarks[hidden] { display: none; }
@@ -1372,7 +1380,7 @@ header {
   top: 1rem;
   display: grid;
   align-content: start;
-  min-height: clamp(16rem, 40vh, 28rem);
+  min-height: max(18rem, calc(100svh - 3rem));
   padding: .7rem;
   border: 1px solid #56432f;
   border-radius: .45rem;
@@ -1389,17 +1397,6 @@ header {
   color: #f0ddbc;
   font: 700 1rem var(--font-display);
 }
-.ledger-bookmark-close {
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: .25rem;
-  color: #d9c7ac;
-  font: 1.35rem/1 system-ui, sans-serif;
-  cursor: pointer;
-}
-.ledger-bookmark-close:hover { background: #3a2e23; color: #fff0d1; }
 .ledger-bookmark-folder { min-width: 0; margin-top: .2rem; }
 .ledger-bookmark-folder summary {
   padding: .48rem .48rem .45rem;
@@ -1448,10 +1445,34 @@ header {
 
 @media (min-width: 721px) {
   .ledger-season .ledger-season-layout[data-bookmarks-open="true"] {
-    grid-template-columns: var(--bookmarks-width) minmax(0, 1fr);
+    grid-template-columns: var(--bookmarks-column) minmax(0, 1fr);
   }
 }
 @media (max-width: 720px) {
   .ledger-bookmarks { position: static; min-height: 0; }
   .ledger-bookmark-sections { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.ledger-bookmark-resize { display: none; }
+@media (min-width: 721px) {
+  .ledger-bookmarks-toggle[aria-expanded="true"] {
+    inset-inline-start: calc(max(0px, (100vw - 1720px) / 2) + var(--archive-gutter) + var(--bookmarks-column) - 1px);
+    width: 1.15rem;
+  }
+  .ledger-bookmark-resize {
+    position: absolute;
+    display: block;
+    inset-block: 0;
+    inset-inline-end: -5px;
+    width: 10px;
+    cursor: col-resize;
+    touch-action: none;
+  }
+  .ledger-bookmark-resize:hover,
+  .ledger-bookmark-resize:focus-visible {
+    background: linear-gradient(90deg, transparent 40%, #b8925e 40% 60%, transparent 60%);
+  }
+  .ledger-season-layout[data-bookmarks-open="true"] .ninja-memorial-sheet {
+    --cell: min(76px, calc((100vw - var(--bookmarks-column) - 8rem - 9 * var(--gap)) / 10));
+  }
 }

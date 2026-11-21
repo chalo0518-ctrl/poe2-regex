@@ -375,7 +375,7 @@ describe("season BD showcase", () => {
     expect(screen.queryByRole("link", { name: "返回" })).not.toBeInTheDocument();
     const links = screen.getAllByRole("link", { name: /賽季回顧/ });
     expect(links.length).toBeGreaterThan(0);
-    expect(links.every((link) => link.getAttribute("href") === "/showcase/memorial")).toBe(true);
+    expect(links.every((link) => link.getAttribute("href") === "/showcase/memorial#season-update")).toBe(true);
     expect(screen.queryByRole("link", { name: /裝備製作/ })).not.toBeInTheDocument();
     expect(document.querySelector('a[href="/early"], a[href="/endgame"]')).toBeNull();
   });

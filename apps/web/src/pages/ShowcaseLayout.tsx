@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { Link, NavLink, Outlet, useLocation, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { type BdShowcase } from "@poe2-regex/data";
 import { useLocale } from "../i18n.tsx";
@@ -11,7 +11,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
 }) {
   const { locale, t } = useLocale();
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
-  const bookmarkToggle = useRef<HTMLButtonElement>(null);
+  const [bookmarkWidth, setBookmarkWidth] = useState(270);
   const navigate = useNavigate();
   const location = useLocation();
   useEffect(() => {
@@ -35,26 +35,26 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
     ?? (requested === "current" || inArchive ? seasons[0] : undefined);
   const active = selectedSeason ?? seasons[0];
   const { snapshot, updateImage } = active;
+  const showUpdate = Boolean(archiveOverview && updateImage && location.hash === "#season-update");
+  const resizeBookmarks = (width: number) => {
+    setBookmarkWidth(Math.max(180, Math.min(width, 480, window.innerWidth * 0.42)));
+  };
   const seasonName = (item: BdShowcase) => (english ? item.leagueEn : item.leagueZh) || item.leagueEn || item.titleEn;
   const archivePath = (path: string) => seasonHref(path, active.id);
 
   return (
     <ShowcaseProvider key={active.id} snapshot={snapshot}>
       <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive}>
-        <div className="ledger-content ledger-season-layout" data-bookmarks-open={bookmarksOpen}>
-          <button ref={bookmarkToggle} type="button" className="ledger-bookmarks-toggle" aria-expanded={bookmarksOpen}
+        <div className="ledger-content ledger-season-layout" data-bookmarks-open={bookmarksOpen}
+          style={{ "--bookmarks-width": `${bookmarkWidth}px` } as CSSProperties}>
+          <button type="button" className="ledger-bookmarks-toggle" aria-expanded={bookmarksOpen}
             aria-controls="season-bookmarks" onClick={() => setBookmarksOpen((open) => !open)}>
-            <span className="ledger-bookmark-star" aria-hidden="true">☆</span>
+            <span className="ledger-bookmark-arrow" aria-hidden="true" />
             <span className="sr-only">{english ? (bookmarksOpen ? "Hide bookmarks" : "Show bookmarks") : (bookmarksOpen ? "收合書籤" : "展開書籤")}</span>
           </button>
           <nav id="season-bookmarks" hidden={!bookmarksOpen} className="ledger-bookmarks" aria-label={english ? "Season bookmarks" : "賽季書籤"}>
             <div className="ledger-bookmark-title">
               <span>{english ? "Bookmarks" : "書籤"}</span>
-              <button type="button" className="ledger-bookmark-close"
-                aria-label={english ? "Close bookmarks" : "關閉書籤"}
-                onClick={() => { setBookmarksOpen(false); bookmarkToggle.current?.focus(); }}>
-                <span aria-hidden="true">×</span>
-              </button>
             </div>
             <Link className="ledger-bookmark" to="/"><span aria-hidden="true">⌂</span>{english ? "Home" : "首頁"}</Link>
             {inArchive ? (
@@ -69,9 +69,27 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
                 </div>
               </details>
             ) : null}
+            <div className="ledger-bookmark-resize" role="separator" tabIndex={0}
+              aria-label={english ? "Resize bookmarks" : "調整書籤寬度"} aria-orientation="vertical"
+              aria-valuemin={180} aria-valuemax={480} aria-valuenow={bookmarkWidth}
+              onPointerDown={(event) => {
+                if (event.button !== 0) return;
+                event.currentTarget.setPointerCapture(event.pointerId);
+              }}
+              onPointerMove={(event) => {
+                if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+                const panel = event.currentTarget.parentElement;
+                if (panel) resizeBookmarks(event.clientX - panel.getBoundingClientRect().left);
+              }}
+              onKeyDown={(event) => {
+                if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+                event.preventDefault();
+                resizeBookmarks(bookmarkWidth + (event.key === "ArrowRight" ? 16 : -16));
+              }}
+            />
           </nav>
           <div className="ledger-season-main">
-          {archiveOverview && updateImage ? (
+          {showUpdate && updateImage ? (
             <figure className="ledger-season-poster" id="season-update">
               <img src={updateImage} alt={english ? `${seasonName(snapshot)} update overview` : `${seasonName(snapshot)} 更新總覽`} decoding="async" />
             </figure>
@@ -92,7 +110,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
             </label>
             </div>
           </section>
-          {inArchive ? (
+          {inArchive && !showUpdate ? (
             <>
               <div className="ledger-archive" id="season-build" role="tabpanel" aria-labelledby={recommended ? "showcase-tab-recommended" : "showcase-tab-memorial"}>
                 <Outlet />
