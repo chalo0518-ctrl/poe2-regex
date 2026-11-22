@@ -121,8 +121,10 @@ export default function PassiveTreeCanvas(props: Props) {
     }
   };
   useEffect(() => {
-    const observer = new ResizeObserver(() => redraw.current());
-    if (canvas.current) observer.observe(canvas.current);
+    const onResize = () => redraw.current();
+    const observer = typeof ResizeObserver === "function" ? new ResizeObserver(onResize) : null;
+    if (canvas.current) observer?.observe(canvas.current);
+    window.addEventListener("resize", onResize);
     atlases.current = atlasUrls.map((url) => {
       const image = new Image();
       image.onload = () => redraw.current();
@@ -131,7 +133,8 @@ export default function PassiveTreeCanvas(props: Props) {
     });
     redraw.current();
     return () => {
-      observer.disconnect();
+      observer?.disconnect();
+      window.removeEventListener("resize", onResize);
       atlases.current.forEach((image) => { image.onload = null; });
     };
   }, []);
