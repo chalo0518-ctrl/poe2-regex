@@ -81,7 +81,9 @@ export default function PassiveTreeCanvas(props: Props) {
       if (x < left - 24 || x > right + 24 || y < top - 24 || y > bottom + 24) continue;
       const sets = allocated.get(id);
       const current = Boolean(sets && (!sets.length || sets.includes(props.weaponSet)));
-      const size = [17, 25, 30, 24][kind];
+      const frameDiameter = [10.8, 16, 24, 15.2][kind];
+      const iconDiameter = [7.4, 10.8, 16.4, 15.2][kind];
+      const frameSourceSize = [104, 156, 128, 156][kind];
       function tile(index: number, dimension: number) {
         if (!ctx || index < 0) return;
         const atlas = atlases.current[Math.floor(index / 128)];
@@ -90,16 +92,16 @@ export default function PassiveTreeCanvas(props: Props) {
         ctx.drawImage(atlas, (local % 16) * 128, Math.floor(local / 16) * 128, 128, 128,
           x - dimension / 2, y - dimension / 2, dimension, dimension);
       }
-      ctx.globalAlpha = current ? 1 : .7;
+      ctx.globalAlpha = current ? 1 : .66;
       ctx.beginPath();
-      ctx.arc(x, y, size * .34, 0, 2 * Math.PI);
+      ctx.arc(x, y, iconDiameter * .5, 0, 2 * Math.PI);
       ctx.fillStyle = "#131519";
       ctx.fill();
       ctx.save();
       ctx.clip();
-      tile(icon, kind === 0 ? size * 1.25 : size * .74);
+      tile(icon, kind === 0 ? iconDiameter * 2 : iconDiameter);
       ctx.restore();
-      tile(passive.frameStart + kind * 2 + Number(current), size);
+      tile(passive.frameStart + kind * 2 + Number(current), frameDiameter * 128 / Math.min(frameSourceSize, 128));
       ctx.globalAlpha = 1;
     }
 

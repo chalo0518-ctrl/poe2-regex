@@ -1707,3 +1707,5 @@ header {
 .memorial-tree[data-oracle="true"] svg { margin-block: auto; align-self: center; width: min(100%, 30rem); }
 .memorial-tree[data-oracle="true"] > p { margin-block-start: .5rem; }
 .memorial-tree[data-overview="true"] svg { height: clamp(28rem, 58vw, 49rem); }
+
+.memorial-tree-grid--merged { grid-template-columns: minmax(0, 1fr); }

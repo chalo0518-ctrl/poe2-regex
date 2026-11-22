@@ -1,7 +1,7 @@
 import oracleArt from "../assets/oracle-ascendancy.jpg";
 import PassiveTreeCanvas from "./PassiveTreeCanvas.tsx";
 import fullNodeRows from "../assets/poe2-main-passive-nodes.json";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { type MemorialTree } from "@poe2-regex/data";
 import { useShowcase } from "../pages/showcaseState.tsx";
 import { useLocale } from "../i18n.tsx";
@@ -18,12 +18,14 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [selected, setSelected] = useState("");
+  const ascendancyClip = useId();
+  const embedded = showOverview ? snapshot.ascendancyTree : undefined;
   const viewport = useRef<SVGSVGElement>(null);
   const layer = useRef<SVGGElement>(null);
   const didPan = useRef(false);
   const nodes = tree?.nodes ?? [];
   const byId = new Map(nodes.map((node) => [node.id, node]));
-  const node = byId.get(selected);
+  const node = byId.get(selected) ?? embedded?.nodes.find((entry) => entry.id === selected);
   const extra = showOverview ? overviewById.get(selected) : undefined;
   const isAllocated = (entry: (typeof nodes)[number]) => entry.allocated && (!entry.weaponSets?.length || entry.weaponSets.includes(weaponSet));
   const allocated = nodes.filter(isAllocated);
@@ -36,6 +38,8 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   };
   const overview = { x: -1357, y: -1317, width: 2673, height: 2650 };
   const portrait = { x: -1564.9, y: -790, width: 298.8, height: 297.9 };
+  const insetScale = .72;
+  const insetRadius = portrait.width * insetScale / 2;
   const allocationColor = (sets?: number[]) => sets?.length === 1 ? (sets[0] === 1 ? "#eb6a63" : "#75c98b") : "#e5bf74";
   const [x, width] = showOracle ? [portrait.x, portrait.width] : showOverview && fitAll ? [overview.x, overview.width] : extent("x");
   const [y, height] = showOracle ? [portrait.y, portrait.height] : showOverview && fitAll ? [overview.y, overview.height] : extent("y");
@@ -111,6 +115,26 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
               x={x} y={y} width={width} height={height}
               offsetX={position.x + centerX * (1 - scale)} offsetY={position.y + centerY * (1 - scale)} scale={scale} />}
             <g ref={layer} transform={`translate(${position.x + (x + width / 2) * (1 - scale)} ${position.y + (y + height / 2) * (1 - scale)}) scale(${scale})`}>
+              {embedded?.nodes.length ? (
+                <g aria-label={english ? "Ascendancy tree" : "昇華天賦樹"} role="group">
+                  <defs><clipPath id={ascendancyClip}><circle r={insetRadius} /></clipPath></defs>
+                  <circle r={insetRadius + 1.5} fill="#0c0b0a" stroke="#997948" strokeWidth="2" pointerEvents="none" />
+                  <image href={oracleArt} x={-insetRadius} y={-insetRadius} width={insetRadius * 2} height={insetRadius * 2}
+                    clipPath={`url(#${ascendancyClip})`} pointerEvents="none" />
+                  {embedded.nodes.map((entry) => {
+                    const cx = (entry.x - portrait.x) * insetScale - insetRadius;
+                    const cy = (entry.y - portrait.y) * insetScale - insetRadius;
+                    const radius = ["5571", "32905", "34313", "52374"].includes(entry.id) ? 7 : 4;
+                    return <circle key={entry.id} cx={cx} cy={cy} r={radius} fill="transparent"
+                      stroke={entry.allocated ? "#ffe1a1" : "transparent"} strokeWidth="1.1"
+                      role="button" tabIndex={0} aria-label={english ? entry.nameEn : entry.nameZh}
+                      onClick={() => setSelected(entry.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(entry.id); }
+                      }}><title>{entry.nameEn}</title></circle>;
+                  })}
+                </g>
+              ) : null}
               {showOracle && <image href={oracleArt} {...portrait} pointerEvents="none" />}
               {!showOracle && !showOverview && tree?.edges.map(([first, second]) => {
                 const a = byId.get(first);

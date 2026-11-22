@@ -47,8 +47,7 @@ export default function ShowcaseBoard({ mode }: { mode: "memorial" | "recommende
           <CharacterStats />
         </div>
       ) : <div className="memorial-layout"><PaperDoll mode={mode} /></div>}
-      {mode === "memorial" && <div className="memorial-tree-grid">
-        <MemorialTreeView title={locale === "en" ? "Ascendancy tree" : "昇華天賦樹"} tree={snapshot.ascendancyTree} />
+      {mode === "memorial" && <div className="memorial-tree-grid memorial-tree-grid--merged">
         <MemorialTreeView title={locale === "en" ? "Passive skill tree" : "天賦樹"} tree={snapshot.passiveTree} showOverview={snapshot.id === "ruoa-cetacea"} />
       </div>}
     </div>
