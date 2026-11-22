@@ -29,7 +29,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
   const english = locale === "en";
   const inArchive = Boolean(memorial || recommended);
   const seasons: readonly ShowcaseSeason[] = override
-    ? [{ id: "runes-of-aldur", snapshot: override, updateImage: seasonPreviewUrl }]
+    ? [{ id: "runes-of-aldur", version: SHOWCASE_SEASONS[0].version, snapshot: override, updateImage: seasonPreviewUrl }]
     : SHOWCASE_SEASONS;
   const requested = params.get("season");
   const selectedSeason = seasons.find((entry) => entry.id === requested) ?? seasons[0];
@@ -64,14 +64,13 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
             <Link className="ledger-bookmark" to="/"><span aria-hidden="true">⌂</span>{english ? "Home" : "首頁"}</Link>
             {inArchive ? (
               <details className="ledger-bookmark-folder" open>
-                <summary>{seasonName(snapshot)}</summary>
-                <Link className="ledger-bookmark" to={archivePath("/showcase")}>{english ? "Switch season" : "切換賽季"}</Link>
+                <summary>{seasonName(snapshot)} · {active.version}</summary>
                 <Link className="ledger-bookmark ledger-bookmark-update" aria-current={location.hash === "#season-update" ? "location" : undefined} to={updatePath}>
                   {english ? "Season update" : "版本更新"}
                 </Link>
                 <div role="tablist" aria-label={t.showcaseTabsAria} className="ledger-bookmark-sections">
-                  <ShowcaseTab id="showcase-tab-memorial" to={archivePath("/showcase/memorial") + "#season-build"} selected={Boolean(memorial) && location.hash !== "#season-update"} label={t.showcaseTabMemorial} />
-                  <ShowcaseTab id="showcase-tab-recommended" to={archivePath("/showcase/recommended") + "#season-build"} selected={Boolean(recommended)} label={t.showcaseTabRecommended} />
+                  <ShowcaseTab id="showcase-tab-memorial" to={archivePath("/showcase/memorial") + "#season-build"} selected={Boolean(memorial) && location.hash !== "#season-update"} label={english ? "Memorial Build" : "紀念 BD"} />
+                  <ShowcaseTab id="showcase-tab-recommended" to={archivePath("/showcase/recommended") + "#season-build"} selected={Boolean(recommended)} label={english ? "Recommended Build" : "推薦 BD"} />
                 </div>
               </details>
             ) : null}

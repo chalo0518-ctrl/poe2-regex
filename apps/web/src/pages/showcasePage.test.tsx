@@ -47,8 +47,9 @@ describe("season BD showcase", () => {
     expect(screen.getByRole("button", { name: "放大賽季更新圖" })).toBeInTheDocument();
     expect(screen.queryByRole("tabpanel")).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "展開書籤" }));
-    await user.click(screen.getByRole("link", { name: "切換賽季" }));
-    expect(screen.getByRole("region", { name: "選擇賽季" })).toBeInTheDocument();
+    const bookmarks = screen.getByRole("navigation", { name: "賽季書籤" });
+    expect(within(bookmarks).getByText(/0\.5$/)).toBeInTheDocument();
+    expect(within(bookmarks).queryByRole("link", { name: "切換賽季" })).not.toBeInTheDocument();
   });
 
   it("switches two main tabs and does not show them side by side", async () => {
@@ -60,8 +61,8 @@ describe("season BD showcase", () => {
     await user.click(toggle);
     expect(toggle).toHaveAttribute("aria-expanded", "true");
     expect(within(screen.getByRole("navigation", { name: "賽季書籤" })).getByRole("link", { name: "首頁" })).toHaveAttribute("href", "/");
-    const memorial = screen.getByRole("tab", { name: "紀念" });
-    const recommended = screen.getByRole("tab", { name: "推薦" });
+    const memorial = screen.getByRole("tab", { name: "紀念 BD" });
+    const recommended = screen.getByRole("tab", { name: "推薦 BD" });
     expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
     expect(memorial).toHaveAttribute("aria-selected", "true");
     expect(recommended).toHaveAttribute("aria-selected", "false");
@@ -274,7 +275,7 @@ describe("season BD showcase", () => {
     await user.click(helmet);
     await user.click(screen.getByRole("button", { name: "展開書籤" }));
     expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
-    expect(screen.getByRole("tab", { name: "推薦" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "推薦 BD" })).toHaveAttribute("aria-selected", "true");
     expect(screen.queryByRole("tab", { name: /編輯/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "武器組 I" })).not.toBeInTheDocument();
     expect(screen.getByText("不會寫回網站")).toBeInTheDocument();
@@ -398,7 +399,7 @@ describe("season BD showcase", () => {
     expect(screen.queryByRole("link", { name: "裝備製作" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "換界石" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "碑牌" })).toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "紀念" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "紀念 BD" })).not.toBeInTheDocument();
   });
 });
 
