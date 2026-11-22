@@ -5,7 +5,7 @@ export default function AppLayout() {
     <div className="ledger-app min-h-svh">
       <header className="ledger-masthead">
         <div className="ledger-nav">
-          <Link to="/" className="ledger-brand">
+          <Link to="/showcase" className="ledger-brand">
             <img
               className="ledger-brand-logo"
               src="https://cdn2.unrealengine.com/egs-pathofexile2-grindinggeargames-ic1-2-766x680-f06bc65a22ab.png?h=270&quality=medium&resize=1&w=480"

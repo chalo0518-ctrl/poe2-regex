@@ -61,7 +61,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
             <div className="ledger-bookmark-title">
               <span>{english ? "Bookmarks" : "書籤"}</span>
             </div>
-            <Link className="ledger-bookmark" to="/"><span aria-hidden="true">⌂</span>{english ? "Home" : "首頁"}</Link>
+            <Link className="ledger-bookmark" to="/showcase"><span aria-hidden="true">⌂</span>{english ? "Season selection" : "賽季選擇"}</Link>
             {inArchive ? (
               <details className="ledger-bookmark-folder" open>
                 <summary>{seasonName(snapshot)} · {active.version}</summary>
