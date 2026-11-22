@@ -1602,3 +1602,42 @@ header {
   height: 1px;
   background: linear-gradient(90deg, transparent, #765536, transparent);
 }
+
+.item-tip {
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  max-height: min(90dvh, 52rem);
+  overflow: hidden;
+}
+.item-tip header {
+  position: static;
+  flex: none;
+  padding: .25rem .65rem;
+  gap: .35rem;
+  background: #1a1610;
+}
+.item-tip header button {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  color: #dbc18d;
+  cursor: pointer;
+}
+.item-tip-pin[aria-pressed="true"] { background: #59452a; }
+.item-tip-body {
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #78613e #11100e;
+  overscroll-behavior: contain;
+}
+.item-tip-body .market-item { box-shadow: none; }
+.market-item-name h2 { font-size: 1em; font-weight: 700; }
+.market-item-name > p { font-size: .78em; font-weight: 500; margin-top: .2em; color: #dfc69b; }
+.market-item-mod[data-granted-skill] {
+  color: #beb2ff;
+  font-weight: 650;
+  background: linear-gradient(90deg, transparent, #342741b0 50%, transparent);
+}

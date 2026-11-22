@@ -12,6 +12,8 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
   const flavour = locale === "en" ? gear.flavourEn : gear.flavourZh || gear.flavourEn;
   const mirrored = locale === "en" ? gear.mirroredEn : gear.mirroredZh || gear.mirroredEn;
   const mods = gear.mods ?? [];
+  const baseMods = mods.length ? mods.filter((mod) => mod.kind === "implicit") : gear.implicits.map((row) => ({ ...row, kind: "implicit" }));
+  const isGranted = (row: (typeof baseMods)[number]) => /^(?:Grants Skill|賦予技能)\s*[:：]/iu.test(line(row, locale).trim());
 
   return (
     <article className={`market-item market-item--${gear.rarity || "rare"}`}>
@@ -29,7 +31,8 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
           ))}
         </section> : null}
         {[
-          { label: locale === "en" ? "Base effects" : "底材效果", rows: mods.length ? mods.filter((mod) => mod.kind === "implicit") : gear.implicits.map((row) => ({ ...row, kind: "implicit" })) },
+          { label: locale === "en" ? "Base effects" : "底材效果", rows: baseMods.filter((mod) => !isGranted(mod)) },
+          { label: "", rows: baseMods.filter(isGranted) },
           { label: locale === "en" ? "Socket effects" : "鑲嵌效果", rows: mods.filter((mod) => mod.kind === "socket") },
           { label: "", rows: mods.length ? mods.filter((mod) => !["implicit", "socket", "corrupted"].includes(mod.kind)) : gear.affixes.map((row) => ({ ...row, kind: "explicit" })) },
           { label: "", rows: mods.filter((mod) => mod.kind === "corrupted") },
@@ -38,7 +41,7 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
             {label && <p className="market-item-label">{label}</p>}
             <ul>
               {rows.map((mod, rowIndex) => (
-                <li key={rowIndex} className="market-item-mod" data-kind={mod.kind} data-granted-skill={mod.kind === "implicit" && /^(?:Grants Skill|賦予技能)\s*[:：]/iu.test(line(mod, locale)) ? "" : undefined}>
+                <li key={rowIndex} className="market-item-mod" data-kind={mod.kind} data-granted-skill={mod.kind === "implicit" && isGranted(mod) ? "" : undefined}>
                   {mod.kind === "fractured" && <small>{locale === "en" ? "Fractured" : "鎖定"}</small>}
                   {mod.kind === "crafted" && <small>{locale === "en" ? "Crafted" : "工藝"}</small>}
                   <span>{line(mod, locale)}</span>

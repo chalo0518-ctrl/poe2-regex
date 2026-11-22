@@ -1,4 +1,4 @@
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { seasonHref } from "../pages/showcaseSeasons.ts";
 import wandSerle from "../assets/socket-medals/wand-1-serles-triumph.png";
@@ -78,13 +78,20 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
   const visible = gridSlots.filter((slot) => slot.set === 0 || slot.set === set);
   const alternate = gridSlots.filter((slot) => slot.set !== 0 && slot.set !== set);
 
+  const hideTimer = useRef<number | undefined>(undefined);
+  function cancelHide() {
+    window.clearTimeout(hideTimer.current);
+  }
+  useEffect(() => () => window.clearTimeout(hideTimer.current), []);
+
   function showTip(gear: MemorialGear | null, event: MouseEvent<HTMLElement>) {
+    cancelHide();
     if (!gear) {
       hideTip();
       return;
     }
     const rect = event.currentTarget.getBoundingClientRect();
-    setTip((current) => ({
+    setTip((current) => current?.pinned ? current : ({
       gear,
       x: current?.pinned ? current.x : rect.right + 8,
       y: current?.pinned ? current.y : rect.top,
@@ -93,7 +100,8 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
   }
 
   function hideTip() {
-    if (!tip?.pinned) setTip(null);
+    cancelHide();
+    hideTimer.current = window.setTimeout(() => setTip((current) => current?.pinned ? current : null), 220);
   }
 
   useEffect(() => {
@@ -182,6 +190,8 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
           locale={locale}
           onPinned={(x, y) => setTip((current) => (current ? { ...current, x, y, pinned: true } : current))}
           onDismiss={() => setTip(null)}
+          onEnter={cancelHide}
+          onLeave={hideTip}
         />
       ) : null}
     </div>
