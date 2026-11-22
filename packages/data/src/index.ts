@@ -233,6 +233,7 @@ export type {
   MemorialAffix,
   MemorialGear,
   MemorialMod,
+  MemorialTree,
   MemorialSocket,
   PaperDollGroupId,
   PaperDollSlot,

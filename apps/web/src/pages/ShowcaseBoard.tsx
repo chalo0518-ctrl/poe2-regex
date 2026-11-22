@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react";
 import MemorialTreeView from "../components/MemorialTreeView.tsx";
 import CharacterStats from "../components/CharacterStats.tsx";
 import PaperDoll from "../components/PaperDoll.tsx";
@@ -17,7 +18,12 @@ export function SessionNote() {
 
 export default function ShowcaseBoard({ mode }: { mode: "memorial" | "recommended" }) {
   const { locale, t } = useLocale();
-  const { snapshot } = useShowcase();
+  const { snapshot, memorialScroll } = useShowcase();
+  useLayoutEffect(() => {
+    if (mode !== "memorial" || memorialScroll.current == null) return;
+    window.scrollTo(0, memorialScroll.current);
+    memorialScroll.current = null;
+  }, [mode, memorialScroll]);
   const identity = snapshot.level
     ? locale === "en"
       ? `Level ${snapshot.level} ${snapshot.classEn ?? ""} · ${snapshot.leagueEn ?? ""}`

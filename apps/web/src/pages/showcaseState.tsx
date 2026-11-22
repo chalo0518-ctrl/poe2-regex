@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   affixModGroup,
   catalogForDollSlot,
@@ -17,6 +17,7 @@ import {
 type ShowcaseContextValue = {
   snapshot: BdShowcase;
   weaponSet: 1 | 2;
+  memorialScroll: { current: number | null };
   setWeaponSet: (set: 1 | 2) => void;
   setBase: (slot: PaperDollSlotId, gear: RecommendedGear) => void;
   setTier: (slot: PaperDollSlotId, familyId: string, rank: number | null) => void;
@@ -61,6 +62,7 @@ export function ShowcaseProvider({
   const [bases, setBases] = useState<Bases>(saved.bases ?? {});
   const [picks, setPicks] = useState(() => ({ ...initialPicks(original), ...saved.picks }));
   const [tiers, setTiers] = useState<TierSelections>(saved.tiers ?? {});
+  const memorialScroll = useRef<number | null>(null);
   const [weaponSet, setWeaponSet] = useState<1 | 2>(1);
   const snapshot = useMemo(() => ({ ...original, recommended: { ...original.recommended, ...bases } }), [original, bases]);
   useEffect(() => {
@@ -99,7 +101,7 @@ export function ShowcaseProvider({
     });
   }, [snapshot]);
 
-  const value = { snapshot, picks, toggleRank, tiers, setBase, setTier, weaponSet, setWeaponSet };
+  const value = { snapshot, picks, toggleRank, tiers, setBase, setTier, memorialScroll, weaponSet, setWeaponSet };
   return <ShowcaseContext.Provider value={value}>{children}</ShowcaseContext.Provider>;
 }
 

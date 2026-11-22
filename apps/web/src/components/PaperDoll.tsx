@@ -241,7 +241,7 @@ function DollCell({
   onLeave: () => void;
 }) {
   const { t } = useLocale();
-  const { snapshot, picks } = useShowcase();
+  const { snapshot, picks, memorialScroll } = useShowcase();
   const [params] = useSearchParams();
   const to = seasonHref(`/showcase/${mode}/${slot.id}`, params.get("season"));
   const slotLabel = labelOf(slot, locale);
@@ -259,6 +259,7 @@ function DollCell({
         className="ninja-cell"
         style={place}
         aria-label={[slotLabel, name || t.showcaseMemorialEmpty].join(" ")}
+        onClick={() => { memorialScroll.current = window.scrollY; }}
         onMouseEnter={(event) => onHover(gear, event)}
         onMouseLeave={onLeave}
       >
