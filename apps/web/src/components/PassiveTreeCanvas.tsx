@@ -18,6 +18,7 @@ const jewels = new Set(["21984", "7960"]);
 type Props = {
   tree: MemorialTree;
   weaponSet: number;
+  classic: boolean;
   hasKeystoneRadius: boolean;
   x: number;
   y: number;
@@ -55,16 +56,21 @@ export default function PassiveTreeCanvas(props: Props) {
     const bottom = top + props.height / props.scale;
     const allocated = new Map(props.tree.nodes.filter((node) => node.allocated).map((node) => [node.id, node.weaponSets ?? []]));
     ctx.lineCap = "round";
+    const connected = new Set<string>();
     const paths = new Map<string, Path2D>();
     for (const [from, to, radius] of edges) {
       const a = graph[from], b = graph[to];
-      const pad = Math.abs(radius);
-      if (Math.max(a[0], b[0]) + pad < left || Math.min(a[0], b[0]) - pad > right ||
-          Math.max(a[1], b[1]) + pad < top || Math.min(a[1], b[1]) - pad > bottom) continue;
       const first = allocated.get(from), second = allocated.get(to);
       const set = first?.length ? first[0] : second?.length ? second[0] : 0;
       const active = Boolean(first && second && (!first.length || !second.length || first.some((value) => second.includes(value))));
-      const color = active ? set === 1 ? "#cd625b" : set === 2 ? "#70ba81" : "#d2b073" : "#51452d";
+      if (active) {
+        if (first?.length || !second?.length) connected.add(from);
+        if (second?.length || !first?.length) connected.add(to);
+      }
+      const pad = Math.abs(radius);
+      if (Math.max(a[0], b[0]) + pad < left || Math.min(a[0], b[0]) - pad > right ||
+          Math.max(a[1], b[1]) + pad < top || Math.min(a[1], b[1]) - pad > bottom) continue;
+      const color = active ? set === 1 || (props.classic && set === 2) ? "#cd625b" : set === 2 ? "#70ba81" : "#d2b073" : "#51452d";
       const path = paths.get(color) ?? new Path2D();
       path.moveTo(a[0], a[1]);
       if (radius && Math.hypot(a[0] - b[0], a[1] - b[1]) < Math.abs(radius) * 2) {
@@ -94,6 +100,13 @@ export default function PassiveTreeCanvas(props: Props) {
         ctx.drawImage(atlas, (local % 16) * 128, Math.floor(local / 16) * 128, 128, 128,
           x - dimension / 2, y - dimension / 2, dimension, dimension);
       }
+      if (props.classic) {
+        ctx.beginPath();
+        ctx.arc(x, y, sets ? 5 : 2.6, 0, 2 * Math.PI);
+        ctx.fillStyle = sets ? "#ffcf75" : "#746047";
+        ctx.fill();
+        continue;
+      }
       ctx.globalAlpha = current ? 1 : .66;
       ctx.beginPath();
       ctx.arc(x, y, iconDiameter * .5, 0, 2 * Math.PI);
@@ -122,6 +135,30 @@ export default function PassiveTreeCanvas(props: Props) {
       ctx.strokeStyle = jewel ? "#90bbff" : "#6889d9";
       ctx.lineWidth = jewel ? 4 : 3;
       ctx.stroke();
+    }
+
+    for (const [id, sets] of allocated) {
+      const point = graph[id];
+      if (!point || connected.has(id)) continue;
+      const [x, y, , kind] = point;
+      if (x < left - 25 || x > right + 25 || y < top - 25 || y > bottom + 25) continue;
+      const color = sets.length === 1 ? (sets[0] === 1 ? "#ff716a" : "#7bdb90") : "#f5d289";
+      const radius = props.classic ? 9 : [8, 11, 15, 11][kind];
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, 2 * Math.PI);
+      ctx.strokeStyle = "#0a0908";
+      ctx.lineWidth = 6;
+      ctx.stroke();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.6;
+      ctx.stroke();
+      if (sx * props.scale / density >= .65) {
+        ctx.fillStyle = color;
+        ctx.font = "bold 8px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(sets.length === 1 ? (sets[0] === 1 ? "I" : "II") : "◆", x, y - radius - 2);
+      }
     }
   };
   useEffect(() => {

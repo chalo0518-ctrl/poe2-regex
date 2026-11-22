@@ -36,6 +36,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [selected, setSelected] = useState("");
+  const [classic, setClassic] = useState(false);
   const ascendancyClip = useId();
   const embedded = showOverview ? snapshot.ascendancyTree : undefined;
   const viewport = useRef<SVGSVGElement>(null);
@@ -94,6 +95,9 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
       {!nodes.length ? <p>{english ? "Not recorded in this season snapshot." : "本季快照未記錄。"}</p> : (
         <>
           <div className="memorial-tree-controls">
+            {showOverview && <button type="button" aria-pressed={classic} onClick={() => setClassic((active) => !active)} className="text-gold underline">
+              {english ? (classic ? "Simplified lines" : "PoB2 icons") : (classic ? "簡潔線條" : "PoB2 圖示")}
+            </button>}
             <button aria-label={english ? "Zoom in" : "放大"} onClick={() => setScale((value) => Math.min(5, value * 1.25))}>＋</button>
             <button aria-label={english ? "Zoom out" : "縮小"} onClick={() => setScale((value) => Math.max(.2, value / 1.25))}>−</button>
             <button onClick={() => { setPosition({ x: 0, y: 0 }); setScale(1); setFitAll(true); }}>{english ? "Reset view" : "回到全圖"}</button>
@@ -135,7 +139,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
               if (closest) setSelected(closest[0]);
             }}
           >
-            {showOverview && tree && <PassiveTreeCanvas tree={tree} weaponSet={weaponSet}
+            {showOverview && tree && <PassiveTreeCanvas tree={tree} weaponSet={weaponSet} classic={classic}
               hasKeystoneRadius={Boolean(snapshot.ascendancyTree?.nodes.some((entry) => entry.id === "32905" && entry.allocated))}
               x={x} y={y} width={width} height={height}
               offsetX={position.x + centerX * (1 - scale)} offsetY={position.y + centerY * (1 - scale)} scale={scale} />}
@@ -195,7 +199,17 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
             </g>
           </svg>
           {extra && !node && <p><strong>{extra[3]}</strong> {extra[4]}</p>}
-          {node && <p><strong>{english ? node.nameEn : node.nameZh}</strong> {english ? node.effectEn : node.effectZh || node.effectEn}</p>}
+          {node && <p>
+            <strong>{english ? node.nameEn : node.nameZh}</strong>{" "}
+            {showOverview && node.allocated && (
+              <span className="text-gold">
+                {node.weaponSets?.length
+                  ? node.weaponSets.map((set) => (english ? "Weapon set " : "武器組 ") + (set === 1 ? "I" : "II")).join("／")
+                  : english ? "Shared allocation" : "共用配點"}
+              </span>
+            )}{" "}
+            {english ? node.effectEn : node.effectZh || node.effectEn}
+          </p>}
         </>
       )}
     </section>
