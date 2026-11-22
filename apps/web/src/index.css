@@ -1698,3 +1698,6 @@ header {
 .memorial-tree, .memorial-tree svg { background: #000; }
 .memorial-tree[data-overview="true"] svg { height: clamp(26rem, 55vw, 42rem); }
 .memorial-tree svg circle:hover, .memorial-tree svg circle:focus-visible { stroke: #f6dfad; stroke-width: 2; }
+
+.memorial-tree-legend { display: flex; gap: .4rem .8rem; flex-wrap: wrap; font-size: .8rem; margin-block: .3rem; }
+.memorial-tree[data-oracle="true"] svg { height: auto; aspect-ratio: 1; }
