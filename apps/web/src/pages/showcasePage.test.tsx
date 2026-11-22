@@ -92,7 +92,7 @@ describe("season BD showcase", () => {
     expect(slotLink(/生命藥劑/)).toHaveStyle({ gridRow: "8 / 10" });
     expect(screen.getByText("5,511")).toBeInTheDocument();
     expect(screen.getByText("恐怖之柱")).toBeInTheDocument();
-    expect(screen.getByText("16,000")).toBeInTheDocument();
+    expect(screen.getByText("15,750.99")).toBeInTheDocument();
     expect(document.body.textContent).not.toContain("推荐");
     expect(document.body.textContent).not.toContain("鑽嵌");
     expect(document.body.textContent).not.toContain("装备");

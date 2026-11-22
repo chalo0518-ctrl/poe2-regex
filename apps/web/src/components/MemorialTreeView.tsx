@@ -48,6 +48,8 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const extra = showOverview ? overviewById.get(selected) : undefined;
   const isAllocated = (entry: (typeof nodes)[number]) => entry.allocated && (!entry.weaponSets?.length || entry.weaponSets.includes(weaponSet));
   const allocated = nodes.filter(isAllocated);
+  const sharedCount = nodes.filter((entry) => entry.allocated && !entry.weaponSets?.length).length;
+  const setCount = (set: number) => nodes.filter((entry) => entry.allocated && entry.weaponSets?.includes(set)).length;
   const [fitAll, setFitAll] = useState(showOverview);
   const focus = fitAll || !allocated.length ? nodes : allocated;
   const extent = (axis: "x" | "y") => {
@@ -104,9 +106,9 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
           </div>
           {showOverview && (
             <div className="memorial-tree-legend" aria-label={english ? "Tree legend" : "天賦圖例"}>
-              <span style={{ color: "#e5bf74" }}>{english ? "Shared" : "共用"}</span>
-              <span style={{ color: "#eb6a63" }}>{english ? "Weapon set I" : "武器組 I"}</span>
-              <span style={{ color: "#75c98b" }}>{english ? "Weapon set II" : "武器組 II"}</span>
+              <span style={{ color: "#e5bf74" }}>{english ? "Shared" : "共用"} · {sharedCount}</span>
+              <span style={{ color: "#eb6a63" }}>{english ? "Weapon set I" : "武器組 I"} · {setCount(1)}</span>
+              <span style={{ color: "#75c98b" }}>{english ? "Weapon set II" : "武器組 II"} · {setCount(2)}</span>
               <span style={{ color: "#87b6ff" }}>{english ? "Jewel radius" : "珠寶範圍"}</span>
               <span style={{ color: "#656fc4" }}>{english ? "Keystone radius" : "核心天賦範圍"}</span>
             </div>

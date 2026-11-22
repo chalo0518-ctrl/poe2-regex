@@ -139,7 +139,7 @@ export default function PassiveTreeCanvas(props: Props) {
 
     for (const [id, sets] of allocated) {
       const point = graph[id];
-      if (!point || connected.has(id)) continue;
+      if (!point || (!sets.length && connected.has(id))) continue;
       const [x, y, , kind] = point;
       if (x < left - 25 || x > right + 25 || y < top - 25 || y > bottom + 25) continue;
       const color = sets.length === 1 ? (sets[0] === 1 ? "#ff716a" : "#7bdb90") : "#f5d289";
@@ -150,7 +150,7 @@ export default function PassiveTreeCanvas(props: Props) {
       ctx.lineWidth = 6;
       ctx.stroke();
       ctx.strokeStyle = color;
-      ctx.lineWidth = 2.6;
+      ctx.lineWidth = !sets.length || sets.includes(props.weaponSet) ? 3.3 : 2.5;
       ctx.stroke();
       if (sx * props.scale / density >= .65) {
         ctx.fillStyle = color;
