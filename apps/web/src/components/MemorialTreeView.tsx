@@ -1,5 +1,5 @@
 import oracleArt from "../assets/oracle-ascendancy.jpg";
-import fullTree from "../assets/poe2-main-passive-overview.svg";
+import fullTree from "../assets/talent-main-full-rings.png";
 import fullNodeRows from "../assets/poe2-main-passive-nodes.json";
 import { useRef, useState } from "react";
 import { type MemorialTree } from "@poe2-regex/data";
@@ -33,20 +33,8 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
     const min = Math.min(...values) - 40;
     return values.length ? [min, Math.max(...values) + 40 - min] : [0, 1];
   };
-  const overview = { x: -1298, y: -1276, width: 2602, height: 2581 };
+  const overview = { x: -1357, y: -1317, width: 2673, height: 2650 };
   const portrait = { x: -1564.9, y: -790, width: 298.8, height: 297.9 };
-  const jewelIds = new Set(["21984", "7960"]);
-  const keystoneIds = new Set(["11230", "33979", "42680", "45202", "45918", "46742", "49363", "49547", "55048", "57513"]);
-  const grantsKeystoneRadius = snapshot.ascendancyTree?.nodes.some((entry) => entry.id === "32905" && entry.allocated);
-  const rings = showOverview ? nodes.flatMap((entry) => {
-    if (!isAllocated(entry)) return [];
-    if (jewelIds.has(entry.id)) return [{ entry, radius: 180, jewel: true }];
-    if (grantsKeystoneRadius && keystoneIds.has(entry.id)) return [{ entry, radius: 138, jewel: false }];
-    return [];
-  }) : [];
-  const eligible = showOverview ? overviewNodes.filter(([, px, py, , effect, kind]) =>
-    Boolean(effect) && (kind === "normal" || kind === "notable" || kind === "strength" || kind === "dexterity" || kind === "intelligence") &&
-    rings.some(({ entry, radius, jewel }) => !jewel && Math.hypot(entry.x - px, entry.y - py) <= radius)) : [];
   const allocationColor = (sets?: number[]) => sets?.length === 1 ? (sets[0] === 1 ? "#eb6a63" : "#75c98b") : "#e5bf74";
   const [x, width] = showOracle ? [portrait.x, portrait.width] : showOverview && fitAll ? [overview.x, overview.width] : extent("x");
   const [y, height] = showOracle ? [portrait.y, portrait.height] : showOverview && fitAll ? [overview.y, overview.height] : extent("y");
@@ -98,18 +86,19 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
             <g ref={layer} transform={`translate(${position.x + (x + width / 2) * (1 - scale)} ${position.y + (y + height / 2) * (1 - scale)}) scale(${scale})`}>
               {showOverview && <image href={fullTree} {...overview} pointerEvents="none" />}
               {showOracle && <image href={oracleArt} {...portrait} pointerEvents="none" />}
-              {rings.map(({ entry, radius, jewel }) => (
-                <circle key={entry.id} cx={entry.x} cy={entry.y} r={radius} fill={jewel ? "#4285ff10" : "#6768ff09"} stroke={jewel ? "#88b6ff" : "#656fc4"} strokeWidth={jewel ? 5 : 3.5} pointerEvents="none" />
-              ))}
-              <path d={eligible.map(([, px, py]) => `M${px} ${py}h.01`).join("")} stroke="#868cf2" strokeWidth="5" strokeLinecap="round" opacity=".65" pointerEvents="none" />
-              {!showOracle && tree?.edges.map(([first, second]) => {
+              {!showOracle && !showOverview && tree?.edges.map(([first, second]) => {
                 const a = byId.get(first);
                 const b = byId.get(second);
                 const matching = a?.weaponSets?.length && b?.weaponSets?.length ? a.weaponSets.filter((set) => b.weaponSets?.includes(set)) : a?.weaponSets?.length ? a.weaponSets : b?.weaponSets;
                 const visible = a?.allocated && b?.allocated && !(a.weaponSets?.length && b.weaponSets?.length && !matching?.length);
                 return a && b && <line key={first + "/" + second} x1={a.x} x2={b.x} y1={a.y} y2={b.y} stroke={visible ? allocationColor(matching) : "#454033"} opacity={visible && matching?.length && !matching.includes(weaponSet) ? .72 : 1} strokeWidth={visible ? 4 : 2.4} pointerEvents="none" />;
               })}
-              {nodes.map((entry) => <circle key={entry.id} cx={entry.x} cy={entry.y} r={showOracle ? 8 : entry.allocated ? 8 : 5.5} fill={showOracle ? "transparent" : entry.allocated ? allocationColor(entry.weaponSets) : "#656052"}
+              {showOracle && allocated.map((entry) => (
+                <circle key={"allocated-" + entry.id} cx={entry.x} cy={entry.y}
+                  r={["5571", "32905", "34313", "52374"].includes(entry.id) ? 10 : 5.5}
+                  fill="none" stroke="#ffe1a1" strokeWidth=".9" pointerEvents="none" />
+              ))}
+              {nodes.map((entry) => <circle key={entry.id} cx={entry.x} cy={entry.y} r={showOracle ? 8 : entry.allocated ? 8 : 5.5} fill={showOracle || showOverview ? "transparent" : entry.allocated ? allocationColor(entry.weaponSets) : "#656052"}
                 role="button" tabIndex={0} aria-label={english ? entry.nameEn : entry.nameZh}
                 onClick={() => setSelected(entry.id)}
                 onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(entry.id); } }}><title>{(english ? entry.nameEn : entry.nameZh) + "\n" + (entry.effectEn ?? "")}</title></circle>)}

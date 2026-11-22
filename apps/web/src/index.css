@@ -1701,3 +1701,9 @@ header {
 
 .memorial-tree-legend { display: flex; gap: .4rem .8rem; flex-wrap: wrap; font-size: .8rem; margin-block: .3rem; }
 .memorial-tree[data-oracle="true"] svg { height: auto; aspect-ratio: 1; }
+
+.memorial-tree-grid { align-items: stretch; background: #000; }
+.memorial-tree[data-oracle="true"] { display: flex; flex-direction: column; }
+.memorial-tree[data-oracle="true"] svg { margin-block: auto; align-self: center; width: min(100%, 30rem); }
+.memorial-tree[data-oracle="true"] > p { margin-block-start: .5rem; }
+.memorial-tree[data-overview="true"] svg { height: clamp(28rem, 58vw, 49rem); }
