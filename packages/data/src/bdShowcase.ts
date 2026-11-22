@@ -195,10 +195,17 @@ const DEFAULT_CRAFT_SLOT: Partial<Record<PaperDollSlotId, CraftSlotId>> = {
   belt: "belt",
 };
 
+function snapshotTree(tree: typeof pobSnapshot.passiveTree): MemorialTree {
+  return {
+    nodes: tree.nodes,
+    edges: tree.edges.map(([from, to]) => [from, to]),
+  };
+}
+
 export const SEASON_BD_V1: BdShowcase = {
   id: "ruoa-cetacea",
-  passiveTree: pobSnapshot.passiveTree as MemorialTree,
-  ascendancyTree: pobSnapshot.ascendancyTree as MemorialTree,
+  passiveTree: snapshotTree(pobSnapshot.passiveTree),
+  ascendancyTree: snapshotTree(pobSnapshot.ascendancyTree),
   pobStats: pobSnapshot.stats,
   titleZh: RUO_CETACEA_META.name,
   titleEn: RUO_CETACEA_META.name,
