@@ -1692,3 +1692,5 @@ header {
 .item-tip[data-pinned="false"] { pointer-events: none; }
 .item-tip[data-pinned="false"] header .item-tip-hint { display: inline; font-size: .8rem; margin-right: auto; }
 .item-tip[data-pinned="true"] header { cursor: move; }
+
+.item-anchor-pin { position: fixed; z-index: 1001; display: grid; place-items: center; width: 24px; height: 24px; color: #dbc18d; background: #211a12; border: 1px solid #8d7340; cursor: pointer; }

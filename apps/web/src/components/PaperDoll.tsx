@@ -86,6 +86,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
     const rect = event.currentTarget.getBoundingClientRect();
     setTip((current) => current?.pinned ? current : ({
       gear,
+      anchor: { x: rect.right - 28, y: rect.top + 3 },
       x: current?.pinned ? current.x : rect.right + 8,
       y: current?.pinned ? current.y : rect.top,
       pinned: current?.pinned ?? false,
@@ -93,7 +94,6 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
   }
 
   function hideTip() {
-    cancelHide();
     setTip((current) => current?.pinned ? current : null);
   }
 
@@ -183,6 +183,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
           locale={locale}
           onPinned={(x, y) => setTip((current) => (current ? { ...current, x, y, pinned: true } : current))}
           onDismiss={() => setTip(null)}
+          onAnchorLeave={hideTip}
         />
       ) : null}
     </div>
@@ -252,7 +253,10 @@ function DollCell({
         aria-label={[slotLabel, name || t.showcaseMemorialEmpty].join(" ")}
         onClick={() => { memorialScroll.current = window.scrollY; }}
         onMouseEnter={(event) => onHover(gear, event)}
-        onMouseLeave={onLeave}
+        onMouseLeave={(event) => {
+          if (event.relatedTarget instanceof Element && event.relatedTarget.closest("[data-item-anchor-pin]")) return;
+          onLeave();
+        }}
       >
         <span className="ninja-art">
           {src ? <img src={src} alt={name || slotLabel} /> : null}

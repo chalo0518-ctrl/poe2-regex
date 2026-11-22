@@ -6,6 +6,7 @@ import MarketItemCard, { marketItemTitle } from "./MarketItemCard.tsx";
 
 export type TooltipState = {
   gear: MemorialGear;
+  anchor: { x: number; y: number };
   x: number;
   y: number;
   pinned: boolean;
@@ -16,11 +17,13 @@ export default function ItemTooltip({
   locale,
   onPinned,
   onDismiss,
+  onAnchorLeave,
 }: {
   tip: TooltipState;
   locale: UiLocale;
   onPinned: (x: number, y: number) => void;
   onDismiss: () => void;
+  onAnchorLeave: () => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const drag = useRef<{ dx: number; dy: number; moved: boolean } | null>(null);
@@ -68,6 +71,16 @@ export default function ItemTooltip({
   }
 
   return createPortal(
+    <>
+    {!tip.pinned && <button type="button" data-item-anchor-pin className="item-anchor-pin" aria-label={locale === "en" ? "Pin item" : "釘選裝備"}
+      style={{ left: tip.anchor.x, top: tip.anchor.y }}
+      onMouseLeave={(event) => {
+        if (event.relatedTarget instanceof Element && event.relatedTarget.closest("[data-slot]")) return;
+        onAnchorLeave();
+      }}
+      onClick={() => onPinned(pos.x, pos.y)}>
+      <svg aria-hidden="true" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M9 4h6m-5 0v6l-3 4v2h10v-2l-3-4V4m-2 12v5" /></svg>
+    </button>}
     <div
       ref={root}
       data-pinned={tip.pinned}
@@ -78,17 +91,18 @@ export default function ItemTooltip({
     >
       <header title={locale === "en" ? "Hold Alt to pin, then drag here" : "按住 Alt 釘選後，可拖曳此處"} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}>
         {!tip.pinned && <span className="item-tip-hint">{locale === "en" ? "Alt to pin" : "按 Alt 釘選"}</span>}
-        <button type="button" className="item-tip-pin" aria-pressed={tip.pinned} tabIndex={tip.pinned ? 0 : -1}
+        {tip.pinned && <button type="button" className="item-tip-pin" aria-pressed={tip.pinned} tabIndex={tip.pinned ? 0 : -1}
           aria-label={locale === "en" ? "Pin item" : "釘選裝備"}
           onPointerDown={(event) => event.stopPropagation()}
           onClick={() => onPinned(pos.x, pos.y)}>
           <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M9 4h6m-5 0v6l-3 4v2h10v-2l-3-4V4m-2 12v5" /></svg>
-        </button>
+        </button>}
         <button type="button" tabIndex={tip.pinned ? 0 : -1} onPointerDown={(event) => event.stopPropagation()} onClick={onDismiss} aria-label={locale === "en" ? "Close" : "關閉"}>
           ×
         </button>
       </header>
       <div className="item-tip-body"><MarketItemCard gear={tip.gear} locale={locale} /></div>
-    </div>, document.body
+    </div>
+    </>, document.body
   );
 }
