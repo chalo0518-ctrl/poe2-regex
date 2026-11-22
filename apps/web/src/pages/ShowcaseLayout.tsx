@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link, NavLink, Outlet, useLocation, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { type BdShowcase } from "@poe2-regex/data";
 import { useLocale } from "../i18n.tsx";
@@ -13,6 +13,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
   const [bookmarksOpen, setBookmarksOpen] = useState(false);
   const [bookmarkWidth, setBookmarkWidth] = useState(270);
   const navigate = useNavigate();
+  const posterDialog = useRef<HTMLDialogElement>(null);
   const location = useLocation();
   useEffect(() => {
     if (location.hash === "#season-update" || location.hash === "#season-build") {
@@ -31,11 +32,10 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
     ? [{ id: "runes-of-aldur", snapshot: override, updateImage: seasonPreviewUrl }]
     : SHOWCASE_SEASONS;
   const requested = params.get("season");
-  const selectedSeason = seasons.find((entry) => entry.id === requested)
-    ?? (requested === "current" || inArchive ? seasons[0] : undefined);
+  const selectedSeason = seasons.find((entry) => entry.id === requested) ?? seasons[0];
   const active = selectedSeason ?? seasons[0];
   const { snapshot, updateImage } = active;
-  const showUpdate = Boolean(archiveOverview && updateImage && location.hash === "#season-update");
+  const showUpdate = Boolean(archiveOverview && location.hash === "#season-update");
   const resizeBookmarks = (width: number) => {
     setBookmarkWidth(Math.max(180, Math.min(width, 480, window.innerWidth * 0.42)));
   };
@@ -44,18 +44,20 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
     return name.replace(/\s*聯盟\s*$/u, "");
   };
   const archivePath = (path: string) => seasonHref(path, active.id);
+  const updatePath = archivePath("/showcase/memorial") + "#season-update";
+  const posterLabel = english ? `${seasonName(snapshot)} update overview` : `${seasonName(snapshot)} 更新總覽`;
 
   return (
     <ShowcaseProvider key={active.id} snapshot={snapshot}>
       <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive}>
-        <div className="ledger-content ledger-season-layout" data-bookmarks-open={bookmarksOpen}
+        <div className="ledger-content ledger-season-layout" data-bookmarks-open={inArchive && bookmarksOpen}
           style={{ "--bookmarks-width": `${bookmarkWidth}px` } as CSSProperties}>
-          <button type="button" className="ledger-bookmarks-toggle" aria-expanded={bookmarksOpen}
+          {inArchive ? <button type="button" className="ledger-bookmarks-toggle" aria-expanded={bookmarksOpen}
             aria-controls="season-bookmarks" onClick={() => setBookmarksOpen((open) => !open)}>
             <span className="ledger-bookmark-arrow" aria-hidden="true" />
             <span className="sr-only">{english ? (bookmarksOpen ? "Hide bookmarks" : "Show bookmarks") : (bookmarksOpen ? "收合書籤" : "展開書籤")}</span>
-          </button>
-          <nav id="season-bookmarks" hidden={!bookmarksOpen} className="ledger-bookmarks" aria-label={english ? "Season bookmarks" : "賽季書籤"}>
+          </button> : null}
+          <nav id="season-bookmarks" hidden={!inArchive || !bookmarksOpen} className="ledger-bookmarks" aria-label={english ? "Season bookmarks" : "賽季書籤"}>
             <div className="ledger-bookmark-title">
               <span>{english ? "Bookmarks" : "書籤"}</span>
             </div>
@@ -63,9 +65,10 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
             {inArchive ? (
               <details className="ledger-bookmark-folder" open>
                 <summary>{seasonName(snapshot)}</summary>
-                {updateImage ? <Link className="ledger-bookmark ledger-bookmark-update" aria-current={location.hash === "#season-update" ? "location" : undefined} to={archivePath("/showcase/memorial") + "#season-update"}>
+                <Link className="ledger-bookmark" to={archivePath("/showcase")}>{english ? "Switch season" : "切換賽季"}</Link>
+                <Link className="ledger-bookmark ledger-bookmark-update" aria-current={location.hash === "#season-update" ? "location" : undefined} to={updatePath}>
                   {english ? "Season update" : "版本更新"}
-                </Link> : null}
+                </Link>
                 <div role="tablist" aria-label={t.showcaseTabsAria} className="ledger-bookmark-sections">
                   <ShowcaseTab id="showcase-tab-memorial" to={archivePath("/showcase/memorial") + "#season-build"} selected={Boolean(memorial) && location.hash !== "#season-update"} label={t.showcaseTabMemorial} />
                   <ShowcaseTab id="showcase-tab-recommended" to={archivePath("/showcase/recommended") + "#season-build"} selected={Boolean(recommended)} label={t.showcaseTabRecommended} />
@@ -92,27 +95,41 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
             />
           </nav>
           <div className="ledger-season-main">
-          {showUpdate && updateImage ? (
-            <figure className="ledger-season-poster" id="season-update">
-              <img src={updateImage} alt={english ? `${seasonName(snapshot)} update overview` : `${seasonName(snapshot)} 更新總覽`} decoding="async" />
-            </figure>
-          ) : null}
-          {!inArchive ? <section className="ledger-season-select" aria-label={english ? "Choose a season" : "選擇賽季"}>
-            <div className="ledger-season-controls">
-              {!inArchive ? (
-                <h1>{t.showcaseNav}</h1>
-              ) : null}
-            <label className="ledger-season-filter">
-              <span>{english ? "Season" : "賽季"}</span>
-              <select value={selectedSeason?.id ?? ""} onChange={(event) => {
-                navigate(event.target.value ? seasonHref("/showcase/memorial", event.target.value) : "/showcase");
-              }}>
-                <option value="">{english ? "Select a season" : "請選擇賽季"}</option>
-                {seasons.map((entry) => <option key={entry.id} value={entry.id}>{seasonName(entry.snapshot)}</option>)}
-              </select>
-            </label>
-            </div>
-          </section> : null}
+          {showUpdate && (
+            <section id="season-update" aria-label={posterLabel}>
+              {updateImage ? (
+                <figure className="ledger-season-poster">
+                  <button type="button" className="ledger-poster-open" aria-label={english ? "Enlarge season poster" : "放大賽季更新圖"}
+                    onClick={() => posterDialog.current?.showModal()}>
+                    <img src={updateImage} alt={posterLabel} decoding="async" />
+                  </button>
+                  <dialog ref={posterDialog} className="ledger-poster-dialog" aria-label={posterLabel}>
+                    <form method="dialog"><button autoFocus>{english ? "Close poster" : "關閉大圖"}</button></form>
+                    <img src={updateImage} alt={posterLabel} />
+                  </dialog>
+                </figure>
+              ) : <p>{english ? "Season poster unavailable." : "本季更新圖尚未提供。"}</p>}
+            </section>
+          )}
+          {!inArchive && (
+            <section className="ledger-season-select" aria-label={english ? "Choose a season" : "選擇賽季"}>
+              <div className="ledger-season-controls">
+                <h1>{english ? "Choose a season" : "選擇賽季"}</h1>
+                {seasons.length > 1 && <label className="ledger-season-filter">
+                  <span>{english ? "Season" : "賽季"}</span>
+                  <select value={active.id} onChange={(event) => navigate(seasonHref("/showcase", event.target.value))}>
+                    {seasons.map((entry) => <option key={entry.id} value={entry.id}>{seasonName(entry.snapshot)}</option>)}
+                  </select>
+                </label>}
+              </div>
+              <Link to={updatePath} className="ledger-season-card" data-art={active.id === "runes-of-aldur" ? "canvas" : undefined}>
+                <div className="ledger-season-copy">
+                  <h2>{seasonName(snapshot)}</h2>
+                  <span className="ledger-season-enter">{english ? "Open season recap" : "進入賽季回顧"}</span>
+                </div>
+              </Link>
+            </section>
+          )}
           {inArchive && !showUpdate ? (
             <>
               <div className="ledger-archive" id="season-build" role="tabpanel" aria-labelledby={recommended ? "showcase-tab-recommended" : "showcase-tab-memorial"}>

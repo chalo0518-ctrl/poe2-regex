@@ -42,9 +42,13 @@ describe("season BD showcase", () => {
     const user = userEvent.setup();
     renderAt("/showcase");
     expect(screen.queryByRole("tab")).not.toBeInTheDocument();
-    const filter = within(screen.getByRole("region", { name: "選擇賽季" })).getByRole("combobox", { name: "賽季" });
-    await user.selectOptions(filter, "runes-of-aldur");
-    expect(screen.getByRole("tabpanel")).toBeInTheDocument();
+    const picker = screen.getByRole("region", { name: "選擇賽季" });
+    await user.click(within(picker).getByRole("link", { name: /進入賽季回顧/ }));
+    expect(screen.getByRole("button", { name: "放大賽季更新圖" })).toBeInTheDocument();
+    expect(screen.queryByRole("tabpanel")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "展開書籤" }));
+    await user.click(screen.getByRole("link", { name: "切換賽季" }));
+    expect(screen.getByRole("region", { name: "選擇賽季" })).toBeInTheDocument();
   });
 
   it("switches two main tabs and does not show them side by side", async () => {
@@ -374,7 +378,7 @@ describe("season BD showcase", () => {
     expect(screen.queryByRole("link", { name: "返回" })).not.toBeInTheDocument();
     const links = screen.getAllByRole("link", { name: /賽季回顧/ });
     expect(links.length).toBeGreaterThan(0);
-    expect(links.every((link) => link.getAttribute("href") === "/showcase/memorial#season-update")).toBe(true);
+    expect(links.every((link) => link.getAttribute("href") === "/showcase")).toBe(true);
     expect(screen.queryByRole("link", { name: /裝備製作/ })).not.toBeInTheDocument();
     expect(document.querySelector('a[href="/early"], a[href="/endgame"]')).toBeNull();
   });

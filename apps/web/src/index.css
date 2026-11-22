@@ -1641,3 +1641,20 @@ header {
   font-weight: 650;
   background: linear-gradient(90deg, transparent, #342741b0 50%, transparent);
 }
+
+.ledger-poster-open { display: block; width: 100%; cursor: zoom-in; }
+.ledger-poster-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(96vw, 1800px);
+  max-width: none;
+  max-height: 94vh;
+  overflow: auto;
+  background: #100e0c;
+  border: 1px solid #8d7247;
+  color: #ebd3a6;
+}
+.ledger-poster-dialog::backdrop { background: #000c; }
+.ledger-poster-dialog form { position: sticky; top: 0; text-align: right; background: #17130f; padding: .5rem 1rem; }
+.ledger-poster-dialog img { width: 100%; }
