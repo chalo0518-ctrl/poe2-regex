@@ -93,7 +93,7 @@ describe("season BD showcase", () => {
     expect(slotLink(/生命藥劑/)).toHaveStyle({ gridRow: "8 / 10" });
     expect(screen.getByText("5,511")).toBeInTheDocument();
     expect(screen.getByText("恐怖之柱")).toBeInTheDocument();
-    expect(screen.getByText("16k")).toBeInTheDocument();
+    expect(screen.getByText("16,000")).toBeInTheDocument();
     expect(document.body.textContent).not.toContain("推荐");
     expect(document.body.textContent).not.toContain("鑽嵌");
     expect(document.body.textContent).not.toContain("装备");
@@ -114,6 +114,13 @@ describe("season BD showcase", () => {
     renderAt("/showcase/memorial");
     await user.hover(slotLink(/主手/));
     expect(screen.getByRole("dialog", { name: "暮色刃痕" })).toHaveTextContent("單挑法杖");
+    await user.unhover(slotLink(/主手/));
+    expect(screen.queryByRole("dialog", { name: "暮色刃痕" })).not.toBeInTheDocument();
+    await user.hover(slotLink(/主手/));
+    await user.keyboard("{Alt>}");
+    await user.unhover(slotLink(/主手/));
+    expect(screen.getByRole("dialog", { name: "暮色刃痕" })).toHaveAttribute("data-pinned", "true");
+    await user.keyboard("{/Alt}{Escape}");
 
     expect(screen.queryByRole("button", { name: "顯示鑲嵌" })).not.toBeInTheDocument();
     expect(slotLink(/頭盔/).querySelector(".socket-stack")).toBeNull();
