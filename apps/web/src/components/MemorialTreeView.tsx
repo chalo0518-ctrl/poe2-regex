@@ -1,9 +1,14 @@
 import oracleArt from "../assets/oracle-ascendancy.jpg";
 import fullTree from "../assets/poe2-main-passive-overview.svg";
-import { useState } from "react";
+import fullNodeRows from "../assets/poe2-main-passive-nodes.json";
+import { useRef, useState } from "react";
 import { type MemorialTree } from "@poe2-regex/data";
 import { useShowcase } from "../pages/showcaseState.tsx";
 import { useLocale } from "../i18n.tsx";
+
+type OverviewNode = [id: string, x: number, y: number, name: string, effect: string, kind: string];
+const overviewNodes = fullNodeRows as OverviewNode[];
+const overviewById = new Map(overviewNodes.map((row) => [row[0], row]));
 
 export default function MemorialTreeView({ tree, title, showOverview = false }: { tree?: MemorialTree; title: string; showOverview?: boolean }) {
   const { locale } = useLocale();
@@ -13,9 +18,12 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [selected, setSelected] = useState("");
+  const layer = useRef<SVGGElement>(null);
+  const didPan = useRef(false);
   const nodes = tree?.nodes ?? [];
   const byId = new Map(nodes.map((node) => [node.id, node]));
   const node = byId.get(selected);
+  const extra = showOverview ? overviewById.get(selected) : undefined;
   const isAllocated = (entry: (typeof nodes)[number]) => entry.allocated && (!entry.weaponSets?.length || entry.weaponSets.includes(weaponSet));
   const allocated = nodes.filter(isAllocated);
   const [fitAll, setFitAll] = useState(showOverview);
@@ -36,6 +44,9 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
     if (grantsKeystoneRadius && keystoneIds.has(entry.id)) return [{ entry, radius: 138, jewel: false }];
     return [];
   }) : [];
+  const eligible = showOverview ? overviewNodes.filter(([, px, py, , effect, kind]) =>
+    Boolean(effect) && (kind === "normal" || kind === "notable" || kind === "strength" || kind === "dexterity" || kind === "intelligence") &&
+    rings.some(({ entry, radius, jewel }) => !jewel && Math.hypot(entry.x - px, entry.y - py) <= radius)) : [];
   const allocationColor = (sets?: number[]) => sets?.length === 1 ? (sets[0] === 1 ? "#eb6a63" : "#75c98b") : "#e5bf74";
   const [x, width] = showOracle ? [portrait.x, portrait.width] : showOverview && fitAll ? [overview.x, overview.width] : extent("x");
   const [y, height] = showOracle ? [portrait.y, portrait.height] : showOverview && fitAll ? [overview.y, overview.height] : extent("y");
@@ -61,20 +72,36 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
           <svg viewBox={`${x} ${y} ${width} ${height}`}
             aria-label={title}
             onPointerDown={(event) => {
+              didPan.current = false;
               if (event.button === 0 && event.target === event.currentTarget) event.currentTarget.setPointerCapture(event.pointerId);
             }}
             onPointerMove={(event) => {
               if (!event.currentTarget.hasPointerCapture(event.pointerId)) return;
+              if (event.movementX || event.movementY) didPan.current = true;
               const ratio = event.currentTarget.getScreenCTM()?.a || 1;
               setPosition((previous) => ({ x: previous.x + event.movementX / ratio, y: previous.y + event.movementY / ratio }));
             }}
+            onClick={(event) => {
+              if (event.target !== event.currentTarget || !showOverview || didPan.current) return;
+              const matrix = layer.current?.getScreenCTM();
+              if (!matrix) return;
+              const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+              let closest: OverviewNode | undefined;
+              let distance = Math.max(9, 7 / Math.abs(matrix.a));
+              for (const row of overviewNodes) {
+                const next = Math.hypot(row[1] - point.x, row[2] - point.y);
+                if (next < distance) { closest = row; distance = next; }
+              }
+              if (closest) setSelected(closest[0]);
+            }}
           >
-            <g transform={`translate(${position.x + (x + width / 2) * (1 - scale)} ${position.y + (y + height / 2) * (1 - scale)}) scale(${scale})`}>
+            <g ref={layer} transform={`translate(${position.x + (x + width / 2) * (1 - scale)} ${position.y + (y + height / 2) * (1 - scale)}) scale(${scale})`}>
               {showOverview && <image href={fullTree} {...overview} pointerEvents="none" />}
               {showOracle && <image href={oracleArt} {...portrait} pointerEvents="none" />}
               {rings.map(({ entry, radius, jewel }) => (
                 <circle key={entry.id} cx={entry.x} cy={entry.y} r={radius} fill={jewel ? "#4285ff10" : "#6768ff09"} stroke={jewel ? "#88b6ff" : "#656fc4"} strokeWidth={jewel ? 5 : 3.5} pointerEvents="none" />
               ))}
+              <path d={eligible.map(([, px, py]) => `M${px} ${py}h.01`).join("")} stroke="#868cf2" strokeWidth="5" strokeLinecap="round" opacity=".65" pointerEvents="none" />
               {!showOracle && tree?.edges.map(([first, second]) => {
                 const a = byId.get(first);
                 const b = byId.get(second);
@@ -88,6 +115,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
                 onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(entry.id); } }}><title>{(english ? entry.nameEn : entry.nameZh) + "\n" + (entry.effectEn ?? "")}</title></circle>)}
             </g>
           </svg>
+          {extra && !node && <p><strong>{extra[3]}</strong> {extra[4]}</p>}
           {node && <p><strong>{english ? node.nameEn : node.nameZh}</strong> {english ? node.effectEn : node.effectZh || node.effectEn}</p>}
         </>
       )}
