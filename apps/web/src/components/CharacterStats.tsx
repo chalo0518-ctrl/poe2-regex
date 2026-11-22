@@ -1,3 +1,4 @@
+import weaponTwoStats from "../assets/ruoa-weapon-ii-stats.json";
 import type { ReactNode } from "react";
 import { RUO_CETACEA_STATS } from "@poe2-regex/data";
 import { useShowcase } from "../pages/showcaseState.tsx";
@@ -55,7 +56,8 @@ function Parts({ parts }: { parts: { text: string; color: string }[] }) {
 export default function CharacterStats() {
   const { locale } = useLocale();
   const { snapshot, weaponSet } = useShowcase();
-  if (weaponSet === 2 || snapshot.id !== "ruoa-cetacea") return (
+  if (weaponSet === 2 && snapshot.id === "ruoa-cetacea") return <WeaponTwoStats />;
+  if (snapshot.id !== "ruoa-cetacea") return (
     <section className="stats-col" aria-label={locale === "en" ? "Character stats" : "角色屬性"}>
       <h2 className="stats-title">{locale === "en" ? "Character stats" : "角色屬性"}</h2>
       <p>{locale === "en" ? "No stats recorded for this weapon set." : "此武器組的屬性未記錄。"}</p>
@@ -179,4 +181,43 @@ function skillDetail(text: string, locale: "zh-Hant" | "en") {
   return text.replace(/\/s/g, "／秒").replace(/([\d.]+)m radius/g, "半徑 $1 公尺")
     .replace(/([\d.]+)s duration/g, "持續 $1 秒").replace(/([\d.]+%) \/ ([\d.]+%) crit/g, "暴擊率 $1／暴擊加成 $2")
     .replace(/([\d.]+%) hit/g, "命中率 $1");
+}
+
+function WeaponTwoStats() {
+  const { locale } = useLocale();
+  const english = locale === "en";
+  const title = english ? "Character stats · Weapon set II" : "角色屬性 · 武器組 II";
+  const number = new Intl.NumberFormat(english ? "en-US" : "zh-TW", { maximumFractionDigits: 2 });
+  const values: Readonly<Record<string, number>> = weaponTwoStats;
+  const groups: { en: string; zh: string; rows: [string, string, string, string?][] }[] = [
+    { en: "Character", zh: "角色", rows: [
+      ["Str", "Strength", "力量"], ["Dex", "Dexterity", "敏捷"], ["Int", "Intelligence", "智慧"],
+    ] },
+    { en: "Defence and resources", zh: "防禦與資源", rows: [
+      ["Life", "Life", "生命"], ["EnergyShield", "Energy Shield", "能量護盾"],
+      ["Mana", "Mana", "魔力"], ["ManaRegenRecovery", "Mana recovery per second", "每秒魔力回復"],
+      ["Spirit", "Spirit", "精魂"], ["Armour", "Armour", "護甲值"], ["Evasion", "Evasion rating", "閃避值"],
+      ["EffectiveBlockChance", "Effective block chance", "有效格擋率", "%"],
+      ["FireResist", "Fire resistance", "火焰抗性", "%"], ["ColdResist", "Cold resistance", "冰冷抗性", "%"],
+      ["LightningResist", "Lightning resistance", "閃電抗性", "%"], ["ChaosResist", "Chaos resistance", "混沌抗性", "%"],
+      ["TotalEHP", "Effective Health Pool", "有效生命池"],
+    ] },
+    { en: "Grim Pillars", zh: "恐怖之柱", rows: [
+      ["AverageHit", "Average hit", "平均擊中傷害"], ["Speed", "Cast rate", "施放頻率", english ? "/s" : "／秒"],
+      ["CritChance", "Critical strike chance", "暴擊率", "%"],
+    ] },
+  ];
+  return (
+    <section className="stats-col" aria-label={title}>
+      <h2 className="stats-title">{title}</h2>
+      <p className="text-xs text-muted">{english ? "Saved PoB2 calculation · 0.5" : "PoB2 儲存的計算結果 · 0.5"}</p>
+      {groups.map(({ en, zh, rows }) => (
+        <div key={en}>
+          <h3 className="stats-section">{english ? en : zh}</h3>
+          {rows.map(([key, enLabel, zhLabel, suffix = ""]) => values[key] != null &&
+            <Row key={key} label={english ? enLabel : zhLabel} value={number.format(values[key]) + suffix} />)}
+        </div>
+      ))}
+    </section>
+  );
 }

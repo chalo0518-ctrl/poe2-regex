@@ -1,7 +1,7 @@
 import oracleArt from "../assets/oracle-ascendancy.jpg";
 import fullTree from "../assets/talent-main-full-rings.png";
 import fullNodeRows from "../assets/poe2-main-passive-nodes.json";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type MemorialTree } from "@poe2-regex/data";
 import { useShowcase } from "../pages/showcaseState.tsx";
 import { useLocale } from "../i18n.tsx";
@@ -18,6 +18,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [selected, setSelected] = useState("");
+  const viewport = useRef<SVGSVGElement>(null);
   const layer = useRef<SVGGElement>(null);
   const didPan = useRef(false);
   const nodes = tree?.nodes ?? [];
@@ -38,6 +39,28 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const allocationColor = (sets?: number[]) => sets?.length === 1 ? (sets[0] === 1 ? "#eb6a63" : "#75c98b") : "#e5bf74";
   const [x, width] = showOracle ? [portrait.x, portrait.width] : showOverview && fitAll ? [overview.x, overview.width] : extent("x");
   const [y, height] = showOracle ? [portrait.y, portrait.height] : showOverview && fitAll ? [overview.y, overview.height] : extent("y");
+  const centerX = x + width / 2;
+  const centerY = y + height / 2;
+  useEffect(() => {
+    const svg = viewport.current;
+    if (!svg) return;
+    function zoom(event: WheelEvent) {
+      const matrix = svg?.getScreenCTM();
+      if (!matrix || !event.deltaY) return;
+      event.preventDefault();
+      const cursor = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+      const next = Math.max(.2, Math.min(5, scale * (event.deltaY < 0 ? 1.15 : 1 / 1.15)));
+      if (next === scale) return;
+      const ratio = 1 - next / scale;
+      setPosition(({ x, y }) => ({
+        x: x + (cursor.x - centerX - x) * ratio,
+        y: y + (cursor.y - centerY - y) * ratio,
+      }));
+      setScale(next);
+    }
+    svg.addEventListener("wheel", zoom, { passive: false });
+    return () => svg.removeEventListener("wheel", zoom);
+  }, [scale, centerX, centerY, nodes.length]);
   return (
     <section className="memorial-tree" data-overview={showOverview} data-oracle={showOracle} aria-label={title}>
       <h3>{title}</h3>
@@ -57,7 +80,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
               <span style={{ color: "#656fc4" }}>{english ? "Keystone radius" : "核心天賦範圍"}</span>
             </div>
           )}
-          <svg viewBox={`${x} ${y} ${width} ${height}`}
+          <svg ref={viewport} viewBox={`${x} ${y} ${width} ${height}`}
             aria-label={title}
             onPointerDown={(event) => {
               didPan.current = false;
