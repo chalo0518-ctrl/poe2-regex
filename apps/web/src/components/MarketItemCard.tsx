@@ -38,7 +38,7 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
             {label && <p className="market-item-label">{label}</p>}
             <ul>
               {rows.map((mod, rowIndex) => (
-                <li key={rowIndex} className="market-item-mod" data-kind={mod.kind}>
+                <li key={rowIndex} className="market-item-mod" data-kind={mod.kind} data-granted-skill={mod.kind === "implicit" && /^(?:Grants Skill|賦予技能)\s*[:：]/iu.test(line(mod, locale)) ? "" : undefined}>
                   {mod.kind === "fractured" && <small>{locale === "en" ? "Fractured" : "鎖定"}</small>}
                   {mod.kind === "crafted" && <small>{locale === "en" ? "Crafted" : "工藝"}</small>}
                   <span>{line(mod, locale)}</span>

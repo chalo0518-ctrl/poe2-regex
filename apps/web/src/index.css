@@ -1587,3 +1587,18 @@ header {
 .market-item-mod[data-kind="corrupted"] { color: #f0837e; }
 .market-item-flavour { color: #eaa36c; font-style: italic; white-space: pre-line; }
 .socket-pip { pointer-events: auto; }
+
+.market-item-mod[data-granted-skill] {
+  position: relative;
+  margin-block: .15em;
+  padding-block: .4em;
+  color: #a9a3ff;
+  background: linear-gradient(90deg, transparent 12%, #231c2b80 50%, transparent 88%);
+}
+.market-item-mod[data-granted-skill]::before {
+  content: "";
+  position: absolute;
+  inset: 0 25% auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #765536, transparent);
+}
