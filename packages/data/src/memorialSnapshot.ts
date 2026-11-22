@@ -2,8 +2,7 @@ import snapshot from "./ruoaCetacea.json";
 import { craftingSlots } from "./weapons.ts";
 import { earlyGearCatalog, isEarlyGearSlotId } from "./earlyGear.ts";
 import { weaponCatalog } from "./weapons.ts";
-import { craftTierChoices } from "./crafting.ts";
-import type { AffixTier } from "./types.ts";
+import { recognizeMemorialTier } from "./memorialTier.ts";
 import type { MemorialGear, MemorialMod, MemorialSocket, PaperDollSlotId, ShowcaseText } from "./bdShowcase.ts";
 
 /**
@@ -53,7 +52,7 @@ const ART: Record<string, string> = {
   "Cadigan's Epiphany": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Expedition2/GameWarpRune3.webp",
 };
 
-type RawText = { kind?: string; text_en?: string; text_zh?: string };
+type RawText = { kind?: string; text_en?: string; text_zh?: string; prefix_suffix?: string | null };
 type RawNotable = { name_en?: string; name_zh?: string; mods?: RawText[] };
 type RawItem = {
   status?: string;
@@ -195,19 +194,10 @@ function socketsOf(item: RawItem): MemorialSocket[] {
 }
 
 const itemClassToSlot: Record<string, string> = { "Body Armour": "body", "Helmet": "helmet" };
-const statToken = /\((-?\d+(?:\.\d+)?)\s*[-–—−]\s*(-?\d+(?:\.\d+)?)\)|(-?\d+(?:\.\d+)?)/g;
-
-function tierText(text: string, tier?: AffixTier) {
-  const bounds: [number, number][] = [];
-  const shape = text.toLowerCase().replace(/(?<=\d),(?=\d)/g, "").replace(statToken, (_, low, high, fixed) => {
-    bounds.push(low == null ? [Number(fixed), Number(fixed)] : [Number(low), Number(high)]);
-    return "#";
-  }).replace(/\s+/g, "");
-  if (tier?.statMin != null && tier.statMax != null && bounds.length === 1 && bounds[0][0] === bounds[0][1]) {
-    bounds[0] = [tier.statMin, tier.statMax];
-  }
-  return { shape, bounds };
-}
+const knownBasePools: Record<string, string> = {
+  "Ancestral Tiara": "int",
+  "Sekhema Sandals": "int",
+};
 
 function verifyTiers(item: RawItem, mods: MemorialMod[]): MemorialMod[] {
   if (item.rarity !== "rare" || !item.item_class_en) return mods;
@@ -216,26 +206,14 @@ function verifyTiers(item: RawItem, mods: MemorialMod[]): MemorialMod[] {
   if (!slot) return mods;
   const pools = isEarlyGearSlotId(slot.id) ? earlyGearCatalog.byCategory[slot.id] : weaponCatalog.byCategory[slot.id];
   if (!pools) return mods;
+  const knownPool = knownBasePools[item.base_en ?? ""];
+  const candidates = knownPool && pools[knownPool] ? [pools[knownPool]] : Object.values(pools);
   return mods.map((mod) => {
-    if (!(mod.kind === "explicit" || mod.kind === "fractured") || !mod.textEn) return mod;
-    const roll = tierText(mod.textEn);
-    if (!roll.bounds.length) return mod;
-    const families = new Set<string>();
-    const ranks = new Set<number>();
-    for (const pool of Object.values(pools)) {
-      for (const family of pool) {
-        for (const choice of craftTierChoices(family)) {
-          if (item.item_level != null && choice.level > item.item_level) continue;
-          const tier = family.tiers[choice.index];
-          const candidate = tierText(tier.textEn, tier);
-          if (candidate.shape !== roll.shape || candidate.bounds.length !== roll.bounds.length) continue;
-          if (!candidate.bounds.every(([lo, hi], index) => roll.bounds[index][0] >= lo && roll.bounds[index][1] <= hi)) continue;
-          families.add(family.family);
-          ranks.add(choice.rank);
-        }
-      }
-    }
-    return families.size === 1 && ranks.size === 1 ? { ...mod, verifiedTier: [...ranks][0] } : mod;
+    if (mod.kind !== "explicit" && mod.kind !== "fractured") return mod;
+    const raw = item.explicit_affixes?.find((row) => row.text_en && row.text_en === mod.textEn || row.text_zh && row.text_zh === mod.textZh);
+    const side = raw?.prefix_suffix;
+    const rank = recognizeMemorialTier(mod, candidates, item.item_level ?? null, side === "prefix" || side === "suffix" ? side : undefined);
+    return rank === undefined ? mod : { ...mod, verifiedTier: rank };
   });
 }
 

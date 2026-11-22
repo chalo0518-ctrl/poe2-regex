@@ -46,7 +46,7 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
                   {mod.kind === "crafted" && <small>{locale === "en" ? "Crafted" : "工藝"}</small>}
                   <span>{line(mod, locale)}{"verifiedTier" in mod && typeof mod.verifiedTier === "number" ? (
                     <small className="market-item-tier">T{mod.verifiedTier}</small>
-                  ) : ["explicit", "fractured"].includes(mod.kind) ? (
+                  ) : gear.rarity === "rare" && ["explicit", "fractured"].includes(mod.kind) ? (
                     <small className="market-item-tier">{locale === "en" ? "Tier unverified" : "階級未確認"}</small>
                   ) : null}</span>
                 </li>
