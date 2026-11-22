@@ -41,7 +41,7 @@ export default function CharacterStats() {
   const { locale } = useLocale();
   const { snapshot, weaponSet } = useShowcase();
   if (weaponSet === 2 || snapshot.id !== "ruoa-cetacea") return (
-    <section className="stats-col" aria-label="Stats">
+    <section className="stats-col" aria-label={locale === "en" ? "Character stats" : "角色屬性"}>
       <h2 className="stats-title">{locale === "en" ? "Character stats" : "角色屬性"}</h2>
       <p>{locale === "en" ? "No stats recorded for this weapon set." : "此武器組的屬性未記錄。"}</p>
     </section>
@@ -54,8 +54,8 @@ export default function CharacterStats() {
   const hits = stats.defensive.max_hit.display.split(" / ");
 
   return (
-    <section className="stats-col" aria-label="Stats">
-      <h2 className="stats-title">Stats</h2>
+    <section className="stats-col" aria-label={locale === "en" ? "Character stats" : "角色屬性"}>
+      <h2 className="stats-title">{locale === "en" ? "Character stats" : "角色屬性"}</h2>
       <h3 className="stats-section">CHARACTER</h3>
       <Row label={label("Attributes", locale)}>
         <Parts

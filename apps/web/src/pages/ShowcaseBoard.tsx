@@ -39,10 +39,14 @@ export default function ShowcaseBoard({ mode }: { mode: "memorial" | "recommende
       ) : (
         <p className="mb-4 max-w-2xl text-sm text-muted">{t.showcaseMemorialLead}</p>
       )}
-      <div className="memorial-layout">
-        <PaperDoll mode={mode} />
-        {mode === "memorial" && snapshot.level ? <CharacterStats /> : null}
-      </div>
+      {mode === "memorial" ? (
+        <div className="memorial-layout memorial-layout--columns">
+          <section className="memorial-equipment" aria-label={locale === "en" ? "Equipment" : "裝備欄"}>
+            <PaperDoll mode={mode} />
+          </section>
+          <CharacterStats />
+        </div>
+      ) : <div className="memorial-layout"><PaperDoll mode={mode} /></div>}
       {mode === "memorial" && <div className="memorial-tree-grid">
         <MemorialTreeView title={locale === "en" ? "Ascendancy tree" : "昇華天賦樹"} tree={snapshot.ascendancyTree} />
         <MemorialTreeView title={locale === "en" ? "Passive skill tree" : "天賦樹"} tree={snapshot.passiveTree} />

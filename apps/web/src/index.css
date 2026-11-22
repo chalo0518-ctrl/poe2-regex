@@ -1666,3 +1666,25 @@ header {
 .memorial-tree circle { cursor: pointer; }
 .memorial-tree-controls { display: flex; gap: .75rem; margin-bottom: .5rem; }
 .market-item-mod .market-item-tier { margin-inline: .55em 0; opacity: .75; }
+
+.ledger-archive .memorial-layout--columns {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  align-items: start;
+  gap: clamp(.65rem, 2vw, 1.75rem);
+}
+.memorial-equipment { min-width: 0; container-type: inline-size; }
+.ledger-season-layout .ledger-archive .memorial-equipment .ninja-memorial-sheet {
+  --cell: min(76px, calc((100cqw - 9 * var(--gap)) / 10));
+}
+.memorial-equipment .ninja-jewels,
+.memorial-equipment .ninja-jewel .ninja-cell {
+  --cell: min(64px, calc((100cqw - 56px) / 8));
+}
+.memorial-layout--columns > .stats-col {
+  min-width: 0;
+  max-width: none;
+  width: 100%;
+}
+.memorial-layout--columns .stats-row { gap: .5rem; overflow-wrap: anywhere; }
+.memorial-layout--columns .stats-row > :last-child { min-width: 0; text-align: right; }
