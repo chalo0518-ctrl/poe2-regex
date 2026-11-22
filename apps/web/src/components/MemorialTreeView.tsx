@@ -1,5 +1,5 @@
 import oracleArt from "../assets/oracle-ascendancy.jpg";
-import fullTree from "../assets/talent-main-full-rings.png";
+import PassiveTreeCanvas from "./PassiveTreeCanvas.tsx";
 import fullNodeRows from "../assets/poe2-main-passive-nodes.json";
 import { useEffect, useRef, useState } from "react";
 import { type MemorialTree } from "@poe2-regex/data";
@@ -49,7 +49,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
       if (!matrix || !event.deltaY) return;
       event.preventDefault();
       const cursor = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
-      const next = Math.max(.2, Math.min(5, scale * (event.deltaY < 0 ? 1.15 : 1 / 1.15)));
+      const next = Math.max(.2, Math.min(showOverview ? 12 : 5, scale * (event.deltaY < 0 ? 1.15 : 1 / 1.15)));
       if (next === scale) return;
       const ratio = 1 - next / scale;
       setPosition(({ x, y }) => ({
@@ -60,7 +60,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
     }
     svg.addEventListener("wheel", zoom, { passive: false });
     return () => svg.removeEventListener("wheel", zoom);
-  }, [scale, centerX, centerY, nodes.length]);
+  }, [scale, centerX, centerY, nodes.length, showOverview]);
   return (
     <section className="memorial-tree" data-overview={showOverview} data-oracle={showOracle} aria-label={title}>
       <h3>{title}</h3>
@@ -106,8 +106,11 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
               if (closest) setSelected(closest[0]);
             }}
           >
+            {showOverview && tree && <PassiveTreeCanvas tree={tree} weaponSet={weaponSet}
+              hasKeystoneRadius={Boolean(snapshot.ascendancyTree?.nodes.some((entry) => entry.id === "32905" && entry.allocated))}
+              x={x} y={y} width={width} height={height}
+              offsetX={position.x + centerX * (1 - scale)} offsetY={position.y + centerY * (1 - scale)} scale={scale} />}
             <g ref={layer} transform={`translate(${position.x + (x + width / 2) * (1 - scale)} ${position.y + (y + height / 2) * (1 - scale)}) scale(${scale})`}>
-              {showOverview && <image href={fullTree} {...overview} pointerEvents="none" />}
               {showOracle && <image href={oracleArt} {...portrait} pointerEvents="none" />}
               {!showOracle && !showOverview && tree?.edges.map(([first, second]) => {
                 const a = byId.get(first);
