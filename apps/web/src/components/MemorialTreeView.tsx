@@ -8,6 +8,24 @@ import { useLocale } from "../i18n.tsx";
 
 type OverviewNode = [id: string, x: number, y: number, name: string, effect: string, kind: string];
 const overviewNodes = fullNodeRows as OverviewNode[];
+// Signed connector radii from the 0.5 Oracle tree, keyed by ascending node ID.
+const oracleConnectorRadii: Readonly<Record<string, number>> = {
+  "5571/47190": 108,
+  "25092/34313": -84.6,
+  "5571/11335": -84.6,
+  "4197/56505": 84.6,
+  "378/34313": 108,
+  "15275/52374": -84.6,
+  "37782/39659": -84.6,
+  "11335/42761": 132.2,
+  "21284/42761": -84.6,
+  "42761/56505": 66.2,
+  "39659/42761": -108,
+  "25092/42761": -33.5,
+  "15275/42761": -49.3,
+  "32905/47190": -84.6,
+  "378/55135": -84.6,
+};
 const overviewById = new Map(overviewNodes.map((row) => [row[0], row]));
 
 export default function MemorialTreeView({ tree, title, showOverview = false }: { tree?: MemorialTree; title: string; showOverview?: boolean }) {
@@ -40,6 +58,11 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const portrait = { x: -1564.9, y: -790, width: 298.8, height: 297.9 };
   const insetScale = .72;
   const insetRadius = portrait.width * insetScale / 2;
+  const insetPoint = (entry: { x: number; y: number }) => [
+    (entry.x - portrait.x) * insetScale - insetRadius,
+    (entry.y - portrait.y) * insetScale - insetRadius,
+  ] as const;
+  const ascendancyById = new Map(embedded?.nodes.map((entry) => [entry.id, entry]));
   const allocationColor = (sets?: number[]) => sets?.length === 1 ? (sets[0] === 1 ? "#eb6a63" : "#75c98b") : "#e5bf74";
   const [x, width] = showOracle ? [portrait.x, portrait.width] : showOverview && fitAll ? [overview.x, overview.width] : extent("x");
   const [y, height] = showOracle ? [portrait.y, portrait.height] : showOverview && fitAll ? [overview.y, overview.height] : extent("y");
@@ -123,9 +146,24 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
                   <circle r={insetRadius + 1.5} fill="#0c0b0a" stroke="#997948" strokeWidth="2" pointerEvents="none" />
                   <image href={oracleArt} x={-insetRadius} y={-insetRadius} width={insetRadius * 2} height={insetRadius * 2}
                     clipPath={`url(#${ascendancyClip})`} pointerEvents="none" />
+                  <g clipPath={`url(#${ascendancyClip})`} fill="none" stroke="#f0cc80" strokeWidth="1.25" pointerEvents="none">
+                    {embedded.edges.map(([from, to]) => {
+                      const start = ascendancyById.get(from);
+                      const end = ascendancyById.get(to);
+                      if (!start?.allocated || !end?.allocated) return null;
+                      const [ax, ay] = insetPoint(start);
+                      const [bx, by] = insetPoint(end);
+                      const ordered = Number(from) < Number(to);
+                      const signedRadius = oracleConnectorRadii[ordered ? from + "/" + to : to + "/" + from] * (ordered ? 1 : -1);
+                      const radius = Math.abs(signedRadius) * insetScale;
+                      const segment = radius && Math.hypot(bx - ax, by - ay) < 2 * radius
+                        ? `A${radius} ${radius} 0 0 ${signedRadius > 0 ? 0 : 1} ${bx} ${by}`
+                        : `L${bx} ${by}`;
+                      return <path key={from + "/" + to} d={`M${ax} ${ay}${segment}`} />;
+                    })}
+                  </g>
                   {embedded.nodes.map((entry) => {
-                    const cx = (entry.x - portrait.x) * insetScale - insetRadius;
-                    const cy = (entry.y - portrait.y) * insetScale - insetRadius;
+                    const [cx, cy] = insetPoint(entry);
                     const radius = ["5571", "32905", "34313", "52374"].includes(entry.id) ? 7 : 4;
                     return <circle key={entry.id} cx={cx} cy={cy} r={radius} fill="transparent"
                       stroke={entry.allocated ? "#ffe1a1" : "transparent"} strokeWidth="1.1"
