@@ -365,11 +365,11 @@ describe("season BD showcase", () => {
     const user = userEvent.setup();
     renderAt("/showcase/memorial", "en");
     await user.click(screen.getByRole("button", { name: "Show bookmarks" }));
-    expect(screen.getByRole("tab", { name: "Memorial" })).toHaveAttribute("aria-selected", "true");
-    expect(screen.getByRole("tab", { name: "Recommended" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Memorial Build" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "Recommended Build" })).toBeInTheDocument();
     expect(screen.getByText("Dusk Scratch")).toBeInTheDocument();
     expect(document.body.textContent).not.toContain("推荐");
-    await user.click(screen.getByRole("tab", { name: "Recommended" }));
+    await user.click(screen.getByRole("tab", { name: "Recommended Build" }));
     expect(screen.getAllByText("Name not set").length).toBeGreaterThan(0);
     expect(screen.getAllByText("empty prefix").length).toBeGreaterThan(0);
   });
