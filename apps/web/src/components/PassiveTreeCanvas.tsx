@@ -7,9 +7,9 @@ import passive from "../assets/passive-hd.json";
 
 type Point = [x: number, y: number, icon: number, kind: number];
 type Edge = [from: string, to: string, signedRadius: number];
-const graph = passive.nodes as Record<string, Point>;
+const graph: Record<string, Point> = Object.fromEntries(Object.entries(passive.nodes).map(([id, [x, y, icon, kind]]) => [id, [x, y, icon, kind]]));
 const nodes = Object.entries(graph);
-const edges = passive.edges as Edge[];
+const edges: Edge[] = passive.edges.map(([from, to, radius]) => [String(from), String(to), Number(radius)]);
 const atlasUrls = [atlas0, atlas1, atlas2];
 const keystones = new Set(["11230", "33979", "42680", "45202", "45918", "46742", "49363", "49547", "55048", "57513"]);
 const jewels = new Set(["21984", "7960"]);
