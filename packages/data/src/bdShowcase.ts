@@ -1,3 +1,4 @@
+import pobSnapshot from "./ruoaPoB2.json";
 import type { AffixFamily, CraftSlotId, ShieldBaseId, ShieldFamily } from "./types.ts";
 import shieldsJson from "../generated/shields.json";
 import { affixModGroup, earlyGearCatalog, isEarlyGearSlotId } from "./earlyGear.ts";
@@ -113,11 +114,12 @@ export type RecommendedGear = {
 };
 
 export type MemorialTree = {
-  nodes: { id: string; x: number; y: number; nameZh: string; nameEn: string; effectZh?: string; effectEn?: string; allocated: boolean }[];
+  nodes: { id: string; x: number; y: number; nameZh: string; nameEn: string; effectZh?: string; effectEn?: string; allocated: boolean; weaponSets?: number[] }[];
   edges: [string, string][];
 };
 
 export type BdShowcase = {
+  pobStats?: Readonly<Record<string, number>>;
   passiveTree?: MemorialTree;
   ascendancyTree?: MemorialTree;
   id: string;
@@ -195,6 +197,9 @@ const DEFAULT_CRAFT_SLOT: Partial<Record<PaperDollSlotId, CraftSlotId>> = {
 
 export const SEASON_BD_V1: BdShowcase = {
   id: "ruoa-cetacea",
+  passiveTree: pobSnapshot.passiveTree as MemorialTree,
+  ascendancyTree: pobSnapshot.ascendancyTree as MemorialTree,
+  pobStats: pobSnapshot.stats,
   titleZh: RUO_CETACEA_META.name,
   titleEn: RUO_CETACEA_META.name,
   classZh: RUO_CETACEA_META.classZh,

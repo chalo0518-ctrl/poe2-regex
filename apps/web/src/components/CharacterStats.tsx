@@ -62,6 +62,9 @@ export default function CharacterStats() {
     </section>
   );
   const stats = RUO_CETACEA_STATS;
+  const pob = snapshot.pobStats;
+  const display = new Intl.NumberFormat(locale === "en" ? "en-US" : "zh-TW", { maximumFractionDigits: 2 });
+  const saved = (key: string, fallback: string | number) => pob?.[key] == null ? String(fallback) : display.format(pob[key]);
   const [str, dex, intel] = stats.character.attributes.display.split(" / ");
   const charges = stats.character.charges.display.split(" / ");
   const reduction = stats.defensive.damage_reduction.display.split(" / ");
@@ -71,6 +74,7 @@ export default function CharacterStats() {
   return (
     <section className="stats-col" aria-label={locale === "en" ? "Character stats" : "角色屬性"}>
       <h2 className="stats-title">{locale === "en" ? "Character stats" : "角色屬性"}</h2>
+      {pob && <p className="text-xs text-muted">{locale === "en" ? "PoB2 saved calculation · 0.5" : "PoB2 儲存的計算結果 · 0.5"}</p>}
       <h3 className="stats-section">{label("CHARACTER", locale)}</h3>
       <Row label={label("Attributes", locale)}>
         <Parts
@@ -93,12 +97,12 @@ export default function CharacterStats() {
       </Row>
 
       <h3 className="stats-section">{label("DEFENSIVE", locale)}</h3>
-      <Row label={label("Life", locale)} value={stats.defensive.life} />
+      <Row label={label("Life", locale)} value={saved("Life", stats.defensive.life)} />
       <Row label={label("Energy Shield", locale)} value={stats.defensive.energy_shield} />
       <Row label={label("Runic Ward", locale)} value={String(stats.defensive.runic_ward)} />
-      <Row label={label("Mana", locale)} value={stats.defensive.mana} />
-      <Row label={label("Spirit", locale)} value={String(stats.defensive.spirit)} />
-      <Row label={label("Armour", locale)} value={String(stats.defensive.armour)} />
+      <Row label={label("Mana", locale)} value={saved("Mana", stats.defensive.mana)} />
+      <Row label={label("Spirit", locale)} value={saved("Spirit", stats.defensive.spirit)} />
+      <Row label={label("Armour", locale)} value={saved("Armour", stats.defensive.armour)} />
       <Row label={label("Damage Reduction", locale)}>
         <Parts
           parts={reduction.map((text, index) => ({
@@ -107,7 +111,7 @@ export default function CharacterStats() {
           }))}
         />
       </Row>
-      <Row label={label("Evasion rating", locale)} value={String(stats.defensive.evasion_rating)} />
+      <Row label={label("Evasion rating", locale)} value={saved("Evasion", stats.defensive.evasion_rating)} />
       <Row label={label("Evade chance", locale)} value={stats.defensive.evade_chance} />
       <Row label={label("Deflection rating", locale)} value={String(stats.defensive.deflection_rating)} />
       <Row label={label("Companion redirect", locale)} value={stats.defensive.companion_redirect} />

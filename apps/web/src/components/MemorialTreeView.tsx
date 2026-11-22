@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { type MemorialTree } from "@poe2-regex/data";
+import { useShowcase } from "../pages/showcaseState.tsx";
 import { useLocale } from "../i18n.tsx";
 
 export default function MemorialTreeView({ tree, title }: { tree?: MemorialTree; title: string }) {
   const { locale } = useLocale();
   const english = locale === "en";
+  const { weaponSet } = useShowcase();
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
   const [selected, setSelected] = useState("");
   const nodes = tree?.nodes ?? [];
   const byId = new Map(nodes.map((node) => [node.id, node]));
   const node = byId.get(selected);
-  const allocated = nodes.filter((entry) => entry.allocated);
+  const isAllocated = (entry: (typeof nodes)[number]) => entry.allocated && (!entry.weaponSets?.length || entry.weaponSets.includes(weaponSet));
+  const allocated = nodes.filter(isAllocated);
   const [fitAll, setFitAll] = useState(false);
   const focus = fitAll || !allocated.length ? nodes : allocated;
   const extent = (axis: "x" | "y") => {
@@ -46,15 +49,15 @@ export default function MemorialTreeView({ tree, title }: { tree?: MemorialTree;
               {tree?.edges.map(([first, second]) => {
                 const a = byId.get(first);
                 const b = byId.get(second);
-                return a && b && <line key={first + "/" + second} x1={a.x} x2={b.x} y1={a.y} y2={b.y} stroke={a.allocated && b.allocated ? "#ddb76d" : "#524e45"} />;
+                return a && b && <line key={first + "/" + second} x1={a.x} x2={b.x} y1={a.y} y2={b.y} stroke={isAllocated(a) && isAllocated(b) ? "#ddb76d" : "#524e45"} />;
               })}
-              {nodes.map((entry) => <circle key={entry.id} cx={entry.x} cy={entry.y} r="7" fill={entry.allocated ? "#ddb76d" : "#524e45"}
+              {nodes.map((entry) => <circle key={entry.id} cx={entry.x} cy={entry.y} r="7" fill={isAllocated(entry) ? "#ddb76d" : "#524e45"}
                 role="button" tabIndex={0} aria-label={english ? entry.nameEn : entry.nameZh}
                 onClick={() => setSelected(entry.id)}
                 onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(entry.id); } }} />)}
             </g>
           </svg>
-          {node && <p><strong>{english ? node.nameEn : node.nameZh}</strong> {english ? node.effectEn : node.effectZh}</p>}
+          {node && <p><strong>{english ? node.nameEn : node.nameZh}</strong> {english ? node.effectEn : node.effectZh || node.effectEn}</p>}
         </>
       )}
     </section>
