@@ -1688,3 +1688,7 @@ header {
 }
 .memorial-layout--columns .stats-row { gap: .5rem; overflow-wrap: anywhere; }
 .memorial-layout--columns .stats-row > :last-child { min-width: 0; text-align: right; }
+
+.item-tip[data-pinned="false"] { pointer-events: none; }
+.item-tip[data-pinned="false"] header .item-tip-hint { display: inline; font-size: .8rem; margin-right: auto; }
+.item-tip[data-pinned="true"] header { cursor: move; }

@@ -16,15 +16,11 @@ export default function ItemTooltip({
   locale,
   onPinned,
   onDismiss,
-  onEnter,
-  onLeave,
 }: {
   tip: TooltipState;
   locale: UiLocale;
   onPinned: (x: number, y: number) => void;
   onDismiss: () => void;
-  onEnter: () => void;
-  onLeave: () => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const drag = useRef<{ dx: number; dy: number; moved: boolean } | null>(null);
@@ -61,7 +57,7 @@ export default function ItemTooltip({
     if (!state) return;
     const x = event.clientX - state.dx;
     const y = event.clientY - state.dy;
-    if (Math.abs(event.movementX) + Math.abs(event.movementY) > 2) state.moved = true;
+    if (Math.abs(x - pos.x) + Math.abs(y - pos.y) > 2) state.moved = true;
     setPos({ x, y });
   }
 
@@ -74,21 +70,21 @@ export default function ItemTooltip({
   return createPortal(
     <div
       ref={root}
+      data-pinned={tip.pinned}
       className={`item-tip item-tip-${tip.gear.rarity || "rare"}`}
       role="dialog"
       aria-label={name}
       style={{ left: `clamp(8px, ${pos.x}px, calc(100vw - min(46rem, 100vw - 2rem) - 8px))`, top: `clamp(8px, ${pos.y}px, calc(100dvh - min(90dvh, 52rem) - 8px))` }}
-      onMouseEnter={(event) => { event.stopPropagation(); onEnter(); }}
-      onMouseLeave={onLeave}
     >
-      <header onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag}>
-        <button type="button" className="item-tip-pin" aria-pressed={tip.pinned}
+      <header title={locale === "en" ? "Hold Alt to pin, then drag here" : "按住 Alt 釘選後，可拖曳此處"} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}>
+        {!tip.pinned && <span className="item-tip-hint">{locale === "en" ? "Alt to pin" : "按 Alt 釘選"}</span>}
+        <button type="button" className="item-tip-pin" aria-pressed={tip.pinned} tabIndex={tip.pinned ? 0 : -1}
           aria-label={locale === "en" ? "Pin item" : "釘選裝備"}
           onPointerDown={(event) => event.stopPropagation()}
           onClick={() => onPinned(pos.x, pos.y)}>
           <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M9 4h6m-5 0v6l-3 4v2h10v-2l-3-4V4m-2 12v5" /></svg>
         </button>
-        <button type="button" onPointerDown={(event) => event.stopPropagation()} onClick={onDismiss} aria-label={locale === "en" ? "Close" : "關閉"}>
+        <button type="button" tabIndex={tip.pinned ? 0 : -1} onPointerDown={(event) => event.stopPropagation()} onClick={onDismiss} aria-label={locale === "en" ? "Close" : "關閉"}>
           ×
         </button>
       </header>

@@ -3,11 +3,25 @@ import { RUO_CETACEA_STATS } from "@poe2-regex/data";
 import { useShowcase } from "../pages/showcaseState.tsx";
 import { useLocale } from "../i18n.tsx";
 
-/**
- * Row labels in Traditional Chinese only when this repo already has that
- * poe2db string. The rest stay English because the zh-tw ninja panel was not captured.
- */
 const ZH: Record<string, string> = {
+  CHARACTER: "角色",
+  DEFENSIVE: "防禦",
+  RECOVERY: "回復",
+  "MAIN SKILLS": "主要技能",
+  Attributes: "能力值",
+  Charges: "能量球",
+  "Runic Ward": "符文保護",
+  "Damage Reduction": "傷害減免",
+  "Evade chance": "閃避機率",
+  "Deflection rating": "偏斜值",
+  "Companion redirect": "同伴分攤傷害",
+  "Effective Health Pool": "有效生命池",
+  "Max Hit": "最大承受傷害",
+  "Mana regen": "魔力回復",
+  "Grim Pillars": "恐怖之柱",
+  Entangle: "纏繞",
+  "Azmerian Wolf": "阿茲莫里巨狼",
+  AVG: "平均",
   "Movement Speed": "移動速度",
   "Item Rarity": "物品稀有度",
   Life: "生命",
@@ -25,12 +39,13 @@ function label(en: string, locale: "zh-Hant" | "en"): string {
 }
 
 function Parts({ parts }: { parts: { text: string; color: string }[] }) {
+  const { locale } = useLocale();
   return (
     <span>
       {parts.map((part, index) => (
         <span key={`${part.text}-${index}`} style={{ color: part.color }}>
           {index > 0 ? " / " : ""}
-          {part.text}
+          {numberText(part.text, locale)}
         </span>
       ))}
     </span>
@@ -56,7 +71,7 @@ export default function CharacterStats() {
   return (
     <section className="stats-col" aria-label={locale === "en" ? "Character stats" : "角色屬性"}>
       <h2 className="stats-title">{locale === "en" ? "Character stats" : "角色屬性"}</h2>
-      <h3 className="stats-section">CHARACTER</h3>
+      <h3 className="stats-section">{label("CHARACTER", locale)}</h3>
       <Row label={label("Attributes", locale)}>
         <Parts
           parts={[
@@ -68,7 +83,7 @@ export default function CharacterStats() {
       </Row>
       <Row label={label("Movement Speed", locale)} value={stats.character.movement_speed} />
       <Row label={label("Item Rarity", locale)} value={stats.character.item_rarity} />
-      <Row label="Charges">
+      <Row label={label("Charges", locale)}>
         <Parts
           parts={charges.map((text, index) => ({
             text,
@@ -77,14 +92,14 @@ export default function CharacterStats() {
         />
       </Row>
 
-      <h3 className="stats-section">DEFENSIVE</h3>
+      <h3 className="stats-section">{label("DEFENSIVE", locale)}</h3>
       <Row label={label("Life", locale)} value={stats.defensive.life} />
       <Row label={label("Energy Shield", locale)} value={stats.defensive.energy_shield} />
-      <Row label="Runic Ward" value={String(stats.defensive.runic_ward)} />
+      <Row label={label("Runic Ward", locale)} value={String(stats.defensive.runic_ward)} />
       <Row label={label("Mana", locale)} value={stats.defensive.mana} />
       <Row label={label("Spirit", locale)} value={String(stats.defensive.spirit)} />
       <Row label={label("Armour", locale)} value={String(stats.defensive.armour)} />
-      <Row label="Damage Reduction">
+      <Row label={label("Damage Reduction", locale)}>
         <Parts
           parts={reduction.map((text, index) => ({
             text,
@@ -93,9 +108,9 @@ export default function CharacterStats() {
         />
       </Row>
       <Row label={label("Evasion rating", locale)} value={String(stats.defensive.evasion_rating)} />
-      <Row label="Evade chance" value={stats.defensive.evade_chance} />
-      <Row label="Deflection rating" value={String(stats.defensive.deflection_rating)} />
-      <Row label="Companion redirect" value={stats.defensive.companion_redirect} />
+      <Row label={label("Evade chance", locale)} value={stats.defensive.evade_chance} />
+      <Row label={label("Deflection rating", locale)} value={String(stats.defensive.deflection_rating)} />
+      <Row label={label("Companion redirect", locale)} value={stats.defensive.companion_redirect} />
       <Row label={label("Resistances", locale)}>
         <Parts
           parts={resists.map((text, index) => ({
@@ -104,8 +119,8 @@ export default function CharacterStats() {
           }))}
         />
       </Row>
-      <Row label="Effective Health Pool" value={stats.defensive.effective_health_pool} />
-      <Row label="Max Hit">
+      <Row label={label("Effective Health Pool", locale)} value={stats.defensive.effective_health_pool} />
+      <Row label={label("Max Hit", locale)}>
         <Parts
           parts={hits.map((text, index) => ({
             text,
@@ -114,22 +129,22 @@ export default function CharacterStats() {
         />
       </Row>
 
-      <h3 className="stats-section">RECOVERY</h3>
-      <Row label="Mana regen" value={stats.recovery.mana_regen} />
+      <h3 className="stats-section">{label("RECOVERY", locale)}</h3>
+      <Row label={label("Mana regen", locale)} value={stats.recovery.mana_regen} />
 
-      <h3 className="stats-section">MAIN SKILLS</h3>
+      <h3 className="stats-section">{label("MAIN SKILLS", locale)}</h3>
       <ul className="stats-skills">
         {stats.main_skills.map((skill) => (
           <li key={skill.name_en}>
             <div className="stats-skill-head">
-              <span>{skill.name_en}</span>
+              <span>{locale === "en" ? skill.name_en : skill.name_zh || label(skill.name_en, locale)}</span>
               <span className="stats-skill-value">
-                {skill.badge ? <span className="stats-badge">{skill.badge}</span> : null}
-                {skill.value}
+                {skill.badge ? <span className="stats-badge">{label(skill.badge, locale)}</span> : null}
+                {numberText(skill.value, locale)}
               </span>
             </div>
-            <p>{skill.detail_line_1}</p>
-            {skill.detail_line_2 ? <p>{skill.detail_line_2}</p> : null}
+            <p>{skillDetail(skill.detail_line_1, locale)}</p>
+            {skill.detail_line_2 ? <p>{skillDetail(skill.detail_line_2, locale)}</p> : null}
           </li>
         ))}
       </ul>
@@ -138,10 +153,26 @@ export default function CharacterStats() {
 }
 
 function Row({ label, value, children }: { label: string; value?: string; children?: ReactNode }) {
+  const { locale } = useLocale();
   return (
     <div className="stats-row">
       <span>{label}</span>
-      <span>{children ?? value}</span>
+      <span>{children ?? numberText(value ?? "", locale)}</span>
     </div>
   );
+}
+
+function numberText(text: string, locale: "zh-Hant" | "en") {
+  if (locale === "en") return text;
+  return text.replace(/(\d+(?:\.\d+)?)([kMB])\b/g, (_, value: string, unit: string) => {
+    const multiplier = unit === "k" ? 1_000 : unit === "M" ? 1_000_000 : 1_000_000_000;
+    return new Intl.NumberFormat("zh-TW").format(Number(value) * multiplier);
+  });
+}
+
+function skillDetail(text: string, locale: "zh-Hant" | "en") {
+  if (locale === "en") return text;
+  return text.replace(/\/s/g, "／秒").replace(/([\d.]+)m radius/g, "半徑 $1 公尺")
+    .replace(/([\d.]+)s duration/g, "持續 $1 秒").replace(/([\d.]+%) \/ ([\d.]+%) crit/g, "暴擊率 $1／暴擊加成 $2")
+    .replace(/([\d.]+%) hit/g, "命中率 $1");
 }

@@ -1,4 +1,9 @@
 import snapshot from "./ruoaCetacea.json";
+import { craftingSlots } from "./weapons.ts";
+import { earlyGearCatalog, isEarlyGearSlotId } from "./earlyGear.ts";
+import { weaponCatalog } from "./weapons.ts";
+import { craftTierChoices } from "./crafting.ts";
+import type { AffixTier } from "./types.ts";
 import type { MemorialGear, MemorialMod, MemorialSocket, PaperDollSlotId, ShowcaseText } from "./bdShowcase.ts";
 
 /**
@@ -56,6 +61,7 @@ type RawItem = {
   name_en?: string | null;
   name_zh?: string | null;
   base_en?: string | null;
+  item_class_en?: string | null;
   base_zh?: string | null;
   quality?: string | null;
   item_level?: number | null;
@@ -188,6 +194,51 @@ function socketsOf(item: RawItem): MemorialSocket[] {
   }));
 }
 
+const itemClassToSlot: Record<string, string> = { "Body Armour": "body", "Helmet": "helmet" };
+const statToken = /\((-?\d+(?:\.\d+)?)\s*[-–—−]\s*(-?\d+(?:\.\d+)?)\)|(-?\d+(?:\.\d+)?)/g;
+
+function tierText(text: string, tier?: AffixTier) {
+  const bounds: [number, number][] = [];
+  const shape = text.toLowerCase().replace(/(?<=\d),(?=\d)/g, "").replace(statToken, (_, low, high, fixed) => {
+    bounds.push(low == null ? [Number(fixed), Number(fixed)] : [Number(low), Number(high)]);
+    return "#";
+  }).replace(/\s+/g, "");
+  if (tier?.statMin != null && tier.statMax != null && bounds.length === 1 && bounds[0][0] === bounds[0][1]) {
+    bounds[0] = [tier.statMin, tier.statMax];
+  }
+  return { shape, bounds };
+}
+
+function verifyTiers(item: RawItem, mods: MemorialMod[]): MemorialMod[] {
+  if (item.rarity !== "rare" || !item.item_class_en) return mods;
+  const slot = craftingSlots().find((row) => row.id === (itemClassToSlot[item.item_class_en ?? ""] ?? item.item_class_en?.toLowerCase()) ||
+    row.labelEn?.toLowerCase() === item.item_class_en?.toLowerCase());
+  if (!slot) return mods;
+  const pools = isEarlyGearSlotId(slot.id) ? earlyGearCatalog.byCategory[slot.id] : weaponCatalog.byCategory[slot.id];
+  if (!pools) return mods;
+  return mods.map((mod) => {
+    if (!(mod.kind === "explicit" || mod.kind === "fractured") || !mod.textEn) return mod;
+    const roll = tierText(mod.textEn);
+    if (!roll.bounds.length) return mod;
+    const families = new Set<string>();
+    const ranks = new Set<number>();
+    for (const pool of Object.values(pools)) {
+      for (const family of pool) {
+        for (const choice of craftTierChoices(family)) {
+          if (item.item_level != null && choice.level > item.item_level) continue;
+          const tier = family.tiers[choice.index];
+          const candidate = tierText(tier.textEn, tier);
+          if (candidate.shape !== roll.shape || candidate.bounds.length !== roll.bounds.length) continue;
+          if (!candidate.bounds.every(([lo, hi], index) => roll.bounds[index][0] >= lo && roll.bounds[index][1] <= hi)) continue;
+          families.add(family.family);
+          ranks.add(choice.rank);
+        }
+      }
+    }
+    return families.size === 1 && ranks.size === 1 ? { ...mod, verifiedTier: [...ranks][0] } : mod;
+  });
+}
+
 export function memorialGearFromRaw(item: RawItem): MemorialGear | null {
   if (item.status === "empty" || !item.name_en) return null;
   const rarity = item.rarity === "unique" || item.rarity === "rare" || item.rarity === "magic" ? item.rarity : "";
@@ -219,7 +270,7 @@ export function memorialGearFromRaw(item: RawItem): MemorialGear | null {
     requirementsEn: requirements.en,
     requirementsZh: requirements.zh,
     stats: statsOf(item.stats_shown),
-    mods,
+    mods: verifyTiers(item, mods),
     sockets: socketsOf(item),
     notables: notablesOf(item),
     flavourEn: item.flavour_en ?? "",
