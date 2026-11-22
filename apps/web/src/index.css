@@ -1694,3 +1694,7 @@ header {
 .item-tip[data-pinned="true"] header { cursor: move; }
 
 .item-anchor-pin { position: fixed; z-index: 1001; display: grid; place-items: center; width: 24px; height: 24px; color: #dbc18d; background: #211a12; border: 1px solid #8d7340; cursor: pointer; }
+
+.memorial-tree, .memorial-tree svg { background: #000; }
+.memorial-tree[data-overview="true"] svg { height: clamp(26rem, 55vw, 42rem); }
+.memorial-tree svg circle:hover, .memorial-tree svg circle:focus-visible { stroke: #f6dfad; stroke-width: 2; }
