@@ -8,6 +8,7 @@ import passive from "../assets/passive-hd.json";
 type Point = [x: number, y: number, icon: number, kind: number];
 type Edge = [from: string, to: string, signedRadius: number];
 const graph: Record<string, Point> = Object.fromEntries(Object.entries(passive.nodes).map(([id, [x, y, icon, kind]]) => [id, [x, y, icon, kind]]));
+export const passivePositions = graph;
 const nodes = Object.entries(graph);
 const edges: Edge[] = passive.edges.map(([from, to, radius]) => [String(from), String(to), Number(radius)]);
 const atlasUrls = [atlas0, atlas1, atlas2];
@@ -71,7 +72,8 @@ export default function PassiveTreeCanvas(props: Props) {
       } else path.lineTo(b[0], b[1]);
       paths.set(color, path);
     }
-    for (const [color, path] of paths) {
+    const orderedPaths = [...paths].sort(([a], [b]) => Number(a !== "#51452d") - Number(b !== "#51452d"));
+    for (const [color, path] of orderedPaths) {
       ctx.strokeStyle = color;
       ctx.lineWidth = color === "#51452d" ? 1.5 : 3.5;
       ctx.stroke(path);

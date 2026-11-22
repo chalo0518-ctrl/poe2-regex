@@ -1,5 +1,5 @@
 import oracleArt from "../assets/oracle-ascendancy.jpg";
-import PassiveTreeCanvas from "./PassiveTreeCanvas.tsx";
+import PassiveTreeCanvas, { passivePositions } from "./PassiveTreeCanvas.tsx";
 import fullNodeRows from "../assets/poe2-main-passive-nodes.json";
 import { useEffect, useId, useRef, useState } from "react";
 import { type MemorialTree } from "@poe2-regex/data";
@@ -104,7 +104,9 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
               let closest: OverviewNode | undefined;
               let distance = Math.max(9, 7 / Math.abs(matrix.a));
               for (const row of overviewNodes) {
-                const next = Math.hypot(row[1] - point.x, row[2] - point.y);
+                const graphPoint = passivePositions[row[0]];
+                if (!graphPoint) continue;
+                const next = Math.hypot(graphPoint[0] - point.x, graphPoint[1] - point.y);
                 if (next < distance) { closest = row; distance = next; }
               }
               if (closest) setSelected(closest[0]);
@@ -148,7 +150,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
                   r={["5571", "32905", "34313", "52374"].includes(entry.id) ? 10 : 5.5}
                   fill="none" stroke="#ffe1a1" strokeWidth=".9" pointerEvents="none" />
               ))}
-              {nodes.map((entry) => <circle key={entry.id} cx={entry.x} cy={entry.y} r={showOracle ? 8 : entry.allocated ? 8 : 5.5} fill={showOracle || showOverview ? "transparent" : entry.allocated ? allocationColor(entry.weaponSets) : "#656052"}
+              {nodes.filter((entry) => !showOverview || passivePositions[entry.id]).map((entry) => <circle key={entry.id} cx={showOverview ? passivePositions[entry.id][0] : entry.x} cy={showOverview ? passivePositions[entry.id][1] : entry.y} r={showOracle ? 8 : entry.allocated ? 8 : 5.5} fill={showOracle || showOverview ? "transparent" : entry.allocated ? allocationColor(entry.weaponSets) : "#656052"}
                 role="button" tabIndex={0} aria-label={english ? entry.nameEn : entry.nameZh}
                 onClick={() => setSelected(entry.id)}
                 onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelected(entry.id); } }}><title>{(english ? entry.nameEn : entry.nameZh) + "\n" + (entry.effectEn ?? "")}</title></circle>)}
