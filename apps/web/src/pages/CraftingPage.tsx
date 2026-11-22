@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   CRAFTING_CONSTRAINTS,
   CRAFTING_RULESET,
@@ -31,6 +31,7 @@ import {
   poolLabel,
   socketCountMax,
   socketSideCaps,
+  showcaseCatalog,
   type AffixFamily,
   type CraftDecision,
   type CraftDiagramNodeId,
@@ -135,7 +136,30 @@ export default function CraftingPage() {
   const rawSlot = params.get("slot") || DEFAULT_SLOT;
   const slotId: CraftSlotId = isCraftSlotId(rawSlot) ? rawSlot : DEFAULT_SLOT;
   const slot = craftingSlotMeta(slotId);
-  const families = useMemo(() => craftingFamiliesFor(slotId), [slotId]);
+  const baseId = params.get("base");
+  const basePool = slot?.pools.find((pool) => pool.id === baseId);
+  const families = useMemo(() => basePool ? showcaseCatalog(slotId, basePool.id) : craftingFamiliesFor(slotId), [slotId, basePool]);
+  const fromSlot = params.get("fromSlot");
+  const sourceSeason = params.get("season");
+  const imported = JSON.stringify(params.getAll("affix"));
+  const targetsFromRecommendation = useMemo(() => {
+    const result: Record<string, ModPickState> = {};
+    if (!basePool || !fromSlot) return result;
+    for (const raw of JSON.parse(imported) as string[]) {
+      try {
+        const value: unknown = JSON.parse(raw);
+        if (!Array.isArray(value)) continue;
+        const [id, rank, tier] = value;
+        const family = showcaseCatalog(slotId, basePool.id).find((entry) => entry.id === id);
+        if (!family || (rank !== "required" && rank !== "optional")) continue;
+        const choice = craftTierChoices(family).find((entry) => entry.rank === tier);
+        result[family.id] = { polarity: rank === "required" ? "include" : "or", min: "", max: "", minTierIndex: choice?.index ?? null };
+      } catch {
+        // Ignore malformed shared settings.
+      }
+    }
+    return result;
+  }, [basePool?.id, fromSlot, imported, slotId]);
   const desecratedFamilies = useMemo(() => desecratedFamiliesFor(slotId), [slotId]);
 
   const [picks, setPicks] = useState<Record<string, ModPickState>>({});
@@ -195,7 +219,7 @@ export default function CraftingPage() {
   }, []);
 
   useEffect(() => {
-    setPicks({});
+    setPicks(targetsFromRecommendation);
     setOwned({});
     setItemLevelRaw("");
     setPrefixCount(0);
@@ -210,7 +234,7 @@ export default function CraftingPage() {
     setPinnedNode(null);
     setLibraryTab("targets");
     setCollapsedPools({});
-  }, [slotId]);
+  }, [slotId, targetsFromRecommendation]);
 
   useEffect(() => {
     setPrefixCount((count) => Math.min(count, caps.prefix));
@@ -268,8 +292,9 @@ export default function CraftingPage() {
   }, [owned, lockedId]);
 
   const decision = useMemo(() => {
+    const required = fromSlot ? selected.filter((family) => picks[family.id]?.polarity === "include") : selected;
     return decideCraft({
-      includes: selected.map((family) => {
+      includes: required.map((family) => {
         const tier = chosenTier(family, picks[family.id]);
         return {
           id: family.id,
@@ -280,7 +305,7 @@ export default function CraftingPage() {
         };
       }),
       itemLevel: parseLevel(itemLevelRaw),
-      owned: selected
+      owned: required
         .filter((family) => owned[family.id]?.owned || lockedId === family.id)
         .map((family) => ({
           id: family.id,
@@ -313,6 +338,7 @@ export default function CraftingPage() {
   }, [
     checklistFamilies,
     selected,
+    fromSlot,
     itemLevelRaw,
     owned,
     lockedId,
@@ -377,6 +403,10 @@ export default function CraftingPage() {
   return (
     <main className="ledger-page ledger-crafting ledger-forge">
       <LedgerHero title={t.crafting}>
+        {fromSlot && <Link className="text-gold underline" to={`/showcase/recommended/${encodeURIComponent(fromSlot)}${sourceSeason ? "?" + new URLSearchParams({ season: sourceSeason }) : ""}`}>
+          {locale === "en" ? "Back to recommendation" : "返回我的推薦詞條"}
+        </Link>}
+        {basePool && <p>{locale === "en" ? basePool.labelEn || basePool.labelZh : basePool.labelZh}</p>}
         {locale === "en" ? "Choose an item base and target modifiers to get your next step." : "選擇裝備部位與目標詞綴，查看這件裝備下一步怎麼做。"}
       </LedgerHero>
       <div className="ledger-content">

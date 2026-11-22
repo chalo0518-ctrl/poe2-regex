@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout.tsx";
+import CraftingPage from "./pages/CraftingPage.tsx";
 import BuildsPage from "./pages/BuildsPage.tsx";
 import ChaptersPage from "./pages/ChaptersPage.tsx";
 import EarlyGearPage, { EarlyGearShieldsRedirect } from "./pages/EarlyGearPage.tsx";
@@ -32,7 +33,7 @@ export default function App() {
             <Route index element={<Navigate to="waystones" replace />} />
             <Route path="waystones" element={<WaystonesPage />} />
             <Route path="tablets" element={<TabletsPage />} />
-            <Route path="crafting" element={<Navigate to="/showcase" replace />} />
+            <Route path="crafting" element={<CraftingPage />} />
           </Route>
           {showcaseRoute()}
           <Route path="*" element={<Navigate to="/" replace />} />

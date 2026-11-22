@@ -48,7 +48,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
   const posterLabel = english ? `${seasonName(snapshot)} update overview` : `${seasonName(snapshot)} 更新總覽`;
 
   return (
-    <ShowcaseProvider key={active.id} snapshot={snapshot}>
+    <ShowcaseProvider key={active.id} snapshot={snapshot} storageKey={override ? undefined : "exiles-ledger:recommendations:" + active.id}>
       <main className="ledger-page ledger-season ledger-ruins" data-in-archive={inArchive}>
         <div className="ledger-content ledger-season-layout" data-bookmarks-open={inArchive && bookmarksOpen}
           style={{ "--bookmarks-width": `${bookmarkWidth}px` } as CSSProperties}>

@@ -1,3 +1,4 @@
+import MemorialTreeView from "../components/MemorialTreeView.tsx";
 import CharacterStats from "../components/CharacterStats.tsx";
 import PaperDoll from "../components/PaperDoll.tsx";
 import { useLocale } from "../i18n.tsx";
@@ -36,6 +37,10 @@ export default function ShowcaseBoard({ mode }: { mode: "memorial" | "recommende
         <PaperDoll mode={mode} />
         {mode === "memorial" && snapshot.level ? <CharacterStats /> : null}
       </div>
+      {mode === "memorial" && <div className="memorial-tree-grid">
+        <MemorialTreeView title={locale === "en" ? "Ascendancy tree" : "昇華天賦樹"} tree={snapshot.ascendancyTree} />
+        <MemorialTreeView title={locale === "en" ? "Passive skill tree" : "天賦樹"} tree={snapshot.passiveTree} />
+      </div>}
     </div>
   );
 }

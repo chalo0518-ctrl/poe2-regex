@@ -69,7 +69,7 @@ function nameOf(row: { nameZh: string; nameEn: string }, locale: UiLocale): stri
 
 export default function PaperDoll({ mode }: { mode: DollMode }) {
   const { locale, t } = useLocale();
-  const [set, setWeaponSet] = useState<WeaponSet>(1);
+  const { weaponSet: set, setWeaponSet } = useShowcase();
   const [socketsOn, setSocketsOn] = useState(false);
   const [tip, setTip] = useState<TooltipState | null>(null);
   const jewels = paperDollSlots.filter((slot) => slot.group === "jewel");

@@ -43,6 +43,7 @@ export type MemorialAffix = ShowcaseText & {
 /** Mod kind copied from the tooltip. Prefix and suffix are not guessed. */
 export type MemorialMod = {
   kind: string;
+  verifiedTier?: number;
   textZh: string;
   textEn: string;
 };
@@ -111,7 +112,14 @@ export type RecommendedGear = {
   affixes: ShowcasePick[];
 };
 
+export type MemorialTree = {
+  nodes: { id: string; x: number; y: number; nameZh: string; nameEn: string; effectZh?: string; effectEn?: string; allocated: boolean }[];
+  edges: [string, string][];
+};
+
 export type BdShowcase = {
+  passiveTree?: MemorialTree;
+  ascendancyTree?: MemorialTree;
   id: string;
   titleZh: string;
   titleEn: string;

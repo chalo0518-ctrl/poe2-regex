@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { RUO_CETACEA_STATS } from "@poe2-regex/data";
+import { useShowcase } from "../pages/showcaseState.tsx";
 import { useLocale } from "../i18n.tsx";
 
 /**
@@ -38,6 +39,13 @@ function Parts({ parts }: { parts: { text: string; color: string }[] }) {
 
 export default function CharacterStats() {
   const { locale } = useLocale();
+  const { snapshot, weaponSet } = useShowcase();
+  if (weaponSet === 2 || snapshot.id !== "ruoa-cetacea") return (
+    <section className="stats-col" aria-label="Stats">
+      <h2 className="stats-title">{locale === "en" ? "Character stats" : "角色屬性"}</h2>
+      <p>{locale === "en" ? "No stats recorded for this weapon set." : "此武器組的屬性未記錄。"}</p>
+    </section>
+  );
   const stats = RUO_CETACEA_STATS;
   const [str, dex, intel] = stats.character.attributes.display.split(" / ");
   const charges = stats.character.charges.display.split(" / ");

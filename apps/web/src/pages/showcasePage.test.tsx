@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
   SEASON_BD_V1,
   catalogForDollSlot,
@@ -38,6 +38,7 @@ function slotLink(name: RegExp) {
 }
 
 describe("season BD showcase", () => {
+  beforeEach(() => localStorage.clear());
   it("shows the season picker before the archive tabs", async () => {
     const user = userEvent.setup();
     renderAt("/showcase");
@@ -285,11 +286,12 @@ describe("season BD showcase", () => {
     const prefix = screen.getByRole("region", { name: "前綴" });
     const suffix = screen.getByRole("region", { name: "後綴" });
     expect(within(prefix).getByRole("heading", { name: "必要" })).toBeInTheDocument();
-    expect(within(prefix).getByRole("heading", { name: "可選" })).toBeInTheDocument();
+    expect(within(prefix).getByRole("heading", { name: "推薦" })).toBeInTheDocument();
     expect(within(suffix).getByRole("heading", { name: "必要" })).toBeInTheDocument();
-    expect(within(suffix).getByRole("heading", { name: "可選" })).toBeInTheDocument();
+    expect(within(suffix).getByRole("heading", { name: "推薦" })).toBeInTheDocument();
 
     const catalog = catalogForDollSlot("helmet", recommendedGear(SEASON_BD_V1, "helmet"));
+    await user.click(within(prefix).getByRole("button", { name: "打開詞條庫" }));
     expect(within(prefix).getAllByRole("checkbox", { name: /^必要 / })).toHaveLength(
       catalog.filter((family) => family.generation === "prefix").length,
     );
@@ -340,6 +342,7 @@ describe("season BD showcase", () => {
     await user.click(body);
     const catalog = showcaseCatalog("body", "str");
     const prefix = screen.getByRole("region", { name: "前綴" });
+    await user.click(within(prefix).getByRole("button", { name: "打開詞條庫" }));
     expect(within(prefix).getAllByRole("checkbox", { name: /^必要 / })).toHaveLength(
       catalog.filter((family) => family.generation === "prefix").length,
     );
