@@ -102,7 +102,7 @@ export default function PassiveTreeCanvas(props: Props) {
           x - dimension / 2, y - dimension / 2, dimension, dimension);
       }
       const frameTint = (kind === 1 || kind === 2) && sets
-        ? sets.length === 1 ? (sets[0] === 1 ? "#ff544e" : "#75ff96") : "#bba16d"
+        ? sets.length === 1 ? (sets[0] === 1 ? "#ff9994" : "#91d6a0") : "#c5a979"
         : null;
       if (props.classic) {
         ctx.beginPath();
@@ -141,7 +141,7 @@ export default function PassiveTreeCanvas(props: Props) {
               const local = frame % 128;
               paint.drawImage(atlas, (local % 16) * 128, Math.floor(local / 16) * 128, 128, 128, 0, 0, 128, 128);
               paint.globalCompositeOperation = "source-atop";
-              paint.fillStyle = frameTint + (sets?.[0] === 2 ? "ff" : sets?.length === 1 ? "e0" : "72");
+              paint.fillStyle = frameTint + "e0";
               paint.fillRect(0, 0, 128, 128);
               tintedFrames.current.set(key, colored);
             }
@@ -151,7 +151,7 @@ export default function PassiveTreeCanvas(props: Props) {
           ctx.rect(x - frameSize / 2, y - frameSize / 2, frameSize, frameSize);
           ctx.arc(x, y, (iconDiameter + frameDiameter) / 4, 0, 2 * Math.PI);
           ctx.clip("evenodd");
-          if (sets?.length === 1 && sets[0] === 2) ctx.globalAlpha = 1;
+          ctx.globalAlpha = 1;
           ctx.drawImage(colored, x - frameSize / 2, y - frameSize / 2, frameSize, frameSize);
           ctx.restore();
         }
