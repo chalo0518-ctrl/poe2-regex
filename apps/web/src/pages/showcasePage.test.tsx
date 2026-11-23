@@ -388,7 +388,7 @@ describe("season BD showcase", () => {
     await user.click(mana);
     await user.selectOptions(within(prefix).getByRole("combobox", { name: "最低 T 階 最大魔力" }), "1");
     const selected = within(prefix).getByRole("button", { name: /^T1\b/ });
-    expect(selected).toHaveTextContent(/\d.*最大魔力|最大魔力.*\d/);
+    expect(within(selected).getByText(/\d+\s*[-–—−]\s*\d+/)).toBeInTheDocument();
     expect(selected).toHaveTextContent(/最低物品等級 \d/);
   });
 
