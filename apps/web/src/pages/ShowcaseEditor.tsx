@@ -269,7 +269,17 @@ function AffixColumn({
     <section aria-label={title} className="rounded-sm border border-line bg-panel p-3">
       <h2 className="text-sm font-bold text-gold">{title}</h2>
       <div className="mt-3 grid gap-2">
-        {lines.map((line, index) => (
+        {lines.map((line, index) => {
+          const family = line.kind === "affix" ? catalog.find((entry) => entry.id === line.familyId) : undefined;
+          const choice = family && line.kind === "affix"
+            ? craftTierChoices(family).find((entry) => entry.rank === tiers[line.familyId])
+            : undefined;
+          const tier = choice && family?.tiers[choice.index];
+          const tierText = tier && (locale === "en" ? tier.textEn || tier.textZh : tier.textZh || tier.textEn);
+          const range = choice?.statMin != null && choice.statMax != null && choice.statMin !== choice.statMax
+            ? `${choice.statMin}–${choice.statMax}` : undefined;
+          const hasRange = range && tierText?.replace(/\s/g, "").replace(/[-—−]/g, "–").includes(range);
+          return (
           <button type="button" key={index}
             className="grid w-full min-w-0 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-3 border border-line bg-ink px-3 py-2 text-sm hover:border-gold"
             onClick={() => onOpen(generation)}>
@@ -278,14 +288,21 @@ function AffixColumn({
                 <span className="text-left tabular-nums text-gold">
                   {tiers[line.familyId] != null ? `T${tiers[line.familyId]}` : "T—"}
                 </span>
-                <span className="break-words text-center text-[#b5acff]">{locale === "en" ? line.labelEn : line.labelZh}</span>
+                <span className="min-w-0 break-words text-center">
+                  <span className="block text-[#b5acff]">{tierText || (locale === "en" ? line.labelEn : line.labelZh)}</span>
+                  {choice && <small className="block text-muted">
+                    {range && !hasRange && <>{locale === "en" ? "Roll range" : "數值範圍"} {range} · </>}
+                    {locale === "en" ? "Minimum item level" : "最低物品等級"} {choice.level}
+                  </small>}
+                </span>
                 <span className="text-right text-xs text-gold-dim">
                   {line.rank === "required" ? t.showcaseRequired : locale === "en" ? "Recommended" : "推薦"}
                 </span>
               </>
             )}
           </button>
-        ))}
+          );
+        })}
       </div>
       <button type="button" className="mt-3 text-xs text-gold underline" onClick={() => onOpen(generation)}>
         {locale === "en" ? "Open modifier library" : "打開詞條庫"}
