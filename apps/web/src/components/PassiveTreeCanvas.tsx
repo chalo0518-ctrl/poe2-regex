@@ -143,12 +143,12 @@ export default function PassiveTreeCanvas(props: Props) {
       const radius = props.classic ? 9 : [8, 11, 15, 11][kind];
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
-      ctx.strokeStyle = "#0a0908";
-      ctx.lineWidth = 6;
-      ctx.stroke();
+      const active = !sets.length || sets.includes(props.weaponSet);
       ctx.strokeStyle = color;
-      ctx.lineWidth = !sets.length || sets.includes(props.weaponSet) ? 3.3 : 2.5;
+      ctx.globalAlpha = active ? .8 : .6;
+      ctx.lineWidth = (active ? 1.35 : 1) / Math.max(.01, sx * props.scale / density);
       ctx.stroke();
+      ctx.globalAlpha = 1;
       if (sx * props.scale / density >= .65) {
         ctx.fillStyle = color;
         ctx.font = "bold 8px sans-serif";
