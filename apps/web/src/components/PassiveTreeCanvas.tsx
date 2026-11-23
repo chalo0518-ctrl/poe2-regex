@@ -149,13 +149,6 @@ export default function PassiveTreeCanvas(props: Props) {
       ctx.lineWidth = (active ? 1.35 : 1) / Math.max(.01, sx * props.scale / density);
       ctx.stroke();
       ctx.globalAlpha = 1;
-      if (sx * props.scale / density >= .65) {
-        ctx.fillStyle = color;
-        ctx.font = "bold 8px sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "bottom";
-        ctx.fillText(sets.length === 1 ? (sets[0] === 1 ? "I" : "II") : "◆", x, y - radius - 2);
-      }
     }
   };
   useEffect(() => {

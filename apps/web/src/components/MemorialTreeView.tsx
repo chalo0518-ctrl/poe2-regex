@@ -195,6 +195,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
                   fill="none" stroke="#ffe1a1" strokeWidth=".9" pointerEvents="none" />
               ))}
               {nodes.filter((entry) => !showOverview || passivePositions[entry.id]).map((entry) => <circle key={entry.id} cx={showOverview ? passivePositions[entry.id][0] : entry.x} cy={showOverview ? passivePositions[entry.id][1] : entry.y} r={showOverview ? (classic ? (entry.allocated ? 5.4 : 3.2) : [5.4, 8, 12, 7.6][passivePositions[entry.id][3]]) : showOracle || entry.allocated ? 8 : 5.5}
+                data-large-passive={showOverview && [1, 2].includes(passivePositions[entry.id][3]) ? "" : undefined}
                 data-allocation={entry.allocated ? entry.weaponSets?.length === 1 ? entry.weaponSets[0] : "shared" : undefined}
                 vectorEffect="non-scaling-stroke" fill={showOracle || showOverview ? "transparent" : entry.allocated ? allocationColor(entry.weaponSets) : "#656052"}
                 role="button" tabIndex={0} aria-label={english ? entry.nameEn : entry.nameZh}
