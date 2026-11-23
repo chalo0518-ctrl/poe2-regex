@@ -58,7 +58,11 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
       (base.pool ? base.pool === pool.id : entry.pools.length === 1));
     return [
       ...concrete.map((base) => ({ entry, pool, id: categoryId + "/" + base.en, zh: base.zh, en: base.en, runeforge: base.runeforge })),
-      { entry, pool, runeforge: undefined, id: categoryId, zh: entry.labelZh + " · " + pool.labelZh, en: (entry.labelEn ?? entry.id) + " · " + (pool.labelEn ?? pool.labelZh) },
+      {
+        entry, pool, runeforge: undefined, id: categoryId,
+        zh: entry.id === "wand" && entry.pools.length === 1 ? "任意法杖" : entry.labelZh + " · " + pool.labelZh,
+        en: entry.id === "wand" && entry.pools.length === 1 ? "Any Wand" : (entry.labelEn ?? entry.id) + " · " + (pool.labelEn ?? pool.labelZh),
+      },
     ];
   }));
   const typedBases = baseOptions.filter((option) => option.entry.id === typeDraft);
