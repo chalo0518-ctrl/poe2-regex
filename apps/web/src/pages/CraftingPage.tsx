@@ -476,6 +476,21 @@ export default function CraftingPage() {
             {runeforgeBase && <p>{locale === "en"
               ? `Runeforge at the Verisium Anvil using ${runeforgeBase.runeforge} Verisium to obtain ${runeforgedName(runeforgeBase, locale)}.`
               : `在維里西姆鐵砧消耗 ${runeforgeBase.runeforge} 維里西姆，將普通底材轉為${runeforgedName(runeforgeBase, locale)}。`}</p>}
+            {(["include", "or"] as const).map((polarity) => {
+              const targets = selected.filter((family) => picks[family.id]?.polarity === polarity);
+              if (!targets.length) return null;
+              return <div key={polarity} className="mt-3">
+                <h3 className="text-gold">{polarity === "include" ? (locale === "en" ? "Required targets" : "必要詞綴") : (locale === "en" ? "Recommended targets" : "推薦詞綴")}</h3>
+                <ul className="mt-1 space-y-1">
+                  {targets.map((family) => {
+                    const tier = craftTierChoices(family).find((choice) => choice.index === picks[family.id]?.minTierIndex);
+                    const row = tier && family.tiers[tier.index];
+                    const description = locale === "en" ? row?.textEn || family.labelEn : row?.textZh || family.labelZh;
+                    return <li key={family.id}>{tier && <strong className="mr-2 text-gold">T{tier.rank}</strong>}{description}</li>;
+                  })}
+                </ul>
+              </div>;
+            })}
             {minimumBaseLevel > 0 && <p>{locale === "en" ? `Minimum item level for required targets: ${minimumBaseLevel}` : `必要詞綴所需最低物品等級：${minimumBaseLevel}`}</p>}
           </section>
         )}

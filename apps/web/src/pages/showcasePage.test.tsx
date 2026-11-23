@@ -390,6 +390,12 @@ describe("season BD showcase", () => {
     const selected = within(prefix).getByRole("button", { name: /^T1\b/ });
     expect(within(selected).getByText(/\d+\s*[-–—−]\s*\d+/)).toBeInTheDocument();
     expect(selected).toHaveTextContent(/最低物品等級 \d/);
+    await user.click(screen.getByRole("link", { name: "我的推薦詞條" }));
+    const start = screen.getByRole("region", { name: "從空白底材開始" });
+    expect(start).toHaveTextContent(/T1.*最大魔力/);
+    expect(start).toHaveTextContent(/必要詞綴所需最低物品等級：\d/);
+    await user.click(screen.getByRole("link", { name: "返回我的推薦詞條" }));
+    expect(within(screen.getByRole("region", { name: "前綴" })).getByRole("button", { name: /^T1\b/ })).toBeInTheDocument();
   });
 
   it("uses English chrome without simplified Chinese", async () => {
