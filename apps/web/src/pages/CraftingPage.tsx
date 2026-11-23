@@ -140,6 +140,7 @@ export default function CraftingPage() {
   const basePool = slot?.pools.find((pool) => pool.id === baseId);
   const families = useMemo(() => basePool ? showcaseCatalog(slotId, basePool.id) : craftingFamiliesFor(slotId), [slotId, basePool]);
   const fromSlot = params.get("fromSlot");
+  const blankStart = Boolean(fromSlot && basePool && params.get("start") === "blank");
   const sourceSeason = params.get("season");
   const imported = JSON.stringify(params.getAll("affix"));
   const targetsFromRecommendation = useMemo(() => {
@@ -257,6 +258,11 @@ export default function CraftingPage() {
     });
   }, [selected]);
 
+  const minimumBaseLevel = selected.reduce((minimum, family) => {
+    const pick = picks[family.id];
+    if (pick?.polarity !== "include") return minimum;
+    return Math.max(minimum, chosenTier(family, pick)?.level ?? family.minLevel);
+  }, 0);
   const lockedId = selected.find((family) => picks[family.id]?.desecrationLock)?.id ?? null;
 
   useEffect(() => {
@@ -451,6 +457,13 @@ export default function CraftingPage() {
           {locale === "en" ? "View next step" : "查看建議下一步"} <span aria-hidden="true">↓</span>
         </a>
 
+        {blankStart && (
+          <section className="ledger-next-step mb-4 p-4" aria-label={locale === "en" ? "Start from a blank base" : "從空白底材開始"}>
+            <h2>{locale === "en" ? "Start from a blank base" : "從空白底材開始"}</h2>
+            <p>{locale === "en" ? "Prepare the selected base with no explicit modifiers. Record each result as you craft." : "先準備所選底材，起始前後綴皆為 0。製作後可逐步記錄實際成果。"}</p>
+            {minimumBaseLevel > 0 && <p>{locale === "en" ? `Minimum item level for required targets: ${minimumBaseLevel}` : `必要詞綴所需最低物品等級：${minimumBaseLevel}`}</p>}
+          </section>
+        )}
         <div className="ledger-workbench">
           <div className="ledger-workbench-inputs">
             <SocketFilter

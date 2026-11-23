@@ -57,7 +57,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
     [catalog, query],
   );
 
-  const craftParams = new URLSearchParams({ slot: craftSlot ?? "", season, fromSlot: slot.id, base: gear.basePoolId ?? "" });
+  const craftParams = new URLSearchParams({ slot: craftSlot ?? "", season, fromSlot: slot.id, base: gear.basePoolId ?? "", start: "blank" });
   for (const pick of selected) {
     craftParams.append("affix", JSON.stringify([pick.familyId, pick.rank, tiers[slot.id]?.[pick.familyId] ?? null]));
   }

@@ -14,6 +14,7 @@ import {
 } from "@poe2-regex/data";
 import AppLayout from "../components/AppLayout.tsx";
 import { LocaleProvider } from "../i18n.tsx";
+import CraftingPage from "./CraftingPage.tsx";
 import EndgameLayout from "./EndgameLayout.tsx";
 import { showcaseRoute } from "./showcaseRoutes.tsx";
 
@@ -25,6 +26,7 @@ function renderAt(path: string, locale: "zh-Hant" | "en" = "zh-Hant", snapshot?:
           <Route element={<AppLayout />}>
             <Route index element={<Navigate to="/showcase" replace />} />
             {showcaseRoute(snapshot)}
+            <Route path="endgame/crafting" element={<CraftingPage />} />
           </Route>
         </Routes>
       </MemoryRouter>
@@ -359,6 +361,15 @@ describe("season BD showcase", () => {
     }
     const blocked = affixRow(distinct[3].id);
     expect(within(blocked).getByRole("checkbox", { name: `必要 ${distinct[3].matchZh}` })).toBeDisabled();
+    const craftLink = screen.getByRole("link", { name: "我的推薦詞條" });
+    const transfer = new URL(craftLink.getAttribute("href") ?? "", "https://example.test");
+    expect(transfer.searchParams.get("start")).toBe("blank");
+    expect(transfer.searchParams.get("base")).toBe("str");
+    expect(transfer.searchParams.getAll("affix")).toHaveLength(3);
+    await user.click(craftLink);
+    expect(screen.getByRole("region", { name: "從空白底材開始" })).toBeInTheDocument();
+    await user.click(screen.getByRole("link", { name: "返回我的推薦詞條" }));
+    expect(screen.getByRole("link", { name: "我的推薦詞條" })).toBeInTheDocument();
   });
 
   it("does not invent affixes for a weapon slot that has no class yet", () => {
