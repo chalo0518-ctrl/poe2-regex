@@ -112,6 +112,7 @@ export type RecommendedGear = {
   /** poe2db pool id inside that slot, when a single base is known. */
   basePoolId: string | null;
   augments?: string[];
+  runeforge?: boolean;
   affixes: ShowcasePick[];
 };
 

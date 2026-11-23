@@ -1,3 +1,4 @@
+import { recommendationBases, runeforgedName } from "./recommendationBases.ts";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
@@ -144,6 +145,10 @@ export default function CraftingPage() {
   const blankStart = Boolean(fromSlot && basePool && params.get("start") === "blank");
   const sourceSeason = params.get("season");
   const imported = JSON.stringify(params.getAll("affix"));
+  const runeforgeBase = blankStart && params.get("runeforge") === "1"
+    ? recommendationBases.find((base) => base.slot === slotId && base.pool === basePool?.id &&
+      base.en === params.get("baseNameEn") && base.runeforge)
+    : undefined;
   const encodedAugments = JSON.stringify(params.getAll("augment"));
   const importedAugments = useMemo(() => {
     const allowed = new Set(poolAugmentsForSlot(slotId).map((entry) => entry.id));
@@ -468,6 +473,9 @@ export default function CraftingPage() {
           <section className="ledger-next-step mb-4 p-4" aria-label={locale === "en" ? "Start from a blank base" : "從空白底材開始"}>
             <h2>{locale === "en" ? "Start from a blank base" : "從空白底材開始"}</h2>
             <p>{locale === "en" ? "Prepare the selected base with no explicit modifiers. Record each result as you craft." : "先準備所選底材，起始前後綴皆為 0。製作後可逐步記錄實際成果。"}</p>
+            {runeforgeBase && <p>{locale === "en"
+              ? `Runeforge at the Verisium Anvil using ${runeforgeBase.runeforge} Verisium to obtain ${runeforgedName(runeforgeBase, locale)}.`
+              : `在維里西姆鐵砧消耗 ${runeforgeBase.runeforge} 維里西姆，將普通底材轉為${runeforgedName(runeforgeBase, locale)}。`}</p>}
             {minimumBaseLevel > 0 && <p>{locale === "en" ? `Minimum item level for required targets: ${minimumBaseLevel}` : `必要詞綴所需最低物品等級：${minimumBaseLevel}`}</p>}
           </section>
         )}

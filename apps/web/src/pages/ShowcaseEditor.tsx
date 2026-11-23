@@ -1,3 +1,4 @@
+import { recommendationBases, runeforgedName } from "./recommendationBases.ts";
 import { useMemo, useState } from "react";
 import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
 import { seasonHref } from "./showcaseSeasons.ts";
@@ -51,23 +52,13 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
   const categories = craftingSlots().filter((entry) => slot.id.startsWith("weapon-")
     ? (slot.id.endsWith("-main") ? entry.id !== "shield" && !["body", "helmet", "gloves", "boots", "ring", "amulet", "belt"].includes(entry.id) : entry.id === "shield")
     : entry.id === craftSlot);
-  const namedBases = [
-    { slot: "wand", en: "Dueling Wand", zh: "單挑法杖" },
-    { slot: "sceptre", en: "Shrine Sceptre", zh: "神殿權杖" },
-    { slot: "sceptre", en: "Stoic Sceptre", zh: "魔道權杖" },
-    { slot: "helmet", pool: "int", en: "Ancestral Tiara", zh: "先祖頭冠" },
-    { slot: "boots", pool: "int", en: "Sekhema Sandals", zh: "絲克瑪便鞋" },
-    { slot: "belt", en: "Invoking Belt", zh: "祈喚腰帶" },
-    { slot: "amulet", en: "Portent Amulet", zh: "惡兆護身符" },
-    { slot: "ring", en: "Mnemonic Ring", zh: "憶念之戒" },
-  ];
   const baseOptions = categories.flatMap((entry) => entry.pools.flatMap((pool) => {
     const categoryId = entry.id + "/" + pool.id;
-    const concrete = namedBases.filter((base) => base.slot === entry.id &&
+    const concrete = recommendationBases.filter((base) => base.slot === entry.id &&
       (base.pool ? base.pool === pool.id : entry.pools.length === 1));
     return [
-      ...concrete.map((base) => ({ entry, pool, id: categoryId + "/" + base.en, zh: base.zh, en: base.en })),
-      { entry, pool, id: categoryId, zh: entry.labelZh + " · " + pool.labelZh, en: (entry.labelEn ?? entry.id) + " · " + (pool.labelEn ?? pool.labelZh) },
+      ...concrete.map((base) => ({ entry, pool, id: categoryId + "/" + base.en, zh: base.zh, en: base.en, runeforge: base.runeforge })),
+      { entry, pool, runeforge: undefined, id: categoryId, zh: entry.labelZh + " · " + pool.labelZh, en: (entry.labelEn ?? entry.id) + " · " + (pool.labelEn ?? pool.labelZh) },
     ];
   }));
   const typedBases = baseOptions.filter((option) => option.entry.id === typeDraft);
@@ -94,6 +85,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
   if (selectedBase && selectedBase.id.split("/").length === 3) {
     craftParams.set("baseNameZh", selectedBase.zh);
     craftParams.set("baseNameEn", selectedBase.en);
+    if (gear.runeforge && selectedBase.runeforge) craftParams.set("runeforge", "1");
   }
   for (const id of gear.augments ?? []) craftParams.append("augment", id);
   for (const pick of selected) {
@@ -103,7 +95,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
     const choice = baseOptions.find((option) => option.id === value);
     if (!choice) return;
     const { entry, pool } = choice;
-    const next = { ...gear, craftSlot: entry.id as CraftSlotId, basePoolId: pool.id, baseZh: choice.zh, baseEn: choice.en, augments: entry.id === craftSlot ? gear.augments : [] };
+    const next = { ...gear, craftSlot: entry.id as CraftSlotId, basePoolId: pool.id, baseZh: choice.zh, baseEn: choice.en, runeforge: gear.baseEn === choice.en && entry.id === craftSlot && pool.id === gear.basePoolId && gear.runeforge, augments: entry.id === craftSlot ? gear.augments : [] };
     const available = catalogForDollSlot(slot.id, next);
     const lost = selected.filter((pick) => !available.some((family) => family.id === pick.familyId &&
       (tiers[slot.id]?.[pick.familyId] == null || craftTierChoices(family).some((tier) => tier.rank === tiers[slot.id]?.[pick.familyId]))));
@@ -141,6 +133,17 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
             {typedBases.map(({ zh, en, id }) => <option key={id} value={id}>{locale === "en" ? en : zh}</option>)}
           </select>
         </label>
+      )}
+      {typeDraft === craftSlot && selectedBase?.runeforge && (
+        <fieldset className="mb-4 text-gold">
+          <legend>{locale === "en" ? "Verisium Runeforging" : "維里西姆符鍛"}</legend>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={gear.runeforge ?? false} onChange={(event) => {
+              setBase(slot.id, { ...gear, runeforge: event.target.checked });
+            }} />
+            {runeforgedName(selectedBase, locale)} · {selectedBase.runeforge} {locale === "en" ? "Verisium" : "維里西姆"}
+          </label>
+        </fieldset>
       )}
       {craftSlot && augments.length > 0 && (
         <fieldset className="mb-4 flex flex-wrap gap-3 text-gold">
