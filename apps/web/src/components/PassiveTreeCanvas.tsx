@@ -32,6 +32,7 @@ type Props = {
 export default function PassiveTreeCanvas(props: Props) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const atlases = useRef<HTMLImageElement[]>([]);
+  const tintedFrames = useRef(new Map<string, HTMLCanvasElement>());
   const redraw = useRef<() => void>(() => {});
   redraw.current = () => {
     const element = canvas.current;
@@ -105,8 +106,13 @@ export default function PassiveTreeCanvas(props: Props) {
       if (props.classic) {
         ctx.beginPath();
         ctx.arc(x, y, sets ? 5 : 2.6, 0, 2 * Math.PI);
-        ctx.fillStyle = weaponTint ?? (sets ? "#ffcf75" : "#746047");
+        ctx.fillStyle = sets ? "#ffcf75" : "#746047";
         ctx.fill();
+        if (weaponTint) {
+          ctx.strokeStyle = weaponTint;
+          ctx.lineWidth = 1.3;
+          ctx.stroke();
+        }
         continue;
       }
       ctx.globalAlpha = current ? 1 : .66;
@@ -117,13 +123,37 @@ export default function PassiveTreeCanvas(props: Props) {
       ctx.save();
       ctx.clip();
       tile(icon, kind === 0 ? iconDiameter * 2 : iconDiameter);
-      if (weaponTint) {
-        ctx.globalAlpha = .64;
-        ctx.fillStyle = weaponTint;
-        ctx.fillRect(x - iconDiameter / 2, y - iconDiameter / 2, iconDiameter, iconDiameter);
-      }
       ctx.restore();
-      tile(passive.frameStart + kind * 2 + Number(current), frameDiameter * 128 / Math.min(frameSourceSize, 128));
+      const frame = passive.frameStart + kind * 2 + Number(current);
+      const frameSize = frameDiameter * 128 / Math.min(frameSourceSize, 128);
+      tile(frame, frameSize);
+      if (weaponTint) {
+        const atlas = atlases.current[Math.floor(frame / 128)];
+        if (atlas?.complete && atlas.naturalWidth) {
+          const key = frame + ":" + weaponTint;
+          let colored = tintedFrames.current.get(key);
+          if (!colored) {
+            colored = document.createElement("canvas");
+            colored.width = colored.height = 128;
+            const paint = colored.getContext("2d");
+            if (paint) {
+              const local = frame % 128;
+              paint.drawImage(atlas, (local % 16) * 128, Math.floor(local / 16) * 128, 128, 128, 0, 0, 128, 128);
+              paint.globalCompositeOperation = "source-atop";
+              paint.fillStyle = weaponTint + "b0";
+              paint.fillRect(0, 0, 128, 128);
+              tintedFrames.current.set(key, colored);
+            }
+          }
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(x - frameSize / 2, y - frameSize / 2, frameSize, frameSize);
+          ctx.arc(x, y, iconDiameter / 2, 0, 2 * Math.PI);
+          ctx.clip("evenodd");
+          ctx.drawImage(colored, x - frameSize / 2, y - frameSize / 2, frameSize, frameSize);
+          ctx.restore();
+        }
+      }
       ctx.globalAlpha = 1;
     }
 
