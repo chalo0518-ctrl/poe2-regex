@@ -293,10 +293,8 @@ describe("season BD showcase", () => {
 
     const prefix = screen.getByRole("region", { name: "前綴" });
     const suffix = screen.getByRole("region", { name: "後綴" });
-    expect(within(prefix).getByRole("heading", { name: "必要" })).toBeInTheDocument();
-    expect(within(prefix).getByRole("heading", { name: "推薦" })).toBeInTheDocument();
-    expect(within(suffix).getByRole("heading", { name: "必要" })).toBeInTheDocument();
-    expect(within(suffix).getByRole("heading", { name: "推薦" })).toBeInTheDocument();
+    expect(within(prefix).getAllByRole("button", { name: "empty prefix" })).toHaveLength(3);
+    expect(within(suffix).getAllByRole("button", { name: "empty suffix" })).toHaveLength(3);
 
     const catalog = catalogForDollSlot("helmet", recommendedGear(SEASON_BD_V1, "helmet"));
     await user.click(within(prefix).getByRole("button", { name: "打開詞條庫" }));
