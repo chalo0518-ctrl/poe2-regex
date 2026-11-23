@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useLayoutEffect, useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link, NavLink, Outlet, useLocation, useMatch, useNavigate, useSearchParams } from "react-router-dom";
 import { type BdShowcase } from "@poe2-regex/data";
 import { useLocale } from "../i18n.tsx";
@@ -15,11 +15,15 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
   const navigate = useNavigate();
   const posterDialog = useRef<HTMLDialogElement>(null);
   const location = useLocation();
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (location.pathname.replace(/\/$/, "") === "/showcase" || location.state?.seasonEntry) {
+      window.scrollTo(0, 0);
+      return;
+    }
     if (location.hash === "#season-update" || location.hash === "#season-build") {
       document.getElementById(location.hash.slice(1))?.scrollIntoView?.({ block: "start" });
     }
-  }, [location.hash, location.key]);
+  }, [location.pathname, location.state, location.hash, location.key]);
   const [params] = useSearchParams();
   const memorial = useMatch({ path: "/showcase/memorial", end: false });
   const recommended = useMatch({ path: "/showcase/recommended", end: false });
@@ -121,7 +125,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
                   </select>
                 </label>}
               </div>
-              <Link to={updatePath} className="ledger-season-card" data-art={active.id === "runes-of-aldur" ? "canvas" : undefined}>
+              <Link to={updatePath} state={{ seasonEntry: true }} className="ledger-season-card" data-art={active.id === "runes-of-aldur" ? "canvas" : undefined}>
                 <div className="ledger-season-copy">
                   <h2>{seasonName(snapshot)}</h2>
                   <span className="ledger-season-enter">{english ? "Open season recap" : "進入賽季回顧"}</span>
