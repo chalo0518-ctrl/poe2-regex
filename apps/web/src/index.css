@@ -1710,3 +1710,48 @@ header {
 
 .memorial-tree-grid--merged { grid-template-columns: minmax(0, 1fr); }
 
+
+/* Shared reading and interaction treatments for the ledger. */
+.ledger-app { color-scheme: dark; }
+.ledger-app :is(button, a, input, select, summary):focus-visible,
+.market-item button:focus-visible {
+  outline: 2px solid #f2ce86;
+  outline-offset: 2px;
+}
+.ledger-app :is(select, input[type="search"], input[autocomplete="off"]) {
+  border: 1px solid #66563e;
+  background-color: #171512;
+  color: #ece1cd;
+  min-height: 2.5rem;
+  padding-inline: .75rem;
+}
+.ledger-app :is(select, input[autocomplete="off"]):hover { border-color: #9c8258; }
+.ledger-bookmark-title, .ledger-season-copy h2, .ledger-crafting h2 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+.ledger-bookmark-sections { padding-block: .35rem; }
+.ledger-bookmark { line-height: 1.55; }
+.ledger-bookmark:hover, .ledger-bookmark[aria-current="page"] {
+  background-color: #30291f;
+  color: #f4dba8;
+}
+.ledger-season-enter:hover, .ledger-guide-jump:hover { filter: brightness(1.14); }
+.ledger-character, .ledger-workbench { column-gap: clamp(1rem, 2vw, 2rem); }
+.ledger-next-step { border-inline-start: 3px solid #ac8952; }
+.ledger-next-step p, .ledger-details p { line-height: 1.65; }
+.market-item-label { letter-spacing: .055em; }
+.market-item-mod { line-height: 1.5; }
+.market-item-tier { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ledger-app section:has([data-affix-id]) {
+  background: linear-gradient(120deg, #201c18, #151311 72%);
+  border-color: #544737;
+  padding: clamp(.85rem, 1.6vw, 1.4rem);
+}
+.ledger-app section:has([data-affix-id]) > h2 { font-family: var(--font-display); font-size: 1.1rem; }
+.ledger-app section:has([data-affix-id]) .grid > button { min-height: 3rem; }
+.ledger-app section:has([data-affix-id]) .grid > button:hover { background-color: #211d18; }
+.ledger-app [data-affix-id] { padding: .65rem .4rem; }
+.ledger-app [data-affix-id]:focus-within { background-color: #262119; }
+.ledger-app [data-affix-id] summary { cursor: pointer; padding-block: .25rem; }
+.ledger-app [data-affix-id] details[open] summary { color: #dcc59c; }
