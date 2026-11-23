@@ -1710,15 +1710,3 @@ header {
 
 .memorial-tree-grid--merged { grid-template-columns: minmax(0, 1fr); }
 
-.memorial-tree svg circle[data-allocation="1"] { --node-highlight: #ff716a; }
-.memorial-tree svg circle[data-allocation="2"] { --node-highlight: #7bdb90; }
-.memorial-tree svg circle[data-allocation="shared"] { --node-highlight: #f5d289; }
-.memorial-tree svg circle[data-allocation]:is(:hover, :focus-visible) {
-  stroke: var(--node-highlight);
-  stroke-width: 1.35;
-}
-
-.memorial-tree svg circle[data-allocation][data-large-passive]:is(:hover, :focus-visible) {
-  fill: var(--node-highlight);
-  fill-opacity: .35;
-}

@@ -100,10 +100,12 @@ export default function PassiveTreeCanvas(props: Props) {
         ctx.drawImage(atlas, (local % 16) * 128, Math.floor(local / 16) * 128, 128, 128,
           x - dimension / 2, y - dimension / 2, dimension, dimension);
       }
+      const jewelTone = (kind === 1 || kind === 2) && sets?.length === 1
+        ? (sets[0] === 1 ? "#ff716a" : "#7bdb90") : null;
       if (props.classic) {
         ctx.beginPath();
         ctx.arc(x, y, sets ? 5 : 2.6, 0, 2 * Math.PI);
-        ctx.fillStyle = sets ? "#ffcf75" : "#746047";
+        ctx.fillStyle = jewelTone ?? (sets ? "#ffcf75" : "#746047");
         ctx.fill();
         continue;
       }
@@ -115,6 +117,11 @@ export default function PassiveTreeCanvas(props: Props) {
       ctx.save();
       ctx.clip();
       tile(icon, kind === 0 ? iconDiameter * 2 : iconDiameter);
+      if (jewelTone) {
+        ctx.globalAlpha = .43;
+        ctx.fillStyle = jewelTone;
+        ctx.fill();
+      }
       ctx.restore();
       tile(passive.frameStart + kind * 2 + Number(current), frameDiameter * 128 / Math.min(frameSourceSize, 128));
       ctx.globalAlpha = 1;
@@ -136,17 +143,16 @@ export default function PassiveTreeCanvas(props: Props) {
 
     for (const [id, sets] of allocated) {
       const point = graph[id];
-      if (!point || (!sets.length && connected.has(id))) continue;
+      if (!point || sets.length || connected.has(id)) continue;
       const [x, y, , kind] = point;
       if (x < left - 25 || x > right + 25 || y < top - 25 || y > bottom + 25) continue;
-      const color = sets.length === 1 ? (sets[0] === 1 ? "#ff716a" : "#7bdb90") : "#f5d289";
+      const color = "#f5d289";
       const radius = props.classic ? 5.4 : [5.4, 8, 12, 7.6][kind];
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
-      const active = !sets.length || sets.includes(props.weaponSet);
       ctx.strokeStyle = color;
-      ctx.globalAlpha = active ? .8 : .6;
-      ctx.lineWidth = (active ? 1.35 : 1) / Math.max(.01, sx * props.scale / density);
+      ctx.globalAlpha = .8;
+      ctx.lineWidth = 1.35 / Math.max(.01, sx * props.scale / density);
       ctx.stroke();
       ctx.globalAlpha = 1;
     }
