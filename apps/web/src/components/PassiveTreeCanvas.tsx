@@ -101,15 +101,16 @@ export default function PassiveTreeCanvas(props: Props) {
         ctx.drawImage(atlas, (local % 16) * 128, Math.floor(local / 16) * 128, 128, 128,
           x - dimension / 2, y - dimension / 2, dimension, dimension);
       }
-      const weaponTint = (kind === 1 || kind === 2) && sets?.length === 1
-        ? (sets[0] === 1 ? "#ff716a" : "#7bdb90") : null;
+      const frameTint = (kind === 1 || kind === 2) && sets
+        ? sets.length === 1 ? (sets[0] === 1 ? "#ff544e" : "#56ed79") : "#f5d289"
+        : null;
       if (props.classic) {
         ctx.beginPath();
         ctx.arc(x, y, sets ? 5 : 2.6, 0, 2 * Math.PI);
         ctx.fillStyle = sets ? "#ffcf75" : "#746047";
         ctx.fill();
-        if (weaponTint) {
-          ctx.strokeStyle = weaponTint;
+        if (frameTint) {
+          ctx.strokeStyle = frameTint;
           ctx.lineWidth = .65;
           ctx.stroke();
         }
@@ -127,10 +128,10 @@ export default function PassiveTreeCanvas(props: Props) {
       const frame = passive.frameStart + kind * 2 + Number(current);
       const frameSize = frameDiameter * 128 / Math.min(frameSourceSize, 128);
       tile(frame, frameSize);
-      if (weaponTint) {
+      if (frameTint) {
         const atlas = atlases.current[Math.floor(frame / 128)];
         if (atlas?.complete && atlas.naturalWidth) {
-          const key = frame + ":" + weaponTint;
+          const key = frame + ":" + frameTint;
           let colored = tintedFrames.current.get(key);
           if (!colored) {
             colored = document.createElement("canvas");
@@ -140,7 +141,7 @@ export default function PassiveTreeCanvas(props: Props) {
               const local = frame % 128;
               paint.drawImage(atlas, (local % 16) * 128, Math.floor(local / 16) * 128, 128, 128, 0, 0, 128, 128);
               paint.globalCompositeOperation = "source-atop";
-              paint.fillStyle = weaponTint + "b0";
+              paint.fillStyle = frameTint + (sets?.length === 1 ? "e0" : "b0");
               paint.fillRect(0, 0, 128, 128);
               tintedFrames.current.set(key, colored);
             }
@@ -175,6 +176,7 @@ export default function PassiveTreeCanvas(props: Props) {
       const point = graph[id];
       if (!point || sets.length || connected.has(id)) continue;
       const [x, y, , kind] = point;
+      if (kind === 1 || kind === 2) continue;
       if (x < left - 25 || x > right + 25 || y < top - 25 || y > bottom + 25) continue;
       const color = "#f5d289";
       const radius = props.classic ? 5.4 : [5.4, 8, 12, 7.6][kind];
