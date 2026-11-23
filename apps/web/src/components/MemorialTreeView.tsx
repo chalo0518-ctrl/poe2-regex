@@ -64,7 +64,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const insetY = overview.y + overview.height / 2;
   const insetPoint = (entry: { x: number; y: number }) => [
     (entry.x - portrait.x) * insetScale - insetRadius + insetX,
-    (entry.y - portrait.y) * insetScale - insetRadius,
+    (entry.y - portrait.y) * insetScale - insetRadius + insetY,
   ] as const;
   const ascendancyById = new Map(embedded?.nodes.map((entry) => [entry.id, entry]));
   const markRadius = (id: string) => ["5571", "32905", "34313", "52374"].includes(id) ? 7 : 4;
