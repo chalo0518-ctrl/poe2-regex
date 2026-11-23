@@ -56,12 +56,13 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
     const min = Math.min(...values) - 40;
     return values.length ? [min, Math.max(...values) + 40 - min] : [0, 1];
   };
-  const overview = { x: -1357, y: -1317, width: 2673, height: 2650 };
+  const overview = { x: -1357, y: -1325, width: 2714, height: 2650 };
   const portrait = { x: -1564.9, y: -790, width: 298.8, height: 297.9 };
   const insetScale = .72;
   const insetRadius = portrait.width * insetScale / 2;
-  const insetX = overview.x + overview.width / 2;
-  const insetY = overview.y + overview.height / 2;
+  // The six nodes around the central pocket are arranged around PoB2 origin (0, 0).
+  const insetX = 0;
+  const insetY = 0;
   const insetPoint = (entry: { x: number; y: number }) => [
     (entry.x - portrait.x) * insetScale - insetRadius + insetX,
     (entry.y - portrait.y) * insetScale - insetRadius + insetY,
