@@ -158,12 +158,20 @@ export default function CraftingPage() {
   const targetsFromRecommendation = useMemo(() => {
     const result: Record<string, ModPickState> = {};
     if (!basePool || !fromSlot) return result;
+    const familiesById = new Map<string, AffixFamily>();
+    for (const family of [
+      ...showcaseCatalog(slotId, basePool.id),
+      ...desecratedFamiliesFor(slotId),
+      ...familiesForSocketAugments(importedAugments),
+    ]) {
+      if (!familiesById.has(family.id)) familiesById.set(family.id, family);
+    }
     for (const raw of JSON.parse(imported) as string[]) {
       try {
         const value: unknown = JSON.parse(raw);
         if (!Array.isArray(value)) continue;
         const [id, rank, tier] = value;
-        const family = [...showcaseCatalog(slotId, basePool.id), ...desecratedFamiliesFor(slotId), ...familiesForSocketAugments(importedAugments)].find((entry) => entry.id === id);
+        const family = typeof id === "string" ? familiesById.get(id) : undefined;
         if (!family || (rank !== "required" && rank !== "optional")) continue;
         const choice = craftTierChoices(family).find((entry) => entry.rank === tier);
         result[family.id] = { polarity: rank === "required" ? "include" : "or", min: "", max: "", minTierIndex: choice?.index ?? null };
