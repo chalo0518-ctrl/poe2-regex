@@ -110,7 +110,7 @@ export default function PassiveTreeCanvas(props: Props) {
         ctx.fill();
         if (weaponTint) {
           ctx.strokeStyle = weaponTint;
-          ctx.lineWidth = 1.3;
+          ctx.lineWidth = .65;
           ctx.stroke();
         }
         continue;
@@ -148,7 +148,7 @@ export default function PassiveTreeCanvas(props: Props) {
           ctx.save();
           ctx.beginPath();
           ctx.rect(x - frameSize / 2, y - frameSize / 2, frameSize, frameSize);
-          ctx.arc(x, y, iconDiameter / 2, 0, 2 * Math.PI);
+          ctx.arc(x, y, (iconDiameter + frameDiameter) / 4, 0, 2 * Math.PI);
           ctx.clip("evenodd");
           ctx.drawImage(colored, x - frameSize / 2, y - frameSize / 2, frameSize, frameSize);
           ctx.restore();
