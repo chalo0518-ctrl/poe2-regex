@@ -16,12 +16,10 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
   const posterDialog = useRef<HTMLDialogElement>(null);
   const location = useLocation();
   useLayoutEffect(() => {
+    if (location.state?.bookmark) return;
     if (location.pathname.replace(/\/$/, "") === "/showcase" || location.state?.seasonEntry) {
       window.scrollTo(0, 0);
       return;
-    }
-    if (location.hash === "#season-update" || location.hash === "#season-build") {
-      document.getElementById(location.hash.slice(1))?.scrollIntoView?.({ block: "start" });
     }
   }, [location.pathname, location.state, location.hash, location.key]);
   const [params] = useSearchParams();
@@ -65,7 +63,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
             <div className="ledger-bookmark-title">
               <span>{english ? "Bookmarks" : "書籤"}</span>
             </div>
-            <Link className="ledger-bookmark" to="/showcase"><span aria-hidden="true">⌂</span>{english ? "Season selection" : "賽季選擇"}</Link>
+            <Link className="ledger-bookmark" to="/showcase" state={{ bookmark: true }}><span aria-hidden="true">⌂</span>{english ? "Season selection" : "賽季選擇"}</Link>
             {inArchive ? (
               <details className="ledger-bookmark-folder" open>
                 <summary>{seasonName(snapshot)} · {active.version}</summary>
@@ -99,7 +97,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
           </nav>
           <div className="ledger-season-main">
           {showUpdate && (
-            <section id="season-update" aria-label={posterLabel}>
+            <section id="season-update-panel" aria-label={posterLabel}>
               {updateImage ? (
                 <figure className="ledger-season-poster">
                   <button type="button" className="ledger-poster-open" aria-label={english ? "Enlarge season poster" : "放大賽季更新圖"}
@@ -135,7 +133,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
           )}
           {inArchive && !showUpdate ? (
             <>
-              <div className="ledger-archive" id="season-build" role="tabpanel" aria-labelledby={recommended ? "showcase-tab-recommended" : "showcase-tab-memorial"}>
+              <div className="ledger-archive" id="season-build-panel" role="tabpanel" aria-labelledby={recommended ? "showcase-tab-recommended" : "showcase-tab-memorial"}>
                 <Outlet />
               </div>
             </>
