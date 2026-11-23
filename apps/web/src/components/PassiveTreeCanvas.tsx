@@ -140,7 +140,7 @@ export default function PassiveTreeCanvas(props: Props) {
       const [x, y, , kind] = point;
       if (x < left - 25 || x > right + 25 || y < top - 25 || y > bottom + 25) continue;
       const color = sets.length === 1 ? (sets[0] === 1 ? "#ff716a" : "#7bdb90") : "#f5d289";
-      const radius = props.classic ? 9 : [8, 11, 15, 11][kind];
+      const radius = props.classic ? 5.4 : [5.4, 8, 12, 7.6][kind];
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
       const active = !sets.length || sets.includes(props.weaponSet);
