@@ -100,12 +100,12 @@ export default function PassiveTreeCanvas(props: Props) {
         ctx.drawImage(atlas, (local % 16) * 128, Math.floor(local / 16) * 128, 128, 128,
           x - dimension / 2, y - dimension / 2, dimension, dimension);
       }
-      const jewelTone = (kind === 1 || kind === 2) && sets?.length === 1
+      const weaponTint = (kind === 1 || kind === 2) && sets?.length === 1
         ? (sets[0] === 1 ? "#ff716a" : "#7bdb90") : null;
       if (props.classic) {
         ctx.beginPath();
         ctx.arc(x, y, sets ? 5 : 2.6, 0, 2 * Math.PI);
-        ctx.fillStyle = jewelTone ?? (sets ? "#ffcf75" : "#746047");
+        ctx.fillStyle = weaponTint ?? (sets ? "#ffcf75" : "#746047");
         ctx.fill();
         continue;
       }
@@ -117,10 +117,10 @@ export default function PassiveTreeCanvas(props: Props) {
       ctx.save();
       ctx.clip();
       tile(icon, kind === 0 ? iconDiameter * 2 : iconDiameter);
-      if (jewelTone) {
-        ctx.globalAlpha = .43;
-        ctx.fillStyle = jewelTone;
-        ctx.fill();
+      if (weaponTint) {
+        ctx.globalAlpha = .64;
+        ctx.fillStyle = weaponTint;
+        ctx.fillRect(x - iconDiameter / 2, y - iconDiameter / 2, iconDiameter, iconDiameter);
       }
       ctx.restore();
       tile(passive.frameStart + kind * 2 + Number(current), frameDiameter * 128 / Math.min(frameSourceSize, 128));
