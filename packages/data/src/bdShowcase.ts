@@ -2,7 +2,8 @@ import pobSnapshot from "./ruoaPoB2.json";
 import type { AffixFamily, CraftSlotId, ShieldBaseId, ShieldFamily } from "./types.ts";
 import shieldsJson from "../generated/shields.json";
 import { affixModGroup, earlyGearCatalog, isEarlyGearSlotId } from "./earlyGear.ts";
-import { BASE_SIDE_CAP } from "./socketPools.ts";
+import { desecratedFamiliesFor } from "./desecrated.ts";
+import { BASE_SIDE_CAP, familiesForSocketAugments } from "./socketPools.ts";
 import { craftingFamiliesFor, isWeaponCategoryId, weaponCatalog } from "./weapons.ts";
 import { RUO_CETACEA_META, ruoaCetaceaMemorial } from "./memorialSnapshot.ts";
 
@@ -110,6 +111,7 @@ export type RecommendedGear = {
   craftSlot: CraftSlotId | null;
   /** poe2db pool id inside that slot, when a single base is known. */
   basePoolId: string | null;
+  augments?: string[];
   affixes: ShowcasePick[];
 };
 
@@ -266,7 +268,9 @@ export function showcaseCatalog(slot: CraftSlotId, basePoolId: string | null): A
 export function catalogForDollSlot(slotId: PaperDollSlotId, gear: RecommendedGear): AffixFamily[] {
   const slot = resolveCraftSlot(slotId, gear);
   if (!slot) return [];
-  return showcaseCatalog(slot, gear.basePoolId);
+  if (!gear.basePoolId) return showcaseCatalog(slot, gear.basePoolId);
+  const families = [...showcaseCatalog(slot, gear.basePoolId), ...desecratedFamiliesFor(slot), ...familiesForSocketAugments(gear.augments ?? [])];
+  return [...new Map(families.map((family) => [family.id, family])).values()];
 }
 
 export function setShowcasePick(

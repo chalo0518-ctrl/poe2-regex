@@ -31,6 +31,7 @@ import {
   poolLabel,
   socketCountMax,
   socketSideCaps,
+  familiesForSocketAugments,
   showcaseCatalog,
   type AffixFamily,
   type CraftDecision,
@@ -143,6 +144,12 @@ export default function CraftingPage() {
   const blankStart = Boolean(fromSlot && basePool && params.get("start") === "blank");
   const sourceSeason = params.get("season");
   const imported = JSON.stringify(params.getAll("affix"));
+  const encodedAugments = JSON.stringify(params.getAll("augment"));
+  const importedAugments = useMemo(() => {
+    const allowed = new Set(poolAugmentsForSlot(slotId).map((entry) => entry.id));
+    return (JSON.parse(encodedAugments) as string[]).slice(0, Math.max(2, socketCountMax(slotId)))
+      .map((id) => allowed.has(id) ? id : "");
+  }, [encodedAugments, slotId]);
   const targetsFromRecommendation = useMemo(() => {
     const result: Record<string, ModPickState> = {};
     if (!basePool || !fromSlot) return result;
@@ -151,7 +158,7 @@ export default function CraftingPage() {
         const value: unknown = JSON.parse(raw);
         if (!Array.isArray(value)) continue;
         const [id, rank, tier] = value;
-        const family = showcaseCatalog(slotId, basePool.id).find((entry) => entry.id === id);
+        const family = [...showcaseCatalog(slotId, basePool.id), ...desecratedFamiliesFor(slotId), ...familiesForSocketAugments(importedAugments)].find((entry) => entry.id === id);
         if (!family || (rank !== "required" && rank !== "optional")) continue;
         const choice = craftTierChoices(family).find((entry) => entry.rank === tier);
         result[family.id] = { polarity: rank === "required" ? "include" : "or", min: "", max: "", minTierIndex: choice?.index ?? null };
@@ -160,7 +167,7 @@ export default function CraftingPage() {
       }
     }
     return result;
-  }, [basePool?.id, fromSlot, imported, slotId]);
+  }, [basePool?.id, fromSlot, imported, importedAugments, slotId]);
   const desecratedFamilies = useMemo(() => desecratedFamiliesFor(slotId), [slotId]);
 
   const [picks, setPicks] = useState<Record<string, ModPickState>>({});
@@ -230,8 +237,8 @@ export default function CraftingPage() {
     setUnrevealed(false);
     setKeeper(false);
     setOthers({});
-    setSocketCount(2);
-    setSocketPicks(["", ""]);
+    setSocketCount(Math.max(2, importedAugments.length));
+    setSocketPicks(importedAugments.length >= 2 ? importedAugments : [importedAugments[0] ?? "", ""]);
     setPinnedNode(null);
     setLibraryTab("targets");
     setCollapsedPools({});

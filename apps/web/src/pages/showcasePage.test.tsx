@@ -372,9 +372,12 @@ describe("season BD showcase", () => {
     expect(screen.getByRole("link", { name: "我的推薦詞條" })).toBeInTheDocument();
   });
 
-  it("does not invent affixes for a weapon slot that has no class yet", () => {
+  it("shows concrete weapon bases only after choosing their type", async () => {
+    const user = userEvent.setup();
     renderAt("/showcase/recommended/weapon-1-main");
     expect(screen.getByText("這個部位還沒有對上的做裝詞庫")).toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "單挑法杖" })).not.toBeInTheDocument();
+    await user.selectOptions(screen.getByRole("combobox", { name: "裝備類型" }), "wand");
     expect(screen.getByRole("option", { name: "單挑法杖" })).toBeInTheDocument();
     const prefix = screen.getByRole("region", { name: "前綴" });
     expect(within(prefix).queryAllByRole("checkbox")).toHaveLength(0);

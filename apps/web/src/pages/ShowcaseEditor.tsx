@@ -5,6 +5,11 @@ import {
   affixModGroup,
   catalogForDollSlot,
   craftingSlots,
+  showcaseCatalog,
+  desecratedFamiliesFor,
+  familiesForSocketAugments,
+  poolAugmentsForSlot,
+  socketCountMax,
   craftTierChoices,
   resolveCraftSlot,
   matchLangForLocale,
@@ -41,6 +46,8 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
   const [query, setQuery] = useState("");
   const gear = recommendedGear(snapshot, slot.id);
   const craftSlot = resolveCraftSlot(slot.id, gear);
+  const [typeDraft, setTypeDraft] = useState<CraftSlotId | "">(craftSlot ?? "");
+  const [source, setSource] = useState<"ordinary" | "desecrated" | "socket">("ordinary");
   const categories = craftingSlots().filter((entry) => slot.id.startsWith("weapon-")
     ? (slot.id.endsWith("-main") ? entry.id !== "shield" && !["body", "helmet", "gloves", "boots", "ring", "amulet", "belt"].includes(entry.id) : entry.id === "shield")
     : entry.id === craftSlot);
@@ -63,18 +70,24 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
       { entry, pool, id: categoryId, zh: entry.labelZh + " · " + pool.labelZh, en: (entry.labelEn ?? entry.id) + " · " + (pool.labelEn ?? pool.labelZh) },
     ];
   }));
+  const typedBases = baseOptions.filter((option) => option.entry.id === typeDraft);
   const selectedBase = baseOptions.find((option) => option.id === craftSlot + "/" + gear.basePoolId + "/" + gear.baseEn)
     ?? baseOptions.find((option) => option.id === craftSlot + "/" + gear.basePoolId);
   const [library, setLibrary] = useState<"prefix" | "suffix" | null>(null);
   const catalog = catalogForDollSlot(slot.id, gear);
+  const ordinary = craftSlot ? showcaseCatalog(craftSlot, gear.basePoolId) : [];
+  const desecrated = craftSlot && gear.basePoolId ? desecratedFamiliesFor(craftSlot) : [];
+  const augmentFamilies = familiesForSocketAugments(gear.augments ?? []);
+  const sourceRows = source === "desecrated" ? desecrated : source === "socket" ? augmentFamilies : ordinary;
+  const augments = craftSlot && gear.basePoolId ? poolAugmentsForSlot(craftSlot) : [];
   const selected = picks[slot.id];
   const lines = showcaseLines(selected, catalog);
   const slotLabel = locale === "en" ? slot.labelEn : slot.labelZh;
   const group = paperDollGroups.find((row) => row.id === slot.group);
   const groupLabel = group ? (locale === "en" ? group.labelEn : group.labelZh) : "";
   const visible = useMemo(
-    () => catalog.filter((family) => matchesText(family, query, { hanFold: true })),
-    [catalog, query],
+    () => sourceRows.filter((family) => matchesText(family, query, { hanFold: true })),
+    [sourceRows, query],
   );
 
   const craftParams = new URLSearchParams({ slot: craftSlot ?? "", season, fromSlot: slot.id, base: gear.basePoolId ?? "", start: "blank" });
@@ -82,6 +95,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
     craftParams.set("baseNameZh", selectedBase.zh);
     craftParams.set("baseNameEn", selectedBase.en);
   }
+  for (const id of gear.augments ?? []) craftParams.append("augment", id);
   for (const pick of selected) {
     craftParams.append("affix", JSON.stringify([pick.familyId, pick.rank, tiers[slot.id]?.[pick.familyId] ?? null]));
   }
@@ -89,7 +103,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
     const choice = baseOptions.find((option) => option.id === value);
     if (!choice) return;
     const { entry, pool } = choice;
-    const next = { ...gear, craftSlot: entry.id as CraftSlotId, basePoolId: pool.id, baseZh: choice.zh, baseEn: choice.en };
+    const next = { ...gear, craftSlot: entry.id as CraftSlotId, basePoolId: pool.id, baseZh: choice.zh, baseEn: choice.en, augments: entry.id === craftSlot ? gear.augments : [] };
     const available = catalogForDollSlot(slot.id, next);
     const lost = selected.filter((pick) => !available.some((family) => family.id === pick.familyId &&
       (tiers[slot.id]?.[pick.familyId] == null || craftTierChoices(family).some((tier) => tier.rank === tiers[slot.id]?.[pick.familyId]))));
@@ -97,6 +111,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
       .map((family) => locale === "en" ? family?.labelEn : family?.labelZh);
     if (!lost.length || window.confirm((locale === "en" ? "Changing the base removes: " : "更換底材將移除：") + labels.join("、"))) {
       setBase(slot.id, next);
+      setSource("ordinary");
     }
   }
 
@@ -109,14 +124,45 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
       <h2 className="mt-1 text-xl font-bold text-gold">{slotLabel}</h2>
       <p className="mt-1 text-sm text-muted">{t.showcaseEditorTitle}</p>
       <SessionNote />
-      {baseOptions.length > 0 && (
+      {categories.length > 0 && (
         <label className="mb-4 block text-gold">
-          {locale === "en" ? "Base type" : "底材"}
-          <select className="ml-3 bg-panel p-2" value={selectedBase?.id ?? ""} onChange={(event) => chooseBase(event.target.value)}>
-            <option value="" disabled>{locale === "en" ? "Choose a base" : "選擇底材"}</option>
-            {baseOptions.map(({ zh, en, id }) => <option key={id} value={id}>{locale === "en" ? en : zh}</option>)}
+          {locale === "en" ? "Equipment type" : "裝備類型"}
+          <select className="ml-3 bg-panel p-2" value={typeDraft} onChange={(event) => setTypeDraft(event.target.value as CraftSlotId)}>
+            <option value="" disabled>{locale === "en" ? "Choose a type" : "選擇類型"}</option>
+            {categories.map((entry) => <option key={entry.id} value={entry.id}>{locale === "en" ? entry.labelEn ?? entry.id : entry.labelZh}</option>)}
           </select>
         </label>
+      )}
+      {typedBases.length > 0 && (
+        <label className="mb-4 block text-gold">
+          {locale === "en" ? "Base type" : "底材"}
+          <select className="ml-3 bg-panel p-2" value={typeDraft === craftSlot ? selectedBase?.id ?? "" : ""} onChange={(event) => chooseBase(event.target.value)}>
+            <option value="" disabled>{locale === "en" ? "Choose a base" : "選擇底材"}</option>
+            {typedBases.map(({ zh, en, id }) => <option key={id} value={id}>{locale === "en" ? en : zh}</option>)}
+          </select>
+        </label>
+      )}
+      {craftSlot && augments.length > 0 && (
+        <fieldset className="mb-4 flex flex-wrap gap-3 text-gold">
+          <legend>{locale === "en" ? "Socketed augments" : "鑲嵌物"}</legend>
+          {Array.from({ length: Math.max(2, socketCountMax(craftSlot)) }, (_, index) => (
+            <select key={index} className="bg-panel p-2" aria-label={(locale === "en" ? "Socket " : "插槽 ") + (index + 1)}
+              value={gear.augments?.[index] ?? ""} onChange={(event) => {
+                const next = Array.from({ length: Math.max(2, socketCountMax(craftSlot)) }, (_, i) => gear.augments?.[i] ?? "");
+                next[index] = event.target.value;
+                const updated = { ...gear, augments: next };
+                const valid = new Set(catalogForDollSlot(slot.id, updated).map((family) => family.id));
+                if (selected.some((pick) => !valid.has(pick.familyId)) && !window.confirm(locale === "en" ? "Remove incompatible modifiers?" : "移除不再相容的詞條？")) return;
+                setBase(slot.id, updated);
+              }}>
+              <option value="">{locale === "en" ? "Empty socket" : "空插槽"}</option>
+              {augments.map((augment) => <option key={augment.id} value={augment.id}
+                disabled={augment.limitOne && gear.augments?.some((id, i) => i !== index && id === augment.id)}>
+                {locale === "en" ? augment.nameEn : augment.nameZh}
+              </option>)}
+            </select>
+          ))}
+        </fieldset>
       )}
       {craftSlot && gear.basePoolId && selected.length > 0 && (
         <Link className="mb-4 inline-block text-gold underline" to={"/endgame/crafting?" + craftParams}>
@@ -139,6 +185,14 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
           />
         </label>
       )}
+      {library && <label className="mb-3 block text-gold">
+        {locale === "en" ? "Modifier source" : "詞條來源"}
+        <select className="ml-3 bg-panel p-2" value={source} onChange={(event) => setSource(event.target.value as typeof source)}>
+          <option value="ordinary">{locale === "en" ? "Ordinary" : "普通"}</option>
+          <option value="desecrated">{locale === "en" ? "Desecrated" : "褻瀆"}</option>
+          <option value="socket">{locale === "en" ? "Augment pools" : "鑲嵌解鎖"}</option>
+        </select>
+      </label>}
       <div className="grid gap-4 lg:grid-cols-2">
         <AffixColumn
           title={t.showcasePrefix}
@@ -204,7 +258,6 @@ function AffixColumn({
   const emptyLabel = generation === "prefix" ? t.showcaseEmptyPrefix : t.showcaseEmptySuffix;
   const required = lines.flatMap((line) => (line.kind === "affix" && line.rank === "required" ? [line] : []));
   const optional = lines.flatMap((line) => (line.kind === "affix" && line.rank === "optional" ? [line] : []));
-  const empties = lines.flatMap((line) => (line.kind === "empty" ? [line] : []));
   const sideCount = selected.filter((pick) => catalog.find((family) => family.id === pick.familyId)?.generation === generation).length;
 
   return (
@@ -226,18 +279,14 @@ function AffixColumn({
           </p>
         ))}
       </div>
-      {empties.length > 0 ? (
-        <p className="doll-line-empty mt-3">
-          {empties.flatMap((line, index) => [
-            index > 0 ? (
-              <span key={`${line.generation}-sep-${index}`} aria-hidden="true">
-                {" · "}
-              </span>
-            ) : null,
-            <button type="button" key={`${line.generation}-${index}`} onClick={() => onOpen(generation)}>{emptyLabel}</button>,
-          ])}
-        </p>
-      ) : null}
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {lines.map((line, index) => (
+          <button type="button" key={index} className="min-w-0 border border-line bg-ink p-2 text-sm text-paper"
+            onClick={() => onOpen(generation)}>
+            {line.kind === "empty" ? emptyLabel : locale === "en" ? line.labelEn : line.labelZh}
+          </button>
+        ))}
+      </div>
       <button type="button" className="mt-3 text-xs text-gold underline" onClick={() => onOpen(generation)}>
         {locale === "en" ? "Open modifier library" : "打開詞條庫"}
       </button>
