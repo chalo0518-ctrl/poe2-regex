@@ -48,7 +48,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
   const gear = recommendedGear(snapshot, slot.id);
   const craftSlot = resolveCraftSlot(slot.id, gear);
   const [typeDraft, setTypeDraft] = useState<CraftSlotId | "">(craftSlot ?? "");
-  const [source, setSource] = useState<"ordinary" | "desecrated" | "socket">("ordinary");
+  const [source, setSource] = useState<"all" | "ordinary" | "desecrated" | "socket">("all");
   const categories = craftingSlots().filter((entry) => slot.id.startsWith("weapon-")
     ? (slot.id.endsWith("-main") ? entry.id !== "shield" && !["body", "helmet", "gloves", "boots", "ring", "amulet", "belt"].includes(entry.id) : entry.id === "shield")
     : entry.id === craftSlot);
@@ -73,7 +73,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
   const ordinary = craftSlot ? showcaseCatalog(craftSlot, gear.basePoolId) : [];
   const desecrated = craftSlot && gear.basePoolId ? desecratedFamiliesFor(craftSlot) : [];
   const augmentFamilies = familiesForSocketAugments(gear.augments ?? []);
-  const sourceRows = source === "desecrated" ? desecrated : source === "socket" ? augmentFamilies : ordinary;
+  const sourceRows = source === "all" ? catalog : source === "desecrated" ? desecrated : source === "socket" ? augmentFamilies : ordinary;
   const augments = craftSlot && gear.basePoolId ? poolAugmentsForSlot(craftSlot) : [];
   const selected = picks[slot.id];
   const lines = showcaseLines(selected, catalog);
@@ -107,7 +107,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
       .map((family) => locale === "en" ? family?.labelEn : family?.labelZh);
     if (!lost.length || window.confirm((locale === "en" ? "Changing the base removes: " : "更換底材將移除：") + labels.join("、"))) {
       setBase(slot.id, next);
-      setSource("ordinary");
+      setSource("all");
     }
   }
 
@@ -192,9 +192,10 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
           />
         </label>
       )}
-      {library && <label className="mb-3 block text-gold">
-        {locale === "en" ? "Modifier source" : "詞條來源"}
+      {catalog.length > 0 && <label className="mb-3 block text-gold">
+        {locale === "en" ? "Modifier library" : "選擇詞條庫"}
         <select className="ml-3 bg-panel p-2" value={source} onChange={(event) => setSource(event.target.value as typeof source)}>
+          <option value="all">{locale === "en" ? "All available libraries" : "全部可用詞條庫"} ({catalog.length})</option>
           <option value="ordinary">{locale === "en" ? "Ordinary" : "普通"}</option>
           <option value="desecrated">{locale === "en" ? "Desecrated" : "褻瀆"}</option>
           <option value="socket">{locale === "en" ? "Augment pools" : "鑲嵌解鎖"}</option>
@@ -323,7 +324,10 @@ function AffixColumn({
             <li key={family.id} data-affix-id={family.id} className="flex items-center justify-between gap-3 border-b border-line/70 py-2">
               <span className={groupTaken ? "text-sm text-muted" : "text-sm text-paper"}>
                 {typeName}
-                <small className="block text-muted">{choices.map((choice) => `T${choice.rank} · iLvL ${choice.level}`).join(" / ")}</small>
+                <div className="block text-xs text-muted">{choices.length > 0 && <details><summary>{locale === "en" ? "Tier ranges" : "各階級數值範圍"}</summary>{choices.map((choice) => {
+                  const tier = family.tiers[choice.index];
+                  return <span key={choice.index} className="block">T{choice.rank} · {locale === "en" ? tier.textEn || tier.textZh : tier.textZh || tier.textEn} {choice.statMin != null && choice.statMax != null ? ` (${choice.statMin}–${choice.statMax})` : ""} · iLvL {choice.level}</span>;
+                })}</details>}</div>
                 {conflictFamily && <small className="block">{t.craftingConflict} · {matchText(conflictFamily, matchLangForLocale(locale))}</small>}
               </span>
               {pick && <select aria-label={(locale === "en" ? "Minimum tier" : "最低 T 階") + " " + typeName} value={tiers[family.id] ?? ""} onChange={(event) => onTier(family.id, event.target.value ? Number(event.target.value) : null)} className="bg-panel text-paper">
