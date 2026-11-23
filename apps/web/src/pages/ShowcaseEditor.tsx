@@ -200,7 +200,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
           <option value="socket">{locale === "en" ? "Augment pools" : "鑲嵌解鎖"}</option>
         </select>
       </label>}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4">
         <AffixColumn
           title={t.showcasePrefix}
           generation="prefix"
@@ -263,34 +263,25 @@ function AffixColumn({
 }) {
   const { t } = useLocale();
   const emptyLabel = generation === "prefix" ? t.showcaseEmptyPrefix : t.showcaseEmptySuffix;
-  const required = lines.flatMap((line) => (line.kind === "affix" && line.rank === "required" ? [line] : []));
-  const optional = lines.flatMap((line) => (line.kind === "affix" && line.rank === "optional" ? [line] : []));
   const sideCount = selected.filter((pick) => catalog.find((family) => family.id === pick.familyId)?.generation === generation).length;
 
   return (
     <section aria-label={title} className="rounded-sm border border-line bg-panel p-3">
       <h2 className="text-sm font-bold text-gold">{title}</h2>
-      <div className="mt-3">
-        <h3 className="text-xs tracking-[0.14em] text-gold-dim">{t.showcaseRequired}</h3>
-        {required.map((line) => (
-          <p key={line.familyId} className="mt-1 text-sm text-paper">
-            {locale === "en" ? line.labelEn : line.labelZh}
-          </p>
-        ))}
-      </div>
-      <div className="mt-3">
-        <h3 className="text-xs tracking-[0.14em] text-gold-dim">{locale === "en" ? "Recommended" : "推薦"}</h3>
-        {optional.map((line) => (
-          <p key={line.familyId} className="mt-1 text-sm text-paper">
-            {locale === "en" ? line.labelEn : line.labelZh}
-          </p>
-        ))}
-      </div>
       <div className="mt-3 grid grid-cols-3 gap-2">
         {lines.map((line, index) => (
-          <button type="button" key={index} className="min-w-0 border border-line bg-ink p-2 text-sm text-paper"
+          <button type="button" key={index}
+            className="min-w-0 border border-line bg-ink px-2 py-3 text-center text-sm hover:border-gold"
             onClick={() => onOpen(generation)}>
-            {line.kind === "empty" ? emptyLabel : locale === "en" ? line.labelEn : line.labelZh}
+            {line.kind === "empty" ? <span className="text-muted">{emptyLabel}</span> : (
+              <>
+                <span className="mb-1 block text-xs text-gold-dim">
+                  {line.rank === "required" ? t.showcaseRequired : locale === "en" ? "Recommended" : "推薦"}
+                  {tiers[line.familyId] != null && ` · T${tiers[line.familyId]}`}
+                </span>
+                <span className="block break-words text-[#b5acff]">{locale === "en" ? line.labelEn : line.labelZh}</span>
+              </>
+            )}
           </button>
         ))}
       </div>
