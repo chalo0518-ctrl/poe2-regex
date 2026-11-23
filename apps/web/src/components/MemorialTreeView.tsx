@@ -39,6 +39,7 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const [classic, setClassic] = useState(false);
   const embedded = showOverview ? snapshot.ascendancyTree : undefined;
   const viewport = useRef<SVGSVGElement>(null);
+  const [viewportAspect, setViewportAspect] = useState(0);
   const layer = useRef<SVGGElement>(null);
   const didPan = useRef(false);
   const nodes = tree?.nodes ?? [];
@@ -91,10 +92,24 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
     }),
   } : undefined;
   const allocationColor = (sets?: number[]) => sets?.length === 1 ? (sets[0] === 1 ? weaponPalette.one : weaponPalette.two) : "#e5bf74";
-  const [x, width] = showOracle ? [portrait.x, portrait.width] : showOverview && fitAll ? [overview.x, overview.width] : extent("x");
-  const [y, height] = showOracle ? [portrait.y, portrait.height] : showOverview && fitAll ? [overview.y, overview.height] : extent("y");
-  const centerX = x + width / 2;
-  const centerY = y + height / 2;
+  const [baseX, baseWidth] = showOracle ? [portrait.x, portrait.width] : showOverview && fitAll ? [overview.x, overview.width] : extent("x");
+  const [baseY, baseHeight] = showOracle ? [portrait.y, portrait.height] : showOverview && fitAll ? [overview.y, overview.height] : extent("y");
+  const centerX = baseX + baseWidth / 2;
+  const centerY = baseY + baseHeight / 2;
+  const width = showOverview && viewportAspect ? Math.max(baseWidth, baseHeight * viewportAspect) : baseWidth;
+  const height = showOverview && viewportAspect ? Math.max(baseHeight, baseWidth / viewportAspect) : baseHeight;
+  const x = centerX - width / 2;
+  const y = centerY - height / 2;
+  useEffect(() => {
+    const svg = viewport.current;
+    if (!showOverview || !svg || typeof ResizeObserver !== "function") return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      if (width && height) setViewportAspect(width / height);
+    });
+    observer.observe(svg);
+    return () => observer.disconnect();
+  }, [showOverview, nodes.length]);
   useEffect(() => {
     const svg = viewport.current;
     if (!svg) return;
