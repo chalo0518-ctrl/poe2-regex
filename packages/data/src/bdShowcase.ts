@@ -46,6 +46,7 @@ export type MemorialAffix = ShowcaseText & {
 export type MemorialMod = {
   kind: string;
   verifiedTier?: number;
+  generation?: MemorialAffix["generation"];
   textZh: string;
   textEn: string;
 };

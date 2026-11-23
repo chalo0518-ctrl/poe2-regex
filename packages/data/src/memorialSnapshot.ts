@@ -2,7 +2,7 @@ import snapshot from "./ruoaCetacea.json";
 import { craftingSlots } from "./weapons.ts";
 import { earlyGearCatalog, isEarlyGearSlotId } from "./earlyGear.ts";
 import { weaponCatalog } from "./weapons.ts";
-import { recognizeMemorialTier } from "./memorialTier.ts";
+import { recognizeMemorialModifier } from "./memorialTier.ts";
 import type { MemorialGear, MemorialMod, MemorialSocket, PaperDollSlotId, ShowcaseText } from "./bdShowcase.ts";
 
 /**
@@ -122,7 +122,8 @@ function textOf(row: RawText): MemorialMod | null {
   const textEn = row.text_en ?? "";
   const textZh = row.text_zh ?? "";
   if (!textEn && !textZh) return null;
-  return { kind: row.kind || "explicit", textEn, textZh };
+  const generation = row.prefix_suffix === "prefix" || row.prefix_suffix === "suffix" ? row.prefix_suffix : undefined;
+  return { kind: row.kind || "explicit", textEn, textZh, generation };
 }
 
 function modsOf(rows: RawText[] | undefined): MemorialMod[] {
@@ -209,11 +210,9 @@ function verifyTiers(item: RawItem, mods: MemorialMod[]): MemorialMod[] {
   const knownPool = knownBasePools[item.base_en ?? ""];
   const candidates = knownPool && pools[knownPool] ? [pools[knownPool]] : Object.values(pools);
   return mods.map((mod) => {
-    if (mod.kind !== "explicit" && mod.kind !== "fractured") return mod;
-    const raw = item.explicit_affixes?.find((row) => row.text_en && row.text_en === mod.textEn || row.text_zh && row.text_zh === mod.textZh);
-    const side = raw?.prefix_suffix;
-    const rank = recognizeMemorialTier(mod, candidates, item.item_level ?? null, side === "prefix" || side === "suffix" ? side : undefined);
-    return rank === undefined ? mod : { ...mod, verifiedTier: rank };
+    if (!["explicit", "fractured", "crafted"].includes(mod.kind)) return mod;
+    const matched = recognizeMemorialModifier(mod, candidates, item.item_level ?? null, mod.generation);
+    return { ...mod, ...matched, verifiedTier: mod.kind === "crafted" ? undefined : matched.verifiedTier };
   });
 }
 

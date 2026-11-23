@@ -1,4 +1,4 @@
-import { type MemorialGear, type UiLocale } from "@poe2-regex/data";
+import { type MemorialMod, type MemorialGear, type UiLocale } from "@poe2-regex/data";
 
 export function marketItemTitle(gear: MemorialGear, locale: UiLocale): string {
   const base = locale === "en" ? gear.baseEn || gear.baseZh : gear.baseZh || gear.baseEn;
@@ -14,6 +14,11 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
   const mods = gear.mods ?? [];
   const baseMods = mods.length ? mods.filter((mod) => mod.kind === "implicit") : gear.implicits.map((row) => ({ ...row, kind: "implicit" }));
   const isGranted = (row: (typeof baseMods)[number]) => /^(?:Grants Skill|賦予技能)\s*[:：]/iu.test(line(row, locale).trim());
+
+  const affixes: MemorialMod[] = mods.length
+    ? mods.filter((mod) => !["implicit", "socket", "corrupted"].includes(mod.kind))
+    : gear.affixes.map((row) => ({ ...row, kind: "explicit" }));
+  const grouped = affixes.some((mod) => mod.generation);
 
   return (
     <article className={`market-item market-item--${gear.rarity || "rare"}`}>
@@ -34,7 +39,9 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
           { label: locale === "en" ? "Base effects" : "底材效果", rows: baseMods.filter((mod) => !isGranted(mod)) },
           { label: "", rows: baseMods.filter(isGranted) },
           { label: locale === "en" ? "Socket effects" : "鑲嵌效果", rows: mods.filter((mod) => mod.kind === "socket") },
-          { label: "", rows: mods.length ? mods.filter((mod) => !["implicit", "socket", "corrupted"].includes(mod.kind)) : gear.affixes.map((row) => ({ ...row, kind: "explicit" })) },
+          { label: locale === "en" ? "Prefixes" : "前綴", rows: affixes.filter((mod) => mod.generation === "prefix") },
+          { label: locale === "en" ? "Suffixes" : "後綴", rows: affixes.filter((mod) => mod.generation === "suffix") },
+          { label: grouped ? (locale === "en" ? "Other modifiers" : "其他詞條") : "", rows: affixes.filter((mod) => !mod.generation) },
           { label: "", rows: mods.filter((mod) => mod.kind === "corrupted") },
         ].map(({ label, rows }, index) => rows.length > 0 && (
           <div className="market-item-group" key={index}>

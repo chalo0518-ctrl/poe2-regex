@@ -18,17 +18,18 @@ function tierText(text: string, tier?: AffixTier) {
 
 type TierFamily = Pick<AffixFamily, "family" | "generation" | "tiers">;
 
-export function recognizeMemorialTier(
+export function recognizeMemorialModifier(
   mod: Pick<MemorialMod, "textEn" | "textZh">,
   pools: readonly (readonly TierFamily[])[],
   itemLevel: number | null,
   side?: "prefix" | "suffix",
-): number | undefined {
+): Pick<MemorialMod, "generation" | "verifiedTier"> {
   const families = new Set<string>();
   const ranks = new Set<number>();
   const english = Boolean(mod.textEn.trim());
   const roll = tierText(english ? mod.textEn : mod.textZh);
-  if (!roll.bounds.length) return;
+  const sides = new Set<MemorialMod["generation"]>();
+  if (!roll.bounds.length) return {};
   for (const pool of pools) {
     for (const family of pool) {
       if (side && family.generation !== side) continue;
@@ -37,11 +38,19 @@ export function recognizeMemorialTier(
         const tier = family.tiers[choice.index];
         const candidate = tierText(english ? tier.textEn : tier.textZh, tier);
         if (candidate.shape !== roll.shape || candidate.bounds.length !== roll.bounds.length) continue;
+        if (family.generation === "prefix" || family.generation === "suffix") sides.add(family.generation);
         if (!candidate.bounds.every(([lo, hi], index) => roll.bounds[index][0] >= lo && roll.bounds[index][1] <= hi)) continue;
         families.add(family.generation + "/" + family.family);
         ranks.add(choice.rank);
       }
     }
   }
-  if (families.size === 1 && ranks.size === 1) return [...ranks][0];
+  return {
+    generation: side ?? (sides.size === 1 ? [...sides][0] : undefined),
+    verifiedTier: families.size === 1 && ranks.size === 1 ? [...ranks][0] : undefined,
+  };
+}
+
+export function recognizeMemorialTier(...args: Parameters<typeof recognizeMemorialModifier>): number | undefined {
+  return recognizeMemorialModifier(...args).verifiedTier;
 }
