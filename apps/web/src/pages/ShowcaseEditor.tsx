@@ -268,18 +268,20 @@ function AffixColumn({
   return (
     <section aria-label={title} className="rounded-sm border border-line bg-panel p-3">
       <h2 className="text-sm font-bold text-gold">{title}</h2>
-      <div className="mt-3 grid grid-cols-3 gap-2">
+      <div className="mt-3 grid gap-2">
         {lines.map((line, index) => (
           <button type="button" key={index}
-            className="min-w-0 border border-line bg-ink px-2 py-3 text-center text-sm hover:border-gold"
+            className="grid w-full min-w-0 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-3 border border-line bg-ink px-3 py-2 text-sm hover:border-gold"
             onClick={() => onOpen(generation)}>
-            {line.kind === "empty" ? <span className="text-muted">{emptyLabel}</span> : (
+            {line.kind === "empty" ? <span className="col-start-2 text-center text-muted">{emptyLabel}</span> : (
               <>
-                <span className="mb-1 block text-xs text-gold-dim">
-                  {line.rank === "required" ? t.showcaseRequired : locale === "en" ? "Recommended" : "推薦"}
-                  {tiers[line.familyId] != null && ` · T${tiers[line.familyId]}`}
+                <span className="text-left tabular-nums text-gold">
+                  {tiers[line.familyId] != null ? `T${tiers[line.familyId]}` : "T—"}
                 </span>
-                <span className="block break-words text-[#b5acff]">{locale === "en" ? line.labelEn : line.labelZh}</span>
+                <span className="break-words text-center text-[#b5acff]">{locale === "en" ? line.labelEn : line.labelZh}</span>
+                <span className="text-right text-xs text-gold-dim">
+                  {line.rank === "required" ? t.showcaseRequired : locale === "en" ? "Recommended" : "推薦"}
+                </span>
               </>
             )}
           </button>
