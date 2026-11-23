@@ -27,6 +27,8 @@ body,
   margin: 0;
 }
 
+html { scrollbar-gutter: stable; }
+
 body {
   background:
     radial-gradient(900px 420px at 50% -12%, rgba(223, 207, 153, 0.08), transparent),
@@ -707,10 +709,10 @@ header {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: .75rem 1.25rem;
-  max-width: 1320px;
+  max-width: 1720px;
   min-height: 4.5rem;
   margin: auto;
-  padding: .75rem clamp(1rem, 4vw, 2.5rem);
+  padding: .75rem clamp(.75rem, 2.8vw, 2.5rem);
 }
 
 .ledger-brand {
@@ -736,11 +738,6 @@ header {
 
 .ledger-ruins { --ledger-scene-tint: #282b2b; --ledger-portal-glow: #605545; }
 .ledger-forge { --ledger-scene-tint: #2c1917; --ledger-portal-glow: #734535; }
-.ledger-app:has(.ledger-home) .ledger-nav {
-  max-width: none;
-  min-height: 3.75rem;
-  padding-inline: clamp(.8rem, 1.25vw, 1.5rem);
-}
 .ledger-home {
   padding: clamp(1rem, 2vw, 1.6rem) clamp(.8rem, 1.25vw, 1.5rem) 4rem;
 }
@@ -1240,10 +1237,6 @@ header {
   letter-spacing: .07em;
   text-transform: uppercase;
   text-shadow: 0 1px #734e2d, 0 2px 4px #000;
-}
-.ledger-app:has(.ledger-season) .ledger-nav {
-  max-width: 1720px;
-  padding-inline: clamp(.75rem, 2.8vw, 2.5rem);
 }
 .ledger-season-copy {
   display: flex;
