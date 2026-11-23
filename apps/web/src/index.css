@@ -1714,6 +1714,8 @@ header {
 .memorial-tree svg circle[data-allocation="2"] { --node-highlight: #7bdb90; }
 .memorial-tree svg circle[data-allocation="shared"] { --node-highlight: #f5d289; }
 .memorial-tree svg circle[data-allocation]:is(:hover, :focus-visible) {
+  fill: var(--node-highlight);
+  fill-opacity: .35;
   stroke: var(--node-highlight);
   stroke-width: 1.35;
 }
