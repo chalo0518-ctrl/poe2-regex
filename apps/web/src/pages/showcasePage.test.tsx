@@ -415,7 +415,7 @@ describe("season BD showcase", () => {
     renderAt("/");
     const picker = screen.getByRole("region", { name: "選擇賽季" });
     expect(within(picker).getByRole("link", { name: /進入賽季回顧/ })).toHaveAttribute("href", "/showcase/memorial#season-update");
-    expect(screen.queryByRole("link", { name: /裝備製作/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "裝備製作" })).toHaveAttribute("href", "/endgame/crafting");
   });
 
   it("hides equipment crafting in the endgame navigation", () => {
