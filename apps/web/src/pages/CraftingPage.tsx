@@ -486,7 +486,10 @@ export default function CraftingPage() {
                     const tier = craftTierChoices(family).find((choice) => choice.index === picks[family.id]?.minTierIndex);
                     const row = tier && family.tiers[tier.index];
                     const description = locale === "en" ? row?.textEn || family.labelEn : row?.textZh || family.labelZh;
-                    return <li key={family.id}>{tier && <strong className="mr-2 text-gold">T{tier.rank}</strong>}{description}</li>;
+                    const recorded = owned[family.id];
+                    const recordedTier = craftTierChoices(family).find((choice) => choice.index === recorded?.tierIndex);
+                    const status = !recorded?.owned ? (locale === "en" ? "Pending" : "尚未取得") : !tier || (recordedTier && recordedTier.rank <= tier.rank) ? (locale === "en" ? "Met" : "已達標") : !recordedTier ? (locale === "en" ? "Tier unrecorded" : "階級未記錄") : (locale === "en" ? "Below target tier" : "未達目標階級");
+                    return <li key={family.id}>{tier && <strong className="mr-2 text-gold">T{tier.rank}</strong>}{description}<small className="ml-3 text-muted">{status}</small></li>;
                   })}
                 </ul>
               </div>;

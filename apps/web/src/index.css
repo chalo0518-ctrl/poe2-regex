@@ -1755,3 +1755,19 @@ header {
 .ledger-app [data-affix-id]:focus-within { background-color: #262119; }
 .ledger-app [data-affix-id] summary { cursor: pointer; padding-block: .25rem; }
 .ledger-app [data-affix-id] details[open] summary { color: #dcc59c; }
+
+.ledger-module-nav { display: flex; flex-wrap: wrap; gap: .4rem; }
+.ledger-module-nav a {
+  padding: .45rem .75rem;
+  color: #dec9a3;
+  border: 1px solid #554533;
+  background: linear-gradient(#251f18, #161310);
+  text-decoration: none;
+}
+.ledger-module-nav a:hover,
+.ledger-module-nav a:is(.active, [aria-current="page"]) {
+  color: #f4dfb2;
+  border-color: #ac8952;
+  background: #34291b;
+}
+.ledger-masthead .ledger-nav { flex-wrap: wrap; gap: .65rem 1.25rem; }
