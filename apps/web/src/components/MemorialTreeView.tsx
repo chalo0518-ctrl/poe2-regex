@@ -1,7 +1,7 @@
 import oracleArt from "../assets/oracle-ascendancy.jpg";
-import PassiveTreeCanvas, { passivePositions } from "./PassiveTreeCanvas.tsx";
+import PassiveTreeCanvas, { passivePositions, weaponPalette } from "./PassiveTreeCanvas.tsx";
 import fullNodeRows from "../assets/poe2-main-passive-nodes.json";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type MemorialTree } from "@poe2-regex/data";
 import { useShowcase } from "../pages/showcaseState.tsx";
 import { useLocale } from "../i18n.tsx";
@@ -37,7 +37,6 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const [scale, setScale] = useState(1);
   const [selected, setSelected] = useState("");
   const [classic, setClassic] = useState(false);
-  const ascendancyClip = useId();
   const embedded = showOverview ? snapshot.ascendancyTree : undefined;
   const viewport = useRef<SVGSVGElement>(null);
   const layer = useRef<SVGGElement>(null);
@@ -61,12 +60,36 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
   const portrait = { x: -1564.9, y: -790, width: 298.8, height: 297.9 };
   const insetScale = .72;
   const insetRadius = portrait.width * insetScale / 2;
+  const insetX = overview.x + overview.width / 2;
+  const insetY = overview.y + overview.height / 2;
   const insetPoint = (entry: { x: number; y: number }) => [
-    (entry.x - portrait.x) * insetScale - insetRadius,
+    (entry.x - portrait.x) * insetScale - insetRadius + insetX,
     (entry.y - portrait.y) * insetScale - insetRadius,
   ] as const;
   const ascendancyById = new Map(embedded?.nodes.map((entry) => [entry.id, entry]));
-  const allocationColor = (sets?: number[]) => sets?.length === 1 ? (sets[0] === 1 ? "#eb6a63" : "#75c98b") : "#e5bf74";
+  const markRadius = (id: string) => ["5571", "32905", "34313", "52374"].includes(id) ? 7 : 4;
+  const inset = embedded?.nodes.length ? {
+    x: insetX, y: insetY, radius: insetRadius,
+    marks: embedded.nodes.filter((entry) => entry.allocated).map((entry) => {
+      const [x, y] = insetPoint(entry);
+      return { x, y, radius: markRadius(entry.id) };
+    }),
+    links: embedded.edges.flatMap(([from, to]) => {
+      const start = ascendancyById.get(from);
+      const end = ascendancyById.get(to);
+      if (!start?.allocated || !end?.allocated) return [];
+      const [ax, ay] = insetPoint(start);
+      const [bx, by] = insetPoint(end);
+      const ordered = Number(from) < Number(to);
+      const signedRadius = (oracleConnectorRadii[ordered ? from + "/" + to : to + "/" + from] ?? 0) * (ordered ? 1 : -1);
+      const radius = Math.abs(signedRadius) * insetScale;
+      const segment = radius && Math.hypot(bx - ax, by - ay) < 2 * radius
+        ? ` A${radius} ${radius} 0 0 ${signedRadius > 0 ? 0 : 1} ${bx} ${by}`
+        : ` L${bx} ${by}`;
+      return [`M${ax} ${ay}${segment}`];
+    }),
+  } : undefined;
+  const allocationColor = (sets?: number[]) => sets?.length === 1 ? (sets[0] === 1 ? weaponPalette.one : weaponPalette.two) : "#e5bf74";
   const [x, width] = showOracle ? [portrait.x, portrait.width] : showOverview && fitAll ? [overview.x, overview.width] : extent("x");
   const [y, height] = showOracle ? [portrait.y, portrait.height] : showOverview && fitAll ? [overview.y, overview.height] : extent("y");
   const centerX = x + width / 2;
@@ -107,8 +130,8 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
           {showOverview && (
             <div className="memorial-tree-legend" aria-label={english ? "Tree legend" : "天賦圖例"}>
               <span style={{ color: "#e5bf74" }}>{english ? "Shared" : "共用"} · {sharedCount}</span>
-              <span style={{ color: "#eb6a63" }}>{english ? "Weapon set I" : "武器組 I"} · {setCount(1)}</span>
-              <span style={{ color: "#75c98b" }}>{english ? "Weapon set II" : "武器組 II"} · {setCount(2)}</span>
+              <span style={{ color: weaponPalette.one }}>{english ? "Weapon set I" : "武器組 I"} · {setCount(1)}</span>
+              <span style={{ color: weaponPalette.two }}>{english ? "Weapon set II" : "武器組 II"} · {setCount(2)}</span>
               <span style={{ color: "#87b6ff" }}>{english ? "Jewel radius" : "珠寶範圍"}</span>
               <span style={{ color: "#656fc4" }}>{english ? "Keystone radius" : "核心天賦範圍"}</span>
             </div>
@@ -141,38 +164,18 @@ export default function MemorialTreeView({ tree, title, showOverview = false }: 
               if (closest) setSelected(closest[0]);
             }}
           >
-            {showOverview && tree && <PassiveTreeCanvas tree={tree} weaponSet={weaponSet} classic={classic}
+            {showOverview && tree && <PassiveTreeCanvas tree={tree} weaponSet={weaponSet} classic={classic} ascendancy={inset}
               hasKeystoneRadius={Boolean(snapshot.ascendancyTree?.nodes.some((entry) => entry.id === "32905" && entry.allocated))}
               x={x} y={y} width={width} height={height}
               offsetX={position.x + centerX * (1 - scale)} offsetY={position.y + centerY * (1 - scale)} scale={scale} />}
             <g ref={layer} transform={`translate(${position.x + (x + width / 2) * (1 - scale)} ${position.y + (y + height / 2) * (1 - scale)}) scale(${scale})`}>
               {embedded?.nodes.length ? (
                 <g aria-label={english ? "Ascendancy tree" : "昇華天賦樹"} role="group">
-                  <defs><clipPath id={ascendancyClip}><circle r={insetRadius} /></clipPath></defs>
-                  <circle r={insetRadius + 1.5} fill="#0c0b0a" stroke="#997948" strokeWidth="2" pointerEvents="none" />
-                  <image href={oracleArt} x={-insetRadius} y={-insetRadius} width={insetRadius * 2} height={insetRadius * 2}
-                    clipPath={`url(#${ascendancyClip})`} pointerEvents="none" />
-                  <g clipPath={`url(#${ascendancyClip})`} fill="none" stroke="#f0cc80" strokeWidth="1.25" pointerEvents="none">
-                    {embedded.edges.map(([from, to]) => {
-                      const start = ascendancyById.get(from);
-                      const end = ascendancyById.get(to);
-                      if (!start?.allocated || !end?.allocated) return null;
-                      const [ax, ay] = insetPoint(start);
-                      const [bx, by] = insetPoint(end);
-                      const ordered = Number(from) < Number(to);
-                      const signedRadius = oracleConnectorRadii[ordered ? from + "/" + to : to + "/" + from] * (ordered ? 1 : -1);
-                      const radius = Math.abs(signedRadius) * insetScale;
-                      const segment = radius && Math.hypot(bx - ax, by - ay) < 2 * radius
-                        ? `A${radius} ${radius} 0 0 ${signedRadius > 0 ? 0 : 1} ${bx} ${by}`
-                        : `L${bx} ${by}`;
-                      return <path key={from + "/" + to} d={`M${ax} ${ay}${segment}`} />;
-                    })}
-                  </g>
                   {embedded.nodes.map((entry) => {
                     const [cx, cy] = insetPoint(entry);
-                    const radius = ["5571", "32905", "34313", "52374"].includes(entry.id) ? 7 : 4;
+                    const radius = markRadius(entry.id);
                     return <circle key={entry.id} cx={cx} cy={cy} r={radius} fill="transparent"
-                      stroke={entry.allocated ? "#ffe1a1" : "transparent"} strokeWidth="1.1"
+                      stroke="transparent"
                       role="button" tabIndex={0} aria-label={english ? entry.nameEn : entry.nameZh}
                       onClick={() => setSelected(entry.id)}
                       onKeyDown={(event) => {

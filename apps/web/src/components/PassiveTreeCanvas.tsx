@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { MemorialTree } from "@poe2-regex/data";
+import oracleArt from "../assets/oracle-ascendancy.jpg";
 import atlas0 from "../assets/passive-atlas-0.webp";
 import atlas1 from "../assets/passive-atlas-1.webp";
 import atlas2 from "../assets/passive-atlas-2.webp";
@@ -11,7 +12,8 @@ const graph: Record<string, Point> = Object.fromEntries(Object.entries(passive.n
 export const passivePositions = graph;
 const nodes = Object.entries(graph);
 const edges: Edge[] = passive.edges.map(([from, to, radius]) => [String(from), String(to), Number(radius)]);
-const atlasUrls = [atlas0, atlas1, atlas2];
+const atlasUrls = [atlas0, atlas1, atlas2, oracleArt];
+export const weaponPalette = { one: "#ff9994", two: "#91d6a0" };
 const keystones = new Set(["11230", "33979", "42680", "45202", "45918", "46742", "49363", "49547", "55048", "57513"]);
 const jewels = new Set(["21984", "7960"]);
 
@@ -19,6 +21,7 @@ type Props = {
   tree: MemorialTree;
   weaponSet: number;
   classic: boolean;
+  ascendancy?: { x: number; y: number; radius: number; links: string[]; marks: { x: number; y: number; radius: number }[] };
   hasKeystoneRadius: boolean;
   x: number;
   y: number;
@@ -71,7 +74,7 @@ export default function PassiveTreeCanvas(props: Props) {
       const pad = Math.abs(radius);
       if (Math.max(a[0], b[0]) + pad < left || Math.min(a[0], b[0]) - pad > right ||
           Math.max(a[1], b[1]) + pad < top || Math.min(a[1], b[1]) - pad > bottom) continue;
-      const color = active ? set === 1 || (props.classic && set === 2) ? "#cd625b" : set === 2 ? "#70ba81" : "#d2b073" : "#51452d";
+      const color = active ? set === 1 ? weaponPalette.one : set === 2 ? weaponPalette.two : "#d2b073" : "#51452d";
       const path = paths.get(color) ?? new Path2D();
       path.moveTo(a[0], a[1]);
       if (radius && Math.hypot(a[0] - b[0], a[1] - b[1]) < Math.abs(radius) * 2) {
@@ -102,7 +105,7 @@ export default function PassiveTreeCanvas(props: Props) {
           x - dimension / 2, y - dimension / 2, dimension, dimension);
       }
       const frameTint = (kind === 1 || kind === 2) && sets
-        ? sets.length === 1 ? (sets[0] === 1 ? "#ff9994" : "#91d6a0") : "#c5a979"
+        ? sets.length === 1 ? (sets[0] === 1 ? weaponPalette.one : weaponPalette.two) : "#c5a979"
         : null;
       if (props.classic) {
         ctx.beginPath();
@@ -141,7 +144,7 @@ export default function PassiveTreeCanvas(props: Props) {
               const local = frame % 128;
               paint.drawImage(atlas, (local % 16) * 128, Math.floor(local / 16) * 128, 128, 128, 0, 0, 128, 128);
               paint.globalCompositeOperation = "source-atop";
-              paint.fillStyle = frameTint + "e0";
+              paint.fillStyle = frameTint + (sets?.length === 1 ? "ff" : "e0");
               paint.fillRect(0, 0, 128, 128);
               tintedFrames.current.set(key, colored);
             }
@@ -188,6 +191,30 @@ export default function PassiveTreeCanvas(props: Props) {
       ctx.lineWidth = 1.35 / Math.max(.01, sx * props.scale / density);
       ctx.stroke();
       ctx.globalAlpha = 1;
+    }
+    const inset = props.ascendancy;
+    const portrait = atlases.current[3];
+    if (inset && portrait?.complete && portrait.naturalWidth) {
+      const { x, y, radius, links, marks } = inset;
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = "#0c0b0a";
+      ctx.fill();
+      ctx.strokeStyle = "#997948";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.clip();
+      ctx.drawImage(portrait, x - radius, y - radius, radius * 2, radius * 2);
+      ctx.strokeStyle = "#f0cc80";
+      ctx.lineWidth = 1.25;
+      for (const path of links) ctx.stroke(new Path2D(path));
+      for (const mark of marks) {
+        ctx.beginPath();
+        ctx.arc(mark.x, mark.y, mark.radius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
     }
   };
   useEffect(() => {
