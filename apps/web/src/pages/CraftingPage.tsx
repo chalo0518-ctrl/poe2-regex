@@ -412,7 +412,7 @@ export default function CraftingPage() {
         {fromSlot && <Link className="text-gold underline" to={`/showcase/recommended/${encodeURIComponent(fromSlot)}${sourceSeason ? "?" + new URLSearchParams({ season: sourceSeason }) : ""}`}>
           {locale === "en" ? "Back to recommendation" : "返回我的推薦詞條"}
         </Link>}
-        {basePool && <p>{locale === "en" ? basePool.labelEn || basePool.labelZh : basePool.labelZh}</p>}
+        {basePool && <p>{locale === "en" ? params.get("baseNameEn") || basePool.labelEn || basePool.labelZh : params.get("baseNameZh") || basePool.labelZh}</p>}
         {locale === "en" ? "Choose an item base and target modifiers to get your next step." : "選擇裝備部位與目標詞綴，查看這件裝備下一步怎麼做。"}
       </LedgerHero>
       <div className="ledger-content">

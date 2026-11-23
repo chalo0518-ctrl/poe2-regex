@@ -44,7 +44,27 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
   const categories = craftingSlots().filter((entry) => slot.id.startsWith("weapon-")
     ? (slot.id.endsWith("-main") ? entry.id !== "shield" && !["body", "helmet", "gloves", "boots", "ring", "amulet", "belt"].includes(entry.id) : entry.id === "shield")
     : entry.id === craftSlot);
-  const baseOptions = categories.flatMap((entry) => entry.pools.map((pool) => ({ entry, pool, id: entry.id + "/" + pool.id })));
+  const namedBases = [
+    { slot: "wand", en: "Dueling Wand", zh: "單挑法杖" },
+    { slot: "sceptre", en: "Shrine Sceptre", zh: "神殿權杖" },
+    { slot: "sceptre", en: "Stoic Sceptre", zh: "魔道權杖" },
+    { slot: "helmet", pool: "int", en: "Ancestral Tiara", zh: "先祖頭冠" },
+    { slot: "boots", pool: "int", en: "Sekhema Sandals", zh: "絲克瑪便鞋" },
+    { slot: "belt", en: "Invoking Belt", zh: "祈喚腰帶" },
+    { slot: "amulet", en: "Portent Amulet", zh: "惡兆護身符" },
+    { slot: "ring", en: "Mnemonic Ring", zh: "憶念之戒" },
+  ];
+  const baseOptions = categories.flatMap((entry) => entry.pools.flatMap((pool) => {
+    const categoryId = entry.id + "/" + pool.id;
+    const concrete = namedBases.filter((base) => base.slot === entry.id &&
+      (base.pool ? base.pool === pool.id : entry.pools.length === 1));
+    return [
+      ...concrete.map((base) => ({ entry, pool, id: categoryId + "/" + base.en, zh: base.zh, en: base.en })),
+      { entry, pool, id: categoryId, zh: entry.labelZh + " · " + pool.labelZh, en: (entry.labelEn ?? entry.id) + " · " + (pool.labelEn ?? pool.labelZh) },
+    ];
+  }));
+  const selectedBase = baseOptions.find((option) => option.id === craftSlot + "/" + gear.basePoolId + "/" + gear.baseEn)
+    ?? baseOptions.find((option) => option.id === craftSlot + "/" + gear.basePoolId);
   const [library, setLibrary] = useState<"prefix" | "suffix" | null>(null);
   const catalog = catalogForDollSlot(slot.id, gear);
   const selected = picks[slot.id];
@@ -58,6 +78,10 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
   );
 
   const craftParams = new URLSearchParams({ slot: craftSlot ?? "", season, fromSlot: slot.id, base: gear.basePoolId ?? "", start: "blank" });
+  if (selectedBase && selectedBase.id.split("/").length === 3) {
+    craftParams.set("baseNameZh", selectedBase.zh);
+    craftParams.set("baseNameEn", selectedBase.en);
+  }
   for (const pick of selected) {
     craftParams.append("affix", JSON.stringify([pick.familyId, pick.rank, tiers[slot.id]?.[pick.familyId] ?? null]));
   }
@@ -65,7 +89,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
     const choice = baseOptions.find((option) => option.id === value);
     if (!choice) return;
     const { entry, pool } = choice;
-    const next = { ...gear, craftSlot: entry.id as CraftSlotId, basePoolId: pool.id, baseZh: pool.labelZh, baseEn: pool.labelEn ?? pool.labelZh };
+    const next = { ...gear, craftSlot: entry.id as CraftSlotId, basePoolId: pool.id, baseZh: choice.zh, baseEn: choice.en };
     const available = catalogForDollSlot(slot.id, next);
     const lost = selected.filter((pick) => !available.some((family) => family.id === pick.familyId &&
       (tiers[slot.id]?.[pick.familyId] == null || craftTierChoices(family).some((tier) => tier.rank === tiers[slot.id]?.[pick.familyId]))));
@@ -88,9 +112,9 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
       {baseOptions.length > 0 && (
         <label className="mb-4 block text-gold">
           {locale === "en" ? "Base type" : "底材"}
-          <select className="ml-3 bg-panel p-2" value={gear.basePoolId ? craftSlot + "/" + gear.basePoolId : ""} onChange={(event) => chooseBase(event.target.value)}>
+          <select className="ml-3 bg-panel p-2" value={selectedBase?.id ?? ""} onChange={(event) => chooseBase(event.target.value)}>
             <option value="" disabled>{locale === "en" ? "Choose a base" : "選擇底材"}</option>
-            {baseOptions.map(({ entry, pool, id }) => <option key={id} value={id}>{locale === "en" ? entry.labelEn + " · " + (pool.labelEn ?? pool.labelZh) : entry.labelZh + " · " + pool.labelZh}</option>)}
+            {baseOptions.map(({ zh, en, id }) => <option key={id} value={id}>{locale === "en" ? en : zh}</option>)}
           </select>
         </label>
       )}

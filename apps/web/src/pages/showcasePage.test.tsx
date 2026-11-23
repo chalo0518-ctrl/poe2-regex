@@ -375,6 +375,7 @@ describe("season BD showcase", () => {
   it("does not invent affixes for a weapon slot that has no class yet", () => {
     renderAt("/showcase/recommended/weapon-1-main");
     expect(screen.getByText("這個部位還沒有對上的做裝詞庫")).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "單挑法杖" })).toBeInTheDocument();
     const prefix = screen.getByRole("region", { name: "前綴" });
     expect(within(prefix).queryAllByRole("checkbox")).toHaveLength(0);
     expect(within(prefix).getAllByText("empty prefix")).toHaveLength(3);
