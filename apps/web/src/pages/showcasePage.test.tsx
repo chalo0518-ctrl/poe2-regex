@@ -381,6 +381,15 @@ describe("season BD showcase", () => {
     expect(within(prefix).queryAllByRole("checkbox")).toHaveLength(0);
     expect(within(prefix).getAllByText("empty prefix")).toHaveLength(3);
     expect(screen.getByRole("region", { name: "後綴" }).textContent).toContain("empty suffix");
+    const base = screen.getByRole("combobox", { name: "底材" });
+    await user.selectOptions(base, within(base).getByRole("option", { name: "單挑法杖" }));
+    await user.click(within(prefix).getByRole("button", { name: "打開詞條庫" }));
+    const mana = within(prefix).getByRole("checkbox", { name: "必要 最大魔力" });
+    await user.click(mana);
+    await user.selectOptions(within(prefix).getByRole("combobox", { name: "最低 T 階 最大魔力" }), "1");
+    const selected = within(prefix).getByRole("button", { name: /^T1\b/ });
+    expect(selected).toHaveTextContent(/\d.*最大魔力|最大魔力.*\d/);
+    expect(selected).toHaveTextContent(/最低物品等級 \d/);
   });
 
   it("uses English chrome without simplified Chinese", async () => {
