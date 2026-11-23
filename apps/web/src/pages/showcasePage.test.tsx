@@ -137,7 +137,7 @@ describe("season BD showcase", () => {
     expect(screen.queryByText("完美鍛鐵符文")).not.toBeInTheDocument();
     expect(screen.getByText("已汙染")).toBeInTheDocument();
     expect(screen.getAllByText("增加18%找到的物品稀有度").length).toBeGreaterThan(0);
-    expect(screen.queryByText("前綴")).not.toBeInTheDocument();
+    expect(screen.getByText("前綴")).toBeInTheDocument();
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
     expect(screen.getAllByRole("tab", { hidden: true })).toHaveLength(2);
 
