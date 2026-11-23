@@ -68,6 +68,14 @@ function isCraftTarget(pick: ModPickState | undefined): boolean {
   return pick?.polarity === "include" || pick?.polarity === "or";
 }
 
+function meetsTargetTier(family: AffixFamily, target: ModPickState | undefined, recorded: OwnedFlag | undefined): boolean {
+  const choices = craftTierChoices(family);
+  const minimum = choices.find((choice) => choice.index === target?.minTierIndex);
+  if (!minimum) return true;
+  const actual = choices.find((choice) => choice.index === recorded?.tierIndex);
+  return actual !== undefined && actual.rank <= minimum.rank;
+}
+
 function chosenTier(family: AffixFamily, pick: ModPickState | undefined) {
   const index = pick?.minTierIndex;
   if (index == null || index < 0 || index >= family.tiers.length) return null;
@@ -336,7 +344,7 @@ export default function CraftingPage() {
         .map((family) => ({
           id: family.id,
           generation: family.generation,
-          highTier: owned[family.id]?.highTier !== false,
+          highTier: fromSlot ? meetsTargetTier(family, picks[family.id], owned[family.id]) : owned[family.id]?.highTier !== false,
         })),
       prefixCount,
       suffixCount,
@@ -496,7 +504,7 @@ export default function CraftingPage() {
                     const description = locale === "en" ? row?.textEn || family.labelEn : row?.textZh || family.labelZh;
                     const recorded = owned[family.id];
                     const recordedTier = craftTierChoices(family).find((choice) => choice.index === recorded?.tierIndex);
-                    const status = !recorded?.owned ? (locale === "en" ? "Pending" : "尚未取得") : !tier || (recordedTier && recordedTier.rank <= tier.rank) ? (locale === "en" ? "Met" : "已達標") : !recordedTier ? (locale === "en" ? "Tier unrecorded" : "階級未記錄") : (locale === "en" ? "Below target tier" : "未達目標階級");
+                    const status = !recorded?.owned ? (locale === "en" ? "Pending" : "尚未取得") : meetsTargetTier(family, picks[family.id], recorded) ? (locale === "en" ? "Met" : "已達標") : !recordedTier ? (locale === "en" ? "Tier unrecorded" : "階級未記錄") : (locale === "en" ? "Below target tier" : "未達目標階級");
                     return <li key={family.id}>{tier && <strong className="mr-2 text-gold">T{tier.rank}</strong>}{description}<small className="ml-3 text-muted">{status}</small></li>;
                   })}
                 </ul>
