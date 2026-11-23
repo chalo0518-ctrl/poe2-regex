@@ -129,11 +129,8 @@ export default function PassiveTreeCanvas(props: Props) {
       const radius = jewel ? 180 : 138;
       ctx.beginPath();
       ctx.arc(point[0], point[1], radius, 0, 2 * Math.PI);
-      ctx.strokeStyle = "#508cec35";
-      ctx.lineWidth = 18;
-      ctx.stroke();
-      ctx.strokeStyle = jewel ? "#90bbff" : "#6889d9";
-      ctx.lineWidth = jewel ? 4 : 3;
+      ctx.strokeStyle = jewel ? "#91add580" : "#788bc565";
+      ctx.lineWidth = 1 / Math.max(.01, sx * props.scale / density);
       ctx.stroke();
     }
 
