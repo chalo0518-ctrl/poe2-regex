@@ -95,6 +95,11 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
   for (const pick of selected) {
     craftParams.append("affix", JSON.stringify([pick.familyId, pick.rank, tiers[slot.id]?.[pick.familyId] ?? null]));
   }
+  function closeLibrary() {
+    setQuery("");
+    setLibrary(null);
+  }
+
   function chooseBase(value: string) {
     const choice = baseOptions.find((option) => option.id === value);
     if (!choice) return;
@@ -211,6 +216,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
           catalog={catalog}
           expanded={query.trim() ? "both" : library}
           onOpen={setLibrary}
+          onClose={closeLibrary}
           tiers={tiers[slot.id] ?? {}}
           onTier={(id, rank) => setTier(slot.id, id, rank)}
           selected={selected}
@@ -225,6 +231,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
           catalog={catalog}
           expanded={query.trim() ? "both" : library}
           onOpen={setLibrary}
+          onClose={closeLibrary}
           tiers={tiers[slot.id] ?? {}}
           onTier={(id, rank) => setTier(slot.id, id, rank)}
           selected={selected}
@@ -247,10 +254,12 @@ function AffixColumn({
   onToggle,
   expanded,
   onOpen,
+  onClose,
   tiers,
   onTier,
 }: {
   expanded: "prefix" | "suffix" | "both" | null;
+  onClose: () => void;
   onOpen: (side: "prefix" | "suffix") => void;
   tiers: Record<string, number | null>;
   onTier: (id: string, rank: number | null) => void;
@@ -308,15 +317,15 @@ function AffixColumn({
           );
         })}
       </div>
-      <button type="button" className="mt-3 text-xs text-gold underline" onClick={() => onOpen(generation)}>
-        {locale === "en" ? "Open modifier library" : "打開詞條庫"}
+      <button type="button" className="mt-3 text-xs text-gold underline" aria-expanded={isOpen} aria-controls={`library-${generation}`} onClick={isOpen ? onClose : () => onOpen(generation)}>
+        {isOpen ? (locale === "en" ? "Return to selected modifiers" : "返回已選詞條") : (locale === "en" ? "Open modifier library" : "打開詞條庫")}
       </button>
       {isOpen && <p className="mt-3 text-sm text-muted" role="status">
         {rows.length === 0
           ? (locale === "en" ? "No matching modifiers. Try another library or clear the search." : "找不到符合條件的詞條。請切換詞條庫或清除搜尋。")
           : (locale === "en" ? `${rows.length} matching modifiers` : `找到 ${rows.length} 條詞條`)}
       </p>}
-      <ul hidden={!isOpen} className="mt-3 max-h-[28rem] overflow-auto border-t border-line">
+      <ul id={`library-${generation}`} hidden={!isOpen} className="mt-3 max-h-[28rem] overflow-auto border-t border-line">
         {rows.map((family) => {
           const typeName = matchText(family, matchLangForLocale(locale));
           const pick = selected.find((row) => row.familyId === family.id);
