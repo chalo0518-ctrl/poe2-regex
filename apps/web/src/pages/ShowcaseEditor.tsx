@@ -209,7 +209,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
           lines={lines.prefixes}
           rows={visible.filter((family) => family.generation === "prefix")}
           catalog={catalog}
-          expanded={library}
+          expanded={query.trim() ? "both" : library}
           onOpen={setLibrary}
           tiers={tiers[slot.id] ?? {}}
           onTier={(id, rank) => setTier(slot.id, id, rank)}
@@ -223,7 +223,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
           lines={lines.suffixes}
           rows={visible.filter((family) => family.generation === "suffix")}
           catalog={catalog}
-          expanded={library}
+          expanded={query.trim() ? "both" : library}
           onOpen={setLibrary}
           tiers={tiers[slot.id] ?? {}}
           onTier={(id, rank) => setTier(slot.id, id, rank)}
@@ -250,7 +250,7 @@ function AffixColumn({
   tiers,
   onTier,
 }: {
-  expanded: "prefix" | "suffix" | null;
+  expanded: "prefix" | "suffix" | "both" | null;
   onOpen: (side: "prefix" | "suffix") => void;
   tiers: Record<string, number | null>;
   onTier: (id: string, rank: number | null) => void;
@@ -264,6 +264,7 @@ function AffixColumn({
   onToggle: (family: AffixFamily, rank: ShowcaseRank) => void;
 }) {
   const { t } = useLocale();
+  const isOpen = expanded === generation || expanded === "both";
   const emptyLabel = generation === "prefix" ? t.showcaseEmptyPrefix : t.showcaseEmptySuffix;
   const sideCount = selected.filter((pick) => catalog.find((family) => family.id === pick.familyId)?.generation === generation).length;
 
@@ -284,7 +285,7 @@ function AffixColumn({
           return (
           <button type="button" key={index}
             className="grid w-full min-w-0 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-3 border border-line bg-ink px-3 py-2 text-sm hover:border-gold"
-            aria-expanded={expanded === generation}
+            aria-expanded={isOpen}
             onClick={() => onOpen(generation)}>
             {line.kind === "empty" ? <span className="col-start-2 text-center text-muted">{emptyLabel}</span> : (
               <>
@@ -310,12 +311,12 @@ function AffixColumn({
       <button type="button" className="mt-3 text-xs text-gold underline" onClick={() => onOpen(generation)}>
         {locale === "en" ? "Open modifier library" : "打開詞條庫"}
       </button>
-      {expanded === generation && <p className="mt-3 text-sm text-muted" role="status">
+      {isOpen && <p className="mt-3 text-sm text-muted" role="status">
         {rows.length === 0
           ? (locale === "en" ? "No matching modifiers. Try another library or clear the search." : "找不到符合條件的詞條。請切換詞條庫或清除搜尋。")
           : (locale === "en" ? `${rows.length} matching modifiers` : `找到 ${rows.length} 條詞條`)}
       </p>}
-      <ul hidden={expanded !== generation} className="mt-3 max-h-[28rem] overflow-auto border-t border-line">
+      <ul hidden={!isOpen} className="mt-3 max-h-[28rem] overflow-auto border-t border-line">
         {rows.map((family) => {
           const typeName = matchText(family, matchLangForLocale(locale));
           const pick = selected.find((row) => row.familyId === family.id);
