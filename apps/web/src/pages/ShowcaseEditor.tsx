@@ -188,6 +188,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             className="mt-1 w-full rounded-sm border border-line bg-ink px-2 py-1.5 text-paper"
+            type="search"
             autoComplete="off"
           />
         </label>
@@ -283,6 +284,7 @@ function AffixColumn({
           return (
           <button type="button" key={index}
             className="grid w-full min-w-0 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-3 border border-line bg-ink px-3 py-2 text-sm hover:border-gold"
+            aria-expanded={expanded === generation}
             onClick={() => onOpen(generation)}>
             {line.kind === "empty" ? <span className="col-start-2 text-center text-muted">{emptyLabel}</span> : (
               <>
@@ -308,6 +310,11 @@ function AffixColumn({
       <button type="button" className="mt-3 text-xs text-gold underline" onClick={() => onOpen(generation)}>
         {locale === "en" ? "Open modifier library" : "打開詞條庫"}
       </button>
+      {expanded === generation && <p className="mt-3 text-sm text-muted" role="status">
+        {rows.length === 0
+          ? (locale === "en" ? "No matching modifiers. Try another library or clear the search." : "找不到符合條件的詞條。請切換詞條庫或清除搜尋。")
+          : (locale === "en" ? `${rows.length} matching modifiers` : `找到 ${rows.length} 條詞條`)}
+      </p>}
       <ul hidden={expanded !== generation} className="mt-3 max-h-[28rem] overflow-auto border-t border-line">
         {rows.map((family) => {
           const typeName = matchText(family, matchLangForLocale(locale));
