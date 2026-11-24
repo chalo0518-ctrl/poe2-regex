@@ -673,6 +673,10 @@ export default function CraftingPage() {
           </div>
 
           <aside className="ledger-workbench-guide" id="craft-guide">
+            <p className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-sm tabular-nums text-muted">
+              <span>{locale === "en" ? "Open prefix slots" : "剩餘前綴空位"} <strong className="text-gold">{Math.max(0, caps.prefix - prefixCount)} / {caps.prefix}</strong></span>
+              <span>{locale === "en" ? "Open suffix slots" : "剩餘後綴空位"} <strong className="text-gold">{Math.max(0, caps.suffix - suffixCount)} / {caps.suffix}</strong></span>
+            </p>
             <CraftNextStep decision={decision} step={nextStep} ready={selected.length > 0}
               fractureNote={fractureNote} oddsNote={oddsNote} sideLabel={sideLabel} tightBudget={tightBudget} />
             <details className="ledger-details mt-4" aria-labelledby="craft-tree-heading">
