@@ -5,7 +5,6 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { campaignChapters, shopModById } from "@poe2-regex/data";
 import { matchesItem } from "@poe2-regex/regex";
-import BuildsPage from "./BuildsPage.tsx";
 import ChaptersPage from "./ChaptersPage.tsx";
 import EarlyGearPage, { EarlyGearShieldsRedirect } from "./EarlyGearPage.tsx";
 import VendorPage from "./VendorPage.tsx";
@@ -107,13 +106,7 @@ describe("early vendor page", () => {
   });
 });
 
-describe("early builds page stays a placeholder", () => {
-  it("does not pretend to ship build presets", () => {
-    renderEarly(<BuildsPage />, "/early/builds");
-    expect(screen.getByText("流派推薦裝備")).toBeInTheDocument();
-    expect(screen.getByText("內容稍後填入")).toBeInTheDocument();
-  });
-});
+
 
 describe("early gear category picker", () => {
   function renderGear(path = "/early/gear") {

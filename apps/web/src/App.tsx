@@ -1,7 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout.tsx";
 import CraftingPage from "./pages/CraftingPage.tsx";
-import BuildsPage from "./pages/BuildsPage.tsx";
 import ChaptersPage from "./pages/ChaptersPage.tsx";
 import EarlyGearPage, { EarlyGearShieldsRedirect } from "./pages/EarlyGearPage.tsx";
 import EarlyLayout from "./pages/EarlyLayout.tsx";
@@ -24,7 +23,7 @@ export default function App() {
             <Route index element={<Navigate to="chapters" replace />} />
             <Route path="chapters" element={<ChaptersPage />} />
             <Route path="vendor" element={<VendorPage />} />
-            <Route path="builds" element={<BuildsPage />} />
+            <Route path="builds" element={<Navigate to="/early/chapters" replace />} />
             <Route path="gear" element={<EarlyGearPage />} />
             <Route path="shields" element={<EarlyGearShieldsRedirect />} />
           </Route>

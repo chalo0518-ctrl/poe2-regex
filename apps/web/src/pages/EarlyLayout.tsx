@@ -7,7 +7,6 @@ export default function EarlyLayout() {
   const items = [
     { to: "/early/chapters", label: t.earlyChapters },
     { to: "/early/vendor", label: t.earlyVendor },
-    { to: "/early/builds", label: t.earlyBuilds },
     { to: "/early/gear", label: t.earlyGear },
   ];
   return (
