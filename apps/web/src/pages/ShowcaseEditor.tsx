@@ -197,9 +197,9 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
         {locale === "en" ? "Modifier library" : "選擇詞條庫"}
         <select className="ml-3 bg-panel p-2" value={source} onChange={(event) => setSource(event.target.value as typeof source)}>
           <option value="all">{locale === "en" ? "All available libraries" : "全部可用詞條庫"} ({catalog.length})</option>
-          <option value="ordinary">{locale === "en" ? "Ordinary" : "普通"}</option>
-          <option value="desecrated">{locale === "en" ? "Desecrated" : "褻瀆"}</option>
-          <option value="socket">{locale === "en" ? "Augment pools" : "鑲嵌解鎖"}</option>
+          <option value="ordinary" disabled={ordinary.length === 0 && source !== "ordinary"}>{locale === "en" ? "Ordinary" : "普通"} ({ordinary.length})</option>
+          <option value="desecrated" disabled={desecrated.length === 0 && source !== "desecrated"}>{locale === "en" ? "Desecrated" : "褻瀆"} ({desecrated.length})</option>
+          <option value="socket" disabled={augmentFamilies.length === 0 && source !== "socket"}>{locale === "en" ? "Augment pools" : "鑲嵌解鎖"} ({augmentFamilies.length})</option>
         </select>
       </label>}
       <div className="grid gap-4">
