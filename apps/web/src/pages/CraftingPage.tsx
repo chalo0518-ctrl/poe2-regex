@@ -507,7 +507,7 @@ export default function CraftingPage() {
                     const recorded = owned[family.id];
                     const recordedTier = craftTierChoices(family).find((choice) => choice.index === recorded?.tierIndex);
                     const status = !recorded?.owned ? (locale === "en" ? "Pending" : "尚未取得") : meetsTargetTier(family, picks[family.id], recorded) ? (locale === "en" ? "Met" : "已達標") : !recordedTier ? (locale === "en" ? "Tier unrecorded" : "階級未記錄") : (locale === "en" ? "Below target tier" : "未達目標階級");
-                    return <li key={family.id}>{tier && <strong className="mr-2 text-gold">T{tier.rank}</strong>}{description}<small className="ml-3 text-muted">{status}</small></li>;
+                    return <li key={family.id}>{family.id.startsWith("essence:sorcery:") ? <strong className="mr-2 text-gold">{locale === "en" ? "Fixed" : "固定"}</strong> : tier && <strong className="mr-2 text-gold">T{tier.rank}</strong>}{description}<small className="ml-3 text-muted">{status}</small>{family.id.startsWith("essence:sorcery:") && <small className="block text-muted">{locale === "en" ? "Use Perfect Essence of Sorcery on a rare item. It removes a random modifier; an existing required modifier may be lost." : "在稀有裝備使用完美巫術精髓。它會隨機移除一條詞綴，已有的必要詞綴可能被替換。"}</small>}</li>;
                   })}
                 </ul>
               </div>;

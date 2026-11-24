@@ -145,6 +145,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
           </select>
         </label>
       )}
+      {gear.basePoolId && typeDraft !== craftSlot ? <p role="status">{locale === "en" ? "Choose a base to edit its modifiers." : "請選擇新底材，再編輯詞條。"}</p> : <>
       {typeDraft === craftSlot && selectedBase?.runeforge && (
         <fieldset className="mb-4 text-gold">
           <legend>{locale === "en" ? "Verisium Runeforging" : "維里西姆符鍛"}</legend>
@@ -204,7 +205,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
         {locale === "en" ? "Modifier library" : "選擇詞條庫"}
         <select className="ml-3 bg-panel p-2" value={source} onChange={(event) => setSource(event.target.value as typeof source)}>
           <option value="all">{locale === "en" ? "All available libraries" : "全部可用詞條庫"} ({catalog.length})</option>
-          <option value="essence" disabled={!essence.length}>{locale === "en" ? "Essence crafting" : "精髓工藝"} ({essence.length})</option>
+          <option value="essence" disabled={!essence.length}>{locale === "en" ? "Essence crafting" : "精髓工藝"} （{essence.length ? `${locale === "en" ? "Recorded" : "已收錄"} ${essence.length}` : locale === "en" ? "Not catalogued" : "待補資料"}）</option>
           <option value="ordinary" disabled={ordinary.length === 0 && source !== "ordinary"}>{locale === "en" ? "Ordinary" : "普通"} ({ordinary.length})</option>
           <option value="desecrated" disabled={desecrated.length === 0 && source !== "desecrated"}>{locale === "en" ? "Desecrated" : "褻瀆"} ({desecrated.length})</option>
           <option value="socket" disabled={augmentFamilies.length === 0 && source !== "socket"}>{locale === "en" ? "Augment pools" : "鑲嵌解鎖"} ({augmentFamilies.length})</option>
@@ -242,6 +243,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
           onToggle={(family, rank) => toggleRank(slot.id, family, rank)}
         />
       </div>
+      </>}
     </div>
   );
 }
@@ -302,7 +304,7 @@ function AffixColumn({
             {line.kind === "empty" ? <span className="col-start-2 text-center text-muted">{emptyLabel}</span> : (
               <>
                 <span className="text-left tabular-nums text-gold">
-                  {tiers[line.familyId] != null ? `T${tiers[line.familyId]}` : "T—"}
+                  {line.familyId.startsWith("essence:sorcery:") ? (locale === "en" ? "Fixed" : "固定") : tiers[line.familyId] != null ? `T${tiers[line.familyId]}` : "T—"}
                 </span>
                 <span className="min-w-0 break-words text-center">
                   <span className="block text-[#b5acff]">{tierText || (locale === "en" ? line.labelEn : line.labelZh)}</span>
@@ -344,13 +346,14 @@ function AffixColumn({
             <li key={family.id} data-affix-id={family.id} className="flex items-center justify-between gap-3 border-b border-line/70 py-2">
               <span className={groupTaken ? "text-sm text-muted" : "text-sm text-paper"}>
                 {typeName}
-                <div className="block text-xs text-muted">{choices.length > 0 && <details><summary>{locale === "en" ? "Tier ranges" : "各階級數值範圍"}</summary>{choices.map((choice) => {
+                <div className="block text-xs text-muted">{!family.id.startsWith("essence:sorcery:") && choices.length > 0 && <details><summary>{locale === "en" ? "Tier ranges" : "各階級數值範圍"}</summary>{choices.map((choice) => {
                   const tier = family.tiers[choice.index];
                   return <span key={choice.index} className="block">T{choice.rank} · {locale === "en" ? tier.textEn || tier.textZh : tier.textZh || tier.textEn} {choice.statMin != null && choice.statMax != null ? ` (${choice.statMin}–${choice.statMax})` : ""} · iLvL {choice.level}</span>;
                 })}</details>}</div>
+                {!groupTaken && !pick && sideCount >= SHOWCASE_SIDE_CAP && <small className="block">{locale === "en" ? "All slots on this side are filled" : `${title}空位已滿`}</small>}
                 {conflictFamily && <small className="block">{t.craftingConflict} · {matchText(conflictFamily, matchLangForLocale(locale))}</small>}
               </span>
-              {pick && <select aria-label={(locale === "en" ? "Minimum tier" : "最低 T 階") + " " + typeName} value={tiers[family.id] ?? ""} onChange={(event) => onTier(family.id, event.target.value ? Number(event.target.value) : null)} className="bg-panel text-paper">
+              {pick && !family.id.startsWith("essence:sorcery:") && <select aria-label={(locale === "en" ? "Minimum tier" : "最低 T 階") + " " + typeName} value={tiers[family.id] ?? ""} onChange={(event) => onTier(family.id, event.target.value ? Number(event.target.value) : null)} className="bg-panel text-paper">
                 <option value="">{locale === "en" ? "Any tier" : "不限 T 階"}</option>
                 {choices.map((choice) => <option key={choice.index} value={choice.rank}>{`T${choice.rank} · iLvL ${choice.level}`}</option>)}
               </select>}
