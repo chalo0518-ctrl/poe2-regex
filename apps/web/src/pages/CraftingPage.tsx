@@ -23,6 +23,7 @@ import {
   craftingSourcePath,
   CRAFT_DIAGRAM,
   decideCraft,
+  essenceFamiliesFor,
   desecratedFamiliesFor,
   effectText,
   harvestTags,
@@ -169,6 +170,7 @@ export default function CraftingPage() {
     const familiesById = new Map<string, AffixFamily>();
     for (const family of [
       ...showcaseCatalog(slotId, basePool.id),
+      ...essenceFamiliesFor(slotId),
       ...desecratedFamiliesFor(slotId),
       ...familiesForSocketAugments(importedAugments),
     ]) {
@@ -229,8 +231,8 @@ export default function CraftingPage() {
     return groups;
   }, [socketPicks, locale, t]);
   const checklistFamilies = useMemo(
-    () => [...families, ...desecratedFamilies, ...augmentGroups.flatMap((group) => group.families)],
-    [families, desecratedFamilies, augmentGroups],
+    () => [...families, ...essenceFamiliesFor(slotId), ...desecratedFamilies, ...augmentGroups.flatMap((group) => group.families)],
+    [slotId, families, desecratedFamilies, augmentGroups],
   );
   const caps = useMemo(() => socketSideCaps(socketPicks), [socketPicks]);
   const tierCount = families.reduce((sum, family) => sum + family.tiers.length, 0);

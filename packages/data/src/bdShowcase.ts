@@ -1,3 +1,4 @@
+import { essenceFamiliesFor } from "./essence.ts";
 import pobSnapshot from "./ruoaPoB2.json";
 import type { AffixFamily, CraftSlotId, ShieldBaseId, ShieldFamily } from "./types.ts";
 import shieldsJson from "../generated/shields.json";
@@ -271,7 +272,7 @@ export function catalogForDollSlot(slotId: PaperDollSlotId, gear: RecommendedGea
   const slot = resolveCraftSlot(slotId, gear);
   if (!slot) return [];
   if (!gear.basePoolId) return showcaseCatalog(slot, gear.basePoolId);
-  const families = [...showcaseCatalog(slot, gear.basePoolId), ...desecratedFamiliesFor(slot), ...familiesForSocketAugments(gear.augments ?? [])];
+  const families = [...showcaseCatalog(slot, gear.basePoolId), ...desecratedFamiliesFor(slot), ...essenceFamiliesFor(slot), ...familiesForSocketAugments(gear.augments ?? [])];
   return [...new Map(families.map((family) => [family.id, family])).values()];
 }
 

@@ -7,6 +7,7 @@ import {
   catalogForDollSlot,
   craftingSlots,
   showcaseCatalog,
+  essenceFamiliesFor,
   desecratedFamiliesFor,
   familiesForSocketAugments,
   poolAugmentsForSlot,
@@ -48,7 +49,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
   const gear = recommendedGear(snapshot, slot.id);
   const craftSlot = resolveCraftSlot(slot.id, gear);
   const [typeDraft, setTypeDraft] = useState<CraftSlotId | "">(craftSlot ?? "");
-  const [source, setSource] = useState<"all" | "ordinary" | "desecrated" | "socket">("all");
+  const [source, setSource] = useState<"all" | "essence" | "ordinary" | "desecrated" | "socket">("all");
   const categories = craftingSlots().filter((entry) => slot.id.startsWith("weapon-")
     ? (slot.id.endsWith("-main") ? entry.id !== "shield" && !["body", "helmet", "gloves", "boots", "ring", "amulet", "belt"].includes(entry.id) : entry.id === "shield")
     : entry.id === craftSlot);
@@ -73,7 +74,8 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
   const ordinary = craftSlot ? showcaseCatalog(craftSlot, gear.basePoolId) : [];
   const desecrated = craftSlot && gear.basePoolId ? desecratedFamiliesFor(craftSlot) : [];
   const augmentFamilies = familiesForSocketAugments(gear.augments ?? []);
-  const sourceRows = source === "all" ? catalog : source === "desecrated" ? desecrated : source === "socket" ? augmentFamilies : ordinary;
+  const essence = craftSlot && gear.basePoolId ? essenceFamiliesFor(craftSlot) : [];
+  const sourceRows = source === "all" ? catalog : source === "essence" ? essence : source === "desecrated" ? desecrated : source === "socket" ? augmentFamilies : ordinary;
   const augments = craftSlot && gear.basePoolId ? poolAugmentsForSlot(craftSlot) : [];
   const selected = picks[slot.id];
   const lines = showcaseLines(selected, catalog);
@@ -202,6 +204,7 @@ function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: str
         {locale === "en" ? "Modifier library" : "選擇詞條庫"}
         <select className="ml-3 bg-panel p-2" value={source} onChange={(event) => setSource(event.target.value as typeof source)}>
           <option value="all">{locale === "en" ? "All available libraries" : "全部可用詞條庫"} ({catalog.length})</option>
+          <option value="essence" disabled={!essence.length}>{locale === "en" ? "Essence crafting" : "精髓工藝"} ({essence.length})</option>
           <option value="ordinary" disabled={ordinary.length === 0 && source !== "ordinary"}>{locale === "en" ? "Ordinary" : "普通"} ({ordinary.length})</option>
           <option value="desecrated" disabled={desecrated.length === 0 && source !== "desecrated"}>{locale === "en" ? "Desecrated" : "褻瀆"} ({desecrated.length})</option>
           <option value="socket" disabled={augmentFamilies.length === 0 && source !== "socket"}>{locale === "en" ? "Augment pools" : "鑲嵌解鎖"} ({augmentFamilies.length})</option>

@@ -296,3 +296,5 @@ export function tabletFamilies(kind: TabletKindId): TabletFamily[] {
 export function tabletPoolForKind(kind: TabletKindId): AffixFamily[] {
   return tabletFamilies(kind);
 }
+
+export { essenceFamiliesFor } from "./essence.ts";
