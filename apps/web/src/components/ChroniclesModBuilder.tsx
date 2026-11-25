@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   affixModGroup,
   affixTagLabels,
@@ -209,6 +209,7 @@ export function ChroniclesModBuilder({
   clearAllLabel,
   selectionHint,
   polarityStyle = "default",
+  trailing,
 }: {
   kicker: string;
   title: string;
@@ -283,6 +284,8 @@ export function ChroniclesModBuilder({
   selectionHint?: string;
   /** Tablets are Y/N only. Other pages keep 是／或／否, including 或. */
   polarityStyle?: "default" | "yon";
+  /** Rendered after the shop regex, still inside the dock clearance. */
+  trailing?: ReactNode;
 }) {
   const { locale, t } = useLocale();
   const [tagStates, setTagStates] = useState<Record<string, TagState>>({});
@@ -883,6 +886,8 @@ export function ChroniclesModBuilder({
           caption={regexCaption}
         />
       )}
+
+      {trailing}
 
       {showImport && importOpen && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/60 p-4">

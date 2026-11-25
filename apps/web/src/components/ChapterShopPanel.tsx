@@ -54,12 +54,15 @@ export function ChapterShopPanel({
   kicker,
   title,
   extra,
+  after,
 }: {
   chapterId: ChapterId;
   onChapterChange: (id: ChapterId) => void;
   kicker: string;
   title: string;
   extra?: ReactNode;
+  /** Sits under the shop regex. Chapters use this for the route notes. */
+  after?: ReactNode;
 }) {
   const { locale, t } = useLocale();
   const chapter = getChapter(chapterId);
@@ -88,6 +91,7 @@ export function ChapterShopPanel({
         showHideToggle={false}
         prefixTitle={t.shopPrefix}
         suffixTitle={t.shopSuffix}
+        trailing={after}
       />
     </div>
   );
