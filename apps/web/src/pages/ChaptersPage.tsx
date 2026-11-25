@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { campaignChapters, chapterLabel, type ChapterId } from "@poe2-regex/data";
 import {
   ChapterShopPanel,
   VendorChapterLink,
 } from "../components/ChapterShopPanel.tsx";
 import { useLocale } from "../i18n.tsx";
-import { CampaignFlow } from "./CampaignFlow.tsx";
 
 export default function ChaptersPage() {
   const { locale, t } = useLocale();
@@ -19,7 +19,18 @@ export default function ChaptersPage() {
       kicker="EARLY · CHAPTERS"
       title={t.chapterShopTitle(chapter ? chapterLabel(chapter, locale) : t.earlyChapters)}
       extra={<VendorChapterLink chapterId={chapterId} />}
-      after={<CampaignFlow chapterId={chapterId} />}
+      after={
+        <p className="mt-6 text-sm text-muted">
+          {t.earlyTipsCueLead}
+          <Link
+            to="/early/tips"
+            className="text-gold underline decoration-gold/40 underline-offset-2 hover:text-paper"
+          >
+            {t.earlyTips}
+          </Link>
+          {t.earlyTipsCueEnd}
+        </p>
+      }
     />
   );
 }

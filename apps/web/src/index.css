@@ -1764,3 +1764,21 @@ header {
   background: #34291b;
 }
 .ledger-masthead .ledger-nav { flex-wrap: wrap; gap: .65rem 1.25rem; }
+
+.tips-sheet th,
+.tips-sheet td {
+  border: 1px solid var(--color-line);
+  padding: 0.45rem 0.7rem;
+  vertical-align: top;
+}
+.tips-sheet th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #221c16;
+  color: var(--color-gold);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tips-sheet tbody tr:nth-child(odd) { background: #12100e; }
+.tips-sheet tbody tr:nth-child(even) { background: #1b1713; }

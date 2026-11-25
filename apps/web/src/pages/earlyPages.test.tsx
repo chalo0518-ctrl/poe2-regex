@@ -1,12 +1,14 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { ReactElement } from "react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Navigate, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { campaignChapters, shopModById } from "@poe2-regex/data";
 import { matchesItem } from "@poe2-regex/regex";
 import ChaptersPage from "./ChaptersPage.tsx";
 import EarlyGearPage, { EarlyGearShieldsRedirect } from "./EarlyGearPage.tsx";
+import EarlyLayout from "./EarlyLayout.tsx";
+import EarlyTipsPage from "./EarlyTipsPage.tsx";
 import VendorPage from "./VendorPage.tsx";
 import { LocaleProvider } from "../i18n.tsx";
 
@@ -68,84 +70,119 @@ describe("early chapters page", () => {
     expect(pressedYesCount()).toBe(campaignChapters[1].defaultPicks.length);
   });
 
-  it("shows 開荒流程 under the shop regex and switches it with the chapter tab", async () => {
-    const user = userEvent.setup();
+  it("keeps the shop regex and points the route notes at the tips tab", () => {
     renderEarly(<ChaptersPage />);
 
-    const flow = screen.getByRole("region", { name: "開荒流程" });
+    expect(screen.queryByRole("heading", { name: "開荒流程" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "開荒流程" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/葛瑞爾林/)).not.toBeInTheDocument();
+    expect(screen.queryByText("維里西姆鐵砧")).not.toBeInTheDocument();
+    const tips = screen.getByRole("link", { name: "開荒技巧" });
+    expect(tips).toHaveAttribute("href", "/early/tips");
     const rail = document.querySelector("[data-regex-rail]");
     expect(rail).toBeTruthy();
-    expect(rail!.compareDocumentPosition(flow) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
-    expect(screen.queryByRole("heading", { name: "隨機地圖辨位" })).not.toBeInTheDocument();
-    expect(flow.textContent).toContain("葛瑞爾林（The Grelwood）");
-    expect(flow.textContent).toContain("赤谷（Red Vale）");
-    expect(flow.textContent).toContain("攝魂之樹");
-    expect(flow.textContent).toContain("纏縛陰林（Grim Tangle）");
-    expect(flow.textContent).toContain("獵場（Hunting Grounds）");
-    expect(flow.textContent).toContain("鴉鈴（Crowbell，+2 武器套點）");
-    expect(flow.textContent).toContain("跟隨移動的蝗蟲");
-    expect(flow.textContent).toContain("+10% 冰冷抗性（優先）");
-    expect(flow.textContent).toContain("+30 精魂（優先）");
-    expect(screen.getByRole("link", { name: "編年史第 1 章" })).toHaveAttribute(
-      "href",
-      "https://poe2db.tw/tw/Act_1",
-    );
+    expect(rail!.compareDocumentPosition(tips) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
     expect(pressedYesCount()).toBe(campaignChapters[0].defaultPicks.length);
     expect(campaignChapters.every((chapter) => chapter.maps.length === 0)).toBe(true);
+  });
+});
 
-    await user.click(screen.getByRole("tab", { name: /第二章/ }));
-    const act2 = screen.getByRole("region", { name: "開荒流程" });
-    expect(act2.textContent).toContain("叛徒之路（Traitor’s Passage）");
-    expect(act2.textContent).toContain("在岔路尋找馬拉克斯卷軸標記");
-    expect(act2.textContent).toContain("叛徒．芭芭拉（Balbala）");
-    expect(act2.textContent).toContain("乳齒象惡地（Mastodon Badlands）");
-    expect(act2.textContent).toContain("地面裂縫通往無光通道／靈魂之井");
-    expect(act2.textContent).not.toContain("葛瑞爾林");
-    expect(screen.getByRole("link", { name: "編年史第 2 章" })).toBeInTheDocument();
-    expect(pressedYesCount()).toBe(campaignChapters[1].defaultPicks.length);
+describe("early tips page", () => {
+  function dataRows() {
+    const table = screen.getByRole("table");
+    return within(table).getAllByRole("row").slice(1);
+  }
 
-    await user.click(screen.getByRole("tab", { name: /第三章/ }));
-    const act3 = screen.getByRole("region", { name: "開荒流程" });
-    expect(act3.textContent).toContain("遇到探險者時先交談");
-    expect(act3.textContent).toContain("最後通牒雕刻");
-    expect(act3.textContent).toContain("遺忘的黑顎");
-    expect(act3.textContent).toContain("由此岔出阿札克泥沼");
-    expect(act3.textContent).toContain("完成血犧");
-    expect(act3.textContent).toContain("+10% 火焰抗性（優先）");
-    expect(act3.textContent).toContain("+30 精魂（優先）");
+  it("lists the locked route in one sheet, with notes above and sources below", async () => {
+    const user = userEvent.setup();
+    renderEarly(<EarlyTipsPage />, "/early/tips");
 
-    await user.click(screen.getByRole("tab", { name: /第四章/ }));
-    const act4 = screen.getByRole("region", { name: "開荒流程" });
-    expect(act4.textContent).toContain("金氏島、凱吉灣、瓦卡帕努島、伯勞鳥之島");
-    expect(act4.textContent).toContain("荒廢哨站");
-    expect(act4.textContent).toContain("符文探求者");
-    expect(act4.textContent).toContain("維里西姆鐵砧");
-    expect(act4.textContent).toContain("鯊魚鰭");
-    expect(act4.textContent).toContain("岡姆的教誨");
-    expect(act4.textContent).toContain("萊基亞塔的教誨");
-    expect(act4.textContent).toContain("悉妮蔻拉之眼");
-    expect(act4.querySelectorAll("[data-priority]")).toHaveLength(0);
-    expect(screen.getByRole("link", { name: "符文探求者" })).toHaveAttribute(
-      "href",
-      "https://poe2db.tw/tw/The_Runeseeker",
+    expect(screen.getByRole("heading", { name: "開荒技巧" })).toBeInTheDocument();
+    expect(screen.getAllByText(/禁忌儀式是聯盟內容/)).toHaveLength(1);
+    const headers = screen.getAllByRole("columnheader").map((cell) => cell.textContent);
+    expect(headers).toEqual(["章節", "地圖", "技巧／地標", "獎勵或設施", "優先"]);
+    expect(headers).not.toContain("來源");
+
+    const table = screen.getByRole("table");
+    expect(table.textContent).toContain("葛瑞爾林（The Grelwood）");
+    expect(table.textContent).toContain("赤谷（Red Vale）");
+    expect(table.textContent).toContain("攝魂之樹");
+    expect(table.textContent).toContain("纏縛陰林（Grim Tangle）");
+    expect(table.textContent).toContain("獵場（Hunting Grounds）");
+    expect(table.textContent).toContain("鴉鈴（Crowbell）");
+    expect(table.textContent).toContain("弗雷索恩（Freythorn）");
+    expect(table.textContent).toContain("叛徒之路（Traitor’s Passage）");
+    expect(table.textContent).toContain("叛徒．芭芭拉（Balbala）");
+    expect(table.textContent).toContain("最後通牒雕刻");
+    expect(table.textContent).toContain("解鎖維里西姆鐵砧");
+    expect(table.textContent).not.toContain("通牛");
+    expect(table.textContent).not.toContain("（優先）");
+    expect(dataRows().some((row) => row.textContent?.includes("本章說明"))).toBe(true);
+    expect(dataRows().filter((row) => row.textContent?.startsWith("第五章（間章）")).length).toBeGreaterThan(0);
+    expect(within(table).getAllByText("優先")).toHaveLength(7);
+
+    const sources = screen.getByRole("link", { name: "編年史第 1 章" });
+    expect(sources).toHaveAttribute("href", "https://poe2db.tw/tw/Act_1");
+    expect(table.compareDocumentPosition(sources) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    expect(screen.getByText(/乳齒象惡地裂縫見 Reddit/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "只看優先" }));
+    const priority = dataRows().map((row) => row.textContent ?? "");
+    expect(priority.some((text) => text.includes("皆伐（Clearfell）") && text.includes("+10% 冰冷抗性"))).toBe(true);
+    expect(priority.some((text) => text.includes("弗雷索恩（Freythorn）") && text.includes("+30 精魂"))).toBe(true);
+    expect(priority.some((text) => text.includes("戴斯哈尖塔") && text.includes("+10% 閃電抗性"))).toBe(true);
+    expect(priority.some((text) => text.includes("吉卡尼的機械迷城") && text.includes("遺忘的黑顎") && text.includes("+10% 火焰抗性"))).toBe(true);
+    expect(priority.some((text) => text.includes("阿札克泥沼") && text.includes("+30 精魂"))).toBe(true);
+    expect(priority.some((text) => text.includes("庫萊亞村") && text.includes("迷失長矛．萊塔拉") && text.includes("+40 精魂"))).toBe(true);
+    expect(priority).toHaveLength(6);
+    expect(priority.every((text) => text.includes("優先"))).toBe(true);
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "章節" }), "第一章");
+    const act1Priority = dataRows().map((row) => row.textContent ?? "");
+    expect(act1Priority).toHaveLength(2);
+    expect(act1Priority.every((text) => text.startsWith("第一章"))).toBe(true);
+
+    await user.click(screen.getByRole("button", { name: "只看優先" }));
+    await user.selectOptions(screen.getByRole("combobox", { name: "章節" }), "第五章（間章）");
+    const interlude = dataRows();
+    expect(interlude.length).toBeGreaterThan(6);
+    expect(interlude.every((row) => row.textContent?.startsWith("第五章（間章）"))).toBe(true);
+    expect(interlude.some((row) => row.textContent?.includes("本章說明"))).toBe(true);
+  });
+});
+
+describe("early subnav", () => {
+  it("orders chapters, tips, vendor, and gear, and keeps /early on chapters", () => {
+    render(
+      <LocaleProvider initialLocale="zh-Hant">
+        <MemoryRouter initialEntries={["/early"]}>
+          <Routes>
+            <Route path="/early" element={<EarlyLayout />}>
+              <Route index element={<Navigate to="chapters" replace />} />
+              <Route path="chapters" element={<p>chapters default</p>} />
+              <Route path="tips" element={<p>tips</p>} />
+              <Route path="vendor" element={<p>vendor</p>} />
+              <Route path="gear" element={<p>gear</p>} />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </LocaleProvider>,
     );
 
-    await user.click(screen.getByRole("tab", { name: /第五章/ }));
-    expect(screen.getByRole("tab", { name: /第五章/ })).toHaveAttribute("aria-selected", "true");
-    const act5 = screen.getByRole("region", { name: "開荒流程" });
-    expect(act5.textContent).toContain("第五章分頁（間章／間歇）");
-    expect(act5.textContent).toContain("三個間章");
-    expect(act5.textContent).toContain("1.0 預定 2026-12-11 會拿掉間章、補上第五、六章");
-    expect(act5.textContent).toContain("庫萊亞村擊敗迷失長矛．萊塔拉，+40 精魂（優先）");
-    expect(act5.textContent).toContain("狂嗥洞穴");
-    expect(act5.querySelectorAll("[data-priority]")).toHaveLength(1);
-    expect(screen.getByRole("link", { name: "編年史間歇" })).toHaveAttribute(
-      "href",
-      "https://poe2db.tw/tw/Interlude",
-    );
-    expect(pressedYesCount()).toBe(
-      campaignChapters.find((chapter) => chapter.id === "act-5")?.defaultPicks.length,
-    );
+    const nav = screen.getByRole("navigation", { name: "子頁面" });
+    expect(within(nav).getAllByRole("link").map((link) => link.textContent)).toEqual([
+      "章節地圖",
+      "開荒技巧",
+      "商店裝備篩選",
+      "裝備詞綴",
+    ]);
+    expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual([
+      "/early/chapters",
+      "/early/tips",
+      "/early/vendor",
+      "/early/gear",
+    ]);
+    expect(screen.getByText("chapters default")).toBeInTheDocument();
   });
 });
 

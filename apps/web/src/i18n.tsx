@@ -37,6 +37,9 @@ type Messages = {
   homeEndgameBody: string;
   subNavAria: string;
   earlyChapters: string;
+  earlyTips: string;
+  earlyTipsCueLead: string;
+  earlyTipsCueEnd: string;
   earlyVendor: string;
   earlyBuilds: string;
   earlyGear: string;
@@ -288,6 +291,9 @@ const zhHant: Messages = {
     "換界石依市集終局篩選（階級、效用、稀有度、掉落率、經驗、群大小、復活、金幣）產生正則，與八種碑牌詞綴正則。碑牌必須先選種類。做裝依部位與目標詞綴給出繼續、換底或降目標。",
   subNavAria: "子頁面",
   earlyChapters: "章節地圖",
+  earlyTips: "開荒技巧",
+  earlyTipsCueLead: "地標、永久獎勵與設施見",
+  earlyTipsCueEnd: "。",
   earlyVendor: "商店裝備篩選",
   earlyBuilds: "流派推薦裝備",
   earlyGear: "裝備詞綴",
@@ -550,6 +556,9 @@ const en: Messages = {
     "Waystones use the market endgame filters (tier, effectiveness, rarity, drop chance, experience, pack size, revives, gold) plus eight tablet pools. Pick a tablet kind first. Crafting turns a slot and target affixes into continue, new base, or lower the goal.",
   subNavAria: "Subpages",
   earlyChapters: "Chapter maps",
+  earlyTips: "Campaign tips",
+  earlyTipsCueLead: "Landmarks, permanent rewards, and facilities are on ",
+  earlyTipsCueEnd: ".",
   earlyVendor: "Vendor filter",
   earlyBuilds: "Build presets",
   earlyGear: "Gear affixes",
