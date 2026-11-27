@@ -11,7 +11,7 @@ import {
 } from "./earlyTips.ts";
 
 export default function EarlyTipsPage() {
-  const [chapter, setChapter] = useState("");
+  const [chapter, setChapter] = useState<(typeof EARLY_TIP_CHAPTERS)[number]>(EARLY_TIP_CHAPTERS[0]);
   const [priorityOnly, setPriorityOnly] = useState(false);
   const rows = useMemo(
     () => filterEarlyTips(earlyTipRows, chapter, priorityOnly),
@@ -31,23 +31,28 @@ export default function EarlyTipsPage() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <label className="flex items-center gap-2 text-sm text-muted">
-          章節
-          <select
-            aria-label="章節"
-            value={chapter}
-            onChange={(event) => setChapter(event.target.value)}
-            className="rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper"
-          >
-            <option value="">全部</option>
-            {EARLY_TIP_CHAPTERS.map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="章節">
+          {EARLY_TIP_CHAPTERS.map((name, index) => (
+            <button
+              key={name}
+              type="button"
+              role="tab"
+              aria-selected={chapter === name}
+              onClick={() => setChapter(name)}
+              className={`rounded-sm border px-3 py-2 text-sm ${
+                chapter === name
+                  ? "border-gold bg-gold/15 text-gold"
+                  : "border-line text-muted hover:text-paper"
+              }`}
+            >
+              <span className="mr-2 font-mono text-xs text-gold-dim">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              {name}
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           aria-pressed={priorityOnly}
@@ -64,6 +69,7 @@ export default function EarlyTipsPage() {
 
       <div className="tips-sheet overflow-x-auto rounded border border-line">
         <table className="w-full min-w-[56rem] border-collapse text-left text-sm">
+          <caption className="sr-only">{chapter}</caption>
           <thead>
             <tr>
               {EARLY_TIPS_COLUMNS.map((column) => (

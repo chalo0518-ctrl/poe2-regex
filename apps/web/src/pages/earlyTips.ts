@@ -9,7 +9,7 @@ export const EARLY_TIPS_COLUMNS = [
 ] as const;
 
 export const EARLY_TIPS_INTRO = [
-  "現役開荒是第一章至第四章，再打三個間章（編年史作「間歇」），大約 65 等進終局。0.5.5h 不改主線。1.0 預定 2026-12-11 會拿掉間章、補上第五、六章，這條路線只適用搶先體驗這段。",
+  "現役開荒是第一章至第四章。0.5.5h 不改主線。",
   "禁忌儀式是聯盟內容：每張主線圖都有祭祀，給升級用裝備與通貨；頭目祭祀會疊加，整串打完才用貢禮換傳奇。這不是永久主線獎勵。"
 ] as const;
 
@@ -252,76 +252,6 @@ export const earlyTipRows: readonly EarlyTipRow[] = [
     "cue": "主線頭目是圖克哈瑪酋長．塔瓦凱。",
     "reward": "",
     "priority": ""
-  },
-  {
-    "chapter": "第五章（間章）",
-    "map": "本章說明",
-    "cue": "三個間章可自選順序。進場會降抗，先補抗再進。許多指南會先跑「多里亞尼的意外事件」，以便早拿 +40 精魂。",
-    "reward": "",
-    "priority": ""
-  },
-  {
-    "chapter": "第五章（間章）",
-    "map": "狼之要塞（霍爾登的詛咒）",
-    "cue": "回奧格姆。擊敗恐懼典獄長．歐斯溫。",
-    "reward": "+2 武器套點",
-    "priority": ""
-  },
-  {
-    "chapter": "第五章（間章）",
-    "map": "卡里交匯道（被偷的巨靈之幣）",
-    "cue": "去瓦斯提里荒漠。擊敗艾克提與艾能德。",
-    "reward": "+2 武器套點",
-    "priority": ""
-  },
-  {
-    "chapter": "第五章（間章）",
-    "map": "熔岩神殿",
-    "cue": "與卡里交匯道同區。",
-    "reward": "+5% 最大生命",
-    "priority": ""
-  },
-  {
-    "chapter": "第五章（間章）",
-    "map": "奇瑪",
-    "cue": "可選一座靈柱恩惠（可更換）。",
-    "reward": "靈柱恩惠",
-    "priority": ""
-  },
-  {
-    "chapter": "第五章（間章）",
-    "map": "灰燼森林（多里亞尼的意外事件）",
-    "cue": "去庫萊亞山。遠古紀念碑。",
-    "reward": "14 等未切割技能寶石",
-    "priority": ""
-  },
-  {
-    "chapter": "第五章（間章）",
-    "map": "庫萊亞村",
-    "cue": "擊敗迷失長矛．萊塔拉",
-    "reward": "+40 精魂",
-    "priority": "優先"
-  },
-  {
-    "chapter": "第五章（間章）",
-    "map": "狂嗥洞穴",
-    "cue": "擊敗怪異雪獸，回報後",
-    "reward": "+2 武器套點",
-    "priority": ""
-  },
-  {
-    "chapter": "第五章（間章）",
-    "map": "金司馬區",
-    "cue": "三個間章都完成後，向黑衣幽魂領最後獎勵，再開啟輿圖。",
-    "reward": "+2 武器套點",
-    "priority": ""
-  },
-  {
-    "chapter": "第五章（間章）",
-    "map": "終局銜接",
-    "cue": "多數角色約 58–60 等開始地圖；升 T15 前，把地圖和要塞任務推開，不必一開始就把圖汁拉滿。",
-    "reward": "",
-    "priority": ""
   }
 ];
 
@@ -330,7 +260,6 @@ export const EARLY_TIP_CHAPTERS = [
   "第二章",
   "第三章",
   "第四章",
-  "第五章（間章）",
 ] as const;
 
 export type EarlyTipSource = { label: string; href: string };
@@ -365,10 +294,6 @@ export const earlyTipSourceGroups: readonly (readonly EarlyTipSource[])[] = [
     {
       "label": "第 4 章",
       "href": "https://poe2db.tw/tw/Act_4"
-    },
-    {
-      "label": "間歇",
-      "href": "https://poe2db.tw/tw/Interlude"
     }
   ],
   [

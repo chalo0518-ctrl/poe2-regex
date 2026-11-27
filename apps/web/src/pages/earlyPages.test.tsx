@@ -111,15 +111,16 @@ describe("early tips page", () => {
     expect(table.textContent).toContain("獵場（Hunting Grounds）");
     expect(table.textContent).toContain("鴉鈴（Crowbell）");
     expect(table.textContent).toContain("弗雷索恩（Freythorn）");
-    expect(table.textContent).toContain("叛徒之路（Traitor’s Passage）");
-    expect(table.textContent).toContain("叛徒．芭芭拉（Balbala）");
-    expect(table.textContent).toContain("最後通牒雕刻");
-    expect(table.textContent).toContain("解鎖維里西姆鐵砧");
+    expect(table.textContent).not.toContain("叛徒之路");
+    expect(table.textContent).not.toContain("第五章（間章）");
+    expect(table.textContent).not.toContain("庫萊亞村");
+    expect(screen.queryByRole("tab", { name: /第五章/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "間歇" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/間章/)).not.toBeInTheDocument();
     expect(table.textContent).not.toContain("通牛");
+    expect(table.textContent).not.toContain("通牘");
     expect(table.textContent).not.toContain("（優先）");
-    expect(dataRows().some((row) => row.textContent?.includes("本章說明"))).toBe(true);
-    expect(dataRows().filter((row) => row.textContent?.startsWith("第五章（間章）")).length).toBeGreaterThan(0);
-    expect(within(table).getAllByText("優先")).toHaveLength(7);
+    expect(within(table).getAllByText("優先")).toHaveLength(3);
 
     const sources = screen.getByRole("link", { name: "編年史第 1 章" });
     expect(sources).toHaveAttribute("href", "https://poe2db.tw/tw/Act_1");
@@ -127,27 +128,39 @@ describe("early tips page", () => {
     expect(screen.getByText(/乳齒象惡地裂縫見 Reddit/)).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "只看優先" }));
-    const priority = dataRows().map((row) => row.textContent ?? "");
-    expect(priority.some((text) => text.includes("皆伐（Clearfell）") && text.includes("+10% 冰冷抗性"))).toBe(true);
-    expect(priority.some((text) => text.includes("弗雷索恩（Freythorn）") && text.includes("+30 精魂"))).toBe(true);
-    expect(priority.some((text) => text.includes("戴斯哈尖塔") && text.includes("+10% 閃電抗性"))).toBe(true);
-    expect(priority.some((text) => text.includes("吉卡尼的機械迷城") && text.includes("遺忘的黑顎") && text.includes("+10% 火焰抗性"))).toBe(true);
-    expect(priority.some((text) => text.includes("阿札克泥沼") && text.includes("+30 精魂"))).toBe(true);
-    expect(priority.some((text) => text.includes("庫萊亞村") && text.includes("迷失長矛．萊塔拉") && text.includes("+40 精魂"))).toBe(true);
-    expect(priority).toHaveLength(6);
-    expect(priority.every((text) => text.includes("優先"))).toBe(true);
-
-    await user.selectOptions(screen.getByRole("combobox", { name: "章節" }), "第一章");
     const act1Priority = dataRows().map((row) => row.textContent ?? "");
     expect(act1Priority).toHaveLength(2);
-    expect(act1Priority.every((text) => text.startsWith("第一章"))).toBe(true);
+    expect(act1Priority.some((text) => text.includes("皆伐（Clearfell）") && text.includes("+10% 冰冷抗性"))).toBe(true);
+    expect(act1Priority.some((text) => text.includes("弗雷索恩（Freythorn）") && text.includes("+30 精魂"))).toBe(true);
+
+    await user.click(screen.getByRole("tab", { name: /第二章/ }));
+    const act2 = dataRows().map((row) => row.textContent ?? "");
+    expect(act2).toHaveLength(1);
+    expect(act2[0]).toContain("戴斯哈尖塔");
+    expect(act2[0]).toContain("+10% 閃電抗性");
+    expect(act2.every((text) => text.startsWith("第二章"))).toBe(true);
 
     await user.click(screen.getByRole("button", { name: "只看優先" }));
-    await user.selectOptions(screen.getByRole("combobox", { name: "章節" }), "第五章（間章）");
-    const interlude = dataRows();
-    expect(interlude.length).toBeGreaterThan(6);
-    expect(interlude.every((row) => row.textContent?.startsWith("第五章（間章）"))).toBe(true);
-    expect(interlude.some((row) => row.textContent?.includes("本章說明"))).toBe(true);
+    expect(screen.getByRole("tab", { name: /第二章/ })).toHaveAttribute("aria-selected", "true");
+    expect(dataRows().some((row) => row.textContent?.includes("叛徒之路（Traitor’s Passage）"))).toBe(true);
+    expect(dataRows().some((row) => row.textContent?.includes("叛徒．芭芭拉（Balbala）"))).toBe(true);
+    expect(dataRows().every((row) => row.textContent?.startsWith("第二章"))).toBe(true);
+
+    await user.click(screen.getByRole("tab", { name: /第三章/ }));
+    expect(screen.getByRole("table").textContent).toContain("最後通牒雕刻");
+    expect(screen.getByRole("table").textContent).toContain("阿札克泥沼");
+    await user.click(screen.getByRole("button", { name: "只看優先" }));
+    const act3Priority = dataRows().map((row) => row.textContent ?? "");
+    expect(act3Priority).toHaveLength(2);
+    expect(act3Priority.some((text) => text.includes("吉卡尼的機械迷城") && text.includes("遺忘的黑顎") && text.includes("+10% 火焰抗性"))).toBe(true);
+    expect(act3Priority.some((text) => text.includes("阿札克泥沼") && text.includes("+30 精魂"))).toBe(true);
+
+    await user.click(screen.getByRole("button", { name: "只看優先" }));
+    await user.click(screen.getByRole("tab", { name: /第四章/ }));
+    expect(screen.getByRole("table").textContent).toContain("解鎖維里西姆鐵砧");
+    expect(screen.getByRole("table").textContent).not.toContain("最後通牒雕刻");
+    await user.click(screen.getByRole("button", { name: "只看優先" }));
+    expect(dataRows().map((row) => row.textContent ?? "")).toEqual(["沒有符合的列"]);
   });
 });
 
