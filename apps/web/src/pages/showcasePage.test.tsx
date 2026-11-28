@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Navigate, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -116,7 +116,12 @@ describe("season BD showcase", () => {
     await user.hover(slotLink(/主手/));
     expect(screen.getByRole("dialog", { name: "暮色刃痕" })).toHaveTextContent("單挑法杖");
     await user.unhover(slotLink(/主手/));
-    expect(screen.queryByRole("dialog", { name: "暮色刃痕" })).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "暮色刃痕" })).not.toBeInTheDocument());
+    await user.hover(slotLink(/主手/));
+    await user.click(screen.getByRole("button", { name: "釘選裝備" }));
+    expect(screen.getByRole("dialog")).toHaveAttribute("data-pinned", "true");
+    await user.click(screen.getByRole("button", { name: "關閉" }));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     await user.hover(slotLink(/主手/));
     await user.keyboard("{Alt>}");
     await user.unhover(slotLink(/主手/));
