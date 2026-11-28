@@ -9,7 +9,7 @@ export const EARLY_TIPS_COLUMNS = [
 ] as const;
 
 export const EARLY_TIPS_INTRO = [
-  "現役開荒是第一章至第四章。0.5.5h 不改主線。",
+  "現役開荒是第一章至第四章。0.5.5h 不改主線。永久獎勵以遊戲內任務圖示為準。",
   "禁忌儀式是聯盟內容：每張主線圖都有祭祀，給升級用裝備與通貨；頭目祭祀會疊加，整串打完才用貢禮換傳奇。這不是永久主線獎勵。"
 ] as const;
 
@@ -67,8 +67,8 @@ export const earlyTipRows: readonly EarlyTipRow[] = [
   {
     "chapter": "第一章",
     "map": "奧格姆村",
-    "cue": "倫利的工作坊",
-    "reward": "解鎖分解台",
+    "cue": "倫利的工作坊。把鍛造工具帶回皆伐營地交給倫利。",
+    "reward": "解鎖回收台",
     "priority": ""
   },
   {
@@ -87,6 +87,13 @@ export const earlyTipRows: readonly EarlyTipRow[] = [
   },
   {
     "chapter": "第二章",
+    "map": "乳齒象惡地（Mastodon Badlands）",
+    "cue": "地面裂縫通往無光通道／靈魂之井。社群速度路線常先清此處與骨坑，再進凱斯城。",
+    "reward": "",
+    "priority": ""
+  },
+  {
+    "chapter": "第二章",
     "map": "凱斯城",
     "cue": "擊敗蟒蛇女王．卡巴拉",
     "reward": "+2 武器套點",
@@ -94,16 +101,9 @@ export const earlyTipRows: readonly EarlyTipRow[] = [
   },
   {
     "chapter": "第二章",
-    "map": "乳齒象惡地（Mastodon Badlands）",
-    "cue": "地面裂縫通往無光通道／靈魂之井。",
-    "reward": "",
-    "priority": ""
-  },
-  {
-    "chapter": "第二章",
     "map": "泰坦之谷（Valley of the Titans）",
     "cue": "進圖先看巨人石像的頭部，再找對應的峽谷。沿峽谷走到底可找到封印，回頭再選下一尊。",
-    "reward": "祭壇可選護符充能或持續，並 +1 護符欄",
+    "reward": "祭壇二選一：增加 30% 護符充能獲取並 +1 護符欄，或增加 30% 護符效果持續時間並 +1 護符欄",
     "priority": ""
   },
   {
@@ -179,8 +179,8 @@ export const earlyTipRows: readonly EarlyTipRow[] = [
   {
     "chapter": "第三章",
     "map": "熔岩寶庫",
-    "cue": "擊敗冶煉師範．梅克圖後",
-    "reward": "可解鎖重鑄台",
+    "cue": "擊敗冶煉師範．梅克圖後，拾起卡瑪薩之錘，帶回高地神塔營地交給奧斯瓦德。",
+    "reward": "解鎖重鑄台",
     "priority": ""
   },
   {
@@ -207,7 +207,7 @@ export const earlyTipRows: readonly EarlyTipRow[] = [
   {
     "chapter": "第四章",
     "map": "金氏島",
-    "cue": "眼盲巨獸的獎勵不是武器套點。編年史任務獎勵寫硫酸藥劑與 12 等未切割技能寶石；整理站與社群曾改記為高階符文。以任務圖示為準。",
+    "cue": "眼盲巨獸的獎勵不是武器套點。編年史任務獎勵寫硫酸藥劑與 12 等未切割技能寶石；同站第四章走法又寫高階空白符文。以遊戲內任務圖示為準。",
     "reward": "硫酸藥劑與 12 等未切割技能寶石",
     "priority": ""
   },
@@ -215,14 +215,14 @@ export const earlyTipRows: readonly EarlyTipRow[] = [
     "chapter": "第四章",
     "map": "瓦卡帕努島",
     "cue": "擊敗大白鯊取得鯊魚鰭，交給尼加卡努（或金司馬區）的凱馬拿。",
-    "reward": "可選岡姆的教誨（增加 30% 全域護甲、閃避與能量護盾）或萊基亞塔的教誨（部分護甲套用至元素傷害、偏斜、能量護盾較快開始充能）",
+    "reward": "可選岡姆的教誨（增加 30% 全域護甲、閃避與能量護盾）或萊基亞塔的教誨（15% 的護甲同時套用至元素傷害；獲得等同 12% 閃避值的偏斜值；12% 能量護盾更快開始充能）",
     "priority": ""
   },
   {
     "chapter": "第四章",
     "map": "廢棄監獄",
     "cue": "正義女神",
-    "reward": "藥劑的生命恢復或魔力恢復增加 30%，二選一",
+    "reward": "增加 30% 藥劑的生命恢復，或增加 30% 藥劑的魔力恢復，二選一",
     "priority": ""
   },
   {
@@ -235,14 +235,21 @@ export const earlyTipRows: readonly EarlyTipRow[] = [
   {
     "chapter": "第四章",
     "map": "亡者之殿",
-    "cue": "擊敗白之亞瑪。先祖刺青可選三抗各 +5%，或三屬各 +5。",
+    "cue": "擊敗白之亞瑪可獲專精之書。先祖刺青由三處試煉各選一次，可選數值為 +5 力量、敏捷、智慧，或 +5% 火焰、閃電、冰冷抗性（永久，不可更改）；不是一次拿齊三抗或三屬。打完後進入祖靈的試煉，另有獎勵。",
+    "reward": "+2 武器套點",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "祖靈的試煉",
+    "cue": "擊敗白之亞瑪後拾起銀幣，進入此處與娜瓦莉交談，並使用悉妮蔻拉的刺青。",
     "reward": "+2 武器套點",
     "priority": ""
   },
   {
     "chapter": "第四章",
     "map": "旅程之末",
-    "cue": "擊敗恐懼造物．歐姆弗畢亞",
+    "cue": "擊敗恐懼造物．歐姆弗畢亞。向金司馬區的圖貞回報，並使用纏繞迷霧之書。",
     "reward": "+2 武器套點",
     "priority": ""
   },
@@ -304,6 +311,28 @@ export const earlyTipSourceGroups: readonly (readonly EarlyTipSource[])[] = [
     {
       "label": "部落藥術",
       "href": "https://poe2db.tw/tw/Tribal_Medicine"
+    }
+  ],
+  [
+    {
+      "label": "尋找熔爐",
+      "href": "https://poe2db.tw/tw/Finding_the_Forge"
+    },
+    {
+      "label": "奧札爾寶藏",
+      "href": "https://poe2db.tw/tw/Treasures_of_Utzaal"
+    },
+    {
+      "label": "祖靈的試煉",
+      "href": "https://poe2db.tw/tw/Trial_of_the_Ancestors"
+    },
+    {
+      "label": "暗黑迷霧",
+      "href": "https://poe2db.tw/tw/Dark_Mists"
+    },
+    {
+      "label": "萊基亞塔的教誨",
+      "href": "https://poe2db.tw/tw/Rakiatas_Lesson"
     }
   ]
 ];

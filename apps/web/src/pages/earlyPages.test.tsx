@@ -99,6 +99,9 @@ describe("early tips page", () => {
 
     expect(screen.getByRole("heading", { name: "開荒技巧" })).toBeInTheDocument();
     expect(screen.getAllByText(/禁忌儀式是聯盟內容/)).toHaveLength(1);
+    expect(screen.getByText("現役開荒是第一章至第四章。0.5.5h 不改主線。永久獎勵以遊戲內任務圖示為準。")).toBeInTheDocument();
+    expect(screen.getByText("解鎖回收台")).toBeInTheDocument();
+    expect(screen.queryByText("分解台")).not.toBeInTheDocument();
     const headers = screen.getAllByRole("columnheader").map((cell) => cell.textContent);
     expect(headers).toEqual(["章節", "地圖", "技巧／地標", "獎勵或設施", "優先"]);
     expect(headers).not.toContain("來源");
@@ -142,11 +145,16 @@ describe("early tips page", () => {
 
     await user.click(screen.getByRole("button", { name: "只看優先" }));
     expect(screen.getByRole("tab", { name: /第二章/ })).toHaveAttribute("aria-selected", "true");
+    const act2Text = dataRows().map((row) => row.textContent ?? "").join("\n");
+    expect(act2Text.indexOf("乳齒象惡地（Mastodon Badlands）")).toBeLessThan(act2Text.indexOf("凱斯城"));
     expect(dataRows().some((row) => row.textContent?.includes("叛徒之路（Traitor’s Passage）"))).toBe(true);
     expect(dataRows().some((row) => row.textContent?.includes("叛徒．芭芭拉（Balbala）"))).toBe(true);
     expect(dataRows().every((row) => row.textContent?.startsWith("第二章"))).toBe(true);
 
     await user.click(screen.getByRole("tab", { name: /第三章/ }));
+    expect(screen.getByRole("table").textContent).toContain("卡瑪薩之錘");
+    expect(screen.getByRole("table").textContent).toContain("奧斯瓦德");
+    expect(screen.getByRole("table").textContent).toContain("解鎖重鑄台");
     expect(screen.getByRole("table").textContent).toContain("最後通牒雕刻");
     expect(screen.getByRole("table").textContent).toContain("阿札克泥沼");
     await user.click(screen.getByRole("button", { name: "只看優先" }));
@@ -158,6 +166,14 @@ describe("early tips page", () => {
     await user.click(screen.getByRole("button", { name: "只看優先" }));
     await user.click(screen.getByRole("tab", { name: /第四章/ }));
     expect(screen.getByRole("table").textContent).toContain("解鎖維里西姆鐵砧");
+    expect(screen.getByRole("table").textContent).toContain("祖靈的試煉");
+    expect(screen.getByRole("table").textContent).toContain("悉妮蔻拉的刺青");
+    expect(screen.getByRole("table").textContent).toContain("圖貞");
+    expect(screen.getByRole("table").textContent).toContain("纏繞迷霧之書");
+    expect(screen.getByRole("link", { name: "祖靈的試煉" })).toHaveAttribute(
+      "href",
+      "https://poe2db.tw/tw/Trial_of_the_Ancestors",
+    );
     expect(screen.getByRole("table").textContent).not.toContain("最後通牒雕刻");
     await user.click(screen.getByRole("button", { name: "只看優先" }));
     expect(dataRows().map((row) => row.textContent ?? "")).toEqual(["沒有符合的列"]);
