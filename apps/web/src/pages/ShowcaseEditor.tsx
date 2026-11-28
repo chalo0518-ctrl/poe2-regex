@@ -1,8 +1,19 @@
+import { recommendationBases, runeforgedName } from "./recommendationBases.ts";
 import { useMemo, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useSearchParams } from "react-router-dom";
+import { seasonHref } from "./showcaseSeasons.ts";
 import {
   affixModGroup,
   catalogForDollSlot,
+  craftingSlots,
+  showcaseCatalog,
+  essenceFamiliesFor,
+  desecratedFamiliesFor,
+  familiesForSocketAugments,
+  poolAugmentsForSlot,
+  socketCountMax,
+  craftTierChoices,
+  resolveCraftSlot,
   matchLangForLocale,
   matchesText,
   matchText,
@@ -12,6 +23,7 @@ import {
   SHOWCASE_SIDE_CAP,
   showcaseLines,
   type AffixFamily,
+  type CraftSlotId,
   type PaperDollSlot,
   type ShowcaseLine,
   type ShowcaseRank,
@@ -23,36 +35,155 @@ import { useShowcase } from "./showcaseState.tsx";
 
 export default function ShowcaseEditor() {
   const { slotId } = useParams();
+  const [params] = useSearchParams();
+  const backTo = seasonHref("/showcase/recommended", params.get("season"));
   const slot = paperDollSlots.find((row) => row.id === slotId);
-  if (!slot) return <Navigate to="/showcase/recommended" replace />;
-  return <EditorBody slot={slot} />;
+  if (!slot) return <Navigate to={backTo} replace />;
+  return <EditorBody key={slot.id} slot={slot} backTo={backTo} season={params.get("season") ?? "runes-of-aldur"} />;
 }
 
-function EditorBody({ slot }: { slot: PaperDollSlot }) {
+function EditorBody({ slot, backTo, season }: { slot: PaperDollSlot; backTo: string; season: string }) {
   const { locale, t } = useLocale();
-  const { snapshot, picks, toggleRank } = useShowcase();
+  const { snapshot, picks, toggleRank, tiers, setBase, setTier } = useShowcase();
   const [query, setQuery] = useState("");
   const gear = recommendedGear(snapshot, slot.id);
+  const craftSlot = resolveCraftSlot(slot.id, gear);
+  const [typeDraft, setTypeDraft] = useState<CraftSlotId | "">(craftSlot ?? "");
+  const [source, setSource] = useState<"all" | "essence" | "ordinary" | "desecrated" | "socket">("all");
+  const categories = craftingSlots().filter((entry) => slot.id.startsWith("weapon-")
+    ? (slot.id.endsWith("-main") ? entry.id !== "shield" && !["body", "helmet", "gloves", "boots", "ring", "amulet", "belt"].includes(entry.id) : entry.id === "shield")
+    : entry.id === craftSlot);
+  const baseOptions = categories.flatMap((entry) => entry.pools.flatMap((pool) => {
+    const categoryId = entry.id + "/" + pool.id;
+    const concrete = recommendationBases.filter((base) => base.slot === entry.id &&
+      (base.pool ? base.pool === pool.id : entry.pools.length === 1));
+    return [
+      ...concrete.map((base) => ({ entry, pool, id: categoryId + "/" + base.en, zh: base.zh, en: base.en, runeforge: base.runeforge })),
+      {
+        entry, pool, runeforge: undefined, id: categoryId,
+        zh: `任意${entry.labelZh}${entry.pools.length > 1 ? `（${pool.labelZh}）` : ""}`,
+        en: `Any ${entry.labelEn ?? entry.id}${entry.pools.length > 1 ? ` (${pool.labelEn ?? pool.labelZh})` : ""}`,
+      },
+    ];
+  }));
+  const typedBases = baseOptions.filter((option) => option.entry.id === typeDraft);
+  const selectedBase = baseOptions.find((option) => option.id === craftSlot + "/" + gear.basePoolId + "/" + gear.baseEn)
+    ?? baseOptions.find((option) => option.id === craftSlot + "/" + gear.basePoolId);
+  const [library, setLibrary] = useState<"prefix" | "suffix" | null>(null);
   const catalog = catalogForDollSlot(slot.id, gear);
+  const ordinary = craftSlot ? showcaseCatalog(craftSlot, gear.basePoolId) : [];
+  const desecrated = craftSlot && gear.basePoolId ? desecratedFamiliesFor(craftSlot) : [];
+  const augmentFamilies = familiesForSocketAugments(gear.augments ?? []);
+  const essence = craftSlot && gear.basePoolId ? essenceFamiliesFor(craftSlot) : [];
+  const sourceRows = source === "all" ? catalog : source === "essence" ? essence : source === "desecrated" ? desecrated : source === "socket" ? augmentFamilies : ordinary;
+  const augments = craftSlot && gear.basePoolId ? poolAugmentsForSlot(craftSlot) : [];
   const selected = picks[slot.id];
   const lines = showcaseLines(selected, catalog);
   const slotLabel = locale === "en" ? slot.labelEn : slot.labelZh;
   const group = paperDollGroups.find((row) => row.id === slot.group);
   const groupLabel = group ? (locale === "en" ? group.labelEn : group.labelZh) : "";
   const visible = useMemo(
-    () => catalog.filter((family) => matchesText(family, query, { hanFold: true })),
-    [catalog, query],
+    () => sourceRows.filter((family) => matchesText(family, query, { hanFold: true })),
+    [sourceRows, query],
   );
+
+  const craftParams = new URLSearchParams({ slot: craftSlot ?? "", season, fromSlot: slot.id, base: gear.basePoolId ?? "", start: "blank" });
+  if (selectedBase && selectedBase.id.split("/").length === 3) {
+    craftParams.set("baseNameZh", selectedBase.zh);
+    craftParams.set("baseNameEn", selectedBase.en);
+    if (gear.runeforge && selectedBase.runeforge) craftParams.set("runeforge", "1");
+  }
+  for (const id of gear.augments ?? []) craftParams.append("augment", id);
+  for (const pick of selected) {
+    craftParams.append("affix", JSON.stringify([pick.familyId, pick.rank, tiers[slot.id]?.[pick.familyId] ?? null]));
+  }
+  function closeLibrary() {
+    setQuery("");
+    setLibrary(null);
+  }
+
+  function chooseBase(value: string) {
+    const choice = baseOptions.find((option) => option.id === value);
+    if (!choice) return;
+    const { entry, pool } = choice;
+    const next = { ...gear, craftSlot: entry.id as CraftSlotId, basePoolId: pool.id, baseZh: choice.zh, baseEn: choice.en, runeforge: gear.baseEn === choice.en && entry.id === craftSlot && pool.id === gear.basePoolId && gear.runeforge, augments: entry.id === craftSlot ? gear.augments : [] };
+    const available = catalogForDollSlot(slot.id, next);
+    const lost = selected.filter((pick) => !available.some((family) => family.id === pick.familyId &&
+      (tiers[slot.id]?.[pick.familyId] == null || craftTierChoices(family).some((tier) => tier.rank === tiers[slot.id]?.[pick.familyId]))));
+    const labels = lost.map((pick) => catalog.find((family) => family.id === pick.familyId)).filter(Boolean)
+      .map((family) => locale === "en" ? family?.labelEn : family?.labelZh);
+    if (!lost.length || window.confirm((locale === "en" ? "Changing the base removes: " : "更換底材將移除：") + labels.join("、"))) {
+      setBase(slot.id, next);
+      setSource("all");
+    }
+  }
 
   return (
     <div>
-      <Link to="/showcase/recommended" className="text-sm text-gold hover:underline">
+      <Link to={backTo} className="text-sm text-gold hover:underline">
         {t.showcaseBackRecommended}
       </Link>
       <p className="mt-3 text-xs tracking-[0.2em] text-gold-dim">{groupLabel}</p>
       <h2 className="mt-1 text-xl font-bold text-gold">{slotLabel}</h2>
       <p className="mt-1 text-sm text-muted">{t.showcaseEditorTitle}</p>
       <SessionNote />
+      {categories.length > 0 && (
+        <label className="mb-4 block text-gold">
+          {locale === "en" ? "Equipment type" : "裝備類型"}
+          <select className="ml-3 bg-panel p-2" value={typeDraft} onChange={(event) => setTypeDraft(event.target.value as CraftSlotId)}>
+            <option value="" disabled>{locale === "en" ? "Choose a type" : "選擇類型"}</option>
+            {categories.map((entry) => <option key={entry.id} value={entry.id}>{locale === "en" ? entry.labelEn ?? entry.id : entry.labelZh}</option>)}
+          </select>
+        </label>
+      )}
+      {typedBases.length > 0 && (
+        <label className="mb-4 block text-gold">
+          {locale === "en" ? "Base type" : "底材"}
+          <select className="ml-3 bg-panel p-2" value={typeDraft === craftSlot ? selectedBase?.id ?? "" : ""} onChange={(event) => chooseBase(event.target.value)}>
+            <option value="" disabled>{locale === "en" ? "Choose a base" : "選擇底材"}</option>
+            {typedBases.map(({ zh, en, id }) => <option key={id} value={id}>{locale === "en" ? en : zh}</option>)}
+          </select>
+        </label>
+      )}
+      {gear.basePoolId && typeDraft !== craftSlot ? <p role="status">{locale === "en" ? "Choose a base to edit its modifiers." : "請選擇新底材，再編輯詞條。"}</p> : <>
+      {typeDraft === craftSlot && selectedBase?.runeforge && (
+        <fieldset className="mb-4 text-gold">
+          <legend>{locale === "en" ? "Verisium Runeforging" : "維里西姆符鍛"}</legend>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" checked={gear.runeforge ?? false} onChange={(event) => {
+              setBase(slot.id, { ...gear, runeforge: event.target.checked });
+            }} />
+            {runeforgedName(selectedBase, locale)} · {selectedBase.runeforge} {locale === "en" ? "Verisium" : "維里西姆"}
+          </label>
+        </fieldset>
+      )}
+      {craftSlot && augments.length > 0 && (
+        <fieldset className="mb-4 flex flex-wrap gap-3 text-gold">
+          <legend>{locale === "en" ? "Socketed augments" : "鑲嵌物"}</legend>
+          {Array.from({ length: Math.max(2, socketCountMax(craftSlot)) }, (_, index) => (
+            <select key={index} className="bg-panel p-2" aria-label={(locale === "en" ? "Socket " : "插槽 ") + (index + 1)}
+              value={gear.augments?.[index] ?? ""} onChange={(event) => {
+                const next = Array.from({ length: Math.max(2, socketCountMax(craftSlot)) }, (_, i) => gear.augments?.[i] ?? "");
+                next[index] = event.target.value;
+                const updated = { ...gear, augments: next };
+                const valid = new Set(catalogForDollSlot(slot.id, updated).map((family) => family.id));
+                if (selected.some((pick) => !valid.has(pick.familyId)) && !window.confirm(locale === "en" ? "Remove incompatible modifiers?" : "移除不再相容的詞條？")) return;
+                setBase(slot.id, updated);
+              }}>
+              <option value="">{locale === "en" ? "Empty socket" : "空插槽"}</option>
+              {augments.map((augment) => <option key={augment.id} value={augment.id}
+                disabled={augment.limitOne && gear.augments?.some((id, i) => i !== index && id === augment.id)}>
+                {locale === "en" ? augment.nameEn : augment.nameZh}
+              </option>)}
+            </select>
+          ))}
+        </fieldset>
+      )}
+      {craftSlot && gear.basePoolId && selected.length > 0 && (
+        <Link className="mb-4 inline-block text-gold underline" to={"/endgame/crafting?" + craftParams}>
+          {locale === "en" ? "My recommended modifiers" : "我的推薦詞條"}
+        </Link>
+      )}
       {catalog.length === 0 ? (
         <div className="mb-4 max-w-xl">
           <p className="text-sm text-paper">{t.showcaseNoCatalog}</p>
@@ -65,17 +196,33 @@ function EditorBody({ slot }: { slot: PaperDollSlot }) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             className="mt-1 w-full rounded-sm border border-line bg-ink px-2 py-1.5 text-paper"
+            type="search"
             autoComplete="off"
           />
         </label>
       )}
-      <div className="grid gap-4 lg:grid-cols-2">
+      {catalog.length > 0 && <label className="mb-3 block text-gold">
+        {locale === "en" ? "Modifier library" : "選擇詞條庫"}
+        <select className="ml-3 bg-panel p-2" value={source} onChange={(event) => setSource(event.target.value as typeof source)}>
+          <option value="all">{locale === "en" ? "All available libraries" : "全部可用詞條庫"} ({catalog.length})</option>
+          <option value="essence" disabled={!essence.length}>{locale === "en" ? "Essence crafting" : "精髓工藝"} （{essence.length ? `${locale === "en" ? "Recorded" : "已收錄"} ${essence.length}` : locale === "en" ? "Not catalogued" : "待補資料"}）</option>
+          <option value="ordinary" disabled={ordinary.length === 0 && source !== "ordinary"}>{locale === "en" ? "Ordinary" : "普通"} ({ordinary.length})</option>
+          <option value="desecrated" disabled={desecrated.length === 0 && source !== "desecrated"}>{locale === "en" ? "Desecrated" : "褻瀆"} ({desecrated.length})</option>
+          <option value="socket" disabled={augmentFamilies.length === 0 && source !== "socket"}>{locale === "en" ? "Augment pools" : "鑲嵌解鎖"} ({augmentFamilies.length})</option>
+        </select>
+      </label>}
+      <div className="grid gap-4">
         <AffixColumn
           title={t.showcasePrefix}
           generation="prefix"
           lines={lines.prefixes}
           rows={visible.filter((family) => family.generation === "prefix")}
           catalog={catalog}
+          expanded={query.trim() ? "both" : library}
+          onOpen={setLibrary}
+          onClose={closeLibrary}
+          tiers={tiers[slot.id] ?? {}}
+          onTier={(id, rank) => setTier(slot.id, id, rank)}
           selected={selected}
           locale={locale}
           onToggle={(family, rank) => toggleRank(slot.id, family, rank)}
@@ -86,11 +233,17 @@ function EditorBody({ slot }: { slot: PaperDollSlot }) {
           lines={lines.suffixes}
           rows={visible.filter((family) => family.generation === "suffix")}
           catalog={catalog}
+          expanded={query.trim() ? "both" : library}
+          onOpen={setLibrary}
+          onClose={closeLibrary}
+          tiers={tiers[slot.id] ?? {}}
+          onTier={(id, rank) => setTier(slot.id, id, rank)}
           selected={selected}
           locale={locale}
           onToggle={(family, rank) => toggleRank(slot.id, family, rank)}
         />
       </div>
+      </>}
     </div>
   );
 }
@@ -104,7 +257,17 @@ function AffixColumn({
   selected,
   locale,
   onToggle,
+  expanded,
+  onOpen,
+  onClose,
+  tiers,
+  onTier,
 }: {
+  expanded: "prefix" | "suffix" | "both" | null;
+  onClose: () => void;
+  onOpen: (side: "prefix" | "suffix") => void;
+  tiers: Record<string, number | null>;
+  onTier: (id: string, rank: number | null) => void;
   title: string;
   generation: "prefix" | "suffix";
   lines: ShowcaseLine[];
@@ -115,55 +278,85 @@ function AffixColumn({
   onToggle: (family: AffixFamily, rank: ShowcaseRank) => void;
 }) {
   const { t } = useLocale();
+  const isOpen = expanded === generation || expanded === "both";
   const emptyLabel = generation === "prefix" ? t.showcaseEmptyPrefix : t.showcaseEmptySuffix;
-  const required = lines.flatMap((line) => (line.kind === "affix" && line.rank === "required" ? [line] : []));
-  const optional = lines.flatMap((line) => (line.kind === "affix" && line.rank === "optional" ? [line] : []));
-  const empties = lines.flatMap((line) => (line.kind === "empty" ? [line] : []));
   const sideCount = selected.filter((pick) => catalog.find((family) => family.id === pick.familyId)?.generation === generation).length;
 
   return (
     <section aria-label={title} className="rounded-sm border border-line bg-panel p-3">
       <h2 className="text-sm font-bold text-gold">{title}</h2>
-      <div className="mt-3">
-        <h3 className="text-xs tracking-[0.14em] text-gold-dim">{t.showcaseRequired}</h3>
-        {required.map((line) => (
-          <p key={line.familyId} className="mt-1 text-sm text-paper">
-            {locale === "en" ? line.labelEn : line.labelZh}
-          </p>
-        ))}
+      <div className="mt-3 grid gap-2">
+        {lines.map((line, index) => {
+          const family = line.kind === "affix" ? catalog.find((entry) => entry.id === line.familyId) : undefined;
+          const choice = family && line.kind === "affix"
+            ? craftTierChoices(family).find((entry) => entry.rank === tiers[line.familyId])
+            : undefined;
+          const tier = choice && family?.tiers[choice.index];
+          const tierText = tier && (locale === "en" ? tier.textEn || tier.textZh : tier.textZh || tier.textEn);
+          const range = choice?.statMin != null && choice.statMax != null && choice.statMin !== choice.statMax
+            ? `${choice.statMin}–${choice.statMax}` : undefined;
+          const hasRange = range && tierText?.replace(/\s/g, "").replace(/[-—−]/g, "–").includes(range);
+          return (
+          <button type="button" key={index}
+            className="grid w-full min-w-0 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-3 border border-line bg-ink px-3 py-2 text-sm hover:border-gold"
+            aria-expanded={isOpen}
+            onClick={() => onOpen(generation)}>
+            {line.kind === "empty" ? <span className="col-start-2 text-center text-muted">{emptyLabel}</span> : (
+              <>
+                <span className="text-left tabular-nums text-gold">
+                  {line.familyId.startsWith("essence:sorcery:") ? (locale === "en" ? "Fixed" : "固定") : line.familyId.startsWith("essence:") ? (locale === "en" ? "Essence" : "精髓") : tiers[line.familyId] != null ? `T${tiers[line.familyId]}` : "T—"}
+                </span>
+                <span className="min-w-0 break-words text-center">
+                  <span className="block text-[#b5acff]">{tierText || (locale === "en" ? line.labelEn : line.labelZh)}</span>
+                  {choice && <small className="block text-muted">
+                    {range && !hasRange && <>{locale === "en" ? "Roll range" : "數值範圍"} {range} · </>}
+                    {locale === "en" ? "Minimum item level" : "最低物品等級"} {choice.level}
+                  </small>}
+                </span>
+                <span className="text-right text-xs text-gold-dim">
+                  {line.rank === "required" ? t.showcaseRequired : locale === "en" ? "Recommended" : "推薦"}
+                </span>
+              </>
+            )}
+          </button>
+          );
+        })}
       </div>
-      <div className="mt-3">
-        <h3 className="text-xs tracking-[0.14em] text-gold-dim">{t.showcaseOptional}</h3>
-        {optional.map((line) => (
-          <p key={line.familyId} className="mt-1 text-sm text-paper">
-            {locale === "en" ? line.labelEn : line.labelZh}
-          </p>
-        ))}
-      </div>
-      {empties.length > 0 ? (
-        <p className="doll-line-empty mt-3">
-          {empties.flatMap((line, index) => [
-            index > 0 ? (
-              <span key={`${line.generation}-sep-${index}`} aria-hidden="true">
-                {" · "}
-              </span>
-            ) : null,
-            <span key={`${line.generation}-${index}`}>{emptyLabel}</span>,
-          ])}
-        </p>
-      ) : null}
-      <ul className="mt-3 max-h-[28rem] overflow-auto border-t border-line">
+      <button type="button" className="mt-3 text-xs text-gold underline" aria-expanded={isOpen} aria-controls={`library-${generation}`} onClick={isOpen ? onClose : () => onOpen(generation)}>
+        {isOpen ? (locale === "en" ? "Return to selected modifiers" : "返回已選詞條") : (locale === "en" ? "Open modifier library" : "打開詞條庫")}
+      </button>
+      {isOpen && <p className="mt-3 text-sm text-muted" role="status">
+        {rows.length === 0
+          ? (locale === "en" ? "No matching modifiers. Try another library or clear the search." : "找不到符合條件的詞條。請切換詞條庫或清除搜尋。")
+          : (locale === "en" ? `${rows.length} matching modifiers` : `找到 ${rows.length} 條詞條`)}
+      </p>}
+      <ul id={`library-${generation}`} hidden={!isOpen} className="mt-3 max-h-[28rem] overflow-auto border-t border-line">
         {rows.map((family) => {
           const typeName = matchText(family, matchLangForLocale(locale));
           const pick = selected.find((row) => row.familyId === family.id);
-          const groupTaken = selected.some((row) => {
+          const conflict = selected.find((row) => {
             const other = catalog.find((candidate) => candidate.id === row.familyId);
             return Boolean(other && other.id !== family.id && affixModGroup(other) === affixModGroup(family));
           });
+          const groupTaken = Boolean(conflict);
+          const conflictFamily = catalog.find((entry) => entry.id === conflict?.familyId);
+          const choices = craftTierChoices(family);
           const disabled = groupTaken || (!pick && sideCount >= SHOWCASE_SIDE_CAP);
           return (
             <li key={family.id} data-affix-id={family.id} className="flex items-center justify-between gap-3 border-b border-line/70 py-2">
-              <span className="text-sm text-paper">{typeName}</span>
+              <span className={groupTaken ? "text-sm text-muted" : "text-sm text-paper"}>
+                {typeName}
+                <div className="block text-xs text-muted">{!family.id.startsWith("essence:") && choices.length > 0 && <details><summary>{locale === "en" ? "Tier ranges" : "各階級數值範圍"}</summary>{choices.map((choice) => {
+                  const tier = family.tiers[choice.index];
+                  return <span key={choice.index} className="block">T{choice.rank} · {locale === "en" ? tier.textEn || tier.textZh : tier.textZh || tier.textEn} {choice.statMin != null && choice.statMax != null ? ` (${choice.statMin}–${choice.statMax})` : ""} · iLvL {choice.level}</span>;
+                })}</details>}</div>
+                {!groupTaken && !pick && sideCount >= SHOWCASE_SIDE_CAP && <small className="block">{locale === "en" ? "All slots on this side are filled" : `${title}空位已滿`}</small>}
+                {conflictFamily && <small className="block">{t.craftingConflict} · {matchText(conflictFamily, matchLangForLocale(locale))}</small>}
+              </span>
+              {pick && !family.id.startsWith("essence:") && <select aria-label={(locale === "en" ? "Minimum tier" : "最低 T 階") + " " + typeName} value={tiers[family.id] ?? ""} onChange={(event) => onTier(family.id, event.target.value ? Number(event.target.value) : null)} className="bg-panel text-paper">
+                <option value="">{locale === "en" ? "Any tier" : "不限 T 階"}</option>
+                {choices.map((choice) => <option key={choice.index} value={choice.rank}>{`T${choice.rank} · iLvL ${choice.level}`}</option>)}
+              </select>}
               <span className="flex shrink-0 gap-3 text-xs">
                 <RankBox
                   label={t.showcaseRequired}
@@ -174,7 +367,7 @@ function AffixColumn({
                   onChange={() => onToggle(family, "required")}
                 />
                 <RankBox
-                  label={t.showcaseOptional}
+                  label={locale === "en" ? "Recommended" : "推薦"}
                   typeName={typeName}
                   checked={pick?.rank === "optional"}
                   disabled={disabled && pick?.rank !== "optional"}

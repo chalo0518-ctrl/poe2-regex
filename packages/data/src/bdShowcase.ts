@@ -1,7 +1,10 @@
+import { essenceFamiliesFor } from "./essence.ts";
+import pobSnapshot from "./ruoaPoB2.json";
 import type { AffixFamily, CraftSlotId, ShieldBaseId, ShieldFamily } from "./types.ts";
 import shieldsJson from "../generated/shields.json";
 import { affixModGroup, earlyGearCatalog, isEarlyGearSlotId } from "./earlyGear.ts";
-import { BASE_SIDE_CAP } from "./socketPools.ts";
+import { desecratedFamiliesFor } from "./desecrated.ts";
+import { BASE_SIDE_CAP, familiesForSocketAugments } from "./socketPools.ts";
 import { craftingFamiliesFor, isWeaponCategoryId, weaponCatalog } from "./weapons.ts";
 import { RUO_CETACEA_META, ruoaCetaceaMemorial } from "./memorialSnapshot.ts";
 
@@ -43,6 +46,8 @@ export type MemorialAffix = ShowcaseText & {
 /** Mod kind copied from the tooltip. Prefix and suffix are not guessed. */
 export type MemorialMod = {
   kind: string;
+  verifiedTier?: number;
+  generation?: MemorialAffix["generation"];
   textZh: string;
   textEn: string;
 };
@@ -108,10 +113,20 @@ export type RecommendedGear = {
   craftSlot: CraftSlotId | null;
   /** poe2db pool id inside that slot, when a single base is known. */
   basePoolId: string | null;
+  augments?: string[];
+  runeforge?: boolean;
   affixes: ShowcasePick[];
 };
 
+export type MemorialTree = {
+  nodes: { id: string; x: number; y: number; nameZh: string; nameEn: string; effectZh?: string; effectEn?: string; allocated: boolean; weaponSets?: number[] }[];
+  edges: [string, string][];
+};
+
 export type BdShowcase = {
+  pobStats?: Readonly<Record<string, number>>;
+  passiveTree?: MemorialTree;
+  ascendancyTree?: MemorialTree;
   id: string;
   titleZh: string;
   titleEn: string;
@@ -185,8 +200,18 @@ const DEFAULT_CRAFT_SLOT: Partial<Record<PaperDollSlotId, CraftSlotId>> = {
   belt: "belt",
 };
 
+function snapshotTree(tree: typeof pobSnapshot.passiveTree): MemorialTree {
+  return {
+    nodes: tree.nodes,
+    edges: tree.edges.map(([from, to]) => [from, to]),
+  };
+}
+
 export const SEASON_BD_V1: BdShowcase = {
   id: "ruoa-cetacea",
+  passiveTree: snapshotTree(pobSnapshot.passiveTree),
+  ascendancyTree: snapshotTree(pobSnapshot.ascendancyTree),
+  pobStats: pobSnapshot.stats,
   titleZh: RUO_CETACEA_META.name,
   titleEn: RUO_CETACEA_META.name,
   classZh: RUO_CETACEA_META.classZh,
@@ -246,7 +271,9 @@ export function showcaseCatalog(slot: CraftSlotId, basePoolId: string | null): A
 export function catalogForDollSlot(slotId: PaperDollSlotId, gear: RecommendedGear): AffixFamily[] {
   const slot = resolveCraftSlot(slotId, gear);
   if (!slot) return [];
-  return showcaseCatalog(slot, gear.basePoolId);
+  if (!gear.basePoolId) return showcaseCatalog(slot, gear.basePoolId);
+  const families = [...showcaseCatalog(slot, gear.basePoolId), ...desecratedFamiliesFor(slot), ...essenceFamiliesFor(slot), ...familiesForSocketAugments(gear.augments ?? [])];
+  return [...new Map(families.map((family) => [family.id, family])).values()];
 }
 
 export function setShowcasePick(

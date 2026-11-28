@@ -1,0 +1,23 @@
+.item-tip > header.item-tip-corner {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 38px;
+  padding: 0;
+  z-index: 2;
+  background: transparent;
+  border: 0;
+  pointer-events: auto;
+  touch-action: none;
+}
+.item-tip > header.item-tip-corner button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25px;
+  height: 25px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #e8a561;
+  filter: drop-shadow(0 1px 2px black);
+}

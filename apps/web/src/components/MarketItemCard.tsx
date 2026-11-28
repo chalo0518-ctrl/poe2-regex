@@ -1,4 +1,5 @@
-import { type MemorialGear, type UiLocale } from "@poe2-regex/data";
+import DuskScratchCard from "./DuskScratchCard.tsx";
+import { type MemorialMod, type MemorialGear, type UiLocale } from "@poe2-regex/data";
 
 export function marketItemTitle(gear: MemorialGear, locale: UiLocale): string {
   const base = locale === "en" ? gear.baseEn || gear.baseZh : gear.baseZh || gear.baseEn;
@@ -6,47 +7,65 @@ export function marketItemTitle(gear: MemorialGear, locale: UiLocale): string {
 }
 
 export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; locale: UiLocale }) {
+  if (locale !== "en" && gear.nameEn === "Dusk Scratch" && gear.baseEn === "Dueling Wand") return <DuskScratchCard />;
   const name = marketItemTitle(gear, locale);
   const base = locale === "en" ? gear.baseEn || gear.baseZh : gear.baseZh || gear.baseEn;
   const quality = locale === "en" ? gear.qualityEn : gear.qualityZh || gear.qualityEn;
-  const requirements = locale === "en" ? gear.requirementsEn : gear.requirementsZh || gear.requirementsEn;
   const flavour = locale === "en" ? gear.flavourEn : gear.flavourZh || gear.flavourEn;
   const mirrored = locale === "en" ? gear.mirroredEn : gear.mirroredZh || gear.mirroredEn;
   const mods = gear.mods ?? [];
+  const baseMods = mods.length ? mods.filter((mod) => mod.kind === "implicit") : gear.implicits.map((row) => ({ ...row, kind: "implicit" }));
+  const isGranted = (row: (typeof baseMods)[number]) => /^(?:Grants Skill|賦予技能)\s*[:：]/iu.test(line(row, locale).trim());
+
+  const affixes: MemorialMod[] = mods.length
+    ? mods.filter((mod) => !["implicit", "socket", "corrupted", "enchanted"].includes(mod.kind))
+    : gear.affixes.map((row) => ({ ...row, kind: "explicit" }));
+  const order = (kind: string) => kind === "fractured" ? 0 : kind === "desecrated" ? 2 : kind === "crafted" ? 3 : 1;
+  affixes.sort((a, b) => order(a.kind) - order(b.kind));
+  const runeFrame = gear.rarity === "unique" && /runeforged|runemastered|符鍛|符煉/iu.test([gear.baseEn, gear.baseZh].join(" "));
+  const unique = gear.rarity === "unique";
+  const grouped = affixes.some((mod) => mod.generation);
 
   return (
-    <article className={`market-item market-item--${gear.rarity || "rare"}`}>
-      <div className="market-item-copy">
+    <article className={`market-item market-item--${gear.rarity || "normal"}`}>
+      <div className="market-item-copy" data-rune-frame={runeFrame || undefined} data-vaal-emblem={gear.rarity === "unique" && gear.nameEn === "Saitha's Spear" || undefined}>
         <div className="market-item-name">
           <h2>{name}</h2>
           {base && base !== name ? <p>{base}</p> : null}
         </div>
-        <section className="market-item-group market-item-stats">
+        {(quality || gear.itemLevel || gear.stats?.length) ? <section className="market-item-group market-item-stats">
+          {gear.itemLevel ? <p>{locale === "en" ? "Item level" : "物品等級"} {gear.itemLevel}</p> : null}
           {quality ? <p>{quality.includes("品質") || quality.includes("Quality") ? quality : `${locale === "en" ? "Quality" : "品質"}: ${quality}`}</p> : null}
           {(gear.stats ?? []).map((row) => (
             <p key={row.textEn || row.textZh} className="mt-1">
               {line(row, locale)}
             </p>
           ))}
-          {gear.itemLevel != null ? (
-            <p className="mt-1">{locale === "en" ? `Item Level: ${gear.itemLevel}` : `物品等級: ${gear.itemLevel}`}</p>
-          ) : null}
-          {requirements ? <p className="mt-1 text-sm text-muted">{requirements}</p> : null}
-        </section>
+        </section> : null}
+        {(gear.requirementsZh || gear.requirementsEn) && <p className="market-item-group">{locale === "en" ? gear.requirementsEn || gear.requirementsZh : gear.requirementsZh || gear.requirementsEn}</p>}
         {[
-          { label: locale === "en" ? "Base effects" : "底材效果", rows: mods.length ? mods.filter((mod) => mod.kind === "implicit") : gear.implicits.map((row) => ({ ...row, kind: "implicit" })) },
+          { label: locale === "en" ? "Enchant" : "附魔", rows: mods.filter((mod) => mod.kind === "enchanted") },
+          { label: "", rows: baseMods.filter(isGranted) },
+          { label: locale === "en" ? "Implicit" : "固定", rows: baseMods.filter((mod) => !isGranted(mod)) },
           { label: locale === "en" ? "Socket effects" : "鑲嵌效果", rows: mods.filter((mod) => mod.kind === "socket") },
-          { label: "", rows: mods.length ? mods.filter((mod) => !["implicit", "socket", "corrupted"].includes(mod.kind)) : gear.affixes.map((row) => ({ ...row, kind: "explicit" })) },
+          { label: locale === "en" ? "Prefixes" : "前綴", rows: affixes.filter((mod) => mod.generation === "prefix") },
+          { label: locale === "en" ? "Suffixes" : "後綴", rows: affixes.filter((mod) => mod.generation === "suffix") },
+          { label: unique ? (locale === "en" ? "Unique" : "傳奇") : grouped ? (locale === "en" ? "Other modifiers" : "其他詞條") : "", rows: affixes.filter((mod) => !mod.generation) },
           { label: "", rows: mods.filter((mod) => mod.kind === "corrupted") },
         ].map(({ label, rows }, index) => rows.length > 0 && (
-          <div className="market-item-group" key={index}>
+          <div className="market-item-group affix-block" key={index}>
             {label && <p className="market-item-label">{label}</p>}
             <ul>
               {rows.map((mod, rowIndex) => (
-                <li key={rowIndex} className="market-item-mod" data-kind={mod.kind}>
+                <li key={rowIndex} className="market-item-mod" data-kind={mod.kind} data-granted-skill={mod.kind === "implicit" && isGranted(mod) ? "" : undefined}>
+                  {mod.kind === "desecrated" && <small className="desecrated-tag">{locale === "en" ? "Desecrated" : "褻瀆"}</small>}
                   {mod.kind === "fractured" && <small>{locale === "en" ? "Fractured" : "鎖定"}</small>}
                   {mod.kind === "crafted" && <small>{locale === "en" ? "Crafted" : "工藝"}</small>}
-                  {line(mod, locale)}
+                  <span>{rollText(gear, mod, locale)}{"verifiedTier" in mod && typeof mod.verifiedTier === "number" ? (
+                    <small className="market-item-tier">T{mod.verifiedTier}</small>
+                  ) : gear.rarity === "rare" && ["explicit", "fractured"].includes(mod.kind) ? (
+                    <small className="market-item-tier">{locale === "en" ? "Tier unverified" : "階級未確認"}</small>
+                  ) : mod.kind === "enchanted" ? <small className="market-item-tier">E</small> : mod.kind === "crafted" || (gear.rarity === "unique" && mod.kind === "explicit") ? <small className="market-item-tier">{mod.kind === "crafted" ? "C" : "U"}</small> : null}</span>
                 </li>
               ))}
             </ul>
@@ -75,4 +94,24 @@ function line(row: { textZh: string; textEn: string }, locale: UiLocale): string
 
 function localizedName(gear: { nameZh: string; nameEn: string }, locale: UiLocale): string {
   return locale === "en" ? gear.nameEn || gear.nameZh : gear.nameZh || gear.nameEn;
+}
+
+// PoE2DB: Sylvans_Effigy, introduced in 0.5. Match the recorded modifier
+// before annotating its roll so other sources on the same item stay intact.
+const effigyRolls: [RegExp, string][] = [
+  [/^\d+% increased Spirit$/i, "50–75"],
+  [/^Allies in your Presence Regenerate \d+ Life per second$/i, "50–100"],
+  [/^\+\d+ to all Attributes$/i, "6–12"],
+  [/^Companions deal \d+% increased damage to your Marked targets$/i, "50–100"],
+];
+
+function rollText(gear: MemorialGear, mod: MemorialMod, locale: UiLocale): string {
+  const text = line(mod, locale);
+  if (gear.nameEn !== "Sylvan's Effigy" || mod.kind !== "explicit") return text;
+  const range = effigyRolls.find(([pattern]) => pattern.test(mod.textEn.trim()));
+  if (range) return text.replace(/\d+/, (roll) => roll + "(" + range[1] + ")");
+  if (mod.textEn === "You can have any number of Companions of different types") {
+    return text + (locale === "en" ? " — Fixed value" : " — 無法變動的值");
+  }
+  return text;
 }

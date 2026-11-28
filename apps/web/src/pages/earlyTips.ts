@@ -1,0 +1,352 @@
+export const EARLY_TIPS_TITLE = "開荒技巧";
+
+export const EARLY_TIPS_COLUMNS = [
+  "章節",
+  "地圖",
+  "技巧／地標",
+  "獎勵或設施",
+  "優先",
+] as const;
+
+export const EARLY_TIPS_INTRO = [
+  "現役開荒是第一章至第四章。0.5.5h 不改主線。永久獎勵以遊戲內任務圖示為準。",
+  "禁忌儀式是聯盟內容：每張主線圖都有祭祀，給升級用裝備與通貨；頭目祭祀會疊加，整串打完才用貢禮換傳奇。這不是永久主線獎勵。"
+] as const;
+
+export type EarlyTipRow = {
+  chapter: string;
+  map: string;
+  cue: string;
+  reward: string;
+  priority: "" | "優先";
+};
+
+export const earlyTipRows: readonly EarlyTipRow[] = [
+  {
+    "chapter": "第一章",
+    "map": "皆伐（Clearfell）",
+    "cue": "擊敗腐敗獸群．貝伊拉",
+    "reward": "+10% 冰冷抗性",
+    "priority": "優先"
+  },
+  {
+    "chapter": "第一章",
+    "map": "葛瑞爾林（The Grelwood）",
+    "cue": "前往赤谷（Red Vale）時，找到河道後沿上游走。尋找攝魂之樹時，改沿發光樹根走。地面出現蘑菇，代表已靠近纏縛陰林（Grim Tangle）入口。",
+    "reward": "",
+    "priority": ""
+  },
+  {
+    "chapter": "第一章",
+    "map": "獵場（Hunting Grounds）",
+    "cue": "前往奧格姆農地時留意路牌。要去弗雷索恩，先完成祭壇，再跟隨移動的蝗蟲。",
+    "reward": "",
+    "priority": ""
+  },
+  {
+    "chapter": "第一章",
+    "map": "鴉鈴（Crowbell）",
+    "cue": "在獵場沿途若看到被啄死的牛，這條路通往此處。",
+    "reward": "+2 武器套點",
+    "priority": ""
+  },
+  {
+    "chapter": "第一章",
+    "map": "弗雷索恩（Freythorn）",
+    "cue": "擊敗迷霧之王",
+    "reward": "+30 精魂",
+    "priority": "優先"
+  },
+  {
+    "chapter": "第一章",
+    "map": "奧格姆農地",
+    "cue": "烏娜的小屋",
+    "reward": "+2 武器套點",
+    "priority": ""
+  },
+  {
+    "chapter": "第一章",
+    "map": "奧格姆村",
+    "cue": "倫利的工作坊。把鍛造工具帶回皆伐營地交給倫利。",
+    "reward": "解鎖回收台",
+    "priority": ""
+  },
+  {
+    "chapter": "第一章",
+    "map": "奧格姆宅第",
+    "cue": "存活儀式．燭光。主線頭目是吉恩諾伯爵。",
+    "reward": "+20 最大生命",
+    "priority": ""
+  },
+  {
+    "chapter": "第二章",
+    "map": "叛徒之路（Traitor’s Passage）",
+    "cue": "在岔路尋找馬拉克斯卷軸標記。找叛徒．芭芭拉（Balbala）時走有標記的一支；要趕往出口就走另一支。",
+    "reward": "",
+    "priority": ""
+  },
+  {
+    "chapter": "第二章",
+    "map": "乳齒象惡地（Mastodon Badlands）",
+    "cue": "地面裂縫通往無光通道／靈魂之井。社群速度路線常先清此處與骨坑，再進凱斯城。",
+    "reward": "",
+    "priority": ""
+  },
+  {
+    "chapter": "第二章",
+    "map": "凱斯城",
+    "cue": "擊敗蟒蛇女王．卡巴拉",
+    "reward": "+2 武器套點",
+    "priority": ""
+  },
+  {
+    "chapter": "第二章",
+    "map": "泰坦之谷（Valley of the Titans）",
+    "cue": "進圖先看巨人石像的頭部，再找對應的峽谷。沿峽谷走到底可找到封印，回頭再選下一尊。",
+    "reward": "祭壇二選一：增加 30% 護符充能獲取並 +1 護符欄，或增加 30% 護符效果持續時間並 +1 護符欄",
+    "priority": ""
+  },
+  {
+    "chapter": "第二章",
+    "map": "戴斯哈（Deshar）",
+    "cue": "區域等級 28，可出較高階巨靈之幣。撿遺書交還夏布林。社群速度路線常等到這裡的 28 等幣，再打絲克瑪試煉（昇華前兩點），而不是一進第二章就用 22 等幣。",
+    "reward": "+2 武器套點",
+    "priority": ""
+  },
+  {
+    "chapter": "第二章",
+    "map": "戴斯哈尖塔",
+    "cue": "與卡洛翰的姐妹互動",
+    "reward": "+10% 閃電抗性",
+    "priority": "優先"
+  },
+  {
+    "chapter": "第二章",
+    "map": "絲克瑪試煉",
+    "cue": "鑰匙是巨靈之幣。",
+    "reward": "昇華第 1–2 點",
+    "priority": ""
+  },
+  {
+    "chapter": "第三章",
+    "map": "本章說明",
+    "cue": "遇到探險者時先交談，打開小地圖，依對話新增的標記前往下一區。",
+    "reward": "",
+    "priority": ""
+  },
+  {
+    "chapter": "第三章",
+    "map": "叢林遺跡",
+    "cue": "擊敗神威銀拳。感染荒地由此進入。",
+    "reward": "+2 武器套點",
+    "priority": ""
+  },
+  {
+    "chapter": "第三章",
+    "map": "劇毒墓穴",
+    "cue": "把歐洛克毒藥交給瑟維",
+    "reward": "三選一：增加 25% 暈眩門檻、增加 30% 元素異常狀態門檻、或增加 25% 魔力回復率",
+    "priority": ""
+  },
+  {
+    "chapter": "第三章",
+    "map": "龍蜥濕地",
+    "cue": "擊敗龍蜥．欽路錫安，取得最後通牒雕刻。0.5.5 起混沌試煉可中途離開再續。",
+    "reward": "可開混沌試煉（昇華第 3–4 點）",
+    "priority": ""
+  },
+  {
+    "chapter": "第三章",
+    "map": "吉卡尼的機械迷城",
+    "cue": "擊敗遺忘的黑顎",
+    "reward": "+10% 火焰抗性",
+    "priority": "優先"
+  },
+  {
+    "chapter": "第三章",
+    "map": "瑪特蘭水道",
+    "cue": "由此岔出阿札克泥沼。",
+    "reward": "",
+    "priority": ""
+  },
+  {
+    "chapter": "第三章",
+    "map": "阿札克泥沼",
+    "cue": "擊敗沼澤女巫．尹娜杜克",
+    "reward": "+30 精魂",
+    "priority": "優先"
+  },
+  {
+    "chapter": "第三章",
+    "map": "熔岩寶庫",
+    "cue": "擊敗冶煉師範．梅克圖後，拾起卡瑪薩之錘，帶回高地神塔營地交給奧斯瓦德。",
+    "reward": "解鎖重鑄台",
+    "priority": ""
+  },
+  {
+    "chapter": "第三章",
+    "map": "阿戈拉",
+    "cue": "完成血犧",
+    "reward": "+2 武器套點",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "本章說明",
+    "cue": "島嶼多半可自選順序。0.5.5c 起要先把船隻特許證交給瑪寇魯，島嶼才會開。第一座島後可解鎖藏身處。",
+    "reward": "解鎖藏身處",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "符文探求者",
+    "cue": "四張撕碎的地圖碎片在金氏島、凱吉灣、瓦卡帕努島、伯勞鳥之島。交給丹尼格拼成藏寶圖，再請瑪寇魯前往掠奪者之角，進入荒廢哨站完成此任務。",
+    "reward": "解鎖維里西姆鐵砧",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "金氏島",
+    "cue": "眼盲巨獸的獎勵不是武器套點。編年史任務獎勵寫硫酸藥劑與 12 等未切割技能寶石；同站第四章走法又寫高階空白符文。以遊戲內任務圖示為準。",
+    "reward": "硫酸藥劑與 12 等未切割技能寶石",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "瓦卡帕努島",
+    "cue": "擊敗大白鯊取得鯊魚鰭，交給尼加卡努（或金司馬區）的凱馬拿。",
+    "reward": "可選岡姆的教誨（增加 30% 全域護甲、閃避與能量護盾）或萊基亞塔的教誨（15% 的護甲同時套用至元素傷害；獲得等同 12% 閃避值的偏斜值；12% 能量護盾更快開始充能）",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "廢棄監獄",
+    "cue": "正義女神",
+    "reward": "增加 30% 藥劑的生命恢復，或增加 30% 藥劑的魔力恢復，二選一",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "悉妮蔻拉之眼",
+    "cue": "娜瓦莉憩地",
+    "reward": "+5% 最大魔力",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "亡者之殿",
+    "cue": "擊敗白之亞瑪可獲專精之書。先祖刺青由三處試煉各選一次，可選數值為 +5 力量、敏捷、智慧，或 +5% 火焰、閃電、冰冷抗性（永久，不可更改）；不是一次拿齊三抗或三屬。打完後進入祖靈的試煉，另有獎勵。",
+    "reward": "+2 武器套點",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "祖靈的試煉",
+    "cue": "擊敗白之亞瑪後拾起銀幣，進入此處與娜瓦莉交談，並使用悉妮蔻拉的刺青。",
+    "reward": "+2 武器套點",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "旅程之末",
+    "cue": "擊敗恐懼造物．歐姆弗畢亞。向金司馬區的圖貞回報，並使用纏繞迷霧之書。",
+    "reward": "+2 武器套點",
+    "priority": ""
+  },
+  {
+    "chapter": "第四章",
+    "map": "部族之心",
+    "cue": "主線頭目是圖克哈瑪酋長．塔瓦凱。",
+    "reward": "",
+    "priority": ""
+  }
+];
+
+export const EARLY_TIP_CHAPTERS = [
+  "第一章",
+  "第二章",
+  "第三章",
+  "第四章",
+] as const;
+
+export type EarlyTipSource = { label: string; href: string };
+
+/** Source groups under the table. Each group is one spec bullet. */
+export const earlyTipSourceGroups: readonly (readonly EarlyTipSource[])[] = [
+  [
+    {
+      "label": "0.5 版地標紀錄",
+      "href": "https://www.reddit.com/r/PathOfExile2/comments/1tvk2un/collecting_05_campaign_navigation_cueshintstips/"
+    }
+  ],
+  [
+    {
+      "label": "森林跑圖示範",
+      "href": "https://www.youtube.com/watch?v=G_z8gRdOWqw&t=134s"
+    }
+  ],
+  [
+    {
+      "label": "編年史第 1 章",
+      "href": "https://poe2db.tw/tw/Act_1"
+    },
+    {
+      "label": "第 2 章",
+      "href": "https://poe2db.tw/tw/Act_2"
+    },
+    {
+      "label": "第 3 章",
+      "href": "https://poe2db.tw/tw/Act_3"
+    },
+    {
+      "label": "第 4 章",
+      "href": "https://poe2db.tw/tw/Act_4"
+    }
+  ],
+  [
+    {
+      "label": "符文探求者",
+      "href": "https://poe2db.tw/tw/The_Runeseeker"
+    },
+    {
+      "label": "部落藥術",
+      "href": "https://poe2db.tw/tw/Tribal_Medicine"
+    }
+  ],
+  [
+    {
+      "label": "尋找熔爐",
+      "href": "https://poe2db.tw/tw/Finding_the_Forge"
+    },
+    {
+      "label": "奧札爾寶藏",
+      "href": "https://poe2db.tw/tw/Treasures_of_Utzaal"
+    },
+    {
+      "label": "祖靈的試煉",
+      "href": "https://poe2db.tw/tw/Trial_of_the_Ancestors"
+    },
+    {
+      "label": "暗黑迷霧",
+      "href": "https://poe2db.tw/tw/Dark_Mists"
+    },
+    {
+      "label": "萊基亞塔的教誨",
+      "href": "https://poe2db.tw/tw/Rakiatas_Lesson"
+    }
+  ]
+];
+
+export const EARLY_TIPS_FOOTNOTE = "乳齒象惡地裂縫見 Reddit 彙整與 0.5 補丁說明；官方 Streamlining 影片未示範。";
+
+export function filterEarlyTips(
+  rows: readonly EarlyTipRow[],
+  chapter: string,
+  priorityOnly: boolean,
+): EarlyTipRow[] {
+  return rows.filter((row) => {
+    if (chapter && row.chapter !== chapter) return false;
+    if (priorityOnly && row.priority !== "優先") return false;
+    return true;
+  });
+}

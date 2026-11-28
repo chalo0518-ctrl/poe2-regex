@@ -6,8 +6,8 @@ export default function EarlyLayout() {
   const { t } = useLocale();
   const items = [
     { to: "/early/chapters", label: t.earlyChapters },
+    { to: "/early/tips", label: t.earlyTips },
     { to: "/early/vendor", label: t.earlyVendor },
-    { to: "/early/builds", label: t.earlyBuilds },
     { to: "/early/gear", label: t.earlyGear },
   ];
   return (

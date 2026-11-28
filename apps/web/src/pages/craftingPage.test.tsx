@@ -70,7 +70,7 @@ describe("crafting page", () => {
     renderCrafting();
     const life = lifeFamily();
 
-    expect(screen.getByRole("link", { name: "做裝" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "裝備製作" })).toBeInTheDocument();
     const slotSelect = screen.getByLabelText("裝備部位");
     expect(slotSelect).toHaveValue("body");
     expect(within(slotSelect).getByRole("option", { name: "胸甲" })).toHaveProperty("selected", true);
@@ -91,6 +91,11 @@ describe("crafting page", () => {
     expect(within(weapons).getByRole("option", { name: "陷阱" })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: "力量" })).not.toBeInTheDocument();
     expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "建議下一步" })).toBeInTheDocument();
+    const tree = screen.getByText("決策樹", { selector: "summary" }).closest("details");
+    expect(tree).not.toHaveAttribute("open");
+    await user.click(screen.getByText("決策樹", { selector: "summary" }));
+    expect(tree).toHaveAttribute("open");
     expect(screen.getByText("craft-caps-v1")).toBeInTheDocument();
     expect(screen.getAllByText(/每件只能有 1 條工藝詞綴/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/重組器不在這條主路線/).length).toBeGreaterThan(0);
@@ -462,7 +467,7 @@ describe("crafting page", () => {
     const augment = screen.getByRole("region", { name: "增幅" });
     expect(within(augment).queryByRole("button", { name: /收合|展開/ })).not.toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "這件裝備" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "決策樹" })).toBeInTheDocument();
+    expect(screen.getByText("決策樹", { selector: "summary" })).toBeInTheDocument();
 
     const preset = screen.getByRole("region", { name: "預設詞綴" });
     const collapsePreset = within(preset).getByRole("button", { name: "收合預設詞綴" });
@@ -548,7 +553,7 @@ describe("crafting page", () => {
     expect(within(screen.getByRole("region", { name: "預設詞綴" })).getByRole("checkbox", { name: `${life.textZh} 已有` })).toBeChecked();
     expect(screen.getByRole("heading", { name: "這件裝備" })).toBeInTheDocument();
     expect(screen.getByLabelText("孔 1")).toHaveValue("Medveds_Tending");
-    expect(screen.getByRole("heading", { name: "決策樹" })).toBeInTheDocument();
+    expect(screen.getByText("決策樹", { selector: "summary" })).toBeInTheDocument();
   }, 15_000);
 
   it("lists same-type affixes together on both sheets", async () => {

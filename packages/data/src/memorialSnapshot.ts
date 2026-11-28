@@ -1,4 +1,8 @@
 import snapshot from "./ruoaCetacea.json";
+import { craftingSlots } from "./weapons.ts";
+import { earlyGearCatalog, isEarlyGearSlotId } from "./earlyGear.ts";
+import { weaponCatalog } from "./weapons.ts";
+import { recognizeMemorialModifier } from "./memorialTier.ts";
 import type { MemorialGear, MemorialMod, MemorialSocket, PaperDollSlotId, ShowcaseText } from "./bdShowcase.ts";
 
 /**
@@ -48,7 +52,7 @@ const ART: Record<string, string> = {
   "Cadigan's Epiphany": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Expedition2/GameWarpRune3.webp",
 };
 
-type RawText = { kind?: string; text_en?: string; text_zh?: string };
+type RawText = { verified_tier?: number; kind?: string; text_en?: string; text_zh?: string; prefix_suffix?: string | null };
 type RawNotable = { name_en?: string; name_zh?: string; mods?: RawText[] };
 type RawItem = {
   status?: string;
@@ -56,6 +60,7 @@ type RawItem = {
   name_en?: string | null;
   name_zh?: string | null;
   base_en?: string | null;
+  item_class_en?: string | null;
   base_zh?: string | null;
   quality?: string | null;
   item_level?: number | null;
@@ -117,7 +122,8 @@ function textOf(row: RawText): MemorialMod | null {
   const textEn = row.text_en ?? "";
   const textZh = row.text_zh ?? "";
   if (!textEn && !textZh) return null;
-  return { kind: row.kind || "explicit", textEn, textZh };
+  const generation = row.prefix_suffix === "prefix" || row.prefix_suffix === "suffix" ? row.prefix_suffix : undefined;
+  return { kind: row.kind || "explicit", textEn, textZh, generation, verifiedTier: row.verified_tier };
 }
 
 function modsOf(rows: RawText[] | undefined): MemorialMod[] {
@@ -188,6 +194,29 @@ function socketsOf(item: RawItem): MemorialSocket[] {
   }));
 }
 
+const itemClassToSlot: Record<string, string> = { "Body Armour": "body", "Helmet": "helmet" };
+const knownBasePools: Record<string, string> = {
+  "Ancestral Tiara": "int",
+  "Sekhema Sandals": "int",
+};
+
+function verifyTiers(item: RawItem, mods: MemorialMod[]): MemorialMod[] {
+  if (item.rarity !== "rare" || !item.item_class_en) return mods;
+  const slot = craftingSlots().find((row) => row.id === (itemClassToSlot[item.item_class_en ?? ""] ?? item.item_class_en?.toLowerCase()) ||
+    row.labelEn?.toLowerCase() === item.item_class_en?.toLowerCase());
+  if (!slot) return mods;
+  const pools = isEarlyGearSlotId(slot.id) ? earlyGearCatalog.byCategory[slot.id] : weaponCatalog.byCategory[slot.id];
+  if (!pools) return mods;
+  const knownPool = knownBasePools[item.base_en ?? ""];
+  const candidates = knownPool && pools[knownPool] ? [pools[knownPool]] : Object.values(pools);
+  return mods.map((mod) => {
+    if (mod.verifiedTier !== undefined) return mod;
+    if (!["explicit", "fractured", "crafted"].includes(mod.kind)) return mod;
+    const matched = recognizeMemorialModifier(mod, candidates, item.item_level ?? null, mod.generation);
+    return { ...mod, ...matched, verifiedTier: mod.kind === "crafted" ? undefined : matched.verifiedTier };
+  });
+}
+
 export function memorialGearFromRaw(item: RawItem): MemorialGear | null {
   if (item.status === "empty" || !item.name_en) return null;
   const rarity = item.rarity === "unique" || item.rarity === "rare" || item.rarity === "magic" ? item.rarity : "";
@@ -219,7 +248,7 @@ export function memorialGearFromRaw(item: RawItem): MemorialGear | null {
     requirementsEn: requirements.en,
     requirementsZh: requirements.zh,
     stats: statsOf(item.stats_shown),
-    mods,
+    mods: verifyTiers(item, mods),
     sockets: socketsOf(item),
     notables: notablesOf(item),
     flavourEn: item.flavour_en ?? "",

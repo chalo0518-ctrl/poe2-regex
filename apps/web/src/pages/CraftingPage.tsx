@@ -1,5 +1,6 @@
+import { recommendationBases, runeforgedName } from "./recommendationBases.ts";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   CRAFTING_CONSTRAINTS,
   CRAFTING_RULESET,
@@ -22,6 +23,7 @@ import {
   craftingSourcePath,
   CRAFT_DIAGRAM,
   decideCraft,
+  essenceFamiliesFor,
   desecratedFamiliesFor,
   effectText,
   harvestTags,
@@ -31,6 +33,8 @@ import {
   poolLabel,
   socketCountMax,
   socketSideCaps,
+  familiesForSocketAugments,
+  showcaseCatalog,
   type AffixFamily,
   type CraftDecision,
   type CraftDiagramNodeId,
@@ -39,6 +43,7 @@ import {
   type NonTargetClass,
 } from "@poe2-regex/data";
 import { ChroniclesModBuilder, type ModPickState } from "../components/ChroniclesModBuilder.tsx";
+import LedgerHero from "../components/LedgerHero.tsx";
 import { CraftDiagram } from "../components/CraftDiagram.tsx";
 import { useLocale } from "../i18n.tsx";
 
@@ -62,6 +67,14 @@ type OtherFlag = { tierIndex: number | null; desecrated: boolean };
 
 function isCraftTarget(pick: ModPickState | undefined): boolean {
   return pick?.polarity === "include" || pick?.polarity === "or";
+}
+
+function meetsTargetTier(family: AffixFamily, target: ModPickState | undefined, recorded: OwnedFlag | undefined): boolean {
+  const choices = craftTierChoices(family);
+  const minimum = choices.find((choice) => choice.index === target?.minTierIndex);
+  if (!minimum) return true;
+  const actual = choices.find((choice) => choice.index === recorded?.tierIndex);
+  return actual !== undefined && actual.rank <= minimum.rank;
 }
 
 function chosenTier(family: AffixFamily, pick: ModPickState | undefined) {
@@ -134,7 +147,50 @@ export default function CraftingPage() {
   const rawSlot = params.get("slot") || DEFAULT_SLOT;
   const slotId: CraftSlotId = isCraftSlotId(rawSlot) ? rawSlot : DEFAULT_SLOT;
   const slot = craftingSlotMeta(slotId);
-  const families = useMemo(() => craftingFamiliesFor(slotId), [slotId]);
+  const baseId = params.get("base");
+  const basePool = slot?.pools.find((pool) => pool.id === baseId);
+  const families = useMemo(() => basePool ? showcaseCatalog(slotId, basePool.id) : craftingFamiliesFor(slotId), [slotId, basePool]);
+  const fromSlot = params.get("fromSlot");
+  const blankStart = Boolean(fromSlot && basePool && params.get("start") === "blank");
+  const sourceSeason = params.get("season");
+  const imported = JSON.stringify(params.getAll("affix"));
+  const runeforgeBase = blankStart && params.get("runeforge") === "1"
+    ? recommendationBases.find((base) => base.slot === slotId && base.pool === basePool?.id &&
+      base.en === params.get("baseNameEn") && base.runeforge)
+    : undefined;
+  const encodedAugments = JSON.stringify(params.getAll("augment"));
+  const importedAugments = useMemo(() => {
+    const allowed = new Set(poolAugmentsForSlot(slotId).map((entry) => entry.id));
+    return (JSON.parse(encodedAugments) as string[]).slice(0, Math.max(2, socketCountMax(slotId)))
+      .map((id) => allowed.has(id) ? id : "");
+  }, [encodedAugments, slotId]);
+  const targetsFromRecommendation = useMemo(() => {
+    const result: Record<string, ModPickState> = {};
+    if (!basePool || !fromSlot) return result;
+    const familiesById = new Map<string, AffixFamily>();
+    for (const family of [
+      ...showcaseCatalog(slotId, basePool.id),
+      ...essenceFamiliesFor(slotId),
+      ...desecratedFamiliesFor(slotId),
+      ...familiesForSocketAugments(importedAugments),
+    ]) {
+      if (!familiesById.has(family.id)) familiesById.set(family.id, family);
+    }
+    for (const raw of JSON.parse(imported) as string[]) {
+      try {
+        const value: unknown = JSON.parse(raw);
+        if (!Array.isArray(value)) continue;
+        const [id, rank, tier] = value;
+        const family = typeof id === "string" ? familiesById.get(id) : undefined;
+        if (!family || (rank !== "required" && rank !== "optional")) continue;
+        const choice = craftTierChoices(family).find((entry) => entry.rank === tier);
+        result[family.id] = { polarity: rank === "required" ? "include" : "or", min: "", max: "", minTierIndex: choice?.index ?? null };
+      } catch {
+        // Ignore malformed shared settings.
+      }
+    }
+    return result;
+  }, [basePool?.id, fromSlot, imported, importedAugments, slotId]);
   const desecratedFamilies = useMemo(() => desecratedFamiliesFor(slotId), [slotId]);
 
   const [picks, setPicks] = useState<Record<string, ModPickState>>({});
@@ -175,8 +231,8 @@ export default function CraftingPage() {
     return groups;
   }, [socketPicks, locale, t]);
   const checklistFamilies = useMemo(
-    () => [...families, ...desecratedFamilies, ...augmentGroups.flatMap((group) => group.families)],
-    [families, desecratedFamilies, augmentGroups],
+    () => [...families, ...essenceFamiliesFor(slotId), ...desecratedFamilies, ...augmentGroups.flatMap((group) => group.families)],
+    [slotId, families, desecratedFamilies, augmentGroups],
   );
   const caps = useMemo(() => socketSideCaps(socketPicks), [socketPicks]);
   const tierCount = families.reduce((sum, family) => sum + family.tiers.length, 0);
@@ -194,7 +250,7 @@ export default function CraftingPage() {
   }, []);
 
   useEffect(() => {
-    setPicks({});
+    setPicks(targetsFromRecommendation);
     setOwned({});
     setItemLevelRaw("");
     setPrefixCount(0);
@@ -204,12 +260,12 @@ export default function CraftingPage() {
     setUnrevealed(false);
     setKeeper(false);
     setOthers({});
-    setSocketCount(2);
-    setSocketPicks(["", ""]);
+    setSocketCount(Math.max(2, importedAugments.length));
+    setSocketPicks(importedAugments.length >= 2 ? importedAugments : [importedAugments[0] ?? "", ""]);
     setPinnedNode(null);
     setLibraryTab("targets");
     setCollapsedPools({});
-  }, [slotId]);
+  }, [slotId, targetsFromRecommendation]);
 
   useEffect(() => {
     setPrefixCount((count) => Math.min(count, caps.prefix));
@@ -232,6 +288,11 @@ export default function CraftingPage() {
     });
   }, [selected]);
 
+  const minimumBaseLevel = selected.reduce((minimum, family) => {
+    const pick = picks[family.id];
+    if (pick?.polarity !== "include") return minimum;
+    return Math.max(minimum, chosenTier(family, pick)?.level ?? family.minLevel);
+  }, 0);
   const lockedId = selected.find((family) => picks[family.id]?.desecrationLock)?.id ?? null;
 
   useEffect(() => {
@@ -267,8 +328,9 @@ export default function CraftingPage() {
   }, [owned, lockedId]);
 
   const decision = useMemo(() => {
+    const required = fromSlot ? selected.filter((family) => picks[family.id]?.polarity === "include") : selected;
     return decideCraft({
-      includes: selected.map((family) => {
+      includes: required.map((family) => {
         const tier = chosenTier(family, picks[family.id]);
         return {
           id: family.id,
@@ -279,12 +341,12 @@ export default function CraftingPage() {
         };
       }),
       itemLevel: parseLevel(itemLevelRaw),
-      owned: selected
+      owned: required
         .filter((family) => owned[family.id]?.owned || lockedId === family.id)
         .map((family) => ({
           id: family.id,
           generation: family.generation,
-          highTier: owned[family.id]?.highTier !== false,
+          highTier: fromSlot ? meetsTargetTier(family, picks[family.id], owned[family.id]) : owned[family.id]?.highTier !== false,
         })),
       prefixCount,
       suffixCount,
@@ -312,6 +374,7 @@ export default function CraftingPage() {
   }, [
     checklistFamilies,
     selected,
+    fromSlot,
     itemLevelRaw,
     owned,
     lockedId,
@@ -329,7 +392,9 @@ export default function CraftingPage() {
     socketPicks,
   ]);
 
-  const shownNodeId = pinnedNode ?? (decision.fracturePending ? "fracture" : (decision.path.at(-1) ?? "fracture"));
+  const nextNodeId = decision.fracturePending ? "fracture" : (decision.path.at(-1) ?? "fracture");
+  const shownNodeId = pinnedNode ?? nextNodeId;
+  const nextStep = CRAFTING_TREE.find((row) => row.id === craftTreeNodeForDiagram(nextNodeId));
   const fractureName = (() => {
     const focus = decision.fractureFocus;
     if (!focus) return "";
@@ -372,319 +437,296 @@ export default function CraftingPage() {
   }
 
   return (
-    <div>
-      <section className="mb-5 rounded-sm border border-line bg-panel px-4 py-3" aria-label={t.craftingConstraintsLabel}>
-        <p className="text-xs tracking-[0.18em] text-gold-dim">
-          {t.craftingConstraintsLabel}
-          <span className="ml-2 font-mono normal-case tracking-normal">{CRAFTING_RULESET.id}</span>
-        </p>
-        <ul className="mt-2 space-y-1 text-sm text-paper">
-          {CRAFTING_CONSTRAINTS.map((line) => (
-            <li key={line.zhHant}>{craftLocaleText(line, locale)}</li>
-          ))}
-        </ul>
-      </section>
-
-      <label className="mb-5 flex items-center gap-2 text-sm text-gold">
-        {t.craftingSlotHeading}
-        <select
-          aria-label={t.craftingSlotHeading}
-          value={slotId}
-          onChange={(event) => setSlot(event.target.value as CraftSlotId)}
-          className="min-w-48 rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper outline-none focus:border-gold"
-        >
-          <optgroup label={t.craftingSlotGroupArmour}>
-            {armourSlots.map((item) => (
-              <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+    <main className="ledger-page ledger-crafting ledger-forge">
+      <LedgerHero title={t.crafting}>
+        {fromSlot && <Link className="text-gold underline" to={`/showcase/recommended/${encodeURIComponent(fromSlot)}${sourceSeason ? "?" + new URLSearchParams({ season: sourceSeason }) : ""}`}>
+          {locale === "en" ? "Back to recommendation" : "返回我的推薦詞條"}
+        </Link>}
+        {basePool && <p>{locale === "en" ? params.get("baseNameEn") || basePool.labelEn || basePool.labelZh : params.get("baseNameZh") || basePool.labelZh}</p>}
+        {locale === "en" ? "Choose an item base and target modifiers to get your next step." : "選擇裝備部位與目標詞綴，查看這件裝備下一步怎麼做。"}
+      </LedgerHero>
+      <div className="ledger-content">
+        <details className="ledger-details mb-5" aria-label={t.craftingConstraintsLabel}>
+          <summary className="text-sm text-gold">
+            {t.craftingConstraintsLabel}
+            <span className="ml-2 font-mono normal-case tracking-normal">{CRAFTING_RULESET.id}</span>
+          </summary>
+          <ul className="mt-2 space-y-1 text-sm text-paper">
+            {CRAFTING_CONSTRAINTS.map((line) => (
+              <li key={line.zhHant}>{craftLocaleText(line, locale)}</li>
             ))}
-          </optgroup>
-          <optgroup label={t.craftingSlotGroupJewellery}>
-            {jewellerySlots.map((item) => (
-              <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
-            ))}
-          </optgroup>
-          <optgroup label={t.craftingSlotGroupWeapon}>
-            {weaponSlots.map((item) => (
-              <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
-            ))}
-          </optgroup>
-        </select>
-      </label>
+          </ul>
+        </details>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,26rem)]">
-        <div className="min-w-0">
-          <SocketFilter
-            slotId={slotId}
-            socketCount={socketCount}
-            socketMax={socketMax}
-            socketPicks={socketPicks}
-            onAdd={() => {
-              setSocketCount((count) => count + 1);
-              setSocketPicks((prev) => [...prev, ""]);
-            }}
-            onRemove={() => {
-              setSocketCount((count) => Math.max(2, count - 1));
-              setSocketPicks((prev) => prev.slice(0, Math.max(2, prev.length - 1)));
-            }}
-            onPick={(index, id) => {
-              setSocketPicks((prev) => {
-                const copy = prev.slice();
-                copy[index] = id;
-                return copy;
-              });
-            }}
-          />
-          <div>
-            <div role="tablist" aria-label={t.craftingLibraryTabs} className="flex items-end gap-1 border-b border-line">
-              {([
-                ["targets", t.craftingTabTargets],
-                ["owned", t.craftingTabOwned],
-              ] as const).map(([id, label]) => {
-                const active = libraryTab === id;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    role="tab"
-                    id={`craft-library-tab-${id}`}
-                    aria-selected={active}
-                    aria-controls={`craft-library-panel-${id}`}
-                    onClick={() => setLibraryTab(id)}
-                    className={`rounded-t-sm border border-b-0 px-3 py-1.5 text-sm ${
-                      active
-                        ? "border-line bg-panel text-gold"
-                        : "border-transparent bg-raised text-muted hover:text-paper"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-            <div
-              role="tabpanel"
-              id="craft-library-panel-targets"
-              aria-labelledby="craft-library-tab-targets"
-              hidden={libraryTab !== "targets"}
-              className="pt-3"
-            >
-              <ChroniclesModBuilder
-                key={slotId}
-                kicker="CRAFTING · TARGETS"
-                title={t.craftingTargetsTitle}
-                description={t.craftingTargetsDesc}
-                statsNote={t.statsFamilies(families.length, tierCount)}
-                sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
-                harvestTags={harvestTags}
-                families={families}
-                extraGroups={augmentGroups}
-                abyssFamilies={desecratedFamilies}
-                collapsedPools={collapsedPools}
-                onTogglePool={togglePool}
-                importHint={t.earlyGearImportHint}
-                picksValue={picks}
-                onPicksChange={setPicks}
-                dockRegex={false}
-                regexCaption={t.craftingRegexCaption}
-                pickMode="target"
-                prefixCap={caps.prefix}
-                suffixCap={caps.suffix}
-              />
-            </div>
-            <div
-              role="tabpanel"
-              id="craft-library-panel-owned"
-              aria-labelledby="craft-library-tab-owned"
-              hidden={libraryTab !== "owned"}
-              className="pt-3"
-            >
-              <ChroniclesModBuilder
-                key={`${slotId}-owned`}
-                kicker="CRAFTING · OWNED"
-                title={t.craftingTabOwned}
-                description={t.craftingOwnedDesc}
-                statsNote={t.statsFamilies(families.length, tierCount)}
-                sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
-                harvestTags={harvestTags}
-                families={families}
-                extraGroups={augmentGroups}
-                abyssFamilies={desecratedFamilies}
-                collapsedPools={collapsedPools}
-                onTogglePool={togglePool}
-                importHint={t.earlyGearImportHint}
-                picksValue={ownedPicks}
-                onPicksChange={onOwnedPicksChange}
-                dockRegex={false}
-                showRegex={false}
-                pickMode="target"
-                rowKind="owned"
-                stickyLock
-                selectionCount={t.craftingOwnedCount}
-                prefixCap={caps.prefix}
-                suffixCap={caps.suffix}
-              />
-            </div>
-          </div>
-          <ItemPanel
-            decision={decision}
-            fractureNote={fractureNote}
-            oddsNote={oddsNote}
-            plan={plan}
-            unrevealed={unrevealed}
-            onUnrevealed={setUnrevealed}
-            sideLabel={sideLabel}
-            itemLevelRaw={itemLevelRaw}
-            onItemLevel={setItemLevelRaw}
-            targetSide={targetSide}
-            onTargetSide={setTargetSide}
-            prefixCount={prefixCount}
-            suffixCount={suffixCount}
-            onPrefixCount={setPrefixCount}
-            onSuffixCount={setSuffixCount}
-            goodFracture={goodFracture}
-            garbageFracture={garbageFracture}
-            onGoodFracture={(next) => {
-              setGoodFracture(next);
-              if (next) setGarbageFracture(false);
-            }}
-            onGarbageFracture={(next) => {
-              setGarbageFracture(next);
-              if (next) setGoodFracture(false);
-            }}
-            keeper={keeper}
-            onKeeper={setKeeper}
-            tightBudget={tightBudget}
-            onTightBudget={setTightBudget}
-            families={checklistFamilies}
-            selectedIds={selected.map((family) => family.id)}
-            others={others}
-            classes={decision.removal.classes}
-            prefixCap={caps.prefix}
-            suffixCap={caps.suffix}
-            onAddOther={(id, tierIndex, desecrated) => {
-              setOthers((prev) => ({ ...prev, [id]: { tierIndex, desecrated } }));
-            }}
-            onRemoveOther={(id) => {
-              setOthers((prev) => {
-                const next = { ...prev };
-                delete next[id];
-                return next;
-              });
-            }}
-          />
-        </div>
+        <label className="ledger-base-picker">
+          {t.craftingSlotHeading}
+          <select
+            aria-label={t.craftingSlotHeading}
+            value={slotId}
+            onChange={(event) => setSlot(event.target.value as CraftSlotId)}
+            className="min-w-48 rounded-sm border border-line bg-ink px-2 py-1.5 text-sm text-paper outline-none focus:border-gold"
+          >
+            <optgroup label={t.craftingSlotGroupArmour}>
+              {armourSlots.map((item) => (
+                <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+              ))}
+            </optgroup>
+            <optgroup label={t.craftingSlotGroupJewellery}>
+              {jewellerySlots.map((item) => (
+                <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+              ))}
+            </optgroup>
+            <optgroup label={t.craftingSlotGroupWeapon}>
+              {weaponSlots.map((item) => (
+                <option key={item.id} value={item.id}>{poolLabel(item, locale)}</option>
+              ))}
+            </optgroup>
+          </select>
+        </label>
+        <a className="ledger-guide-jump" href="#craft-guide">
+          {locale === "en" ? "View next step" : "查看建議下一步"} <span aria-hidden="true">↓</span>
+        </a>
 
-        <aside className="min-w-0 xl:sticky xl:top-20 xl:max-h-[calc(100svh-6rem)] xl:overflow-y-auto">
-          <section className="rounded-sm border border-line bg-panel px-3 py-3" aria-labelledby="craft-tree-heading">
-            <h2 id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</h2>
-            <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
-            <CraftDiagram
-              path={decision.path}
-              fractureNote={fractureNote}
-              selectedId={shownNodeId}
-              onSelect={setPinnedNode}
-              detail={shownDiagram && shownTree ? (
-                <div className="mt-2 space-y-2 rounded-sm border border-line bg-panel px-2 py-2 text-xs leading-relaxed text-paper" data-craft-detail>
-                  <p className="text-gold">
-                    {craftLocaleText(shownDiagram.title, locale)}
-                    {" · "}
-                    {craftLocaleText(shownTree.title, locale)}
-                  </p>
-                  <p>{craftLocaleText(shownDiagram.choice, locale)}</p>
-                  <NodeBlock label={t.craftingSectionAction} body={craftLocaleText(shownTree.action, locale)} />
-                  <NodeBlock label={t.craftingSectionMaterials} body={craftLocaleText(shownTree.materials, locale)} />
-                  <NodeBlock label={t.craftingSectionSkip} body={craftLocaleText(shownTree.skip, locale)} />
-                  <NodeBlock label={t.craftingSectionIrreversible} body={craftLocaleText(shownTree.irreversible, locale)} />
-                  <NodeBlock label={t.craftingSectionWarning} body={craftLocaleText(shownTree.warning, locale)} />
-                </div>
-              ) : null}
-              augments={decision.socketAugments.map((row) => ({
-                key: `${row.socket}-${row.id}`,
-                text: `${t.craftingSocketN(row.socket)} · ${locale === "en" ? row.nameEn : row.nameZh} · ${
-                  locale === "en" ? row.effectEn : row.effectZh
-                }`,
-              }))}
-            />
+        {blankStart && (
+          <section className="ledger-next-step mb-4 p-4" aria-label={locale === "en" ? "Start from a blank base" : "從空白底材開始"}>
+            <h2>{locale === "en" ? "Start from a blank base" : "從空白底材開始"}</h2>
+            <p>{locale === "en" ? "Prepare the selected base with no explicit modifiers. Record each result as you craft." : "先準備所選底材，起始前後綴皆為 0。製作後可逐步記錄實際成果。"}</p>
+            {runeforgeBase && <p>{locale === "en"
+              ? `Runeforge at the Verisium Anvil using ${runeforgeBase.runeforge} Verisium to obtain ${runeforgedName(runeforgeBase, locale)}.`
+              : `在維里西姆鐵砧消耗 ${runeforgeBase.runeforge} 維里西姆，將普通底材轉為${runeforgedName(runeforgeBase, locale)}。`}</p>}
+            {(["include", "or"] as const).map((polarity) => {
+              const targets = selected.filter((family) => picks[family.id]?.polarity === polarity);
+              if (!targets.length) return null;
+              return <div key={polarity} className="mt-3">
+                <h3 className="text-gold">{polarity === "include" ? (locale === "en" ? "Required targets" : "必要詞綴") : (locale === "en" ? "Recommended targets" : "推薦詞綴")}</h3>
+                <ul className="mt-1 space-y-1">
+                  {targets.map((family) => {
+                    const tier = craftTierChoices(family).find((choice) => choice.index === picks[family.id]?.minTierIndex);
+                    const row = tier && family.tiers[tier.index];
+                    const description = locale === "en" ? row?.textEn || family.labelEn : row?.textZh || family.labelZh;
+                    const recorded = owned[family.id];
+                    const recordedTier = craftTierChoices(family).find((choice) => choice.index === recorded?.tierIndex);
+                    const status = !recorded?.owned ? (locale === "en" ? "Pending" : "尚未取得") : meetsTargetTier(family, picks[family.id], recorded) ? (locale === "en" ? "Met" : "已達標") : !recordedTier ? (locale === "en" ? "Tier unrecorded" : "階級未記錄") : (locale === "en" ? "Below target tier" : "未達目標階級");
+                    return <li key={family.id}>{family.id.startsWith("essence:sorcery:") ? <strong className="mr-2 text-gold">{locale === "en" ? "Fixed" : "固定"}</strong> : tier && <strong className="mr-2 text-gold">T{tier.rank}</strong>}{description}<small className="ml-3 text-muted">{status}</small>{family.id.startsWith("essence:wand:") && <small className="block text-muted">{family.tiers[0]?.nameEn.startsWith("Perfect") ? (locale === "en" ? "Use on a rare item; a random modifier is replaced." : "用於稀有裝備，隨機替換一條詞綴。") : (locale === "en" ? "Use on a magic item to upgrade it to rare with this modifier." : "用於魔法裝備，升級為稀有裝備並取得此詞綴。")}</small>}{family.id.startsWith("essence:sorcery:") && <small className="block text-muted">{locale === "en" ? "Use Perfect Essence of Sorcery on a rare item. It removes a random modifier; an existing required modifier may be lost." : "在稀有裝備使用完美巫術精髓。它會隨機移除一條詞綴，已有的必要詞綴可能被替換。"}</small>}</li>;
+                  })}
+                </ul>
+              </div>;
+            })}
+            {minimumBaseLevel > 0 && <p>{locale === "en" ? `Minimum item level for required targets: ${minimumBaseLevel}` : `必要詞綴所需最低物品等級：${minimumBaseLevel}`}</p>}
           </section>
-        </aside>
+        )}
+        <div className="ledger-workbench">
+          <div className="ledger-workbench-inputs">
+            <SocketFilter
+              slotId={slotId}
+              socketCount={socketCount}
+              socketMax={socketMax}
+              socketPicks={socketPicks}
+              onAdd={() => {
+                setSocketCount((count) => count + 1);
+                setSocketPicks((prev) => [...prev, ""]);
+              }}
+              onRemove={() => {
+                setSocketCount((count) => Math.max(2, count - 1));
+                setSocketPicks((prev) => prev.slice(0, Math.max(2, prev.length - 1)));
+              }}
+              onPick={(index, id) => {
+                setSocketPicks((prev) => {
+                  const copy = prev.slice();
+                  copy[index] = id;
+                  return copy;
+                });
+              }}
+            />
+            <div>
+              <div role="tablist" aria-label={t.craftingLibraryTabs} className="ledger-craft-tabs">
+                {([
+                  ["targets", t.craftingTabTargets],
+                  ["owned", t.craftingTabOwned],
+                ] as const).map(([id, label]) => {
+                  const active = libraryTab === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      role="tab"
+                      id={`craft-library-tab-${id}`}
+                      aria-selected={active}
+                      aria-controls={`craft-library-panel-${id}`}
+                      onClick={() => setLibraryTab(id)}
+                      className={`rounded-t-sm border border-b-0 px-3 py-1.5 text-sm ${
+                        active
+                          ? "border-line bg-panel text-gold"
+                          : "border-transparent bg-raised text-muted hover:text-paper"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+              <div
+                role="tabpanel"
+                id="craft-library-panel-targets"
+                aria-labelledby="craft-library-tab-targets"
+                hidden={libraryTab !== "targets"}
+                className="pt-3"
+              >
+                <ChroniclesModBuilder
+                  key={slotId}
+                  kicker="CRAFTING · TARGETS"
+                  title={t.craftingTargetsTitle}
+                  description={t.craftingTargetsDesc}
+                  statsNote={t.statsFamilies(families.length, tierCount)}
+                  sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
+                  harvestTags={harvestTags}
+                  families={families}
+                  extraGroups={augmentGroups}
+                  abyssFamilies={desecratedFamilies}
+                  collapsedPools={collapsedPools}
+                  onTogglePool={togglePool}
+                  importHint={t.earlyGearImportHint}
+                  picksValue={picks}
+                  onPicksChange={setPicks}
+                  dockRegex={false}
+                  regexCaption={t.craftingRegexCaption}
+                  pickMode="target"
+                  prefixCap={caps.prefix}
+                  suffixCap={caps.suffix}
+                />
+              </div>
+              <div
+                role="tabpanel"
+                id="craft-library-panel-owned"
+                aria-labelledby="craft-library-tab-owned"
+                hidden={libraryTab !== "owned"}
+                className="pt-3"
+              >
+                <ChroniclesModBuilder
+                  key={`${slotId}-owned`}
+                  kicker="CRAFTING · OWNED"
+                  title={t.craftingTabOwned}
+                  description={t.craftingOwnedDesc}
+                  statsNote={t.statsFamilies(families.length, tierCount)}
+                  sourceNote={t.sourcePoe2db(slot ? craftingSourcePath(slot) : "")}
+                  harvestTags={harvestTags}
+                  families={families}
+                  extraGroups={augmentGroups}
+                  abyssFamilies={desecratedFamilies}
+                  collapsedPools={collapsedPools}
+                  onTogglePool={togglePool}
+                  importHint={t.earlyGearImportHint}
+                  picksValue={ownedPicks}
+                  onPicksChange={onOwnedPicksChange}
+                  dockRegex={false}
+                  showRegex={false}
+                  pickMode="target"
+                  rowKind="owned"
+                  stickyLock
+                  selectionCount={t.craftingOwnedCount}
+                  prefixCap={caps.prefix}
+                  suffixCap={caps.suffix}
+                />
+              </div>
+            </div>
+            <ItemPanel
+              plan={plan}
+              unrevealed={unrevealed}
+              onUnrevealed={setUnrevealed}
+              itemLevelRaw={itemLevelRaw}
+              onItemLevel={setItemLevelRaw}
+              targetSide={targetSide}
+              onTargetSide={setTargetSide}
+              prefixCount={prefixCount}
+              suffixCount={suffixCount}
+              onPrefixCount={setPrefixCount}
+              onSuffixCount={setSuffixCount}
+              goodFracture={goodFracture}
+              garbageFracture={garbageFracture}
+              onGoodFracture={(next) => {
+                setGoodFracture(next);
+                if (next) setGarbageFracture(false);
+              }}
+              onGarbageFracture={(next) => {
+                setGarbageFracture(next);
+                if (next) setGoodFracture(false);
+              }}
+              keeper={keeper}
+              onKeeper={setKeeper}
+              tightBudget={tightBudget}
+              onTightBudget={setTightBudget}
+              families={checklistFamilies}
+              selectedIds={selected.map((family) => family.id)}
+              others={others}
+              classes={decision.removal.classes}
+              prefixCap={caps.prefix}
+              suffixCap={caps.suffix}
+              onAddOther={(id, tierIndex, desecrated) => {
+                setOthers((prev) => ({ ...prev, [id]: { tierIndex, desecrated } }));
+              }}
+              onRemoveOther={(id) => {
+                setOthers((prev) => {
+                  const next = { ...prev };
+                  delete next[id];
+                  return next;
+                });
+              }}
+            />
+          </div>
+
+          <aside className="ledger-workbench-guide" id="craft-guide">
+            <p className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-sm tabular-nums text-muted">
+              <span>{locale === "en" ? "Open prefix slots" : "剩餘前綴空位"} <strong className="text-gold">{Math.max(0, caps.prefix - prefixCount)} / {caps.prefix}</strong></span>
+              <span>{locale === "en" ? "Open suffix slots" : "剩餘後綴空位"} <strong className="text-gold">{Math.max(0, caps.suffix - suffixCount)} / {caps.suffix}</strong></span>
+            </p>
+            <CraftNextStep decision={decision} step={nextStep} ready={selected.length > 0}
+              fractureNote={fractureNote} oddsNote={oddsNote} sideLabel={sideLabel} tightBudget={tightBudget} />
+            <details className="ledger-details mt-4" aria-labelledby="craft-tree-heading">
+              <summary id="craft-tree-heading" className="text-sm font-medium text-gold">{t.craftingTreeHeading}</summary>
+              <p className="mt-1 mb-3 text-xs text-muted">{t.craftingTreeHint}</p>
+              <CraftDiagram
+                path={decision.path}
+                fractureNote={fractureNote}
+                selectedId={shownNodeId}
+                onSelect={setPinnedNode}
+                detail={shownDiagram && shownTree ? (
+                  <div className="mt-2 space-y-2 rounded-sm border border-line bg-panel px-2 py-2 text-xs leading-relaxed text-paper" data-craft-detail>
+                    <p className="text-gold">
+                      {craftLocaleText(shownDiagram.title, locale)}
+                      {" · "}
+                      {craftLocaleText(shownTree.title, locale)}
+                    </p>
+                    <p>{craftLocaleText(shownDiagram.choice, locale)}</p>
+                    <NodeBlock label={t.craftingSectionAction} body={craftLocaleText(shownTree.action, locale)} />
+                    <NodeBlock label={t.craftingSectionMaterials} body={craftLocaleText(shownTree.materials, locale)} />
+                    <NodeBlock label={t.craftingSectionSkip} body={craftLocaleText(shownTree.skip, locale)} />
+                    <NodeBlock label={t.craftingSectionIrreversible} body={craftLocaleText(shownTree.irreversible, locale)} />
+                    <NodeBlock label={t.craftingSectionWarning} body={craftLocaleText(shownTree.warning, locale)} />
+                  </div>
+                ) : null}
+                augments={decision.socketAugments.map((row) => ({
+                  key: `${row.socket}-${row.id}`,
+                  text: `${t.craftingSocketN(row.socket)} · ${locale === "en" ? row.nameEn : row.nameZh} · ${
+                    locale === "en" ? row.effectEn : row.effectZh
+                  }`,
+                }))}
+              />
+            </details>
+          </aside>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }
 
-function NodeBlock({ label, body }: { label: string; body: string }) {
-  return (
-    <p>
-      <span className="text-gold-dim">{label} · </span>
-      {body}
-    </p>
-  );
-}
-
-function ItemPanel({
-  decision,
-  fractureNote,
-  oddsNote,
-  plan,
-  unrevealed,
-  onUnrevealed,
-  sideLabel,
-  itemLevelRaw,
-  onItemLevel,
-  targetSide,
-  onTargetSide,
-  prefixCount,
-  suffixCount,
-  onPrefixCount,
-  onSuffixCount,
-  goodFracture,
-  garbageFracture,
-  onGoodFracture,
-  onGarbageFracture,
-  keeper,
-  onKeeper,
-  tightBudget,
-  onTightBudget,
-  families,
-  selectedIds,
-  others,
-  classes,
-  onAddOther,
-  onRemoveOther,
-  prefixCap,
-  suffixCap,
-}: {
+function CraftNextStep({ decision, step, ready, fractureNote, oddsNote, sideLabel, tightBudget }: {
   decision: CraftDecision;
+  step: (typeof CRAFTING_TREE)[number] | undefined;
+  ready: boolean;
   fractureNote: string;
   oddsNote: string;
-  plan: { id: string; name: string; source: string; text: string }[];
-  unrevealed: boolean;
-  onUnrevealed: (value: boolean) => void;
   sideLabel: string;
-  itemLevelRaw: string;
-  onItemLevel: (value: string) => void;
-  targetSide: ModSide | "auto";
-  onTargetSide: (value: ModSide | "auto") => void;
-  prefixCount: number;
-  suffixCount: number;
-  onPrefixCount: (value: number) => void;
-  onSuffixCount: (value: number) => void;
-  goodFracture: boolean;
-  garbageFracture: boolean;
-  onGoodFracture: (value: boolean) => void;
-  onGarbageFracture: (value: boolean) => void;
-  keeper: boolean;
-  onKeeper: (value: boolean) => void;
   tightBudget: boolean;
-  onTightBudget: (value: boolean) => void;
-  families: AffixFamily[];
-  selectedIds: string[];
-  others: Record<string, OtherFlag>;
-  classes: { id: string; classification: NonTargetClass }[];
-  onAddOther: (id: string, tierIndex: number | null, desecrated: boolean) => void;
-  onRemoveOther: (id: string) => void;
-  prefixCap: number;
-  suffixCap: number;
 }) {
   const { locale, t } = useLocale();
   const headline = craftVerdictHeadline(decision, locale);
@@ -697,12 +739,20 @@ function ItemPanel({
   const cleanup = decision.cleanup === "none" ? null : CRAFT_CLEANUP_TEXT[decision.cleanup];
 
   return (
-    <section className="mt-6 rounded-sm border border-line bg-panel p-3" aria-labelledby="craft-now-heading">
-      <h2 id="craft-now-heading" className="text-sm font-medium text-gold">{t.craftingNowHeading}</h2>
-      <p className="mt-1 text-xs text-muted">{t.craftingNowHint}</p>
-
+    <section className="ledger-next-step" aria-labelledby="craft-next-heading">
+      <h2 id="craft-next-heading">{locale === "en" ? "Next step" : "建議下一步"}</h2>
+      {!ready ? <p className="mt-2 text-sm text-muted">
+        {locale === "en" ? "Select at least one target modifier to get a recommendation." : "先選擇至少一條目標詞綴，即可查看建議。"}
+      </p> : null}
       <div className={`mt-3 rounded-sm border px-3 py-3 ${tone}`} data-verdict={decision.verdict} aria-live="polite">
         <p className="text-base font-bold">{headline}</p>
+        {ready && step && decision.verdict === "continue" ? (
+          <div className="mt-3 space-y-2 text-sm text-paper">
+            <p className="font-semibold text-gold">{craftLocaleText(step.title, locale)}</p>
+            <p>{craftLocaleText(step.action, locale)}</p>
+            <NodeBlock label={locale === "en" ? "When to stop" : "停手條件"} body={craftLocaleText(step.warning, locale)} />
+          </div>
+        ) : null}
         {fractureNote ? <p className="mt-2 text-xs text-paper">{fractureNote}</p> : null}
         {oddsNote ? <p className="mt-1 text-xs text-gold" data-fracture-odds>{oddsNote}</p> : null}
         <p className="mt-1 text-xs text-muted">{t.craftingResolvedSide(sideLabel)}</p>
@@ -734,6 +784,82 @@ function ItemPanel({
         )}
         {tightBudget && <p className="mt-2 text-xs text-gold">{t.craftingBudgetOn}</p>}
       </div>
+    </section>
+  );
+}
+
+function NodeBlock({ label, body }: { label: string; body: string }) {
+  return (
+    <p>
+      <span className="text-gold-dim">{label} · </span>
+      {body}
+    </p>
+  );
+}
+
+function ItemPanel({
+  plan,
+  unrevealed,
+  onUnrevealed,
+  itemLevelRaw,
+  onItemLevel,
+  targetSide,
+  onTargetSide,
+  prefixCount,
+  suffixCount,
+  onPrefixCount,
+  onSuffixCount,
+  goodFracture,
+  garbageFracture,
+  onGoodFracture,
+  onGarbageFracture,
+  keeper,
+  onKeeper,
+  tightBudget,
+  onTightBudget,
+  families,
+  selectedIds,
+  others,
+  classes,
+  onAddOther,
+  onRemoveOther,
+  prefixCap,
+  suffixCap,
+}: {
+  plan: { id: string; name: string; source: string; text: string }[];
+  unrevealed: boolean;
+  onUnrevealed: (value: boolean) => void;
+  itemLevelRaw: string;
+  onItemLevel: (value: string) => void;
+  targetSide: ModSide | "auto";
+  onTargetSide: (value: ModSide | "auto") => void;
+  prefixCount: number;
+  suffixCount: number;
+  onPrefixCount: (value: number) => void;
+  onSuffixCount: (value: number) => void;
+  goodFracture: boolean;
+  garbageFracture: boolean;
+  onGoodFracture: (value: boolean) => void;
+  onGarbageFracture: (value: boolean) => void;
+  keeper: boolean;
+  onKeeper: (value: boolean) => void;
+  tightBudget: boolean;
+  onTightBudget: (value: boolean) => void;
+  families: AffixFamily[];
+  selectedIds: string[];
+  others: Record<string, OtherFlag>;
+  classes: { id: string; classification: NonTargetClass }[];
+  onAddOther: (id: string, tierIndex: number | null, desecrated: boolean) => void;
+  onRemoveOther: (id: string) => void;
+  prefixCap: number;
+  suffixCap: number;
+}) {
+  const { t } = useLocale();
+
+  return (
+    <section className="mt-6 rounded-sm border border-line bg-panel p-3" aria-labelledby="craft-now-heading">
+      <h2 id="craft-now-heading" className="text-sm font-medium text-gold">{t.craftingNowHeading}</h2>
+      <p className="mt-1 text-xs text-muted">{t.craftingNowHint}</p>
 
       {plan.length > 0 && (
         <div className="mt-3 rounded-sm border border-line px-3 py-2" data-craft-plan>

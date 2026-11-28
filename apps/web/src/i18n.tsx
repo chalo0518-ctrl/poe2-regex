@@ -37,6 +37,9 @@ type Messages = {
   homeEndgameBody: string;
   subNavAria: string;
   earlyChapters: string;
+  earlyTips: string;
+  earlyTipsCueLead: string;
+  earlyTipsCueEnd: string;
   earlyVendor: string;
   earlyBuilds: string;
   earlyGear: string;
@@ -274,27 +277,30 @@ type Messages = {
 };
 
 const zhHant: Messages = {
-  brand: "流放之路 2 正則",
+  brand: "流亡手札",
   navAria: "主模組",
   early: "開荒／新手",
   endgame: "終局",
   homeKicker: "PATH OF EXILE 2",
-  homeTitle: "正則工具",
+  homeTitle: "流亡手札",
   homeLead:
     "依遊玩階段選擇模組。開荒依章節提供商店裝備預設正則；終局有換界石、碑牌詞綴正則，以及做裝決策。賽季 BD 用紙娃娃紀念當下配裝，並整理同一條 BD 的推薦詞條。",
   homeEarlyBody:
-    "章節地圖、商店裝備篩選（各章預設生命／移速／抗性）、流派推薦裝備。開荒裝備詞綴可切換胸甲／頭盔／手套／鞋子／飾品／單手錘／盾牌。",
+    "章節地圖、商店裝備篩選（各章預設生命／移速／抗性）。開荒裝備詞綴可切換胸甲／頭盔／手套／鞋子／飾品／單手錘／盾牌。",
   homeEndgameBody:
     "換界石依市集終局篩選（階級、效用、稀有度、掉落率、經驗、群大小、復活、金幣）產生正則，與八種碑牌詞綴正則。碑牌必須先選種類。做裝依部位與目標詞綴給出繼續、換底或降目標。",
   subNavAria: "子頁面",
   earlyChapters: "章節地圖",
+  earlyTips: "開荒技巧",
+  earlyTipsCueLead: "地標、永久獎勵與設施見",
+  earlyTipsCueEnd: "。",
   earlyVendor: "商店裝備篩選",
   earlyBuilds: "流派推薦裝備",
   earlyGear: "裝備詞綴",
   earlyShields: "實驗：盾牌詞綴",
   endgameWaystones: "換界石",
   endgameTablets: "碑牌",
-  crafting: "做裝",
+  crafting: "裝備製作",
   craftingSlotHeading: "裝備部位",
   craftingSlotHint:
     "胸甲、頭盔、手套、鞋子、戒指、項鍊、腰帶、盾牌，以及武器種類。只選種類，不拆力量／敏捷／智慧。",
@@ -505,10 +511,10 @@ const zhHant: Messages = {
   cancel: "取消",
   warningMissing: "部分詞綴缺少匹配文本，已跳過",
   warningOverLimit: (n) => `已超過 ${n} 字限制，請取消部分詞綴或放寬數值範圍`,
-  showcaseNav: "賽季 BD",
+  showcaseNav: "賽季回顧",
   showcaseTabsAria: "主分頁",
-  showcaseTabMemorial: "我的狀況／紀念",
-  showcaseTabRecommended: "推薦／攻略",
+  showcaseTabMemorial: "紀念",
+  showcaseTabRecommended: "推薦",
   showcaseMemorialEmpty: "尚未抄入",
   showcaseNamePending: "名稱待填",
   showcaseImplicitPending: "固有尚未填入",
@@ -537,11 +543,11 @@ const zhHant: Messages = {
 
 const en: Messages = {
   ...zhHant,
-  brand: "PoE 2 Regex",
+  brand: "Exile’s Ledger",
   navAria: "Main modules",
   early: "Campaign",
   endgame: "Endgame",
-  homeTitle: "Regex tools",
+  homeTitle: "Exile’s Ledger",
   homeLead:
     "Pick a stage. Campaign chapters ship default shop regexes; endgame has waystone and tablet regexes, plus a crafting decision tree. Season BD keeps a paper doll of the current gear and the same build's recommended affixes.",
   homeEarlyBody:
@@ -550,13 +556,16 @@ const en: Messages = {
     "Waystones use the market endgame filters (tier, effectiveness, rarity, drop chance, experience, pack size, revives, gold) plus eight tablet pools. Pick a tablet kind first. Crafting turns a slot and target affixes into continue, new base, or lower the goal.",
   subNavAria: "Subpages",
   earlyChapters: "Chapter maps",
+  earlyTips: "Campaign tips",
+  earlyTipsCueLead: "Landmarks, permanent rewards, and facilities are on ",
+  earlyTipsCueEnd: ".",
   earlyVendor: "Vendor filter",
   earlyBuilds: "Build presets",
   earlyGear: "Gear affixes",
   earlyShields: "Lab: shield affixes",
   endgameWaystones: "Waystones",
   endgameTablets: "Tablets",
-  crafting: "Crafting",
+  crafting: "Equipment Crafting",
   craftingSlotHeading: "Slot",
   craftingSlotHint:
     "Body, helmet, gloves, boots, ring, amulet, belt, shield, and weapon classes. One class each — no str/dex/int split.",
@@ -767,10 +776,10 @@ const en: Messages = {
   cancel: "Cancel",
   warningMissing: "Some affixes have no match text and were skipped",
   warningOverLimit: (n) => `Over the ${n}-character cap — drop affixes or loosen numeric bounds`,
-  showcaseNav: "Season BD",
+  showcaseNav: "Season Recap",
   showcaseTabsAria: "Main tabs",
-  showcaseTabMemorial: "My setup / Memorial",
-  showcaseTabRecommended: "Guide / Recommended",
+  showcaseTabMemorial: "Memorial",
+  showcaseTabRecommended: "Recommended",
   showcaseMemorialEmpty: "Not transcribed",
   showcaseNamePending: "Name not set",
   showcaseImplicitPending: "Implicit not set",

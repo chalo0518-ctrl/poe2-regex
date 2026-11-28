@@ -1,12 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout.tsx";
-import BuildsPage from "./pages/BuildsPage.tsx";
-import ChaptersPage from "./pages/ChaptersPage.tsx";
 import CraftingPage from "./pages/CraftingPage.tsx";
+import ChaptersPage from "./pages/ChaptersPage.tsx";
+import EarlyTipsPage from "./pages/EarlyTipsPage.tsx";
 import EarlyGearPage, { EarlyGearShieldsRedirect } from "./pages/EarlyGearPage.tsx";
 import EarlyLayout from "./pages/EarlyLayout.tsx";
 import EndgameLayout from "./pages/EndgameLayout.tsx";
-import HomePage from "./pages/HomePage.tsx";
 import TabletsPage from "./pages/TabletsPage.tsx";
 import { showcaseRoute } from "./pages/showcaseRoutes.tsx";
 import VendorPage from "./pages/VendorPage.tsx";
@@ -19,13 +18,14 @@ export default function App() {
     <BrowserRouter basename={basename}>
       <Routes>
         <Route element={<AppLayout />}>
-          <Route index element={<HomePage />} />
+          <Route index element={<Navigate to="/showcase" replace />} />
           <Route path="campaign" element={<Navigate to="/early" replace />} />
           <Route path="early" element={<EarlyLayout />}>
             <Route index element={<Navigate to="chapters" replace />} />
             <Route path="chapters" element={<ChaptersPage />} />
+            <Route path="tips" element={<EarlyTipsPage />} />
             <Route path="vendor" element={<VendorPage />} />
-            <Route path="builds" element={<BuildsPage />} />
+            <Route path="builds" element={<Navigate to="/early/chapters" replace />} />
             <Route path="gear" element={<EarlyGearPage />} />
             <Route path="shields" element={<EarlyGearShieldsRedirect />} />
           </Route>
@@ -36,7 +36,7 @@ export default function App() {
             <Route path="crafting" element={<CraftingPage />} />
           </Route>
           {showcaseRoute()}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/showcase" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

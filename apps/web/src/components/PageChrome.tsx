@@ -10,7 +10,7 @@ export function SubNav({
   const { t } = useLocale();
   return (
     <nav
-      className="mb-6 flex flex-wrap gap-1 border-b border-line pb-3"
+      className="ledger-module-nav mb-6 border-b border-line pb-3"
       aria-label={t.subNavAria}
     >
       {items.map((item) => (
@@ -64,7 +64,7 @@ export function PageShell({
   return (
     <div className={`mx-auto py-6 ${wide ? "max-w-[1560px] px-6 sm:px-10" : "max-w-[1280px] px-4 sm:px-6"}`}>
       <p className="text-xs tracking-[0.28em] text-gold-dim">{kicker}</p>
-      <h1 className="mt-1 mb-5 text-2xl font-bold text-gold">{title}</h1>
+      <h1 className="mt-1 mb-5 font-display text-2xl font-bold text-gold">{title}</h1>
       {children}
     </div>
   );
