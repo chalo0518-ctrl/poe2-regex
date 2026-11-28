@@ -68,7 +68,7 @@ export default function ShowcaseLayout({ snapshot: override, seasonPreviewUrl }:
               <details className="ledger-bookmark-folder" open>
                 <summary>{seasonName(snapshot)} · {active.version}</summary>
                 <Link className="ledger-bookmark ledger-bookmark-update" aria-current={location.hash === "#season-update" ? "location" : undefined} to={updatePath}>
-                  {english ? "Season update" : "版本更新"}
+                  {english ? "Season update" : <span style={{ display: "inline-block", width: "4em" }}>版本更新</span>}
                 </Link>
                 <div role="tablist" aria-label={t.showcaseTabsAria} className="ledger-bookmark-sections">
                   <ShowcaseTab id="showcase-tab-memorial" to={archivePath("/showcase/memorial") + "#season-build"} selected={Boolean(memorial) && location.hash !== "#season-update"} label={english ? "Memorial Build" : "紀念 BD"} />
@@ -164,7 +164,11 @@ function ShowcaseTab({
       aria-selected={selected}
       className="ledger-bookmark"
     >
-      {label}
+      {label.endsWith(" BD") ? (
+        <span style={{ display: "inline-flex", width: "4em", justifyContent: "space-between" }}>
+          <span>{label.slice(0, -3)}</span>{" "}<span>BD</span>
+        </span>
+      ) : label}
     </NavLink>
   );
 }
