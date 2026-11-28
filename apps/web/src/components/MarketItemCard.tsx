@@ -20,16 +20,20 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
   const affixes: MemorialMod[] = mods.length
     ? mods.filter((mod) => !["implicit", "socket", "corrupted"].includes(mod.kind))
     : gear.affixes.map((row) => ({ ...row, kind: "explicit" }));
+  const order = (kind: string) => kind === "fractured" ? 0 : kind === "desecrated" ? 2 : kind === "crafted" ? 3 : 1;
+  affixes.sort((a, b) => order(a.kind) - order(b.kind));
+  const runeFrame = gear.rarity === "unique" && /runeforged|runemastered|符鍛|符煉/iu.test([gear.baseEn, gear.baseZh].join(" "));
   const grouped = affixes.some((mod) => mod.generation);
 
   return (
-    <article className={`market-item market-item--${gear.rarity || "rare"}`}>
-      <div className="market-item-copy">
+    <article className={`market-item market-item--${gear.rarity || "normal"}`}>
+      <div className="market-item-copy" data-rune-frame={runeFrame || undefined} data-vaal-emblem={gear.rarity === "unique" && gear.nameEn === "Saitha's Spear" || undefined}>
         <div className="market-item-name">
           <h2>{name}</h2>
           {base && base !== name ? <p>{base}</p> : null}
         </div>
-        {(quality || gear.stats?.length) ? <section className="market-item-group market-item-stats">
+        {(quality || gear.itemLevel || gear.stats?.length) ? <section className="market-item-group market-item-stats">
+          {gear.itemLevel ? <p>{locale === "en" ? "Item level" : "物品等級"} {gear.itemLevel}</p> : null}
           {quality ? <p>{quality.includes("品質") || quality.includes("Quality") ? quality : `${locale === "en" ? "Quality" : "品質"}: ${quality}`}</p> : null}
           {(gear.stats ?? []).map((row) => (
             <p key={row.textEn || row.textZh} className="mt-1">
@@ -37,6 +41,7 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
             </p>
           ))}
         </section> : null}
+        {(gear.requirementsZh || gear.requirementsEn) && <p className="market-item-group">{locale === "en" ? gear.requirementsEn || gear.requirementsZh : gear.requirementsZh || gear.requirementsEn}</p>}
         {[
           { label: locale === "en" ? "Base effects" : "底材效果", rows: baseMods.filter((mod) => !isGranted(mod)) },
           { label: "", rows: baseMods.filter(isGranted) },
@@ -57,7 +62,7 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
                     <small className="market-item-tier">T{mod.verifiedTier}</small>
                   ) : gear.rarity === "rare" && ["explicit", "fractured"].includes(mod.kind) ? (
                     <small className="market-item-tier">{locale === "en" ? "Tier unverified" : "階級未確認"}</small>
-                  ) : null}</span>
+                  ) : mod.kind === "crafted" || (gear.rarity === "unique" && mod.kind === "explicit") ? <small className="market-item-tier">{mod.kind === "crafted" ? "C" : "U"}</small> : null}</span>
                 </li>
               ))}
             </ul>

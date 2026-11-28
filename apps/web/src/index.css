@@ -1798,3 +1798,64 @@ header {
 }
 .tips-sheet tbody tr:nth-child(odd) { background: #12100e; }
 .tips-sheet tbody tr:nth-child(even) { background: #1b1713; }
+
+/* Shared item inspection surface, including equipment without a bespoke card. */
+.market-item {
+  border: 0;
+  background: rgb(0 0 0 / 87%);
+  --item-accent: #ddd9cf;
+}
+.market-item--magic { --item-accent: #9997fa; }
+.market-item--rare {
+  --item-accent: #f5da52;
+  --cap-left: url("./assets/dusk-plate-left.png");
+  --cap-right: url("./assets/dusk-plate-right.png");
+  --plate: url("./assets/dusk-plate-tile.png");
+}
+.market-item--unique {
+  --item-accent: #ef822c;
+  --cap-left: url("./assets/unique-left.png");
+  --cap-right: url("./assets/unique-right.png");
+  --plate: url("./assets/unique-tile.png");
+}
+.market-item-copy[data-rune-frame] {
+  --cap-left: url("./assets/rune-left.png");
+  --cap-right: url("./assets/rune-right.png");
+  --plate: url("./assets/rune-tile.png");
+}
+.market-item-name {
+  border: 0;
+  padding: .32em 2.4em;
+  color: var(--item-accent);
+  background: var(--cap-left, none) left center / auto 100% no-repeat,
+              var(--cap-right, none) right center / auto 100% no-repeat,
+              var(--plate, linear-gradient(#282624,#100f0e)) center / auto 100% repeat-x;
+}
+.market-item-name h2, .market-item-name > p {
+  margin: 0;
+  font: 500 1em/1.12 "Microsoft JhengHei", sans-serif;
+  color: inherit;
+}
+.item-tip:has(.market-item) { background: transparent; }
+.item-tip-body:has(.market-item) { padding: 0; }
+.market-item-group + .market-item-group::after,
+.market-item-mod[data-kind="crafted"] > span::before,
+.market-item-mod[data-kind="crafted"] > span::after { content: none; }
+.market-item-mod { position: relative; padding-inline: 12%; }
+.market-item-mod .market-item-tier { position: absolute; right: .35em; top: 50%; transform: translateY(-50%); }
+.market-item-mod[data-kind="fractured"] { background: transparent; color: #b9a168; }
+.market-item-flavour { color: #c77d31; }
+.market-item-copy[data-vaal-emblem] .market-item-name { position: relative; }
+.market-item-copy[data-vaal-emblem] .market-item-name::before,
+.market-item-copy[data-vaal-emblem] .market-item-name::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.18em;
+  aspect-ratio: 35 / 37;
+  border-radius: 50%;
+  background: url("./assets/vaal-face.png") center / contain no-repeat;
+}
+.market-item-copy[data-vaal-emblem] .market-item-name::before { left: .2em; }
+.market-item-copy[data-vaal-emblem] .market-item-name::after { right: .2em; }
