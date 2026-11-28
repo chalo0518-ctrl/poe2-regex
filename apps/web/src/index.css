@@ -1765,6 +1765,12 @@ header {
 }
 .ledger-masthead .ledger-nav { flex-wrap: wrap; gap: .65rem 1.25rem; }
 
+.tips-sheet table { table-layout: fixed; }
+.tips-col-chapter { width: 6.5rem; }
+.tips-col-map { width: 18rem; }
+.tips-col-cue { width: 28rem; }
+.tips-col-reward { width: 20rem; }
+.tips-col-priority { width: 4.75rem; }
 .tips-sheet th,
 .tips-sheet td {
   border: 1px solid var(--color-line);
@@ -1779,6 +1785,16 @@ header {
   color: var(--color-gold);
   font-weight: 600;
   white-space: nowrap;
+}
+.tips-sheet td:nth-child(1),
+.tips-sheet td:nth-child(2),
+.tips-sheet td:nth-child(5) {
+  white-space: nowrap;
+}
+.tips-sheet td:nth-child(3),
+.tips-sheet td:nth-child(4) {
+  line-break: strict;
+  text-wrap: pretty;
 }
 .tips-sheet tbody tr:nth-child(odd) { background: #12100e; }
 .tips-sheet tbody tr:nth-child(even) { background: #1b1713; }

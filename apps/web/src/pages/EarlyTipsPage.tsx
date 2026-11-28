@@ -68,8 +68,15 @@ export default function EarlyTipsPage() {
       </div>
 
       <div className="tips-sheet overflow-x-auto rounded border border-line">
-        <table className="w-full min-w-[56rem] border-collapse text-left text-sm">
+        <table className="w-full min-w-[76rem] border-collapse text-left text-sm">
           <caption className="sr-only">{chapter}</caption>
+          <colgroup>
+            <col className="tips-col-chapter" />
+            <col className="tips-col-map" />
+            <col className="tips-col-cue" />
+            <col className="tips-col-reward" />
+            <col className="tips-col-priority" />
+          </colgroup>
           <thead>
             <tr>
               {EARLY_TIPS_COLUMNS.map((column) => (

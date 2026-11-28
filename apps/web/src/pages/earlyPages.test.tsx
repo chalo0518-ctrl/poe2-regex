@@ -104,6 +104,13 @@ describe("early tips page", () => {
     expect(screen.queryByText("分解台")).not.toBeInTheDocument();
     const headers = screen.getAllByRole("columnheader").map((cell) => cell.textContent);
     expect(headers).toEqual(["章節", "地圖", "技巧／地標", "獎勵或設施", "優先"]);
+    expect([...document.querySelectorAll(".tips-sheet col")].map((col) => col.className)).toEqual([
+      "tips-col-chapter",
+      "tips-col-map",
+      "tips-col-cue",
+      "tips-col-reward",
+      "tips-col-priority",
+    ]);
     expect(headers).not.toContain("來源");
 
     const table = screen.getByRole("table");
