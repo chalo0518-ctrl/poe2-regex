@@ -50,8 +50,12 @@ export default function ItemTooltip({
         if (bounds) { setPos({ x: bounds.left, y: bounds.top }); onPinned(bounds.left, bounds.top); }
       }
     }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKeyDown, true);
+    window.addEventListener("keyup", onKeyDown, true);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown, true);
+      window.removeEventListener("keyup", onKeyDown, true);
+    };
   }, [onDismiss, onPinned, tip.pinned]);
 
   function startDrag(event: ReactPointerEvent<HTMLElement>) {
