@@ -31,9 +31,11 @@ font: clamp(16px, 1.65vw, 27px)/1.22 "Microsoft JhengHei",sans-serif; color:#c9c
   box-sizing: border-box;
   margin: 0;
   padding: 4px 50px;
-  border: solid transparent;
-  border-width: 0 48px;
-  border-image: url("../assets/dusk-scratch-nameplate.png") 0 70 fill / 0 48px / 0 repeat;
+  border: 0;
+  background:
+    url("../assets/dusk-plate-left.png") left center / auto 100% no-repeat,
+    url("../assets/dusk-plate-right.png") right center / auto 100% no-repeat,
+    url("../assets/dusk-plate-tile.png") center / auto 100% repeat-x;
   color: #f5da52;
   font: 500 1.13em/1.08 "Microsoft JhengHei", sans-serif;
   text-align: center;
