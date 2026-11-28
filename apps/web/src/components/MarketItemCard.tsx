@@ -1,3 +1,4 @@
+import DuskScratchCard from "./DuskScratchCard.tsx";
 import { type MemorialMod, type MemorialGear, type UiLocale } from "@poe2-regex/data";
 
 export function marketItemTitle(gear: MemorialGear, locale: UiLocale): string {
@@ -6,6 +7,7 @@ export function marketItemTitle(gear: MemorialGear, locale: UiLocale): string {
 }
 
 export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; locale: UiLocale }) {
+  if (locale !== "en" && gear.nameEn === "Dusk Scratch" && gear.baseEn === "Dueling Wand") return <DuskScratchCard />;
   const name = marketItemTitle(gear, locale);
   const base = locale === "en" ? gear.baseEn || gear.baseZh : gear.baseZh || gear.baseEn;
   const quality = locale === "en" ? gear.qualityEn : gear.qualityZh || gear.qualityEn;
