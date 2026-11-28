@@ -52,7 +52,7 @@ const ART: Record<string, string> = {
   "Cadigan's Epiphany": "https://cdn.poe2db.tw/image/Art/2DItems/Currency/Expedition2/GameWarpRune3.webp",
 };
 
-type RawText = { kind?: string; text_en?: string; text_zh?: string; prefix_suffix?: string | null };
+type RawText = { verified_tier?: number; kind?: string; text_en?: string; text_zh?: string; prefix_suffix?: string | null };
 type RawNotable = { name_en?: string; name_zh?: string; mods?: RawText[] };
 type RawItem = {
   status?: string;
@@ -123,7 +123,7 @@ function textOf(row: RawText): MemorialMod | null {
   const textZh = row.text_zh ?? "";
   if (!textEn && !textZh) return null;
   const generation = row.prefix_suffix === "prefix" || row.prefix_suffix === "suffix" ? row.prefix_suffix : undefined;
-  return { kind: row.kind || "explicit", textEn, textZh, generation };
+  return { kind: row.kind || "explicit", textEn, textZh, generation, verifiedTier: row.verified_tier };
 }
 
 function modsOf(rows: RawText[] | undefined): MemorialMod[] {
@@ -210,6 +210,7 @@ function verifyTiers(item: RawItem, mods: MemorialMod[]): MemorialMod[] {
   const knownPool = knownBasePools[item.base_en ?? ""];
   const candidates = knownPool && pools[knownPool] ? [pools[knownPool]] : Object.values(pools);
   return mods.map((mod) => {
+    if (mod.verifiedTier !== undefined) return mod;
     if (!["explicit", "fractured", "crafted"].includes(mod.kind)) return mod;
     const matched = recognizeMemorialModifier(mod, candidates, item.item_level ?? null, mod.generation);
     return { ...mod, ...matched, verifiedTier: mod.kind === "crafted" ? undefined : matched.verifiedTier };

@@ -1120,33 +1120,38 @@
       "explicit_affixes": [
         {
           "kind": "fractured",
-          "text_en": "+50 to Spirit",
-          "text_zh": "+50精魂",
-          "prefix_suffix": null
+          "text_en": "+50(47-50) to Spirit",
+          "text_zh": "+50(47-50)精魂",
+          "prefix_suffix": "prefix",
+          "verified_tier": 1
         },
         {
           "kind": "explicit",
-          "text_en": "36% increased Cast Speed",
-          "text_zh": "增加36%施法速度",
-          "prefix_suffix": null
+          "text_en": "+174(165-179) to maximum Mana",
+          "text_zh": "+174(165-179)最大魔力",
+          "prefix_suffix": "prefix",
+          "verified_tier": 2
         },
         {
           "kind": "explicit",
-          "text_en": "+174 to maximum Mana",
-          "text_zh": "+174最大魔力",
-          "prefix_suffix": null
+          "text_en": "19(16-19)% increased Rarity of Items found",
+          "text_zh": "增加19(16-19)%找到的物品稀有度",
+          "prefix_suffix": "prefix",
+          "verified_tier": 1
         },
         {
           "kind": "explicit",
-          "text_en": "19% increased Rarity of Items found",
-          "text_zh": "增加19%找到的物品稀有度",
-          "prefix_suffix": null
+          "text_en": "+3 to Level of all Spell Skills",
+          "text_zh": "+3全部法術技能等級",
+          "prefix_suffix": "suffix",
+          "verified_tier": 1
         },
         {
-          "kind": "explicit",
-          "text_en": "+4 to Level of all Spell Skills",
-          "text_zh": "+4全部法術技能等級",
-          "prefix_suffix": null
+          "kind": "desecrated",
+          "text_en": "26(25-28)% increased Cast Speed",
+          "text_zh": "增加26(25-28)%施法速度",
+          "prefix_suffix": "suffix",
+          "verified_tier": 1
         }
       ],
       "flavour_en": "We reach for the promises lost...",

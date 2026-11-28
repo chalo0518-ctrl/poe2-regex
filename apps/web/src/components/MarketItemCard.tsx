@@ -18,7 +18,7 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
   const isGranted = (row: (typeof baseMods)[number]) => /^(?:Grants Skill|賦予技能)\s*[:：]/iu.test(line(row, locale).trim());
 
   const affixes: MemorialMod[] = mods.length
-    ? mods.filter((mod) => !["implicit", "socket", "corrupted"].includes(mod.kind))
+    ? mods.filter((mod) => !["implicit", "socket", "corrupted", "enchanted"].includes(mod.kind))
     : gear.affixes.map((row) => ({ ...row, kind: "explicit" }));
   const order = (kind: string) => kind === "fractured" ? 0 : kind === "desecrated" ? 2 : kind === "crafted" ? 3 : 1;
   affixes.sort((a, b) => order(a.kind) - order(b.kind));
@@ -44,8 +44,9 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
         </section> : null}
         {(gear.requirementsZh || gear.requirementsEn) && <p className="market-item-group">{locale === "en" ? gear.requirementsEn || gear.requirementsZh : gear.requirementsZh || gear.requirementsEn}</p>}
         {[
-          { label: locale === "en" ? "Base effects" : "底材效果", rows: baseMods.filter((mod) => !isGranted(mod)) },
+          { label: locale === "en" ? "Enchant" : "附魔", rows: mods.filter((mod) => mod.kind === "enchanted") },
           { label: "", rows: baseMods.filter(isGranted) },
+          { label: locale === "en" ? "Implicit" : "固定", rows: baseMods.filter((mod) => !isGranted(mod)) },
           { label: locale === "en" ? "Socket effects" : "鑲嵌效果", rows: mods.filter((mod) => mod.kind === "socket") },
           { label: locale === "en" ? "Prefixes" : "前綴", rows: affixes.filter((mod) => mod.generation === "prefix") },
           { label: locale === "en" ? "Suffixes" : "後綴", rows: affixes.filter((mod) => mod.generation === "suffix") },
@@ -57,13 +58,14 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
             <ul>
               {rows.map((mod, rowIndex) => (
                 <li key={rowIndex} className="market-item-mod" data-kind={mod.kind} data-granted-skill={mod.kind === "implicit" && isGranted(mod) ? "" : undefined}>
+                  {mod.kind === "desecrated" && <small className="desecrated-tag">{locale === "en" ? "Desecrated" : "褻瀆"}</small>}
                   {mod.kind === "fractured" && <small>{locale === "en" ? "Fractured" : "鎖定"}</small>}
                   {mod.kind === "crafted" && <small>{locale === "en" ? "Crafted" : "工藝"}</small>}
                   <span>{rollText(gear, mod, locale)}{"verifiedTier" in mod && typeof mod.verifiedTier === "number" ? (
                     <small className="market-item-tier">T{mod.verifiedTier}</small>
                   ) : gear.rarity === "rare" && ["explicit", "fractured"].includes(mod.kind) ? (
                     <small className="market-item-tier">{locale === "en" ? "Tier unverified" : "階級未確認"}</small>
-                  ) : mod.kind === "crafted" || (gear.rarity === "unique" && mod.kind === "explicit") ? <small className="market-item-tier">{mod.kind === "crafted" ? "C" : "U"}</small> : null}</span>
+                  ) : mod.kind === "enchanted" ? <small className="market-item-tier">E</small> : mod.kind === "crafted" || (gear.rarity === "unique" && mod.kind === "explicit") ? <small className="market-item-tier">{mod.kind === "crafted" ? "C" : "U"}</small> : null}</span>
                 </li>
               ))}
             </ul>

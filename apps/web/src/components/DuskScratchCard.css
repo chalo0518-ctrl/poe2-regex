@@ -42,3 +42,6 @@ font: clamp(16px, 1.65vw, 27px)/1.22 "Microsoft JhengHei",sans-serif; color:#c9c
 }
 .item-tip:has(.dusk-scratch-card) .item-tip-body { padding: 0; }
 .item-tip .dusk-scratch-card { max-width: none; width: 100%; }
+.market-item-mod[data-kind="desecrated"] { background: #718d201c; }
+.market-item-mod[data-kind="desecrated"] .market-item-tier { color: #b4d75e; }
+.market-item-mod .desecrated-tag { position: absolute; left: .35em; color: #a7b46f; }
