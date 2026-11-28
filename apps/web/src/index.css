@@ -1859,3 +1859,35 @@ header {
 }
 .market-item-copy[data-vaal-emblem] .market-item-name::before { left: .2em; }
 .market-item-copy[data-vaal-emblem] .market-item-name::after { right: .2em; }
+
+.market-item .affix-block { padding: .15em 0; }
+.market-item .affix-block > .market-item-label {
+  position: absolute;
+  inset: .3em auto auto .35em;
+  color: #a9a6a0;
+  font: inherit;
+  font-size: .85em;
+  pointer-events: none;
+}
+.market-item .affix-block .market-item-mod {
+  line-height: 1.3;
+  padding-block: .12em;
+}
+.market-item .affix-block .market-item-mod[data-granted-skill] {
+  background: transparent;
+  font-weight: 400;
+  text-decoration: underline;
+  text-underline-offset: .15em;
+}
+.market-item .affix-block .market-item-mod[data-granted-skill]::before { content: none; }
+.market-item .affix-block .market-item-mod:is([data-kind="crafted"],[data-kind="fractured"]) > small {
+  position: absolute;
+  left: .35em;
+  bottom: 0;
+  font-size: .65em;
+}
+.market-item .affix-block:has(.market-item-mod:is([data-kind="crafted"],[data-kind="fractured"]):first-child) > .market-item-label {
+  position: static;
+  text-align: left;
+  padding-left: .35em;
+}

@@ -23,6 +23,7 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
   const order = (kind: string) => kind === "fractured" ? 0 : kind === "desecrated" ? 2 : kind === "crafted" ? 3 : 1;
   affixes.sort((a, b) => order(a.kind) - order(b.kind));
   const runeFrame = gear.rarity === "unique" && /runeforged|runemastered|符鍛|符煉/iu.test([gear.baseEn, gear.baseZh].join(" "));
+  const unique = gear.rarity === "unique";
   const grouped = affixes.some((mod) => mod.generation);
 
   return (
@@ -48,17 +49,17 @@ export default function MarketItemCard({ gear, locale }: { gear: MemorialGear; l
           { label: locale === "en" ? "Socket effects" : "鑲嵌效果", rows: mods.filter((mod) => mod.kind === "socket") },
           { label: locale === "en" ? "Prefixes" : "前綴", rows: affixes.filter((mod) => mod.generation === "prefix") },
           { label: locale === "en" ? "Suffixes" : "後綴", rows: affixes.filter((mod) => mod.generation === "suffix") },
-          { label: grouped ? (locale === "en" ? "Other modifiers" : "其他詞條") : "", rows: affixes.filter((mod) => !mod.generation) },
+          { label: unique ? (locale === "en" ? "Unique" : "傳奇") : grouped ? (locale === "en" ? "Other modifiers" : "其他詞條") : "", rows: affixes.filter((mod) => !mod.generation) },
           { label: "", rows: mods.filter((mod) => mod.kind === "corrupted") },
         ].map(({ label, rows }, index) => rows.length > 0 && (
-          <div className="market-item-group" key={index}>
+          <div className="market-item-group affix-block" key={index}>
             {label && <p className="market-item-label">{label}</p>}
             <ul>
               {rows.map((mod, rowIndex) => (
                 <li key={rowIndex} className="market-item-mod" data-kind={mod.kind} data-granted-skill={mod.kind === "implicit" && isGranted(mod) ? "" : undefined}>
                   {mod.kind === "fractured" && <small>{locale === "en" ? "Fractured" : "鎖定"}</small>}
                   {mod.kind === "crafted" && <small>{locale === "en" ? "Crafted" : "工藝"}</small>}
-                  <span>{line(mod, locale)}{"verifiedTier" in mod && typeof mod.verifiedTier === "number" ? (
+                  <span>{rollText(gear, mod, locale)}{"verifiedTier" in mod && typeof mod.verifiedTier === "number" ? (
                     <small className="market-item-tier">T{mod.verifiedTier}</small>
                   ) : gear.rarity === "rare" && ["explicit", "fractured"].includes(mod.kind) ? (
                     <small className="market-item-tier">{locale === "en" ? "Tier unverified" : "階級未確認"}</small>
@@ -91,4 +92,24 @@ function line(row: { textZh: string; textEn: string }, locale: UiLocale): string
 
 function localizedName(gear: { nameZh: string; nameEn: string }, locale: UiLocale): string {
   return locale === "en" ? gear.nameEn || gear.nameZh : gear.nameZh || gear.nameEn;
+}
+
+// PoE2DB: Sylvans_Effigy, introduced in 0.5. Match the recorded modifier
+// before annotating its roll so other sources on the same item stay intact.
+const effigyRolls: [RegExp, string][] = [
+  [/^\d+% increased Spirit$/i, "50–75"],
+  [/^Allies in your Presence Regenerate \d+ Life per second$/i, "50–100"],
+  [/^\+\d+ to all Attributes$/i, "6–12"],
+  [/^Companions deal \d+% increased damage to your Marked targets$/i, "50–100"],
+];
+
+function rollText(gear: MemorialGear, mod: MemorialMod, locale: UiLocale): string {
+  const text = line(mod, locale);
+  if (gear.nameEn !== "Sylvan's Effigy" || mod.kind !== "explicit") return text;
+  const range = effigyRolls.find(([pattern]) => pattern.test(mod.textEn.trim()));
+  if (range) return text.replace(/\d+/, (roll) => roll + "(" + range[1] + ")");
+  if (mod.textEn === "You can have any number of Companions of different types") {
+    return text + (locale === "en" ? " — Fixed value" : " — 無法變動的值");
+  }
+  return text;
 }
