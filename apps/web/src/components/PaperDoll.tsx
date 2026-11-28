@@ -87,6 +87,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
       hideTip();
       return;
     }
+    if (!document.hasFocus()) event.currentTarget.focus({ preventScroll: true });
     const rect = event.currentTarget.getBoundingClientRect();
     setTip((current) => current?.pinned ? current : ({
       gear,

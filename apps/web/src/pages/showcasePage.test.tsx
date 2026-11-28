@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Navigate, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -126,7 +126,14 @@ describe("season BD showcase", () => {
     await user.keyboard("{Alt>}");
     await user.unhover(slotLink(/主手/));
     expect(screen.getByRole("dialog", { name: "暮色刃痕" })).toHaveAttribute("data-pinned", "true");
-    await user.keyboard("{/Alt}{Escape}");
+    await user.keyboard("{/Alt}");
+    expect(screen.getByRole("button", { name: "關閉" })).toBeVisible();
+    await user.keyboard("{Escape}");
+    await user.hover(slotLink(/主手/));
+    fireEvent.keyUp(window, { code: "AltLeft", key: "Unidentified" });
+    await user.unhover(slotLink(/主手/));
+    expect(screen.getByRole("dialog")).toHaveAttribute("data-pinned", "true");
+    await user.click(screen.getByRole("button", { name: "關閉" }));
 
     expect(screen.queryByRole("button", { name: "顯示鑲嵌" })).not.toBeInTheDocument();
     expect(slotLink(/頭盔/).querySelector(".socket-stack")).toBeNull();

@@ -41,8 +41,11 @@ export default function ItemTooltip({
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onDismiss();
-      if (event.key === "Alt" && !tip.pinned) {
+      if (event.type === "keydown" && event.key === "Escape") onDismiss();
+      const alt = event.key === "Alt" || event.code === "AltLeft" || event.code === "AltRight";
+      if (!alt || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      event.preventDefault();
+      if (!tip.pinned) {
         const bounds = root.current?.getBoundingClientRect();
         if (bounds) { setPos({ x: bounds.left, y: bounds.top }); onPinned(bounds.left, bounds.top); }
       }
