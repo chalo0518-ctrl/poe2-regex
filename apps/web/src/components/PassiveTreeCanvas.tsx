@@ -110,7 +110,9 @@ export default function PassiveTreeCanvas(props: Props) {
       if (props.classic) {
         ctx.beginPath();
         ctx.arc(x, y, sets ? 5 : 2.6, 0, 2 * Math.PI);
-        ctx.fillStyle = sets ? "#ffcf75" : "#746047";
+        ctx.fillStyle = sets?.length === 1
+          ? (sets[0] === 1 ? weaponPalette.one : weaponPalette.two)
+          : sets ? "#ffcf75" : "#746047";
         ctx.fill();
         if (frameTint) {
           ctx.strokeStyle = frameTint;
@@ -208,7 +210,16 @@ export default function PassiveTreeCanvas(props: Props) {
       ctx.drawImage(portrait, x - radius, y - radius, radius * 2, radius * 2);
       ctx.strokeStyle = "#f0cc80";
       ctx.lineWidth = 1.25;
+      ctx.save();
+      const visibleLinks = new Path2D();
+      visibleLinks.rect(x - radius, y - radius, radius * 2, radius * 2);
+      for (const mark of marks) {
+        visibleLinks.moveTo(mark.x + mark.radius, mark.y);
+        visibleLinks.arc(mark.x, mark.y, mark.radius, 0, 2 * Math.PI);
+      }
+      ctx.clip(visibleLinks, "evenodd");
       for (const path of links) ctx.stroke(new Path2D(path));
+      ctx.restore();
       for (const mark of marks) {
         ctx.beginPath();
         ctx.arc(mark.x, mark.y, mark.radius, 0, Math.PI * 2);
