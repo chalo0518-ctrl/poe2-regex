@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import "./ItemTooltipCorner.css";
 import { createPortal } from "react-dom";
 import { type MemorialGear, type UiLocale } from "@poe2-regex/data";
 
@@ -18,12 +19,14 @@ export default function ItemTooltip({
   onPinned,
   onDismiss,
   onAnchorLeave,
+  onControlEnter,
 }: {
   tip: TooltipState;
   locale: UiLocale;
   onPinned: (x: number, y: number) => void;
   onDismiss: () => void;
   onAnchorLeave: () => void;
+  onControlEnter: () => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
   const drag = useRef<{ dx: number; dy: number; moved: boolean } | null>(null);
@@ -41,7 +44,7 @@ export default function ItemTooltip({
       if (event.key === "Escape") onDismiss();
       if (event.key === "Alt" && !tip.pinned) {
         const bounds = root.current?.getBoundingClientRect();
-        if (bounds) onPinned(bounds.left, bounds.top);
+        if (bounds) { setPos({ x: bounds.left, y: bounds.top }); onPinned(bounds.left, bounds.top); }
       }
     }
     window.addEventListener("keydown", onKeyDown);
@@ -49,7 +52,7 @@ export default function ItemTooltip({
   }, [onDismiss, onPinned, tip.pinned]);
 
   function startDrag(event: ReactPointerEvent<HTMLElement>) {
-    if (event.button !== 0) return;
+    if (!tip.pinned || event.button !== 0) return;
     const bounds = root.current?.getBoundingClientRect();
     drag.current = { dx: event.clientX - (bounds?.left ?? pos.x), dy: event.clientY - (bounds?.top ?? pos.y), moved: false };
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -58,8 +61,8 @@ export default function ItemTooltip({
   function moveDrag(event: ReactPointerEvent<HTMLElement>) {
     const state = drag.current;
     if (!state) return;
-    const x = event.clientX - state.dx;
-    const y = event.clientY - state.dy;
+    const x = Math.max(24 - (root.current?.offsetWidth ?? 24), Math.min(window.innerWidth - (root.current?.offsetWidth ?? 0), event.clientX - state.dx));
+    const y = Math.max(0, Math.min(window.innerHeight - 32, event.clientY - state.dy));
     if (Math.abs(x - pos.x) + Math.abs(y - pos.y) > 2) state.moved = true;
     setPos({ x, y });
   }
@@ -71,38 +74,30 @@ export default function ItemTooltip({
   }
 
   return createPortal(
-    <>
-    {!tip.pinned && <button type="button" data-item-anchor-pin className="item-anchor-pin" aria-label={locale === "en" ? "Pin item" : "釘選裝備"}
-      style={{ left: tip.anchor.x, top: tip.anchor.y }}
-      onMouseLeave={(event) => {
-        if (event.relatedTarget instanceof Element && event.relatedTarget.closest("[data-slot]")) return;
-        onAnchorLeave();
-      }}
-      onClick={() => onPinned(pos.x, pos.y)}>
-      <svg aria-hidden="true" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M9 4h6m-5 0v6l-3 4v2h10v-2l-3-4V4m-2 12v5" /></svg>
-    </button>}
     <div
       ref={root}
       data-pinned={tip.pinned}
       className={`item-tip item-tip-${tip.gear.rarity || "rare"}`}
       role="dialog"
       aria-label={name}
-      style={{ left: `clamp(8px, ${pos.x}px, calc(100vw - min(46rem, 100vw - 2rem) - 8px))`, top: `clamp(8px, ${pos.y}px, calc(100dvh - min(90dvh, 52rem) - 8px))` }}
+      style={tip.pinned ? { left: pos.x, top: pos.y } : { left: `clamp(8px, ${pos.x}px, calc(100vw - min(46rem, 100vw - 2rem) - 8px))`, top: `clamp(8px, ${pos.y}px, calc(100dvh - min(90dvh, 52rem) - 8px))` }}
     >
-      <header title={locale === "en" ? "Hold Alt to pin, then drag here" : "按住 Alt 釘選後，可拖曳此處"} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}>
-        {!tip.pinned && <span className="item-tip-hint">{locale === "en" ? "Alt to pin" : "按 Alt 釘選"}</span>}
-        {tip.pinned && <button type="button" className="item-tip-pin" aria-pressed={tip.pinned} tabIndex={tip.pinned ? 0 : -1}
-          aria-label={locale === "en" ? "Pin item" : "釘選裝備"}
+      <header className="item-tip-corner" onMouseEnter={onControlEnter} onMouseLeave={onAnchorLeave}
+        onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}>
+        <button type="button" aria-label={tip.pinned ? (locale === "en" ? "Close" : "關閉") : (locale === "en" ? "Pin item" : "釘選裝備")}
+          title={tip.pinned ? (locale === "en" ? "Close" : "關閉") : (locale === "en" ? "Pin (Alt)" : "釘選（Alt）")}
           onPointerDown={(event) => event.stopPropagation()}
-          onClick={() => onPinned(pos.x, pos.y)}>
-          <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M9 4h6m-5 0v6l-3 4v2h10v-2l-3-4V4m-2 12v5" /></svg>
-        </button>}
-        <button type="button" tabIndex={tip.pinned ? 0 : -1} onPointerDown={(event) => event.stopPropagation()} onClick={onDismiss} aria-label={locale === "en" ? "Close" : "關閉"}>
-          ×
+          onClick={() => {
+            if (tip.pinned) return onDismiss();
+            const bounds = root.current?.getBoundingClientRect();
+            if (bounds) { setPos({ x: bounds.left, y: bounds.top }); onPinned(bounds.left, bounds.top); }
+          }}>
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4">
+            {tip.pinned ? <path d="M2 2l20 20M22 2L2 22" /> : <path transform="rotate(45 12 12)" d="M8 3h8l-2 3v5l3 3v2H7v-2l3-3V6zM12 16v6" />}
+          </svg>
         </button>
-      </header>
-      <div className="item-tip-body"><MarketItemCard gear={tip.gear} locale={locale} /></div>
+      </header>      <div className="item-tip-body"><MarketItemCard gear={tip.gear} locale={locale} /></div>
     </div>
-    </>, document.body
+    , document.body
   );
 }

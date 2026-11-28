@@ -1,4 +1,4 @@
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { seasonHref } from "../pages/showcaseSeasons.ts";
 import wandSerle from "../assets/socket-medals/wand-1-serles-triumph.png";
@@ -72,6 +72,9 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
   const { weaponSet: set, setWeaponSet } = useShowcase();
   const [socketsOn, setSocketsOn] = useState(false);
   const [tip, setTip] = useState<TooltipState | null>(null);
+  const leaveTimer = useRef<number | undefined>(undefined);
+  function cancelLeave() { window.clearTimeout(leaveTimer.current); }
+  useEffect(() => cancelLeave, []);
   const jewels = paperDollSlots.filter((slot) => slot.group === "jewel");
   const charms = paperDollSlots.filter((slot) => slot.group === "charm");
   const gridSlots = paperDollSlots.filter((slot) => GRID_AREAS.includes(slot.area as (typeof GRID_AREAS)[number]));
@@ -79,6 +82,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
   const alternate = gridSlots.filter((slot) => slot.set !== 0 && slot.set !== set);
 
   function showTip(gear: MemorialGear | null, event: MouseEvent<HTMLElement>) {
+    cancelLeave();
     if (!gear) {
       hideTip();
       return;
@@ -94,7 +98,8 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
   }
 
   function hideTip() {
-    setTip((current) => current?.pinned ? current : null);
+    cancelLeave();
+    leaveTimer.current = window.setTimeout(() => setTip((current) => current?.pinned ? current : null), 350);
   }
 
   useEffect(() => {
@@ -184,6 +189,7 @@ export default function PaperDoll({ mode }: { mode: DollMode }) {
           onPinned={(x, y) => setTip((current) => (current ? { ...current, x, y, pinned: true } : current))}
           onDismiss={() => setTip(null)}
           onAnchorLeave={hideTip}
+          onControlEnter={cancelLeave}
         />
       ) : null}
     </div>
