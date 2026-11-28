@@ -464,7 +464,7 @@ header {
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
-.item-tip header {
+.item-tip > header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -476,7 +476,7 @@ header {
 
 
 
-.item-tip header button {
+.item-tip > header button {
   border: 0;
   background: transparent;
   color: var(--color-muted);
@@ -1506,7 +1506,7 @@ header {
   scrollbar-width: thin;
   scrollbar-color: #78613e #11100e;
 }
-.item-tip header {
+.item-tip > header {
   position: absolute;
   inset: 0 0 auto;
   background: transparent;
@@ -1516,7 +1516,7 @@ header {
   z-index: 1;
   touch-action: none;
 }
-.item-tip header span { display: none; }
+.item-tip > header span { display: none; }
 .market-item {
   --item-accent: #e5c27a;
   border: solid transparent;
@@ -1603,14 +1603,14 @@ header {
   max-height: min(90dvh, 52rem);
   overflow: hidden;
 }
-.item-tip header {
+.item-tip > header {
   position: static;
   flex: none;
   padding: .25rem .65rem;
   gap: .35rem;
   background: #1a1610;
 }
-.item-tip header button {
+.item-tip > header button {
   display: grid;
   place-items: center;
   width: 2rem;
@@ -1683,8 +1683,8 @@ header {
 .memorial-layout--columns .stats-row > :last-child { min-width: 0; text-align: right; }
 
 .item-tip[data-pinned="false"] { pointer-events: none; }
-.item-tip[data-pinned="false"] header .item-tip-hint { display: inline; font-size: .8rem; margin-right: auto; }
-.item-tip[data-pinned="true"] header { cursor: move; }
+.item-tip[data-pinned="false"] > header .item-tip-hint { display: inline; font-size: .8rem; margin-right: auto; }
+.item-tip[data-pinned="true"] > header { cursor: move; }
 
 .item-anchor-pin { position: fixed; z-index: 1001; display: grid; place-items: center; width: 24px; height: 24px; color: #dbc18d; background: #211a12; border: 1px solid #8d7340; cursor: pointer; }
 
