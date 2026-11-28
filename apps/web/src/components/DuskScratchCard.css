@@ -11,3 +11,19 @@ footer{padding:.22em}footer hr{margin-bottom:0}
 .equipped{color:#cbb178;text-align:center;padding:0 0 .16em}.equipped b{font-family:Georgia,serif;font-weight:normal;font-size:1.27em}.equipped hr{margin-top:.1em}footer{margin-top:.22em}
 
 font: clamp(16px, 1.65vw, 27px)/1.22 "Microsoft JhengHei",sans-serif; color:#c9c7bd;}
+
+.item-tip:has(.dusk-scratch-card) {
+  background: transparent;
+}
+
+.dusk-scratch-card > header {
+  border-radius: 0;
+  border: solid transparent;
+  border-width: 5px 18px;
+  border-image: url("../assets/market-canvas-frame.jpg") 19 45 14 45 / 1 stretch;
+  background: linear-gradient(#15100b55, #0b0806aa), url("../assets/ledger-canvas-bronze.jpg") center / cover;
+}
+
+.dusk-scratch-card > header::before {
+  content: none;
+}
