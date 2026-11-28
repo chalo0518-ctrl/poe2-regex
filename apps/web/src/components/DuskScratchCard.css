@@ -27,3 +27,16 @@ font: clamp(16px, 1.65vw, 27px)/1.22 "Microsoft JhengHei",sans-serif; color:#c9c
 .dusk-scratch-card > header::before {
   content: none;
 }
+.dusk-scratch-card > .dusk-nameplate {
+  box-sizing: border-box;
+  margin: -1px -1px 0;
+  padding: 4px 50px;
+  border: solid transparent;
+  border-width: 0 48px;
+  border-image: url("../assets/dusk-scratch-nameplate.png") 0 70 fill / 0 48px / 0 repeat;
+  color: #f5da52;
+  font: 500 1.13em/1.08 "Microsoft JhengHei", sans-serif;
+  text-align: center;
+}
+.item-tip:has(.dusk-scratch-card) .item-tip-body { padding: 0; }
+.item-tip .dusk-scratch-card { max-width: none; width: 100%; }

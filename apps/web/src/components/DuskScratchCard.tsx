@@ -1,7 +1,7 @@
-import nameplate from "../assets/dusk-scratch-nameplate.png";
+
 import "./DuskScratchCard.css";
 export default function DuskScratchCard() { return <article className="dusk-scratch-card">
-<img src={nameplate} alt="暮色刃痕 · 單挑法杖" style={{ display: "block", width: "100%", height: "auto" }} />
+<h2 className="dusk-nameplate">暮色刃痕<br />單挑法杖</h2>
 <div className="meta"><p><span className="dim"><u>法杖</u>：</span>物品等級 83</p><p><span className="dim"><u>品質</u>：</span><span className="blue">+23%</span></p><hr /><p><span className="dim">需求：</span>等級 65, 114 智慧</p><hr /></div>
 <div className="ice socket-effect">允許後綴+1<br />+3全部<u>法術</u>技能等級</div><hr />
 <div className="skill"><img alt="" src="https://cdn.poe2db.tw/image/art/2dart/skillicons/4k/spellslingerweaponskill.webp" /><span>賦予技能: <u>等級 19 拋法者</u></span></div><hr />
